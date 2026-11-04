@@ -4,6 +4,7 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/server";
 import {
+  AmountTooSmallError,
   EmptyAmountError,
   InsufficientAmountError,
   InvalidNumberAmountError,
@@ -40,6 +41,8 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.emptyAmount"];
   } else if (e instanceof InvalidNumberAmountError) {
     return ["errors.invalidNumberAmount"];
+  } else if (e instanceof AmountTooSmallError) {
+    return ["errors.amountTooSmall"];
   } else if (e instanceof ZeroAmountError) {
     return ["errors.zeroAmount"];
   } else if (e instanceof NegativeAmountError) {

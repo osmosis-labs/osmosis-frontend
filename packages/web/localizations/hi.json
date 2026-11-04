@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "राशि की गणना करने में समस्या",
     "depositNoBalance": "आपके पास जमा करने के लिए कोई संपत्ति नहीं है",
+    "amountTooSmall": "राशि बहुत छोटी है",
     "emptyAmount": "रकम खाली है",
     "generic": "गलती",
     "highSwapFee": "स्वैप शुल्क बहुत अधिक है",
@@ -395,6 +396,8 @@
     "settings": "समायोजन"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} प्रति दिन",
+    "spendLimitLeftToday": "आज {amount} शेष",
     "toast": {
       "oneClickTradingActive": "1-ट्रेडिंग सक्रिय पर क्लिक करें",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "एकाधिक वॉलेट अनुमोदन की परेशानी के बिना त्वरित, आसान व्यापार करें।",
       "learnMore": "और अधिक जानें",
       "startTradingButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
-      "defaultParameters": "डिफ़ॉल्ट सेटिंग $5,000 USD हानि संरक्षण सीमा के साथ 1 घंटे पर सेट की गई है।",
+      "defaultParameters": "डिफ़ॉल्ट सेटिंग 7 दिन और $5,000 USD की दैनिक खर्च सीमा पर सेट हैं।",
       "changeButton": "विन्यास बदलें"
     },
     "reviewOrder": {
       "recapRowTitle": "1-क्लिक ट्रेडिंग सीमा",
       "enableTitle": "1-क्लिक ट्रेडिंग शुरू करें",
       "enableDescription": "तीव्र एवं आसान व्यापार",
-      "paramsDescription": "{sessionLength} सत्र {lossProtectionLimit} हानि सुरक्षा सीमा के साथ",
+      "paramsDescription": "{sessionLength} सत्र, {spendLimit} दैनिक खर्च सीमा के साथ",
       "defaultSpendLimit": "$5,000 अमरीकी डॉलर",
       "change": "परिवर्तन",
       "edit": "संपादन करना",
       "exceeded": "पार हो गई",
       "exceededTooltip": {
-        "title": "वर्तमान हानि-सुरक्षा सीमा पार हो गई",
+        "title": "आपकी दैनिक खर्च सीमा से अधिक है",
         "body": "आपको अपने वॉलेट में इस लेनदेन को मैन्युअल रूप से अनुमोदित करना होगा।"
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-ट्रेडिंग पर क्लिक करें",
       "description": "1-क्लिक ट्रेडिंग आपको अपने वॉलेट में प्रत्येक लेनदेन पर हस्ताक्षर करने की परेशानी के बिना इस डिवाइस पर सुरक्षित रूप से व्यापार करने की सुविधा देता है।",
       "enableTitle": "1-क्लिक ट्रेडिंग सक्षम करें",
-      "spendLimitTitle": "हानि सुरक्षा सीमा",
+      "spendLimitTitle": "दैनिक खर्च सीमा",
       "sessionPeriodTitle": "सत्र अवधि",
       "startButton": "1-क्लिक ट्रेडिंग प्रारंभ करें",
       "editSessionButton": "परिवर्तनों को सुरक्षित करें",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "संपत्ति",
       "amount": "मात्रा",
-      "review": "समीक्षा",
-      "deposit": "जमा"
+      "review": "समीक्षा"
     },
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "फीस के लिए अपर्याप्त धनराशि",
     "youNeedFundsToPay": "आपको {chain} पर नेटवर्क और ब्रिजिंग शुल्क का भुगतान करने के लिए धन की आवश्यकता है।",
     "youNeedFundsToPayWithFee": "आप जो राशि स्थानांतरित करने का प्रयास कर रहे हैं वह {chain} पर {feeAmount} {feeCurrency} के ब्रिजिंग शुल्क को कवर करने के लिए बहुत कम है। कृपया एक बड़ी राशि का प्रयास करें।",
-    "transferAmountTooLowValueLoss": "स्थानांतरण राशि बहुत कम है",
-    "valueLossTooHighToBridge": "शुल्क के बाद स्थानांतरण राशि बहुत कम है। ब्रिज को सफलतापूर्वक पूरा करने के लिए मूल्य हानि बहुत अधिक होगी। कृपया एक बड़ी राशि का प्रयास करें।",
     "assetsDepositsUnavailable": "{asset} जमा उपलब्ध नहीं हैं",
-    "assetWithdrawalsUnavailable": "{asset} निकासी उपलब्ध नहीं है",
+    "assetWithdrawalsToChainUnavailable": "{chain} पर {asset} निकासी उपलब्ध नहीं है",
+    "routeLiquidityTooLow": "इस रूट के लिए पर्याप्त तरलता नहीं है",
+    "routeLiquidityTooLowBody": "अभी इस ट्रांसफ़र को उचित मूल्य पर रूट करने के लिए पर्याप्त तरलता नहीं है। कोई दूसरा नेटवर्क या टोकन आज़माएँ, या बाद में फिर कोशिश करें।",
     "noAvailableDeposits": "वर्तमान में कोई उपलब्ध मार्ग या प्रदाता नहीं मिल पा रहा है। कृपया बाद में पुनः प्रयास करें या अपने फंड को ऑस्मोसिस में स्थानांतरित करने के लिए किसी वैकल्पिक एप्लिकेशन का उपयोग करें।",
     "noAvailableWithdrawals": "वर्तमान में कोई उपलब्ध मार्ग या प्रदाता नहीं मिल पा रहा है। कृपया बाद में पुनः प्रयास करें या Osmosis से अपने फंड को स्थानांतरित करने के लिए कोई वैकल्पिक एप्लिकेशन सेट करें।",
     "somethingIsntWorking": "कुछ काम नहीं कर रहा है...",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "{asset} निकासी रोक दी गई है",
     "noNativeTransfers": "{asset} के लिए नेटिव ट्रांसफर अनुपलब्ध",
     "noNativeTransfersDescription": "कृपया नीचे दिए गए वैकल्पिक प्रदाताओं में से किसी एक का उपयोग करें।",
-    "sendFromWalletOrExchange": "अपने वॉलेट या एक्सचेंज से भेजें",
-    "scanWithMobileWallet": "अपने मोबाइल वॉलेट से स्कैन करें",
-    "or": "या",
-    "copied": "कॉपी किया गया",
-    "copyToClipboard": "क्लिपबोर्ड पर कॉपी करें",
-    "showQrCode": "क्यूआर कोड दिखाएं",
-    "yourDepositAddress": "आपका {denom} जमा पता",
-    "copyAddressToClipboard": "पता क्लिपबोर्ड पर कॉपी करें",
-    "copyAddress": "पता कॉपी करें",
-    "receiveOnlyAsset": "यह पता केवल {denom} {network} नेटवर्क से प्राप्त कर सकता है। किसी अन्य संपत्ति को भेजने से स्थायी नुकसान हो सकता है।",
-    "minimumDeposit": "न्यूनतम जमा",
-    "nomic": {
-      "estimatedTime": "1-8 घंटे",
-      "awaitingBtc": "बीटीसी की प्रतीक्षा में",
-      "transferringYourBtc": "अपना BTC स्थानांतरित करना",
-      "depositStatus": "जमा स्थिति",
-      "depositSuccess": "जमा सफल",
-      "pendingDeposit": "लंबित जमा",
-      "estimatedAboutTime": "अनुमानित लगभग {time}",
-      "from": "से",
-      "to": "को",
-      "asset": "संपत्ति",
-      "amountBtc": "राशि बीटीसी",
-      "totalValue": "कुल मूल्य",
-      "transactionHash": "लेनदेन हैश",
-      "viewOnExplorer": "एक्सप्लोरर पर देखें",
-      "totalFees": "कुल शुल्क"
-    },
-    "doNotSendFundsToThisAddress": "इस पते पर धनराशि न भेजें।",
-    "addressExpired": "यह पता समाप्त हो गया है। कृपया नया पता मांगें।",
-    "addressAboutToExpire": "यह पता समाप्त होने वाला है। कृपया धनराशि खोने से बचने के लिए नया पता मांगें।",
-    "createNewDepositAddress": "नया जमा पता बनाएं",
-    "transactionDetails": "लेन-देन विवरण",
     "confirmAmount": "राशि की पुष्टि करें",
     "enterChainAddress": "{chain} पता दर्ज करें",
     "wormholeRedeem": {

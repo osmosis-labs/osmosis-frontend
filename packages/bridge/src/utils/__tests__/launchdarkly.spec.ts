@@ -38,7 +38,7 @@ describe("getLaunchDarklyFlagValue", () => {
 
     await expect(
       getLaunchDarklyFlagValue({
-        key: "nomicWithdrawAmount",
+        key: "swapToolSimulateFee",
         defaultValue: false,
       })
     ).resolves.toBe(true);
@@ -59,12 +59,12 @@ describe("getLaunchDarklyFlagValue", () => {
 
     await expect(
       getLaunchDarklyFlagValue({
-        key: "nomicWithdrawAmount",
+        key: "swapToolSimulateFee",
         defaultValue: false,
       })
     ).resolves.toBe(false);
     expect(client.variation).toHaveBeenCalledWith(
-      "nomic-withdraw-amount",
+      "swap-tool-simulate-fee",
       false
     );
   });
@@ -77,7 +77,7 @@ describe("getLaunchDarklyFlagValue", () => {
 
     await expect(
       getLaunchDarklyFlagValue({
-        key: "nomicWithdrawAmount",
+        key: "swapToolSimulateFee",
         defaultValue: false,
       })
     ).resolves.toBe(false);
@@ -91,7 +91,7 @@ describe("getLaunchDarklyFlagValue", () => {
 
     await expect(
       getLaunchDarklyFlagValue({
-        key: "nomicWithdrawAmount",
+        key: "swapToolSimulateFee",
         defaultValue: false,
       })
     ).resolves.toBe(false);
@@ -104,7 +104,7 @@ describe("getLaunchDarklyFlagValue", () => {
     await Promise.all(
       Array.from({ length: 3 }, () =>
         getLaunchDarklyFlagValue({
-          key: "nomicWithdrawAmount",
+          key: "swapToolSimulateFee",
           defaultValue: false,
         })
       )

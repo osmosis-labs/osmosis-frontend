@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problem beim Berechnen des Betrags",
     "depositNoBalance": "Sie haben kein Vermögen zum Einzahlen",
+    "amountTooSmall": "Betrag ist zu klein",
     "emptyAmount": "Der Betrag ist leer",
     "generic": "Fehler",
     "highSwapFee": "Swap-Gebühr zu hoch",
@@ -395,6 +396,8 @@
     "settings": "Einstellungen"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} pro Tag",
+    "spendLimitLeftToday": "Heute noch {amount}",
     "toast": {
       "oneClickTradingActive": "1-Click-Handel aktiv",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Führen Sie schnellere und einfachere Geschäfte durch, ohne den Aufwand mehrerer Wallet-Genehmigungen.",
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
-      "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
+      "defaultParameters": "Die Standardeinstellungen sind auf 7 Tage mit einem täglichen Ausgabenlimit von 5.000 USD festgelegt.",
       "changeButton": "Einstellungen bearbeiten"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Klick-Handelslimit",
       "enableTitle": "Starten Sie den 1-Klick-Handel",
       "enableDescription": "Schneller und einfacher handeln",
-      "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
+      "paramsDescription": "{sessionLength} Sitzung mit {spendLimit} täglichem Ausgabenlimit",
       "defaultSpendLimit": "5.000 USD",
       "change": "Ändern",
       "edit": "Bearbeiten",
       "exceeded": "Übertroffen",
       "exceededTooltip": {
-        "title": "Überschreitet die aktuelle Verlustschutzgrenze",
+        "title": "Überschreitet Ihr tägliches Ausgabenlimit",
         "body": "Sie müssen diese Transaktion in Ihrem Wallet manuell genehmigen."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
       "enableTitle": "Aktivieren Sie den 1-Klick-Handel",
-      "spendLimitTitle": "Verlustschutzgrenze",
+      "spendLimitTitle": "Tägliches Ausgabenlimit",
       "sessionPeriodTitle": "Sitzungszeitraum",
       "startButton": "Starten Sie den 1-Klick-Handel",
       "editSessionButton": "Änderungen speichern",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
-      "review": "Rezension",
-      "deposit": "Kaution"
+      "review": "Rezension"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Unzureichende Mittel für Gebühren",
     "youNeedFundsToPay": "Sie benötigen Guthaben, um Netzwerk- und Überbrückungsgebühren für {chain} zu bezahlen.",
     "youNeedFundsToPayWithFee": "Der Betrag, den Sie zu überweisen versuchen, ist zu niedrig, um die Überbrückungsgebühr von {feeAmount} {feeCurrency} für {chain} zu decken. Bitte versuchen Sie einen größeren Betrag.",
-    "transferAmountTooLowValueLoss": "Überweisungsbetrag zu niedrig",
-    "valueLossTooHighToBridge": "Der Überweisungsbetrag ist nach Abzug der Gebühren zu niedrig. Der Wertverlust wäre zu hoch, um erfolgreich zu überbrücken. Bitte versuchen Sie es mit einem höheren Betrag.",
     "assetsDepositsUnavailable": "{asset} Einlagen sind nicht verfügbar",
-    "assetWithdrawalsUnavailable": "{asset} Abhebungen sind nicht verfügbar",
+    "assetWithdrawalsToChainUnavailable": "{asset}-Auszahlungen nach {chain} sind nicht verfügbar",
+    "routeLiquidityTooLow": "Nicht genug Liquidität für diese Route",
+    "routeLiquidityTooLowBody": "Für diese Überweisung ist derzeit nicht genug Liquidität zu einem fairen Preis vorhanden. Versuche ein anderes Netzwerk oder einen anderen Token oder versuche es später erneut.",
     "noAvailableDeposits": "Derzeit können keine verfügbaren Routen oder Anbieter gefunden werden. Bitte versuchen Sie es später erneut oder verwenden Sie eine alternative Anwendung, um Ihr Geld an Osmosis zu überweisen.",
     "noAvailableWithdrawals": "Derzeit können keine verfügbaren Routen oder Anbieter gefunden werden. Bitte versuchen Sie es später erneut oder legen Sie eine alternative Anwendung fest, um Ihr Geld von Osmosis zu überweisen.",
     "somethingIsntWorking": "Irgendetwas funktioniert nicht ...",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "Auszahlungen von {asset} sind gestoppt",
     "noNativeTransfers": "Native Übertragungen für {asset} nicht verfügbar",
     "noNativeTransfersDescription": "Bitte verwenden Sie einen der folgenden alternativen Anbieter.",
-    "sendFromWalletOrExchange": "Senden Sie aus Ihrem Wallet oder Ihrer Börse",
-    "scanWithMobileWallet": "Scannen Sie mit Ihrer mobilen Geldbörse",
-    "or": "oder",
-    "copied": "Kopiert",
-    "copyToClipboard": "In die Zwischenablage kopieren",
-    "showQrCode": "QR-Code anzeigen",
-    "yourDepositAddress": "Ihre {denom} Einzahlungsadresse",
-    "copyAddressToClipboard": "Kopieren",
-    "copyAddress": "Adresse kopieren",
-    "receiveOnlyAsset": "Diese Adresse kann nur {denom} vom Netzwerk {network} empfangen. Das Senden anderer Assets kann zu einem dauerhaften Verlust führen.",
-    "minimumDeposit": "Mindesteinzahlung",
-    "nomic": {
-      "estimatedTime": "1-8 Std.",
-      "awaitingBtc": "Warten auf BTC",
-      "transferringYourBtc": "Übertragen Sie Ihre BTC",
-      "depositStatus": "Einzahlungsstatus",
-      "depositSuccess": "Einzahlung erfolgreich",
-      "pendingDeposit": "Ausstehende Einzahlung",
-      "estimatedAboutTime": "Geschätzt ca. {time}",
-      "from": "Aus",
-      "to": "Zu",
-      "asset": "Vermögenswert",
-      "amountBtc": "Betrag BTC",
-      "totalValue": "Gesamtwert",
-      "transactionHash": "Transaktions-Hash",
-      "viewOnExplorer": "Im Explorer anzeigen",
-      "totalFees": "Gesamtgebühren"
-    },
-    "doNotSendFundsToThisAddress": "Senden Sie kein Geld an diese Adresse.",
-    "addressExpired": "Diese Adresse ist abgelaufen. Bitte fordern Sie eine neue an.",
-    "addressAboutToExpire": "Diese Adresse läuft bald ab. Bitte fordern Sie eine neue Adresse an, um Geldverluste zu vermeiden.",
-    "createNewDepositAddress": "Neue Einzahlungsadresse erstellen",
-    "transactionDetails": "Details der Transaktion",
     "confirmAmount": "Betrag bestätigen",
     "enterChainAddress": "Geben Sie die Adresse {chain} ein",
     "wormholeRedeem": {

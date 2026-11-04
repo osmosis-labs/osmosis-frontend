@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
+    "amountTooSmall": "Le montant est trop petit",
     "emptyAmount": "Le montant est vide",
     "generic": "Erreur",
     "highSwapFee": "Les frais d'échange sont trop importants",
@@ -395,6 +396,8 @@
     "settings": "Paramètres"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} par jour",
+    "spendLimitLeftToday": "{amount} restants aujourd’hui",
     "toast": {
       "oneClickTradingActive": "Trading en 1 clic actif",
       "oneClickTradingDisabled": "Trading en 1 clic désactivé",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Effectuez des transactions plus rapides et plus faciles sans les tracas liés aux approbations multiples de portefeuilles.",
       "learnMore": "Apprendre encore plus",
       "startTradingButton": "Commencez le trading en 1 clic",
-      "defaultParameters": "Les paramètres par défaut sont définis sur 1 heure avec une limite de protection contre les pertes de 5 000 USD.",
+      "defaultParameters": "Les paramètres par défaut sont fixés à 7 jours avec une limite de dépenses quotidienne de 5 000 USD.",
       "changeButton": "Modifier les paramètres"
     },
     "reviewOrder": {
       "recapRowTitle": "Limite de trading en 1 clic",
       "enableTitle": "Commencez à trader en 1 clic",
       "enableDescription": "Des échanges plus rapides et plus faciles",
-      "paramsDescription": "Session {sessionLength} avec limite de protection contre les pertes {lossProtectionLimit}",
+      "paramsDescription": "Session de {sessionLength} avec une limite de dépenses quotidienne de {spendLimit}",
       "defaultSpendLimit": "5 000 USD",
       "change": "Changement",
       "edit": "Modifier",
       "exceeded": "Dépassé",
       "exceededTooltip": {
-        "title": "Dépasse la limite actuelle de protection contre les pertes",
+        "title": "Dépasse votre limite de dépenses quotidienne",
         "body": "Vous devrez approuver manuellement cette transaction dans votre portefeuille."
       }
     },
@@ -441,7 +444,7 @@
       "header": "Trading en 1 clic",
       "description": "Le trading en 1 clic vous permet de négocier en toute sécurité sur cet appareil sans avoir à signer chaque transaction dans votre portefeuille.",
       "enableTitle": "Activer le trading en 1 clic",
-      "spendLimitTitle": "Limite de protection contre les pertes",
+      "spendLimitTitle": "Limite de dépenses quotidienne",
       "sessionPeriodTitle": "Période de séance",
       "startButton": "Commencez le trading en 1 clic",
       "editSessionButton": "Sauvegarder les modifications",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Actif",
       "amount": "Montant",
-      "review": "Revoir",
-      "deposit": "Dépôt"
+      "review": "Revoir"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Plus d'options de dépôt",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Fonds insuffisants pour les frais",
     "youNeedFundsToPay": "Vous avez besoin de fonds pour payer les frais de réseau et de transition sur {chain} .",
     "youNeedFundsToPayWithFee": "Le montant que vous essayez de transférer est trop faible pour couvrir les frais de pontage de {feeAmount} {feeCurrency} sur {chain}. Veuillez essayer un montant plus élevé.",
-    "transferAmountTooLowValueLoss": "Montant du transfert trop bas",
-    "valueLossTooHighToBridge": "Le montant du transfert est trop bas après les frais. La perte de valeur serait trop élevée pour effectuer le pontage avec succès. Veuillez essayer un montant plus élevé.",
     "assetsDepositsUnavailable": "Les dépôts {asset} ne sont pas disponibles",
-    "assetWithdrawalsUnavailable": "Les retraits de {asset} ne sont pas disponibles",
+    "assetWithdrawalsToChainUnavailable": "Les retraits de {asset} vers {chain} ne sont pas disponibles",
+    "routeLiquidityTooLow": "Liquidité insuffisante pour cet itinéraire",
+    "routeLiquidityTooLowBody": "La liquidité est actuellement insuffisante pour acheminer ce transfert à un prix équitable. Essayez un autre réseau ou un autre jeton, ou réessayez plus tard.",
     "noAvailableDeposits": "Actuellement, aucun itinéraire ou fournisseur disponible n'a été trouvé. Veuillez réessayer plus tard ou utiliser une autre application pour transférer vos fonds vers Osmosis.",
     "noAvailableWithdrawals": "Actuellement, aucun itinéraire ou fournisseur disponible n'a été trouvé. Veuillez réessayer ultérieurement ou définir une autre application pour transférer vos fonds depuis Osmosis.",
     "somethingIsntWorking": "Quelque chose ne fonctionne pas…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "Les retraits de {asset} sont suspendus",
     "noNativeTransfers": "Transferts natifs indisponibles pour {asset}",
     "noNativeTransfersDescription": "Veuillez utiliser l’un des fournisseurs alternatifs ci-dessous.",
-    "sendFromWalletOrExchange": "Envoyez depuis votre portefeuille ou échangez",
-    "scanWithMobileWallet": "Scannez avec votre portefeuille mobile",
-    "or": "ou",
-    "copied": "Copié",
-    "copyToClipboard": "Copier dans le presse-papier",
-    "showQrCode": "Afficher le code QR",
-    "yourDepositAddress": "Votre adresse de dépôt {denom}",
-    "copyAddressToClipboard": "Copier l'adresse dans le presse-papiers",
-    "copyAddress": "Copier l'adresse",
-    "receiveOnlyAsset": "Cette adresse ne peut recevoir que {denom} du réseau {network} . L'envoi de tout autre élément peut entraîner une perte permanente.",
-    "minimumDeposit": "Dépôt minimum",
-    "nomic": {
-      "estimatedTime": "1-8 h",
-      "awaitingBtc": "En attente de BTC",
-      "transferringYourBtc": "Transférer votre BTC",
-      "depositStatus": "Statut du dépôt",
-      "depositSuccess": "Succès du dépôt",
-      "pendingDeposit": "Dépôt en attente",
-      "estimatedAboutTime": "Estimé à environ {time}",
-      "from": "Depuis",
-      "to": "À",
-      "asset": "Actif",
-      "amountBtc": "Montant en BTC",
-      "totalValue": "Valeur totale",
-      "transactionHash": "Hachage de transaction",
-      "viewOnExplorer": "Voir sur l'explorateur",
-      "totalFees": "Frais totaux"
-    },
-    "doNotSendFundsToThisAddress": "N'envoyez pas de fonds à cette adresse.",
-    "addressExpired": "Cette adresse a expiré. Veuillez en demander une nouvelle.",
-    "addressAboutToExpire": "Cette adresse est sur le point d'expirer. Veuillez demander une nouvelle adresse pour éviter de perdre des fonds.",
-    "createNewDepositAddress": "Créer une nouvelle adresse de dépôt",
-    "transactionDetails": "Détails de la transaction",
     "confirmAmount": "Confirmer le montant",
     "enterChainAddress": "Entrez l'adresse {chain}",
     "wormholeRedeem": {

@@ -5,7 +5,6 @@ import { defaultShouldDehydrateQuery, Query } from "@tanstack/react-query";
  */
 export const PERSIST_EXCLUDED_KEYS = [
   "local.bridgeTransfer.getSupportedAssetsBalances",
-  "bridgeTransfer.getDepositAddress",
 ];
 
 /**

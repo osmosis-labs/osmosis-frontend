@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "depositNoBalance": "Yatıracak varlığınız yok",
+    "amountTooSmall": "Miktar çok küçük",
     "emptyAmount": "Miktar boş",
     "generic": "Hata",
     "highSwapFee": "Takas ücreti çok yüksek",
@@ -395,6 +396,8 @@
     "settings": "Ayarlar"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "Günlük {amount}",
+    "spendLimitLeftToday": "Bugün kalan: {amount}",
     "toast": {
       "oneClickTradingActive": "1-Tıkla Ticaret aktif",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Birden fazla cüzdan onayıyla uğraşmadan daha hızlı ve daha kolay işlemler yapın.",
       "learnMore": "Daha fazla bilgi edin",
       "startTradingButton": "Tek Tıklamayla Ticareti Başlatın",
-      "defaultParameters": "Varsayılan ayarlar 5.000 USD Kayıp Koruma limitiyle 1 saate ayarlanmıştır.",
+      "defaultParameters": "Varsayılan ayarlar 7 gün ve 5.000 USD günlük harcama limitidir.",
       "changeButton": "Ayarları düzenle"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Tıkla İşlem limiti",
       "enableTitle": "1-Tıkla İşlem Başlat",
       "enableDescription": "Daha hızlı, daha kolay ticaret",
-      "paramsDescription": "{sessionLength} oturumu {spendLimit} kayıp koruma sınırıyla",
+      "paramsDescription": "{sessionLength} oturum, {spendLimit} günlük harcama limitiyle",
       "defaultSpendLimit": "5.000 ABD doları",
       "change": "Değiştirmek",
       "edit": "Düzenlemek",
       "exceeded": "Aşıldı",
       "exceededTooltip": {
-        "title": "Mevcut kayıp koruma sınırını aşar",
+        "title": "Günlük harcama limitinizi aşıyor",
         "body": "Bu işlemi cüzdanınızda manuel olarak onaylamanız gerekecektir."
       }
     },
@@ -441,7 +444,7 @@
       "header": "Tek Tıklamayla Ticaret",
       "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",
       "enableTitle": "Tek Tıklamayla Ticareti Etkinleştir",
-      "spendLimitTitle": "Kayıp koruma limiti",
+      "spendLimitTitle": "Günlük harcama limiti",
       "sessionPeriodTitle": "Oturum dönemi",
       "startButton": "Tek Tıklamayla Ticareti Başlatın",
       "editSessionButton": "Değişiklikleri Kaydet",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
-      "review": "Gözden geçirmek",
-      "deposit": "Depozito"
+      "review": "Gözden geçirmek"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Ücretler için yeterli fon yok",
     "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
     "youNeedFundsToPayWithFee": "Transfer etmeye çalıştığınız miktar, {chain} üzerinde {feeAmount} {feeCurrency} köprüleme ücretini karşılamak için çok düşük. Lütfen daha büyük bir miktar deneyin.",
-    "transferAmountTooLowValueLoss": "Transfer miktarı çok düşük",
-    "valueLossTooHighToBridge": "Ücretlerden sonra transfer miktarı çok düşük. Değer kaybı köprüyü başarıyla tamamlamak için çok yüksek olacaktır. Lütfen daha büyük bir miktar deneyin.",
     "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",
-    "assetWithdrawalsUnavailable": "{asset} çekimleri kullanılamaz",
+    "assetWithdrawalsToChainUnavailable": "{asset} için {chain} ağına çekimler kullanılamıyor",
+    "routeLiquidityTooLow": "Bu rota için yeterli likidite yok",
+    "routeLiquidityTooLowBody": "Şu anda bu transferi adil bir fiyattan yönlendirmek için yeterli likidite yok. Başka bir ağ veya token deneyin ya da daha sonra tekrar deneyin.",
     "noAvailableDeposits": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
     "noAvailableWithdrawals": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'ten aktarmak için alternatif bir uygulama ayarlayın.",
     "somethingIsntWorking": "Bir şeyler çalışmıyor…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "{asset} para çekme işlemleri durduruldu",
     "noNativeTransfers": "{asset} için yerel transferler kullanılamıyor",
     "noNativeTransfersDescription": "Lütfen aşağıdaki alternatif sağlayıcılardan birini kullanın.",
-    "sendFromWalletOrExchange": "Cüzdanınızdan veya borsadan gönderin",
-    "scanWithMobileWallet": "Mobil cüzdanınızla tarayın",
-    "or": "veya",
-    "copied": "Kopyalandı",
-    "copyToClipboard": "Panoya kopyala",
-    "showQrCode": "QR kodunu göster",
-    "yourDepositAddress": "{denom} para yatırma adresiniz",
-    "copyAddressToClipboard": "Adresi panoya kopyala",
-    "copyAddress": "Adresi kopyala",
-    "receiveOnlyAsset": "Bu adres yalnızca {denom} {network} \"denom\"} alabilir. Başka herhangi bir varlığın gönderilmesi kalıcı kayba neden olabilir.",
-    "minimumDeposit": "Minimum mevduat",
-    "nomic": {
-      "estimatedTime": "1-8 saat",
-      "awaitingBtc": "BTC bekleniyor",
-      "transferringYourBtc": "BTC'nizi transfer etme",
-      "depositStatus": "Mevduat durumu",
-      "depositSuccess": "Para yatırma başarısı",
-      "pendingDeposit": "Bekleyen mevduat",
-      "estimatedAboutTime": "{time} hakkında tahmin edildi",
-      "from": "İtibaren",
-      "to": "İle",
-      "asset": "Varlık",
-      "amountBtc": "Miktar BTC",
-      "totalValue": "Toplam değer",
-      "transactionHash": "İşlem karması",
-      "viewOnExplorer": "Explorer'da görüntüle",
-      "totalFees": "Toplam ücretler"
-    },
-    "doNotSendFundsToThisAddress": "Bu adrese para göndermeyin.",
-    "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin.",
-    "addressAboutToExpire": "Bu adresin süresi dolmak üzere. Lütfen para kaybetmemek için yeni bir adres talep edin.",
-    "createNewDepositAddress": "Yeni para yatırma adresi oluştur",
-    "transactionDetails": "İşlem detayları",
     "confirmAmount": "Tutarı Onayla",
     "enterChainAddress": "{chain} adresini girin",
     "wormholeRedeem": {

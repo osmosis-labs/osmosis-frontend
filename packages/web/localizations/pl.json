@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
     "depositNoBalance": "Nie masz środków do wpłaty",
+    "amountTooSmall": "Ilość jest zbyt mała",
     "emptyAmount": "Ilość jest pusta",
     "generic": "Błąd",
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
@@ -395,6 +396,8 @@
     "settings": "Ustawienia"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} dziennie",
+    "spendLimitLeftToday": "Pozostało dziś: {amount}",
     "toast": {
       "oneClickTradingActive": "Aktywny handel jednym kliknięciem",
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Dokonuj szybszych i łatwiejszych transakcji bez konieczności zatwierdzania wielu portfeli.",
       "learnMore": "Ucz się więcej",
       "startTradingButton": "Rozpocznij handel jednym kliknięciem",
-      "defaultParameters": "Ustawienia domyślne są ustawione na 1 godzinę z limitem ochrony przed stratą w wysokości 5000 USD.",
+      "defaultParameters": "Ustawienia domyślne to 7 dni z dziennym limitem wydatków wynoszącym 5000 USD.",
       "changeButton": "Edytuj ustawienia"
     },
     "reviewOrder": {
       "recapRowTitle": "Limit handlu jednym kliknięciem",
       "enableTitle": "Rozpocznij handel jednym kliknięciem",
       "enableDescription": "Szybszy, łatwiejszy handel",
-      "paramsDescription": "{sessionLength} sesja z {lossProtectionLimit} limitem ochrony przed stratami",
+      "paramsDescription": "Sesja {sessionLength} z dziennym limitem wydatków {spendLimit}",
       "defaultSpendLimit": "5000 dolarów amerykańskich",
       "change": "Zmiana",
       "edit": "Redagować",
       "exceeded": "Przekroczony",
       "exceededTooltip": {
-        "title": "Przekracza aktualny limit ochrony przed stratami",
+        "title": "Przekracza Twój dzienny limit wydatków",
         "body": "Będziesz musiał ręcznie zatwierdzić tę transakcję w swoim portfelu."
       }
     },
@@ -441,7 +444,7 @@
       "header": "Handel jednym kliknięciem",
       "description": "Handel 1-Click pozwala bezpiecznie handlować na tym urządzeniu bez konieczności podpisywania każdej transakcji w portfelu.",
       "enableTitle": "Włącz handel jednym kliknięciem",
-      "spendLimitTitle": "Limit ochrony przed stratą",
+      "spendLimitTitle": "Dzienny limit wydatków",
       "sessionPeriodTitle": "Okres sesji",
       "startButton": "Rozpocznij handel jednym kliknięciem",
       "editSessionButton": "Zapisz zmiany",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",
-      "review": "Recenzja",
-      "deposit": "Depozyt"
+      "review": "Recenzja"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Niewystarczające środki na opłaty",
     "youNeedFundsToPay": "Potrzebujesz środków, aby uiścić opłaty sieciowe i pomostowe w sieci {chain} .",
     "youNeedFundsToPayWithFee": "Kwota, którą próbujesz przelać, jest zbyt niska, aby pokryć opłatę mostową w wysokości {feeAmount} {feeCurrency} w sieci {chain}. Spróbuj większej kwoty.",
-    "transferAmountTooLowValueLoss": "Kwota transferu zbyt niska",
-    "valueLossTooHighToBridge": "Kwota transferu jest zbyt niska po uwzględnieniu opłat. Utrata wartości byłaby zbyt wysoka, aby pomyślnie przeprowadzić transfer. Spróbuj większej kwoty.",
     "assetsDepositsUnavailable": "Depozyty {asset} są niedostępne",
-    "assetWithdrawalsUnavailable": "Wypłaty {asset} są niedostępne",
+    "assetWithdrawalsToChainUnavailable": "Wypłaty {asset} do {chain} są niedostępne",
+    "routeLiquidityTooLow": "Za mała płynność dla tej trasy",
+    "routeLiquidityTooLowBody": "Obecnie brakuje płynności, aby przekierować ten transfer po uczciwej cenie. Spróbuj innej sieci lub tokena albo spróbuj ponownie później.",
     "noAvailableDeposits": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub skorzystaj z alternatywnej aplikacji, aby przelać środki na rzecz Osmosis.",
     "noAvailableWithdrawals": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub ustaw alternatywną aplikację do przesyłania środków z Osmozy.",
     "somethingIsntWorking": "Coś nie działa…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "Wypłaty {asset} są wstrzymane",
     "noNativeTransfers": "Natywne przelewy niedostępne dla {asset}",
     "noNativeTransfersDescription": "Proszę skorzystać z jednego z poniższych alternatywnych dostawców.",
-    "sendFromWalletOrExchange": "Wyślij z portfela lub giełdy",
-    "scanWithMobileWallet": "Skanuj za pomocą portfela mobilnego",
-    "or": "Lub",
-    "copied": "Skopiowano",
-    "copyToClipboard": "Kopiuj do schowka",
-    "showQrCode": "Pokaż kod QR",
-    "yourDepositAddress": "Twój adres depozytowy {denom}",
-    "copyAddressToClipboard": "Kopiuj adres do schowka",
-    "copyAddress": "Kopiuj adres",
-    "receiveOnlyAsset": "Ten adres może odbierać tylko {denom} z sieci {network} . Wysyłanie innych zasobów może skutkować trwałą utratą.",
-    "minimumDeposit": "Minimalny depozyt",
-    "nomic": {
-      "estimatedTime": "1-8 godz.",
-      "awaitingBtc": "Oczekiwanie na BTC",
-      "transferringYourBtc": "Przesyłanie BTC",
-      "depositStatus": "Status depozytu",
-      "depositSuccess": "Wpłata zakończona sukcesem",
-      "pendingDeposit": "Oczekujący depozyt",
-      "estimatedAboutTime": "Szacunkowo około {time}",
-      "from": "Z",
-      "to": "Do",
-      "asset": "Zaleta",
-      "amountBtc": "Kwota BTC",
-      "totalValue": "Wartość całkowita",
-      "transactionHash": "Hash transakcji",
-      "viewOnExplorer": "Widok w Eksploratorze",
-      "totalFees": "Łączne opłaty"
-    },
-    "doNotSendFundsToThisAddress": "Nie wysyłaj pieniędzy na ten adres.",
-    "addressExpired": "Ten adres wygasł. Poproś o nowy.",
-    "addressAboutToExpire": "Ten adres wkrótce wygaśnie. Poproś o nowy adres, aby uniknąć utraty środków.",
-    "createNewDepositAddress": "Utwórz nowy adres depozytowy",
-    "transactionDetails": "Szczegóły transakcji",
     "confirmAmount": "Potwierdź kwotę",
     "enterChainAddress": "Wprowadź adres {chain}",
     "wormholeRedeem": {

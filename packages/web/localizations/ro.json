@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "depositNoBalance": "Nu ai active de depozitat",
+    "amountTooSmall": "Suma este prea mică",
     "emptyAmount": "Suma lipseste",
     "generic": "Eroare",
     "highSwapFee": "Taxa de schimb este prea mare",
@@ -395,6 +396,8 @@
     "settings": "Setări"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} pe zi",
+    "spendLimitLeftToday": "{amount} rămași astăzi",
     "toast": {
       "oneClickTradingActive": "1-Faceți clic pe Tranzacționare activă",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Efectuați tranzacții mai rapide și mai ușoare, fără bătaia de cap a aprobărilor multiple pentru portofel.",
       "learnMore": "Află mai multe",
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
-      "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
+      "defaultParameters": "Setările implicite sunt 7 zile cu o limită zilnică de cheltuieli de 5.000 USD.",
       "changeButton": "Editeaza setarile"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
       "enableTitle": "Începeți tranzacționarea cu 1 clic",
       "enableDescription": "Tranzacționare mai rapidă și mai ușoară",
-      "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
+      "paramsDescription": "Sesiune de {sessionLength} cu limită zilnică de cheltuieli de {spendLimit}",
       "defaultSpendLimit": "5.000 USD",
       "change": "Schimba",
       "edit": "Edita",
       "exceeded": "Depășit",
       "exceededTooltip": {
-        "title": "Depășește limita curentă de protecție împotriva pierderilor",
+        "title": "Depășește limita zilnică de cheltuieli",
         "body": "Va trebui să aprobați manual această tranzacție în portofel."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-Click Trading",
       "description": "Tranzacționarea cu 1 clic vă permite să tranzacționați în siguranță pe acest dispozitiv, fără bătaia de cap de a semna fiecare tranzacție din portofel.",
       "enableTitle": "Activați tranzacționarea cu 1 clic",
-      "spendLimitTitle": "Limită de protecție împotriva pierderilor",
+      "spendLimitTitle": "Limită zilnică de cheltuieli",
       "sessionPeriodTitle": "Perioada de sesiune",
       "startButton": "Începeți tranzacționarea cu 1 clic",
       "editSessionButton": "Salvează modificările",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",
-      "review": "Revizuire",
-      "deposit": "Depozit"
+      "review": "Revizuire"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Fonduri insuficiente pentru taxe",
     "youNeedFundsToPay": "Aveți nevoie de fonduri pentru a plăti taxele de rețea și de conectare pe {chain} .",
     "youNeedFundsToPayWithFee": "Suma pe care încercați să o transferați este prea mică pentru a acoperi taxa de conectare de {feeAmount} {feeCurrency} pe {chain}. Vă rugăm să încercați o sumă mai mare.",
-    "transferAmountTooLowValueLoss": "Suma de transfer este prea mică",
-    "valueLossTooHighToBridge": "Suma de transfer este prea mică după taxe. Pierderea de valoare ar fi prea mare pentru a finaliza cu succes conectarea. Vă rugăm să încercați o sumă mai mare.",
     "assetsDepositsUnavailable": "Depunerile {asset} nu sunt disponibile",
-    "assetWithdrawalsUnavailable": "Retragerile {asset} nu sunt disponibile",
+    "assetWithdrawalsToChainUnavailable": "Retragerile de {asset} către {chain} nu sunt disponibile",
+    "routeLiquidityTooLow": "Lichiditate insuficientă pentru această rută",
+    "routeLiquidityTooLowBody": "În acest moment nu există suficientă lichiditate pentru a direcționa acest transfer la un preț corect. Încearcă o altă rețea sau un alt token, sau încearcă din nou mai târziu.",
     "noAvailableDeposits": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
     "noAvailableWithdrawals": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să setați o aplicație alternativă pentru a vă transfera fondurile de la Osmosis.",
     "somethingIsntWorking": "Ceva nu merge…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "Retragerile de {asset} sunt oprite",
     "noNativeTransfers": "Transferurile native sunt indisponibile pentru {asset}",
     "noNativeTransfersDescription": "Vă rugăm să utilizați unul dintre furnizorii alternativi de mai jos.",
-    "sendFromWalletOrExchange": "Trimiteți din portofel sau schimb",
-    "scanWithMobileWallet": "Scanați cu portofelul mobil",
-    "or": "sau",
-    "copied": "Copiat",
-    "copyToClipboard": "Copiați în clipboard",
-    "showQrCode": "Afișați codul QR",
-    "yourDepositAddress": "Adresa dvs. de depunere {denom}",
-    "copyAddressToClipboard": "Copiați adresa în clipboard",
-    "copyAddress": "Copiați adresa",
-    "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
-    "minimumDeposit": "Depozit minim",
-    "nomic": {
-      "estimatedTime": "1-8 ore",
-      "awaitingBtc": "În așteptarea BTC",
-      "transferringYourBtc": "Transferul dvs. BTC",
-      "depositStatus": "Starea depozitului",
-      "depositSuccess": "Depozit cu succes",
-      "pendingDeposit": "Depunerea în așteptare",
-      "estimatedAboutTime": "Estimată aproximativ {time}",
-      "from": "Din",
-      "to": "La",
-      "asset": "Atu",
-      "amountBtc": "Suma BTC",
-      "totalValue": "Valoarea totală",
-      "transactionHash": "Hash de tranzacție",
-      "viewOnExplorer": "Vizualizare pe explorer",
-      "totalFees": "Taxele totale"
-    },
-    "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",
-    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou.",
-    "addressAboutToExpire": "Această adresă este pe cale să expire. Vă rugăm să solicitați o nouă adresă pentru a evita pierderea fondurilor.",
-    "createNewDepositAddress": "Creați o nouă adresă de depozit",
-    "transactionDetails": "Detalii tranzacție",
     "confirmAmount": "Confirmați suma",
     "enterChainAddress": "Introduceți adresa {chain}",
     "wormholeRedeem": {

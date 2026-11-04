@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "金額の計算に問題があります",
     "depositNoBalance": "預ける資産がありません",
+    "amountTooSmall": "金額が小さすぎます",
     "emptyAmount": "金額が空です",
     "generic": "エラー",
     "highSwapFee": "スワップ手数料が高すぎる",
@@ -395,6 +396,8 @@
     "settings": "設定"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "1日あたり{amount}",
+    "spendLimitLeftToday": "本日の残り{amount}",
     "toast": {
       "oneClickTradingActive": "1-Click取引が有効です",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
-      "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
+      "defaultParameters": "デフォルト設定は、7日間、1日の支出限度額 5,000 USD です。",
       "changeButton": "編集の設定"
     },
     "reviewOrder": {
       "recapRowTitle": "1クリック取引制限",
       "enableTitle": "ワンクリック取引を開始",
       "enableDescription": "より速く、より簡単に取引",
-      "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
+      "paramsDescription": "{sessionLength}のセッション、1日の支出限度額 {spendLimit}",
       "defaultSpendLimit": "5,000米ドル",
       "change": "変化",
       "edit": "編集",
       "exceeded": "超過",
       "exceededTooltip": {
-        "title": "現在の損失保護限度額を超えています",
+        "title": "1日の支出限度額を超えています",
         "body": "この取引はウォレットで手動で承認する必要があります。"
       }
     },
@@ -441,7 +444,7 @@
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
       "enableTitle": "1-Click取引を有効にする",
-      "spendLimitTitle": "損失保護限度額",
+      "spendLimitTitle": "1日の支出限度額",
       "sessionPeriodTitle": "会期",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
-      "review": "レビュー",
-      "deposit": "デポジット"
+      "review": "レビュー"
     },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "手数料の資金が不足している",
     "youNeedFundsToPay": "{chain}のネットワーク料金とブリッジ料金を支払うための資金が必要です。",
     "youNeedFundsToPayWithFee": "転送しようとしている金額が低すぎて、{chain}での{feeAmount} {feeCurrency}のブリッジ手数料をカバーできません。より大きな金額をお試しください。",
-    "transferAmountTooLowValueLoss": "送金額が少なすぎます",
-    "valueLossTooHighToBridge": "手数料を差し引いた送金額が少なすぎます。ブリッジを正常に完了するには価値の損失が大きすぎます。より大きな金額をお試しください。",
     "assetsDepositsUnavailable": "{asset}の預金は利用できません",
-    "assetWithdrawalsUnavailable": "{asset}引き出しは利用できません",
+    "assetWithdrawalsToChainUnavailable": "{asset}の{chain}への出金は利用できません",
+    "routeLiquidityTooLow": "このルートには十分な流動性がありません",
+    "routeLiquidityTooLowBody": "現在、この送金を適正な価格でルーティングするための流動性が不足しています。別のネットワークまたはトークンをお試しいただくか、後でもう一度お試しください。",
     "noAvailableDeposits": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
     "noAvailableWithdrawals": "現在、利用可能なルートまたはプロバイダーが見つかりません。後でもう一度お試しいただくか、Osmosis から資金を送金するための別のアプリケーションを設定してください。",
     "somethingIsntWorking": "何かがうまくいかない…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "{asset} の出金は停止中です",
     "noNativeTransfers": "{asset}のネイティブ転送が利用不可",
     "noNativeTransfersDescription": "以下の代替プロバイダーのいずれかをご利用ください。",
-    "sendFromWalletOrExchange": "ウォレットまたは取引所から送金する",
-    "scanWithMobileWallet": "モバイルウォレットでスキャン",
-    "or": "または",
-    "copied": "コピーしました",
-    "copyToClipboard": "クリップボードにコピー",
-    "showQrCode": "QRコードを表示",
-    "yourDepositAddress": "{denom}入金アドレス",
-    "copyAddressToClipboard": "アドレスをクリップボードにコピー",
-    "copyAddress": "アドレスをコピー",
-    "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
-    "minimumDeposit": "最低入金額",
-    "nomic": {
-      "estimatedTime": "1-8時間",
-      "awaitingBtc": "BTCを待つ",
-      "transferringYourBtc": "BTCの送金",
-      "depositStatus": "預金状況",
-      "depositSuccess": "入金成功",
-      "pendingDeposit": "保留中の入金",
-      "estimatedAboutTime": "推定約{time}",
-      "from": "から",
-      "to": "に",
-      "asset": "資産",
-      "amountBtc": "金額 BTC",
-      "totalValue": "合計金額",
-      "transactionHash": "トランザクションハッシュ",
-      "viewOnExplorer": "エクスプローラーで見る",
-      "totalFees": "合計料金"
-    },
-    "doNotSendFundsToThisAddress": "このアドレスに資金を送金しないでください。",
-    "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。",
-    "addressAboutToExpire": "このアドレスは有効期限が近づいています。資金の損失を避けるために、新しいアドレスをリクエストしてください。",
-    "createNewDepositAddress": "新しい入金アドレスを作成する",
-    "transactionDetails": "取引の詳細",
     "confirmAmount": "金額を確認",
     "enterChainAddress": "{chain}アドレスを入力してください",
     "wormholeRedeem": {

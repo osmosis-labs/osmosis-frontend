@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "રકમની ગણતરી કરવામાં સમસ્યા",
     "depositNoBalance": "તમારી પાસે જમા કરવા માટે કોઈ સંપત્તિ નથી",
+    "amountTooSmall": "રકમ ખૂબ નાની છે",
     "emptyAmount": "રકમ ખાલી છે",
     "generic": "ભૂલ",
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",
@@ -395,6 +396,8 @@
     "settings": "સેટિંગ્સ"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} પ્રતિ દિવસ",
+    "spendLimitLeftToday": "આજે {amount} બાકી",
     "toast": {
       "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "બહુવિધ વૉલેટ મંજૂરીઓની ઝંઝટ વિના ઝડપી, સરળ વેપાર કરો.",
       "learnMore": "વધુ શીખો",
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
-      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
+      "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ 7 દિવસ અને $5,000 USD ની દૈનિક ખર્ચ મર્યાદા પર સેટ છે.",
       "changeButton": "સેટિંગ્સ સંપાદિત કરો"
     },
     "reviewOrder": {
       "recapRowTitle": "1-ક્લિક કરો ટ્રેડિંગ મર્યાદા",
       "enableTitle": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "enableDescription": "ઝડપી, સરળ વેપાર",
-      "paramsDescription": "{sessionLength} સત્ર સાથે {lossProtectionLimit} નુકશાન સુરક્ષા મર્યાદા",
+      "paramsDescription": "{sessionLength} સત્ર, {spendLimit} દૈનિક ખર્ચ મર્યાદા સાથે",
       "defaultSpendLimit": "$5,000 USD",
       "change": "બદલો",
       "edit": "સંપાદિત કરો",
       "exceeded": "વટાવી ગયો",
       "exceededTooltip": {
-        "title": "વર્તમાન નુકશાન-રક્ષણ મર્યાદા ઓળંગે છે",
+        "title": "તમારી દૈનિક ખર્ચ મર્યાદા કરતાં વધી જાય છે",
         "body": "તમારે તમારા વૉલેટમાં આ વ્યવહારને મેન્યુઅલી મંજૂર કરવો પડશે."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-ક્લિક કરો ટ્રેડિંગ",
       "description": "1-ક્લિક ટ્રેડિંગ તમને તમારા વૉલેટમાં દરેક ટ્રાન્ઝેક્શન પર સહી કરવાની ઝંઝટ વિના આ ઉપકરણ પર સુરક્ષિત રીતે વેપાર કરવા દે છે.",
       "enableTitle": "1-ક્લિક ટ્રેડિંગને સક્ષમ કરો",
-      "spendLimitTitle": "નુકશાન રક્ષણ મર્યાદા",
+      "spendLimitTitle": "દૈનિક ખર્ચ મર્યાદા",
       "sessionPeriodTitle": "સત્રનો સમયગાળો",
       "startButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "editSessionButton": "ફેરફારો સંગ્રહ",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "એસેટ",
       "amount": "રકમ",
-      "review": "સમીક્ષા",
-      "deposit": "જમા"
+      "review": "સમીક્ષા"
     },
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "ફી માટે અપૂરતું ભંડોળ",
     "youNeedFundsToPay": "તમારે {chain} પર નેટવર્ક અને બ્રિજિંગ ફી ચૂકવવા માટે ભંડોળની જરૂર છે.",
     "youNeedFundsToPayWithFee": "તમે જે રકમ ટ્રાન્સફર કરવાનો પ્રયાસ કરી રહ્યાં છો તે {chain} પર {feeAmount} {feeCurrency} ની બ્રિજિંગ ફી આવરી લેવા માટે ખૂબ ઓછી છે. કૃપા કરીને મોટી રકમનો પ્રયાસ કરો.",
-    "transferAmountTooLowValueLoss": "ટ્રાન્સફર રકમ ખૂબ ઓછી છે",
-    "valueLossTooHighToBridge": "ફી પછી ટ્રાન્સફર રકમ ખૂબ ઓછી છે. બ્રિજને સફળતાપૂર્વક પૂર્ણ કરવા માટે મૂલ્ય નુકશાન ખૂબ વધારે હશે. કૃપા કરીને મોટી રકમનો પ્રયાસ કરો.",
     "assetsDepositsUnavailable": "{asset} થાપણો અનુપલબ્ધ છે",
-    "assetWithdrawalsUnavailable": "{asset} ઉપાડ અનુપલબ્ધ છે",
+    "assetWithdrawalsToChainUnavailable": "{chain} પર {asset} ઉપાડ ઉપલબ્ધ નથી",
+    "routeLiquidityTooLow": "આ રૂટ માટે પૂરતી લિક્વિડિટી નથી",
+    "routeLiquidityTooLowBody": "હાલમાં આ ટ્રાન્સફરને વાજબી ભાવે રૂટ કરવા માટે પૂરતી લિક્વિડિટી નથી. બીજું નેટવર્ક અથવા ટોકન અજમાવો, અથવા પછીથી ફરી પ્રયાસ કરો.",
     "noAvailableDeposits": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા તમારા ભંડોળને ઓસ્મોસિસમાં ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશનનો ઉપયોગ કરો.",
     "noAvailableWithdrawals": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા ઓસ્મોસિસમાંથી તમારા ભંડોળને ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશન સેટ કરો.",
     "somethingIsntWorking": "કંઈક કામ કરતું નથી...",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "{asset} ઉપાડ બંધ છે",
     "noNativeTransfers": "{asset} માટે મૂળ ટ્રાન્સફર અનુપલબ્ધ",
     "noNativeTransfersDescription": "કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",
-    "sendFromWalletOrExchange": "તમારા વૉલેટ અથવા એક્સચેન્જમાંથી મોકલો",
-    "scanWithMobileWallet": "તમારા મોબાઈલ વોલેટથી સ્કેન કરો",
-    "or": "અથવા",
-    "copied": "નકલ કરી",
-    "copyToClipboard": "ક્લિપબોર્ડ પર કૉપિ કરો",
-    "showQrCode": "QR કોડ બતાવો",
-    "yourDepositAddress": "તમારું {denom} જમા સરનામું",
-    "copyAddressToClipboard": "ક્લિપબોર્ડ પર સરનામાંની નકલ કરો",
-    "copyAddress": "સરનામું કૉપિ કરો",
-    "receiveOnlyAsset": "આ સરનામું ફક્ત {\"type\":\"VariableReference\",\" {network} {denom} મેળવી શકે છે. કોઈપણ અન્ય સંપત્તિ મોકલવાથી કાયમી નુકસાન થઈ શકે છે.",
-    "minimumDeposit": "ન્યૂનતમ થાપણ",
-    "nomic": {
-      "estimatedTime": "1-8 કલાક",
-      "awaitingBtc": "BTC ની રાહ જોઈ રહ્યા છીએ",
-      "transferringYourBtc": "તમારું BTC ટ્રાન્સફર કરી રહ્યાં છીએ",
-      "depositStatus": "ડિપોઝિટ સ્થિતિ",
-      "depositSuccess": "જમા કરાવવામાં સફળતા",
-      "pendingDeposit": "બાકી થાપણ",
-      "estimatedAboutTime": "{time} વિશે અંદાજિત",
-      "from": "થી",
-      "to": "થી",
-      "asset": "એસેટ",
-      "amountBtc": "BTC રકમ",
-      "totalValue": "કુલ મૂલ્ય",
-      "transactionHash": "વ્યવહાર હેશ",
-      "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
-      "totalFees": "કુલ ફી"
-    },
-    "doNotSendFundsToThisAddress": "આ સરનામે ભંડોળ મોકલશો નહીં.",
-    "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો.",
-    "addressAboutToExpire": "આ સરનામું સમાપ્ત થવામાં છે. ભંડોળ ગુમાવવાનું ટાળવા માટે કૃપા કરીને નવા સરનામાની વિનંતી કરો.",
-    "createNewDepositAddress": "નવું ડિપોઝિટ સરનામું બનાવો",
-    "transactionDetails": "વ્યવહારની વિગતો",
     "confirmAmount": "રકમની પુષ્ટિ કરો",
     "enterChainAddress": "{chain} સરનામું દાખલ કરો",
     "wormholeRedeem": {

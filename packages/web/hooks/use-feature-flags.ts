@@ -26,8 +26,6 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   alloyedAssets: true,
   assetAlerts: true,
   incentivizePool: true,
-  bridgeDepositAddress: true,
-  nomicWithdrawAmount: true,
   swapToolTopGainers: true,
   swapped: true,
   onrampmoney: true,

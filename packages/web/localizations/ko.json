@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
     "depositNoBalance": "입금할 자산이 없습니다",
+    "amountTooSmall": "수량이 너무 적습니다",
     "emptyAmount": "수량이 비어있습니다",
     "generic": "에러",
     "highSwapFee": "교환 수수료가 너무 높습니다",
@@ -395,6 +396,8 @@
     "settings": "설정"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "하루 {amount}",
+    "spendLimitLeftToday": "오늘 {amount} 남음",
     "toast": {
       "oneClickTradingActive": "1-클릭 거래 활성화",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "여러 번 지갑을 승인해야 하는 번거로움 없이 더 빠르고 쉽게 거래하세요.",
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
-      "defaultParameters": "기본 설정은 1시간으로 설정되어 있으며 손실 보호 한도는 USD 5,000입니다.",
+      "defaultParameters": "기본 설정은 7일, 일일 지출 한도 $5,000 USD입니다.",
       "changeButton": "설정 수정"
     },
     "reviewOrder": {
       "recapRowTitle": "1-클릭 거래 한도",
       "enableTitle": "1-클릭 트레이딩 시작",
       "enableDescription": "더 빠르고 쉬운 거래",
-      "paramsDescription": "{sessionLength} 세션과 {lossProtectionLimit} 손실 보호 한도",
+      "paramsDescription": "{sessionLength} 세션, 일일 지출 한도 {spendLimit}",
       "defaultSpendLimit": "5,000달러",
       "change": "변화",
       "edit": "편집하다",
       "exceeded": "초과했습니다",
       "exceededTooltip": {
-        "title": "현재 손실 보호 한도를 초과합니다.",
+        "title": "일일 지출 한도를 초과합니다",
         "body": "지갑에서 이 거래를 수동으로 승인해야 합니다."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-클릭 거래",
       "description": "1-클릭 거래를 사용하면 지갑의 모든 거래에 서명하는 번거로움 없이 이 장치에서 안전하게 거래할 수 있습니다.",
       "enableTitle": "1-클릭 거래 활성화",
-      "spendLimitTitle": "손실 보호 한도",
+      "spendLimitTitle": "일일 지출 한도",
       "sessionPeriodTitle": "세션 기간",
       "startButton": "1-클릭 거래 시작",
       "editSessionButton": "변경 사항을 저장하다",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "유산",
       "amount": "양",
-      "review": "검토",
-      "deposit": "보증금"
+      "review": "검토"
     },
     "moreBridgeOptions": {
       "titleDeposit": "더 많은 입금 옵션",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "수수료를 지불할 자금이 부족합니다",
     "youNeedFundsToPay": "{chain} 에 대한 네트워크 및 브리징 비용을 지불하려면 자금이 필요합니다.",
     "youNeedFundsToPayWithFee": "전송하려는 금액이 {chain}에서 {feeAmount} {feeCurrency}의 브리징 수수료를 충당하기에 너무 적습니다. 더 큰 금액을 시도해 보세요.",
-    "transferAmountTooLowValueLoss": "전송 금액이 너무 적습니다",
-    "valueLossTooHighToBridge": "수수료를 제외한 전송 금액이 너무 적습니다. 브리지를 성공적으로 완료하기에는 가치 손실이 너무 큽니다. 더 큰 금액을 시도해 보세요.",
     "assetsDepositsUnavailable": "{asset} 예금을 사용할 수 없습니다.",
-    "assetWithdrawalsUnavailable": "{asset} 출금이 불가능합니다.",
+    "assetWithdrawalsToChainUnavailable": "{chain}(으)로의 {asset} 출금을 사용할 수 없습니다",
+    "routeLiquidityTooLow": "이 경로에 충분한 유동성이 없습니다",
+    "routeLiquidityTooLowBody": "현재 이 전송을 공정한 가격으로 라우팅할 유동성이 부족합니다. 다른 네트워크나 토큰을 시도하거나 나중에 다시 시도해 주세요.",
     "noAvailableDeposits": "현재 사용 가능한 경로나 공급자를 찾을 수 없습니다. 나중에 다시 시도하거나 다른 애플리케이션을 사용하여 자금을 Osmosis로 이체하세요.",
     "noAvailableWithdrawals": "현재 사용 가능한 경로나 공급자를 찾을 수 없습니다. 나중에 다시 시도하거나 Osmosis에서 자금을 이체하려면 대체 애플리케이션을 설정하세요.",
     "somethingIsntWorking": "뭔가 작동하지 않습니다…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "{asset} 출금이 중단되었습니다",
     "noNativeTransfers": "{asset}에 대한 기본 전송을 사용할 수 없습니다",
     "noNativeTransfersDescription": "아래 대체 공급자 중 하나를 사용하세요.",
-    "sendFromWalletOrExchange": "지갑이나 거래소에서 보내세요",
-    "scanWithMobileWallet": "모바일 지갑으로 스캔하세요",
-    "or": "또는",
-    "copied": "복사됨",
-    "copyToClipboard": "클립보드에 복사",
-    "showQrCode": "QR코드 표시",
-    "yourDepositAddress": "귀하의 {denom} 입금 주소",
-    "copyAddressToClipboard": "주소를 클립보드에 복사",
-    "copyAddress": "주소 복사",
-    "receiveOnlyAsset": "이 주소는 {denom} 만 {network} 네트워크에서 수신할 수 있습니다. 다른 자산을 보내면 영구적인 손실이 발생할 수 있습니다.",
-    "minimumDeposit": "최소입금",
-    "nomic": {
-      "estimatedTime": "1-8시간",
-      "awaitingBtc": "BTC를 기다리는 중",
-      "transferringYourBtc": "BTC 전송",
-      "depositStatus": "입금 상태",
-      "depositSuccess": "입금 성공",
-      "pendingDeposit": "입금 보류 중",
-      "estimatedAboutTime": "{time} 정도 예상됨",
-      "from": "에서",
-      "to": "에게",
-      "asset": "유산",
-      "amountBtc": "금액 BTC",
-      "totalValue": "총 가치",
-      "transactionHash": "거래 해시",
-      "viewOnExplorer": "탐색기에서 보기",
-      "totalFees": "총 수수료"
-    },
-    "doNotSendFundsToThisAddress": "이 주소로 자금을 보내지 마십시오.",
-    "addressExpired": "이 주소는 만료되었습니다. 새 주소를 요청하세요.",
-    "addressAboutToExpire": "이 주소는 곧 만료됩니다. 자금 손실을 피하려면 새 주소를 요청하세요.",
-    "createNewDepositAddress": "새로운 입금 주소 생성",
-    "transactionDetails": "거래내역",
     "confirmAmount": "금액 확인",
     "enterChainAddress": "{chain} 주소를 입력하세요",
     "wormholeRedeem": {

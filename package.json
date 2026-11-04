@@ -32,7 +32,7 @@
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lint-staged",
     "machine-translate": "bash ./scripts/machine-translate.sh",
-    "lint:workspace": "sherif --ignore-package ./packages/e2e --ignore-dependency bitcoinjs-lib@^6.1.7",
+    "lint:workspace": "sherif --ignore-package ./packages/e2e",
     "lint:workspace:fix": "yarn lint:workspace -f",
     "postinstall": "yarn lint:workspace && yarn hooks:install",
     "hooks:install": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"

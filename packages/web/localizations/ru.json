@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Проблема с расчетом суммы",
     "depositNoBalance": "У вас нет активов для депозита",
+    "amountTooSmall": "Сумма слишком мала",
     "emptyAmount": "Сумма пуста",
     "generic": "Ошибка",
     "highSwapFee": "Комиссия за своп слишком высока",
@@ -395,6 +396,8 @@
     "settings": "Настройки"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} в день",
+    "spendLimitLeftToday": "Осталось сегодня: {amount}",
     "toast": {
       "oneClickTradingActive": "Торговля в 1 клик активна",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Совершайте сделки быстрее и проще без хлопот, требующих одобрения нескольких кошельков.",
       "learnMore": "Узнать больше",
       "startTradingButton": "Начать торговлю в 1 клик",
-      "defaultParameters": "Настройки по умолчанию установлены на 1 час с лимитом защиты от потерь в размере 5000 долларов США.",
+      "defaultParameters": "Настройки по умолчанию: 7 дней и дневной лимит расходов 5000 USD.",
       "changeButton": "Изменить настройки"
     },
     "reviewOrder": {
       "recapRowTitle": "Лимит торговли в 1 клик",
       "enableTitle": "Начните торговлю в 1 клик",
       "enableDescription": "Более быстрая и простая торговля",
-      "paramsDescription": "{sessionLength} сессия с {spendLimit} лимит защиты от потерь",
+      "paramsDescription": "Сессия {sessionLength} с дневным лимитом расходов {spendLimit}",
       "defaultSpendLimit": "5000 долларов США",
       "change": "Изменять",
       "edit": "Редактировать",
       "exceeded": "Превышен",
       "exceededTooltip": {
-        "title": "Превышает текущий лимит защиты от потерь",
+        "title": "Превышает ваш дневной лимит расходов",
         "body": "Вам придется вручную одобрить эту транзакцию в своем кошельке."
       }
     },
@@ -441,7 +444,7 @@
       "header": "Торговля в 1 клик",
       "description": "1-Click Trading позволяет вам безопасно торговать на этом устройстве без необходимости подписывать каждую транзакцию в своем кошельке.",
       "enableTitle": "Включить торговлю в 1 клик",
-      "spendLimitTitle": "Лимит защиты от потерь",
+      "spendLimitTitle": "Дневной лимит расходов",
       "sessionPeriodTitle": "Период сессии",
       "startButton": "Начать торговлю в 1 клик",
       "editSessionButton": "Сохранить изменения",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Объект",
       "amount": "Количество",
-      "review": "Обзор",
-      "deposit": "Депозит"
+      "review": "Обзор"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Недостаточно средств для оплаты комиссий",
     "youNeedFundsToPay": "Вам нужны средства для оплаты сетевых и мостовых сборов на {chain} .",
     "youNeedFundsToPayWithFee": "Сумма, которую вы пытаетесь перевести, слишком мала для покрытия комиссии за мост в размере {feeAmount} {feeCurrency} на {chain}. Пожалуйста, попробуйте большую сумму.",
-    "transferAmountTooLowValueLoss": "Сумма перевода слишком мала",
-    "valueLossTooHighToBridge": "Сумма перевода слишком мала после вычета комиссий. Потеря стоимости будет слишком высокой для успешного моста. Пожалуйста, попробуйте большую сумму.",
     "assetsDepositsUnavailable": "Депозиты {asset} недоступны",
-    "assetWithdrawalsUnavailable": "{asset} снятие средств недоступно",
+    "assetWithdrawalsToChainUnavailable": "Вывод {asset} в {chain} недоступен",
+    "routeLiquidityTooLow": "Недостаточно ликвидности для этого маршрута",
+    "routeLiquidityTooLowBody": "Сейчас недостаточно ликвидности, чтобы провести этот перевод по справедливой цене. Попробуйте другую сеть или токен либо повторите попытку позже.",
     "noAvailableDeposits": "В настоящее время не найдены доступные маршруты или провайдеры. Пожалуйста, повторите попытку позже или воспользуйтесь альтернативным приложением для перевода средств в Osmosis.",
     "noAvailableWithdrawals": "В настоящее время не найдены доступные маршруты или провайдеры. Пожалуйста, повторите попытку позже или установите альтернативное приложение для перевода средств из Osmosis.",
     "somethingIsntWorking": "Что-то не работает…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "Вывод {asset} приостановлен",
     "noNativeTransfers": "Нативные переводы недоступны для {asset}",
     "noNativeTransfersDescription": "Пожалуйста, воспользуйтесь одним из альтернативных поставщиков ниже.",
-    "sendFromWalletOrExchange": "Отправьте из своего кошелька или обменяйте",
-    "scanWithMobileWallet": "Сканируйте с помощью мобильного кошелька",
-    "or": "или",
-    "copied": "Скопировано",
-    "copyToClipboard": "Копировать в буфер обмена",
-    "showQrCode": "Показать QR-код",
-    "yourDepositAddress": "Ваш адрес депозита {denom}",
-    "copyAddressToClipboard": "Копировать адрес в буфер обмена",
-    "copyAddress": "Копировать адрес",
-    "receiveOnlyAsset": "Этот адрес может получать только {denom} из сети {network} . Отправка любых других активов может привести к необратимой потере.",
-    "minimumDeposit": "Минимальный депозит",
-    "nomic": {
-      "estimatedTime": "1-8 ч.",
-      "awaitingBtc": "Ожидание BTC",
-      "transferringYourBtc": "Перевод ваших BTC",
-      "depositStatus": "Статус депозита",
-      "depositSuccess": "Успех депозита",
-      "pendingDeposit": "Ожидаемый депозит",
-      "estimatedAboutTime": "Оценивается примерно {time}",
-      "from": "От",
-      "to": "К",
-      "asset": "Объект",
-      "amountBtc": "Сумма BTC",
-      "totalValue": "Общая стоимость",
-      "transactionHash": "Хэш транзакции",
-      "viewOnExplorer": "Посмотреть в проводнике",
-      "totalFees": "Общая сумма сборов"
-    },
-    "doNotSendFundsToThisAddress": "Не отправляйте средства на этот адрес.",
-    "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый.",
-    "addressAboutToExpire": "Срок действия этого адреса истекает. Пожалуйста, запросите новый адрес, чтобы избежать потери средств.",
-    "createNewDepositAddress": "Создать новый адрес депозита",
-    "transactionDetails": "Подробности транзакции",
     "confirmAmount": "Подтвердите сумму",
     "enterChainAddress": "Введите адрес {chain}",
     "wormholeRedeem": {
