@@ -83,8 +83,9 @@ export interface LossFigures {
  * for an impact in the user's favour.
  *
  * Every source reports a loss as negative: our swap router does, and the
- * Squid provider negates Squid's positive-loss convention at the boundary. The high-impact gate and the
- * acknowledgement re-arm check assume larger = worse, so they read this rather
+ * Squid provider negates Squid's positive-loss convention at the boundary.
+ * The high-impact gate and the acknowledgement re-arm check assume
+ * larger = worse, so they read this rather
  * than the raw figure — a raw negative loss would silently never trip the gate,
  * and a magnitude would gate a favourable impact as though it were a loss.
  *
