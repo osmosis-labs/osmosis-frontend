@@ -573,7 +573,10 @@
       "depthClLegend": "CL havuzları dahil",
       "depthClLegendTooltip": "Taralı çubuklar bu parite için yoğunlaştırılmış likidite havuzlarının likiditesini içerir. Bu AMM eğrisi likiditesidir, bekleyen emir değildir; gösterilen miktarlar yalnızca emirlerdir.",
       "depthClUnavailable": "CL derinliği kullanılamıyor",
-      "depthRowWithCl": "Emirler: {orders} · CL havuzları: {cl}"
+      "depthRowWithCl": "Emirler: {orders} · CL havuzları: {cl}",
+      "retiredQuoteDesc": "{quote} artık yeni limit emirleri için kotasyon birimi olarak sunulmuyor. Bu defterdeki emirlerinizi yine de talep edebilir ve iptal edebilirsiniz.",
+      "retiredQuoteGoTo": "{pair} emir defterinde işlem yap",
+      "retiredQuoteCreate": "{pair} emir defteri oluştur"
     }
   },
   "pools": {
