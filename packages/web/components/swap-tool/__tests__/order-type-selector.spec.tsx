@@ -8,8 +8,8 @@ const HASH =
   "ibc/CE5BFF1D9BADA03BB5CCA5F56939392A761B53A10FBD03B37506669C3218D3B2";
 const ATOM =
   "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
-const USDC_NOBLE =
-  "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+const ALL_USDT =
+  "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT";
 const ALL_USDC =
   "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
 const USDY =
@@ -43,14 +43,14 @@ jest.mock("nuqs", () => {
 
 jest.mock("~/hooks/limit-orders/use-orderbook", () => ({
   useOrderbookSelectableDenoms: () => ({
-    // HASH has an orderbook only against USDC.noble, OSMO only against USDY
+    // HASH has an orderbook only against allUSDT, OSMO only against USDY
     // (not an allowed quote), and ATOM has none.
     selectableBaseAssets: [
       { coinMinimalDenom: HASH },
       { coinMinimalDenom: "uosmo" },
     ],
     selectableQuoteDenoms: {
-      [HASH]: [{ coinMinimalDenom: USDC_NOBLE }],
+      [HASH]: [{ coinMinimalDenom: ALL_USDT }],
       uosmo: [{ coinMinimalDenom: USDY }],
     },
     isLoading: false,
@@ -126,7 +126,7 @@ describe("OrderTypeSelector", () => {
 
     fireEvent.click(screen.getByText("limitOrders.limit"));
 
-    expect(mockSetters.quote).toHaveBeenCalledWith(USDC_NOBLE);
+    expect(mockSetters.quote).toHaveBeenCalledWith(ALL_USDT);
     expect(mockSetters.type).toHaveBeenCalledWith("limit");
     // The quote must be set before the type so the tool never renders a
     // limit order with a quote the base's orderbooks don't support.
@@ -136,7 +136,7 @@ describe("OrderTypeSelector", () => {
   });
 
   it("keeps a quote the base's orderbooks already support", () => {
-    mockQueryState.quote = USDC_NOBLE;
+    mockQueryState.quote = ALL_USDT;
     render(<OrderTypeSelector initialBaseDenom={HASH} />);
 
     fireEvent.click(screen.getByText("limitOrders.limit"));
@@ -145,10 +145,10 @@ describe("OrderTypeSelector", () => {
     expect(mockSetters.type).toHaveBeenCalledWith("limit");
   });
 
-  it("keeps a supported quote given in symbol form (?quote=USDC.noble)", () => {
+  it("keeps a supported quote given in symbol form (?quote=USDT)", () => {
     // The URL may carry a symbol: it must resolve to the supported minimal
     // denom rather than look unsupported and be replaced.
-    mockQueryState.quote = "USDC.noble";
+    mockQueryState.quote = "USDT";
     render(<OrderTypeSelector initialBaseDenom={HASH} />);
 
     fireEvent.click(screen.getByText("limitOrders.limit"));
@@ -159,7 +159,7 @@ describe("OrderTypeSelector", () => {
 
   it("leaves the quote alone when selecting Market", () => {
     mockQueryState.type = "limit";
-    mockQueryState.quote = USDC_NOBLE;
+    mockQueryState.quote = ALL_USDT;
     render(<OrderTypeSelector initialBaseDenom={HASH} />);
 
     fireEvent.click(screen.getByText("limitOrders.market"));
@@ -170,7 +170,7 @@ describe("OrderTypeSelector", () => {
 
   it("opens the creation modal instead of selecting Limit for a pair without an orderbook", () => {
     mockQueryState.from = ATOM;
-    mockQueryState.quote = USDC_NOBLE;
+    mockQueryState.quote = ALL_USDC;
     mockVerification = { orderbookExists: false, endpointFunctional: true };
     render(<OrderTypeSelector initialBaseDenom={ATOM} />);
 
@@ -195,7 +195,7 @@ describe("OrderTypeSelector", () => {
 
   it("does not offer creation when the verification endpoint is not functional", () => {
     mockQueryState.from = ATOM;
-    mockQueryState.quote = USDC_NOBLE;
+    mockQueryState.quote = ALL_USDC;
     mockVerification = { orderbookExists: false, endpointFunctional: false };
     render(<OrderTypeSelector initialBaseDenom={ATOM} />);
 
