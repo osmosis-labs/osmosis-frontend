@@ -28,16 +28,24 @@ type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
 export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
 }> = memo(({ route }) => {
-  const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
-    ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
-    : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
-  const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
-    ? findOsmosisCurrency((route as RouteInGivenOut).tokenOutDenom)
-    : findOsmosisCurrency(
-        (route as RouteOutGivenIn).tokenOutDenoms[
-          (route as RouteOutGivenIn).tokenOutDenoms.length - 1
-        ]
-      );
+  // The route's own hop currencies come from the asset list, as the pool
+  // tooltips use them. The static chain config is only a fallback: it misses
+  // assets (PHOTON) and carries short symbols (USDC.noble as "USDC.n") that
+  // don't map to an icon.
+  const sendCurrency =
+    route.pools[0]?.inCurrency ??
+    ((route as RouteOutGivenIn).tokenInDenom
+      ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
+      : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]));
+  const lastOutCurrency =
+    route.pools[route.pools.length - 1]?.outCurrency ??
+    ((route as RouteInGivenOut).tokenOutDenom
+      ? findOsmosisCurrency((route as RouteInGivenOut).tokenOutDenom)
+      : findOsmosisCurrency(
+          (route as RouteOutGivenIn).tokenOutDenoms[
+            (route as RouteOutGivenIn).tokenOutDenoms.length - 1
+          ]
+        ));
 
   if (!sendCurrency || !lastOutCurrency) return null;
 
