@@ -72,6 +72,10 @@ export class SkipApiClient {
             evm_swaps: true,
             ...options.smart_swap_options,
           },
+          // Eureka (Cosmos Hub to Ethereum) routes are only returned when
+          // requested. `/msgs` rejects this field and rebuilds the Eureka
+          // route from its operations without it.
+          experimental_features: ["eureka"],
         }),
       }
     );

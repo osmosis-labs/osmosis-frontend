@@ -821,6 +821,7 @@ export const useBridgeQuotes = ({
           status: "pending",
           type: "bridge-transfer",
           estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+          ...(quote.viaAxelar === false ? { viaAxelar: false } : {}),
           networkFee: quote.estimatedGasFee
             ? {
                 address: quote.estimatedGasFee.amount.currency.coinMinimalDenom,
