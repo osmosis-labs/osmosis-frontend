@@ -101,6 +101,22 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       claimableSpreadRewardPositions.length > 0 ||
       claimableIncentivePositions.length > 0;
 
+    // Total fiat value of what the button collects; undefined (unknown) if any
+    // collected position has a reward that can't be priced, never a partial sum.
+    const collectAllRewardsValue = useMemo(() => {
+      const collectedPositions = new Map(
+        [...claimableSpreadRewardPositions, ...claimableIncentivePositions].map(
+          (position) => [position.id, position]
+        )
+      );
+      let total = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+      for (const { claimableRewardsValue } of collectedPositions.values()) {
+        if (!claimableRewardsValue) return undefined;
+        total = total.add(claimableRewardsValue);
+      }
+      return total;
+    }, [claimableSpreadRewardPositions, claimableIncentivePositions]);
+
     const {
       pool,
       currentPrice,
@@ -403,6 +419,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     disabled={!hasClaimableRewards}
                   >
                     {t("clPositions.collectAllRewards")}
+                    {hasClaimableRewards && collectAllRewardsValue
+                      ? ` (${formatPretty(collectAllRewardsValue)})`
+                      : ""}
                   </Button>
 
                   <Button

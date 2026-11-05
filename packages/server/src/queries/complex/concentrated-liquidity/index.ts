@@ -618,6 +618,22 @@ export async function mapGetUserPositions({
       }).then((value) =>
         value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
       );
+      // undefined (unknown) when any claimable reward can't be priced
+      const claimableRewardsValue = await calcSumCoinsValueOrUnknown({
+        ...params,
+        coins: aggregateCoinsByDenom([
+          ...mapRawCoinToPretty(
+            params.assetLists,
+            position_.claimable_spread_rewards
+          ),
+          ...mapRawCoinToPretty(
+            params.assetLists,
+            position_.claimable_incentives
+          ),
+        ]),
+      }).then((value) =>
+        value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
+      );
 
       const lowerTick = new Int(position.lower_tick);
       const upperTick = new Int(position.upper_tick);
@@ -668,6 +684,7 @@ export async function mapGetUserPositions({
         position: position_,
         currentCoins: [baseCoin, quoteCoin],
         currentValue,
+        claimableRewardsValue,
         isFullRange,
         priceRange,
         liquidity: new Dec(position.liquidity),
