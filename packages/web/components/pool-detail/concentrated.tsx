@@ -27,7 +27,11 @@ import {
 import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  formatFiatPrice,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -420,7 +424,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   >
                     {t("clPositions.collectAllRewards")}
                     {hasClaimableRewards && collectAllRewardsValue
-                      ? ` (${formatPretty(collectAllRewardsValue)})`
+                      ? ` (${formatFiatPrice(collectAllRewardsValue)})`
                       : ""}
                   </Button>
 
