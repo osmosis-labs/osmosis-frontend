@@ -37,22 +37,25 @@ export type AssetMarketInfo = Partial<{
 }>;
 
 /** Cached function that returns an asset with market info included. The current price
- *  falls back to SQS when the data services have none. */
+ *  comes from SQS, as in the swap form, since the data services' price is cached for
+ *  minutes and lags in a volatile market. It falls back to the data services when SQS has
+ *  none. Price changes, market cap, liquidity and volume come from the data services. */
 export async function getMarketAsset<TAsset extends MinimalAsset>(params: {
   assetLists: AssetList[];
   chainList: Chain[];
   asset: TAsset;
   includeTotalSupply?: boolean;
 }): Promise<TAsset & AssetMarketInfo> {
-  return withSqsPriceFallback({
-    ...params,
-    asset: await getDataServicesMarketAsset(params),
-  });
+  const [marketAsset, sqsPrice] = await Promise.all([
+    getDataServicesMarketAsset(params),
+    getSqsPrice(params),
+  ]);
+  return sqsPrice ? { ...marketAsset, currentPrice: sqsPrice } : marketAsset;
 }
 
 /** Fills a missing current price from SQS, which prices from pool state and doesn't
  *  depend on the data services. Only the spot price: price changes, market cap, liquidity
- *  and volume stay unknown. Not cached here, since `getAssetPrice` caches its own prices. */
+ *  and volume stay unknown. */
 export async function withSqsPriceFallback<
   TAsset extends MinimalAsset & AssetMarketInfo,
 >({
@@ -64,13 +67,21 @@ export async function withSqsPriceFallback<
   asset: TAsset;
 }): Promise<TAsset> {
   if (asset.currentPrice) return asset;
+  return { ...asset, currentPrice: await getSqsPrice({ ...params, asset }) };
+}
 
-  // Many listed assets have no SQS price (no pools), so a failure isn't reported.
-  const currentPrice = await getAssetPrice({ ...params, asset }).then(
+/** The asset's SQS price, or undefined when SQS has none. Many listed assets have no SQS
+ *  price (no pools), so a failure isn't reported. Not cached here, since `getAssetPrice`
+ *  caches its own prices. */
+function getSqsPrice(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  asset: MinimalAsset;
+}): Promise<PricePretty | undefined> {
+  return getAssetPrice(params).then(
     (price) => new PricePretty(DEFAULT_VS_CURRENCY, price),
     () => undefined
   );
-  return { ...asset, currentPrice };
 }
 
 const totalSupplyCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);

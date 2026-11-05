@@ -103,3 +103,40 @@ describe("market data without data-services prices", () => {
     expect(await isMarketDataAvailable()).toBe(false);
   });
 });
+
+describe("market asset with a data-services price", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+    query.mockReset();
+    sqsPrice.mockReset();
+  });
+
+  it("shows the SQS price over the data services' lagging price", async () => {
+    jest.useFakeTimers({ now: new Date("2026-10-28T16:00:00Z") });
+    query.mockResolvedValue([
+      { ...tokenData, price: 0.054, price_24h_change: 5 },
+    ]);
+    sqsPrice.mockResolvedValueOnce(new Dec("0.0496"));
+
+    const asset = await getMarketAsset({
+      assetLists,
+      chainList: [],
+      asset: osmo,
+    });
+    expect(asset.currentPrice?.toDec().toString()).toBe("0.049600000000000000");
+    // Price changes still come from the data services.
+    expect(asset.priceChange24h?.toDec().toString()).toBe(
+      "0.050000000000000000"
+    );
+
+    sqsPrice.mockRejectedValueOnce(new Error("No SQS price"));
+    const withoutSqs = await getMarketAsset({
+      assetLists,
+      chainList: [],
+      asset: osmo,
+    });
+    expect(withoutSqs.currentPrice?.toDec().toString()).toBe(
+      "0.054000000000000000"
+    );
+  });
+});
