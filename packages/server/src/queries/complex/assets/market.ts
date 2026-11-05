@@ -36,10 +36,15 @@ export type AssetMarketInfo = Partial<{
   liquidity: PricePretty;
 }>;
 
+/** How long a market asset waits for its SQS price. An SQS price batch can wait up to 10s
+ *  when SQS stalls or its queue is full. */
+const SQS_PRICE_WAIT_MS = 2000;
+
 /** Cached function that returns an asset with market info included. The current price
  *  comes from SQS, as in the swap form, since the data services' price is cached for
  *  minutes and lags in a volatile market. It falls back to the data services when SQS has
- *  none. Price changes, market cap, liquidity and volume come from the data services. */
+ *  none or is slower than `SQS_PRICE_WAIT_MS`. Price changes, market cap, liquidity and
+ *  volume come from the data services. */
 export async function getMarketAsset<TAsset extends MinimalAsset>(params: {
   assetLists: AssetList[];
   chainList: Chain[];
@@ -48,7 +53,11 @@ export async function getMarketAsset<TAsset extends MinimalAsset>(params: {
 }): Promise<TAsset & AssetMarketInfo> {
   const [marketAsset, sqsPrice] = await Promise.all([
     getDataServicesMarketAsset(params),
-    getSqsPrice(params),
+    timeout(
+      () => getSqsPrice(params),
+      SQS_PRICE_WAIT_MS,
+      "getSqsPrice"
+    )().catch(() => undefined),
   ]);
   return sqsPrice ? { ...marketAsset, currentPrice: sqsPrice } : marketAsset;
 }
