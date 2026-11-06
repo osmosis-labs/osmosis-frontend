@@ -284,11 +284,12 @@ export const AssetsOverview: FunctionComponent<
         marginBottom: isChartMinimized ? "" : `${CHART_CONTAINER_HEIGHT}px`,
       }}
     >
-      {/* On mobile the left column dissolves into a grid so the minimised
-          chart sits beside the balance and the buttons span the row below. */}
-      <header className="flex justify-between md:grid md:grid-cols-[auto_minmax(0,1fr)] md:gap-x-4">
-        <div className="mr-6 flex flex-col md:contents">
-          <div className="flex flex-col md:col-start-1 md:row-start-1">
+      {/* Up to lg the left column dissolves into a grid so the minimised chart
+          takes the width left beside the balance and the buttons span the row
+          below. Side by side, the buttons and a fixed-width card overflow. */}
+      <header className="flex justify-between lg:grid lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-x-4">
+        <div className="mr-6 flex flex-col lg:contents">
+          <div className="flex flex-col lg:col-start-1 lg:row-start-1">
             <span className="body1 text-osmoverse-300">
               {t("assets.totalBalance")}
             </span>
@@ -342,7 +343,7 @@ export const AssetsOverview: FunctionComponent<
               </Tooltip>
             )}
           </div>
-          <div className="flex items-center gap-2 pt-6 lg:gap-1 md:col-span-2 md:row-start-2">
+          <div className="flex items-center gap-2 pt-6 lg:col-span-2 lg:row-start-2 lg:gap-1">
             <Button
               className="flex h-[48px] items-center gap-2 !rounded-full md:gap-1"
               size={isMobile ? "xsm" : undefined}
@@ -404,8 +405,7 @@ export const AssetsOverview: FunctionComponent<
             "mt-auto flex h-[156px] w-full flex-col items-end",
             "w-full max-w-[344px]",
             "xl:w-[383px] xl:max-w-[383px]",
-            "lg:w-[312px] lg:max-w-[312px]",
-            "md:col-start-2 md:row-start-1 md:mt-0 md:h-auto md:min-h-[96px] md:w-full md:max-w-none md:self-stretch"
+            "lg:col-start-2 lg:row-start-1 lg:mt-0 lg:h-auto lg:min-h-[96px] lg:w-full lg:max-w-none lg:self-stretch"
           )}
           as="div"
         >
@@ -417,7 +417,7 @@ export const AssetsOverview: FunctionComponent<
           ) : (
             <button
               className={classNames(
-                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900 md:my-0"
+                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900 lg:my-0"
               )}
               onClick={() => setIsChartMinimized(false)}
             >
@@ -429,10 +429,10 @@ export const AssetsOverview: FunctionComponent<
                 <span className="body1 md:caption absolute top-2 right-3 text-osmoverse-400 md:top-1 md:right-2">
                   {getActiveRangeDateText(range)}
                 </span>
-                {/* Touch has no hover, so the expand hint always shows on mobile */}
+                {/* Touch has no hover, so the expand hint always shows up to lg */}
                 <Icon
                   id="resize-expand"
-                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100 md:bottom-2 md:right-2 md:opacity-100"
+                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100 lg:opacity-100 md:bottom-2 md:right-2"
                   height={16}
                   width={16}
                 />
