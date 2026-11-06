@@ -27,7 +27,11 @@ import {
 import { useWallet } from "~/hooks/use-wallet";
 import { AddLiquidityModal, IncentivizePoolModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  formatFiatPrice,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -100,6 +104,22 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const hasClaimableRewards =
       claimableSpreadRewardPositions.length > 0 ||
       claimableIncentivePositions.length > 0;
+
+    // Total fiat value of what the button collects; undefined (unknown) if any
+    // collected position has a reward that can't be priced, never a partial sum.
+    const collectAllRewardsValue = useMemo(() => {
+      const collectedPositions = new Map(
+        [...claimableSpreadRewardPositions, ...claimableIncentivePositions].map(
+          (position) => [position.id, position]
+        )
+      );
+      let total = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0));
+      for (const { claimableRewardsValue } of collectedPositions.values()) {
+        if (!claimableRewardsValue) return undefined;
+        total = total.add(claimableRewardsValue);
+      }
+      return total;
+    }, [claimableSpreadRewardPositions, claimableIncentivePositions]);
 
     const {
       pool,
@@ -391,6 +411,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     disabled={!hasClaimableRewards}
                   >
                     {t("clPositions.collectAllRewards")}
+                    {hasClaimableRewards && collectAllRewardsValue
+                      ? ` (${formatFiatPrice(collectAllRewardsValue)})`
+                      : ""}
                   </Button>
 
                   <Button
