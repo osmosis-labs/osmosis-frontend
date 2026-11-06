@@ -170,7 +170,7 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.priceRange")}
         </span>
         <div className="flex w-full gap-1">
-          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:min-w-0 md:gap-3 md:py-4 md:pl-3">
             {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
@@ -188,11 +188,12 @@ const AddConcLiqView: FunctionComponent<
               </>
             )}
           </div>
-          {/* md and below hide the price history beside it, so the depth
-              chart and range inputs take the full width. */}
-          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:w-full md:rounded-l-2xl">
-            <div className="flex flex-1 flex-col">
-              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 xs:ml-4">
+          {/* Phones: the price history stays beside this box, so the depth
+              chart narrows to about a fifth of the row and the range inputs
+              narrow too. */}
+          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:w-auto md:shrink-0">
+            <div className="flex flex-1 flex-col md:w-[20vw] md:flex-none">
+              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 md:mr-0.5 md:mt-4 md:gap-0.5">
                 <ChartButton
                   alt="refresh"
                   icon="refresh-ccw"
@@ -252,9 +253,9 @@ const AddConcLiqView: FunctionComponent<
                 fullRange={fullRange}
               />
               {currentRangeApr && (
-                <div className="absolute right-8 top-5 flex select-none flex-col text-right">
+                <div className="absolute right-8 top-5 flex select-none flex-col text-right md:right-3 md:top-3">
                   <div className="flex items-center justify-end gap-1">
-                    <span className="text-osmoverse-300">
+                    <span className="text-osmoverse-300 md:text-caption">
                       {t("addConcentratedLiquidity.estimated")}
                     </span>
                     <Tooltip
@@ -270,7 +271,7 @@ const AddConcLiqView: FunctionComponent<
                   {isRangeAprFetching ? (
                     <Spinner className="m-auto mt-1.5" />
                   ) : (
-                    <h5 className="text-osmoverse-100">
+                    <h5 className="text-osmoverse-100 md:text-subtitle1 md:font-subtitle1">
                       {currentRangeApr.maxDecimals(1).toString() ?? ""}{" "}
                       {t("pool.APR")}
                     </h5>
@@ -405,6 +406,14 @@ const ChartHeader: FunctionComponent<{
       quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
+      // Phones: the price and its "X per Y" caption stack in the narrower
+      // price history column.
+      classes={{
+        pricesHeaderContainerClass: "md:flex-col",
+        // The caption doesn't wrap by default; let it wrap in the narrow column.
+        priceSubheaderClass: "md:[&>div]:whitespace-normal",
+        buttons: "md:flex-wrap md:justify-start md:pr-0",
+      }}
     />
   );
 });
@@ -670,7 +679,7 @@ const PriceInputBox: FunctionComponent<{
       );
 
   return (
-    <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900 md:max-w-[7.25rem]">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
       {isFullRange ? (
         <div className="flex h-[41px] items-center px-2">
