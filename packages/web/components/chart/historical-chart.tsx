@@ -16,9 +16,14 @@ import { theme } from "~/tailwind.config";
 import { FormatOptions } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
 
-import { Chart } from "./light-weight-charts/chart";
+import { Chart, defaultLocalization } from "./light-weight-charts/chart";
 
-const getSeriesOpt = (config: Style): DeepPartial<AreaSeriesOptions> => {
+const maskedPrice = () => "*****";
+
+const getSeriesOpt = (
+  config: Style,
+  maskPrices: boolean
+): DeepPartial<AreaSeriesOptions> => {
   let lineColor, topColor, bottomColor, crosshairMarkerBorderColor;
 
   switch (config) {
@@ -57,7 +62,7 @@ const getSeriesOpt = (config: Style): DeepPartial<AreaSeriesOptions> => {
     crosshairMarkerRadius: 4,
     priceFormat: {
       type: "custom",
-      formatter: priceFormatter,
+      formatter: maskPrices ? maskedPrice : priceFormatter,
       minMove: 0.0000000001,
     },
   };
@@ -71,6 +76,8 @@ interface HistoricalChartProps {
   onPointerOut?: () => void;
   style?: Style;
   hideScales?: boolean;
+  /** Replaces price axis and crosshair values with a placeholder (privacy mode). */
+  maskPrices?: boolean;
 }
 
 export const HistoricalChart = memo((props: HistoricalChartProps) => {
@@ -80,8 +87,11 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
     onPointerOut,
     style = "neutral",
     hideScales = false,
+    maskPrices = false,
   } = props;
 
+  // Options are shallow-merged over the chart defaults, so keep the default
+  // time formatter when overriding `localization`.
   const options = hideScales
     ? {
         rightPriceScale: {
@@ -94,7 +104,14 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
           visible: false,
         },
       }
-    : {};
+    : maskPrices
+      ? {
+          localization: {
+            ...defaultLocalization,
+            priceFormatter: maskedPrice,
+          },
+        }
+      : {};
 
   return (
     <Chart
@@ -104,7 +121,7 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
         {
           type: "Area",
           options: {
-            ...getSeriesOpt(style),
+            ...getSeriesOpt(style, maskPrices),
             autoscaleInfoProvider: () => {
               const values = data
                 .map((entry) => entry.value)
