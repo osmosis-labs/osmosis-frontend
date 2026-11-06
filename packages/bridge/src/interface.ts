@@ -353,6 +353,13 @@ export const getBridgeSupportedAssetsParams = z.object({
    * on quote requests.
    */
   allowSolana: z.boolean().optional(),
+  /**
+   * Optional: Whether a source or destination reachable only by a fast
+   * transfer (e.g. Base ETH into allETH, which Skip routes only through Go
+   * Fast) may be offered. The kill switch for fast transfers, matching
+   * `fastTransfer` on quote requests.
+   */
+  allowFastTransfer: z.boolean().optional(),
 });
 
 export type GetBridgeSupportedAssetsParams = z.infer<
@@ -432,6 +439,16 @@ export const getBridgeQuoteSchema = z.object({
    * Solana quote without it.
    */
   allowSolana: z.boolean().optional(),
+  /**
+   * Optional: Quote the provider's fast transfer route instead of its
+   * standard one. A fast route is faster and usually costs more (Skip Go Fast
+   * today, CCTP v2 Fast Transfer later). Callers send it on a second,
+   * separate quote request, and only while fast transfers are enabled. A
+   * provider with no fast route for the pair refuses with `NoQuotesError`.
+   * Send it only to providers that offer fast transfers (Skip): any other
+   * provider ignores it and returns its standard route.
+   */
+  fastTransfer: z.boolean().optional(),
 });
 
 export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;

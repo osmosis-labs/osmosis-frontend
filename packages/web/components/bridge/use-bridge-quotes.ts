@@ -61,6 +61,13 @@ import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
 
+/**
+ * Bridges that can quote a fast transfer route (`fastTransfer` on a quote
+ * request): Skip, through Go Fast today and CCTP v2 Fast Transfer later. Any
+ * other provider would ignore the param and return its standard route again.
+ */
+const FAST_TRANSFER_BRIDGES: Bridge[] = ["Skip"];
+
 /** An EVM transaction that was mined but reverted: it definitively failed
  *  on-chain, unlike a receipt timeout, where the tx may still land. */
 class EvmTxRevertedError extends Error {
@@ -302,9 +309,18 @@ export const useBridgeQuotes = ({
   const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
     useState(false);
 
+  /**
+   * The speed toggle's opt-in: the key of the transfer (see `transferKey`)
+   * the user turned it on for. Off by default, and it selects nothing unless
+   * a fast option exists (`fastTransfer` below).
+   */
+  const [fastTransferOptInKey, setFastTransferOptInKey] = useState<string>();
+
   const onChangeBridgeProvider = useCallback((bridge: Bridge) => {
     setSelectedBridgeProvider(bridge);
     setBridgeProviderControlledMode(true);
+    // Picking a provider picks its standard quote.
+    setFastTransferOptInKey(undefined);
   }, []);
 
   // Input
@@ -331,6 +347,30 @@ export const useBridgeQuotes = ({
         .truncate(),
     [debouncedInputValue, fromAsset?.decimals]
   );
+
+  /**
+   * Identifies one transfer. A different pair, address or amount is a
+   * different transfer with new quotes, and the fast option may cost a
+   * different share of it or not exist at all (Go Fast caps order size). So
+   * the speed toggle's opt-in only holds for the transfer it was made for,
+   * and every other transfer starts on standard again.
+   */
+  const transferKey = [
+    fromChain?.chainId,
+    toChain?.chainId,
+    fromAsset?.address,
+    toAsset?.address,
+    fromAddress,
+    toAddress,
+    inputAmount.toString(),
+  ].join("|");
+  const isFastTransferSelected = fastTransferOptInKey === transferKey;
+  const setFastTransferSelected = useCallback(
+    (selected: boolean) =>
+      setFastTransferOptInKey(selected ? transferKey : undefined),
+    [transferKey]
+  );
+
   const availableBalance = fromAsset?.amount;
   const inputCoin = useMemo(
     () =>
@@ -357,13 +397,38 @@ export const useBridgeQuotes = ({
     return false;
   })();
 
+  /**
+   * Kill switch for fast transfers (MTN-435). With the flag off, no fast quote
+   * is requested and every request is identical to before fast transfers
+   * existed. With it on, each bridge that offers fast transfers gets a second
+   * quote request with `fastTransfer: true`, and the selection rule below
+   * decides whether the user ever sees it.
+   *
+   * Withdrawals send it too. Skip offers no Osmosis-source fast routes today,
+   * so those requests come back with no route, but nothing here assumes fast
+   * routes are deposit-only.
+   */
+  const fastTransferBridges =
+    featureFlags.fastBridgeTransfers === true
+      ? bridges.filter((bridge) => FAST_TRANSFER_BRIDGES.includes(bridge))
+      : [];
+  const quoteRequests = [
+    ...bridges.map((bridge) => ({ bridge, fastTransfer: false })),
+    // After the standard requests, so the error shown when nothing quotes is
+    // always a standard quote's, never "no fast route".
+    ...fastTransferBridges.map((bridge) => ({ bridge, fastTransfer: true })),
+  ];
+
   const quoteResults = api.useQueries((t) =>
-    bridges.map((bridge) =>
+    quoteRequests.map(({ bridge, fastTransfer }) =>
       t.bridgeTransfer.getQuoteByBridge(
         {
           ...(quoteParams as Required<typeof quoteParams>),
           bridge,
           fromAmount: inputAmount.toString(),
+          // Left out of standard requests, so they stay identical to the
+          // requests sent before fast transfers existed.
+          ...(fastTransfer ? { fastTransfer: true } : {}),
         },
         {
           enabled:
@@ -494,6 +559,9 @@ export const useBridgeQuotes = ({
               // the quote bundles an Osmosis swap whose price impact could not
               // be determined — the loss is unknown, which must warn, not pass
               isSwapImpactUnknown: expectedOutput.priceImpactUnknown === true,
+              // the provider's fast transfer route (e.g. Skip Go Fast), from
+              // the extra fast quote request
+              isFastTransfer: fastTransfer,
             };
           },
 
@@ -509,7 +577,8 @@ export const useBridgeQuotes = ({
     )
   );
 
-  const successfulQuotes = useMemo(() => {
+  /** Standard and fast quotes alike. */
+  const successfulQuoteResults = useMemo(() => {
     return quoteResults.filter(
       (
         quote
@@ -522,11 +591,150 @@ export const useBridgeQuotes = ({
     return quoteResults.filter(({ isError }) => isError);
   }, [quoteResults]);
 
-  const selectedQuoteQuery = useMemo(() => {
+  const bestStandardQuote = useMemo(
+    () =>
+      [...quoteResults]
+        // only those that have fetched
+        .filter(
+          (quoteResult) =>
+            Boolean(quoteResult.isFetched) &&
+            !quoteResult.isError &&
+            // fast quotes are weighed separately, by the rule below
+            !quoteResult.data?.isFastTransfer
+        )
+        // Sort by response time. The fastest and highest quality quote will be first.
+        .sort((a, b) => {
+          // This means the quote is for a basic IBC transfer:
+          // Prefer IBC provider over others since its status source provider
+          // offers a more real time UX compared to other bridge route provider's
+          // status endpoints, which rely on indexing chains and come with a delay.
+          if (a.data?.provider.id === "IBC") return -1;
+
+          if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
+            return 1;
+          }
+          if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
+            return -1;
+          }
+          return 0;
+        })
+        // only those that have returned a result without error
+        .map(({ data }) => data)
+        // only the best quote data
+        .reduce((bestAcc, cur) => {
+          if (!bestAcc) return cur;
+          if (
+            !!cur &&
+            bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
+          ) {
+            return cur;
+          }
+          return bestAcc;
+        }, undefined),
+    [quoteResults]
+  );
+
+  /** The fast quote paying out the most (only Skip quotes fast routes today). */
+  const fastQuoteQuery = useMemo(
+    () =>
+      successfulQuoteResults
+        .filter(({ data }) => data.isFastTransfer)
+        .reduce<(typeof successfulQuoteResults)[number] | undefined>(
+          (best, cur) =>
+            !best ||
+            best.data.expectedOutput.toDec().lt(cur.data.expectedOutput.toDec())
+              ? cur
+              : best,
+          undefined
+        ),
+    [successfulQuoteResults]
+  );
+
+  /**
+   * Fast vs standard (MTN-435): the quote that pays out more wins, and the
+   * speed toggle appears only when there is a real trade-off. The default is
+   * decided against the best standard quote from any provider:
+   *
+   * | Fast quote vs best standard quote | Result                                 |
+   * | --------------------------------- | -------------------------------------- |
+   * | No standard quote at all          | Fast is the default, no toggle         |
+   * | Pays out more (faster or slower)  | Fast is the default, no toggle         |
+   * | Faster, pays out the same or less | Standard stays default, toggle offered |
+   * | Slower, pays out the same or less | Ignored, as if no fast quote existed   |
+   *
+   * - No standard quote: e.g. Base ETH into allETH, which only Go Fast routes.
+   *   The fast quote is the only way to make the transfer.
+   * - Pays out more: the standard quote is strictly worse on what the user
+   *   receives, so making them opt in to the better route helps no one.
+   * - Faster but pays out less: the trade-off the toggle exists for (e.g.
+   *   Ethereum ETH into allETH: Axelar in ~16 min against Go Fast in ~10 s for
+   *   a higher fee). Standard stays the default; the user opts in.
+   * - Slower and pays out no more: no reason to pick it, so it is never shown.
+   *
+   * A fast quote always has a real fast leg: when Skip answers a go_fast
+   * request with a standard route, the provider refuses it, so it never
+   * reaches this rule.
+   */
+  const isFastQuoteDefault =
+    fastQuoteQuery !== undefined &&
+    (!bestStandardQuote ||
+      fastQuoteQuery.data.expectedOutput
+        .toDec()
+        .gt(bestStandardQuote.expectedOutput.toDec()));
+  const bestQuote = isFastQuoteDefault
+    ? fastQuoteQuery.data
+    : bestStandardQuote;
+
+  /**
+   * One quote per provider, for the provider dropdown and selection by
+   * provider ID. A default fast quote takes its provider's place, so Skip is
+   * never listed twice. A trade-off fast quote is not listed; it is reached
+   * through the speed toggle only.
+   */
+  const successfulQuotes = useMemo(() => {
+    const standardQuotes = successfulQuoteResults.filter(
+      ({ data }) => !data.isFastTransfer
+    );
+    if (!isFastQuoteDefault || !fastQuoteQuery) return standardQuotes;
+    return [
+      ...standardQuotes.filter(
+        ({ data }) => data.provider.id !== fastQuoteQuery.data.provider.id
+      ),
+      fastQuoteQuery,
+    ];
+  }, [successfulQuoteResults, isFastQuoteDefault, fastQuoteQuery]);
+
+  /** The selected provider's quote: what is selected with the toggle off. */
+  const selectedProviderQuoteQuery = useMemo(() => {
     return successfulQuotes.find(
       ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
     );
   }, [selectedBridgeProvider, successfulQuotes]);
+
+  /**
+   * The fast quote the speed toggle offers. It is compared with the selected
+   * quote rather than the best one, so the choice is still offered when the
+   * user picked another provider. Turning the toggle on then switches to the
+   * fast quote's provider. A default fast quote is never offered here: it is
+   * already selected, with no opt-in needed.
+   */
+  const fastTransferOption =
+    !isFastQuoteDefault &&
+    fastQuoteQuery &&
+    selectedProviderQuoteQuery &&
+    fastQuoteQuery.data.estimatedTime.asMilliseconds() <
+      selectedProviderQuoteQuery.data.estimatedTime.asMilliseconds()
+      ? fastQuoteQuery
+      : undefined;
+
+  // The toggle's opt-in only counts while there is a fast option to opt in
+  // to. If a refresh removes it (e.g. the amount went over Go Fast's cap),
+  // the selection falls back to the standard quote, with no stale fast quote
+  // left to sign.
+  const selectedQuoteQuery =
+    isFastTransferSelected && fastTransferOption
+      ? fastTransferOption
+      : selectedProviderQuoteQuery;
 
   const selectedQuote = useMemo(() => {
     return selectedQuoteQuery?.data;
@@ -539,12 +747,16 @@ export const useBridgeQuotes = ({
    * The identity key is every field that makes this a different transfer rather
    * than a re-quote of the same one: change the provider, either chain, either
    * asset or the amount and the acknowledgement re-arms with no tolerance.
+   * Speed counts too: a provider's fast and standard quotes are different
+   * routes, and the fast one can pay out meaningfully less (about 1.8% less
+   * for Ethereum ETH into allETH), so accepting one must not accept the other.
    */
   const currentLossFigures: LossFigures | undefined = useMemo(() => {
     if (!selectedQuote) return undefined;
     return {
       identityKey: [
         selectedQuote.provider.id,
+        selectedQuote.isFastTransfer ? "fast" : "standard",
         fromChain?.chainId,
         toChain?.chainId,
         fromAsset?.address,
@@ -587,46 +799,6 @@ export const useBridgeQuotes = ({
         ? quoteResults.find((quoteResult) => Boolean(quoteResult.error))?.error
         : undefined,
     [isOneSuccessful, isOneErrored, quoteResults]
-  );
-
-  const bestQuote = useMemo(
-    () =>
-      [...quoteResults]
-        // only those that have fetched
-        .filter(
-          (quoteResult) =>
-            Boolean(quoteResult.isFetched) && !quoteResult.isError
-        )
-        // Sort by response time. The fastest and highest quality quote will be first.
-        .sort((a, b) => {
-          // This means the quote is for a basic IBC transfer:
-          // Prefer IBC provider over others since its status source provider
-          // offers a more real time UX compared to other bridge route provider's
-          // status endpoints, which rely on indexing chains and come with a delay.
-          if (a.data?.provider.id === "IBC") return -1;
-
-          if (a.data?.responseTime.isBefore(b.data?.responseTime)) {
-            return 1;
-          }
-          if (a.data?.responseTime.isAfter(b.data?.responseTime)) {
-            return -1;
-          }
-          return 0;
-        })
-        // only those that have returned a result without error
-        .map(({ data }) => data)
-        // only the best quote data
-        .reduce((bestAcc, cur) => {
-          if (!bestAcc) return cur;
-          if (
-            !!cur &&
-            bestAcc.expectedOutput.toDec().lt(cur.expectedOutput.toDec())
-          ) {
-            return cur;
-          }
-          return bestAcc;
-        }, undefined),
-    [quoteResults]
   );
 
   // If the selected bridge provider is not found in the results, select the best quote provider
@@ -1848,6 +2020,22 @@ export const useBridgeQuotes = ({
     isAllQuotesSuccessful: isAllSuccessful,
     selectedBridgeProvider,
     setSelectedBridgeProvider: onChangeBridgeProvider,
+
+    /**
+     * Set only when the user has a real speed choice: a fast quote that is
+     * faster than the selected provider's quote and is not already the
+     * default (see the selection rule). Drives the speed toggle.
+     * `standardQuote` is what the toggle switches back to.
+     */
+    fastTransfer:
+      fastTransferOption && selectedProviderQuoteQuery
+        ? {
+            standardQuote: selectedProviderQuoteQuery.data,
+            fastQuote: fastTransferOption.data,
+            isFastSelected: isFastTransferSelected,
+            setFastSelected: setFastTransferSelected,
+          }
+        : undefined,
 
     selectedQuote,
     selectedQuoteUpdatedAt: selectedQuoteQuery?.dataUpdatedAt,

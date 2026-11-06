@@ -47,6 +47,13 @@ export type SkipRouteRequestBase = {
    * swap, where Noble's forwarding cannot carry the swap memo).
    */
   allow_multi_tx?: boolean;
+  /**
+   * Allow Skip Go Fast routes, where a solver pays out on the destination in
+   * seconds and is repaid when the transfer settles, for a fee. Off by
+   * default. Setting it can change the route Skip picks even when no Go Fast
+   * leg is used, so it is only sent on fast-transfer requests.
+   */
+  go_fast?: boolean;
   /** Opt-in route types. `/route` only; `/msgs` rejects the field. */
   experimental_features?: "eureka"[];
   smart_swap_options?: {
@@ -124,7 +131,35 @@ export type SkipOperation =
   | { evm_swap: SkipEvmSwap }
   | { axelar_transfer: SkipAxelarTransfer }
   | { cctp_transfer: SkipCctpTransfer }
-  | { eureka_transfer: SkipEurekaTransfer };
+  | { eureka_transfer: SkipEurekaTransfer }
+  | { go_fast_transfer: SkipGoFastTransfer };
+
+/**
+ * A Skip Go Fast leg (only returned when the request sets `go_fast`). A
+ * solver fills it on the destination chain first, so it lands in about 10
+ * seconds. It moves USDC: other source assets are swapped to USDC on the
+ * source chain first. The same fee is reported as one `BRIDGE` entry in the
+ * route's `estimated_fees`, which is what the quote reads.
+ */
+export type SkipGoFastTransfer = {
+  from_chain_id: string;
+  to_chain_id: string;
+  fee: {
+    fee_asset: SkipAsset;
+    bps_fee: string;
+    bps_fee_amount: string;
+    bps_fee_usd: string;
+    source_chain_fee_amount: string;
+    source_chain_fee_usd: string;
+    destination_chain_fee_amount: string;
+    destination_chain_fee_usd: string;
+  };
+  bridge_id: string;
+  denom_in: string;
+  denom_out: string;
+  source_domain: string;
+  destination_domain: string;
+};
 
 /**
  * IBC Eureka transfer between the Cosmos Hub and Ethereum. Its relay fee is

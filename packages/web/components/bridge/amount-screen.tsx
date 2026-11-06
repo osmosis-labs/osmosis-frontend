@@ -77,6 +77,7 @@ import {
   NetworkFeeRow,
   ProviderFeesRow,
   TotalFeesRow,
+  TransferSpeedToggle,
 } from "./quote-detail";
 import { BridgeQuote } from "./use-bridge-quotes";
 import {
@@ -1512,6 +1513,15 @@ export const AmountScreen = memo(
           )}
 
           {assetDropdown}
+
+          {/* Outside the collapsed details, so the faster option is seen
+              without opening them. */}
+          {fromChain && !isLoadingBridgeQuote && quote.fastTransfer && (
+            <TransferSpeedToggle
+              fastTransfer={quote.fastTransfer}
+              disabled={quote.isTxPending}
+            />
+          )}
 
           {fromChain && (
             <TransferDetails
