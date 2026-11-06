@@ -22,6 +22,15 @@
   ::-webkit-scrollbar-corner {
     background: rgba(0, 0, 0, 0);
   }
+  /* Firefox has no ::-webkit-scrollbar. Scoped to browsers without it because
+     Chromium 121+ ignores the ::-webkit-scrollbar rules above once scrollbar-color
+     or scrollbar-width is set. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: theme("colors.osmoverse.600") transparent;
+    }
+  }
   .tokendetailshadow::after {
     @apply absolute -left-4 -right-4 bottom-0 top-0 bg-gradient-token-details-shadow content-[""];
   }
