@@ -266,24 +266,20 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
             </div>
             {!isUninitializedPool && !isInactivePool && (
-              <div className="flex h-[340px] flex-row">
-                <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                  {chartConfig.isHistoricalDataLoading ? (
-                    <Spinner className="m-auto" />
-                  ) : !chartConfig.historicalChartUnavailable ? (
-                    <>
-                      <ChartHeader config={chartConfig} />
-                      <Chart config={chartConfig} />
-                    </>
-                  ) : (
-                    <ChartUnavailable />
-                  )}
-                </div>
-
-                {/* Phones: at most a third of the row, so the price chart keeps at
-                    least two thirds as the screen narrows. */}
-                <div className="flex-shrink-1 relative flex w-[229px] flex-col sm:w-[min(7rem,33.333%)]">
-                  <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
+              // The price header and zoom buttons share one row above both
+              // charts, and both charts sit in one row with the same 24px
+              // bottom axis margin, so their plot areas share a top and bottom
+              // at every width and the depth chart's current-price line meets
+              // the price line.
+              <div className="flex h-[340px] flex-col py-7 sm:py-3">
+                <div className="flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    {!chartConfig.isHistoricalDataLoading &&
+                      !chartConfig.historicalChartUnavailable && (
+                        <ChartHeader config={chartConfig} />
+                      )}
+                  </div>
+                  <div className="flex h-6 shrink-0 justify-end gap-1 pr-8 sm:pr-0">
                     <ChartButton
                       alt="refresh"
                       icon="refresh-ccw"
@@ -303,7 +299,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       onClick={zoomIn}
                     />
                   </div>
-                  <div className="mt-8 flex flex-1 flex-col">
+                </div>
+                <div className="mt-5 flex min-h-0 flex-1 flex-row">
+                  <div className="flex-shrink-1 flex w-0 flex-1 flex-col">
+                    {chartConfig.isHistoricalDataLoading ? (
+                      <Spinner className="m-auto" />
+                    ) : !chartConfig.historicalChartUnavailable ? (
+                      <Chart config={chartConfig} />
+                    ) : (
+                      <ChartUnavailable />
+                    )}
+                  </div>
+
+                  {/* Phones: at most a third of the row, so the price chart keeps at
+                      least two thirds as the screen narrows. */}
+                  <div className="flex-shrink-1 flex w-[229px] flex-col sm:w-[min(7rem,33.333%)]">
                     <ConcentratedLiquidityDepthChart
                       yRange={yRange}
                       xRange={xRange}
@@ -321,7 +331,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       }
                       offset={{
                         top: 0,
-                        bottom: 24 + 28,
+                        bottom: 24,
                         left: 0,
                       }}
                       horizontal
