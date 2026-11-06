@@ -24,5 +24,6 @@ export type AvailableFlags =
   | "multiTxBridgeRoutes"
   | "positionMigration"
   | "solanaSkipRoutes"
+  | "fastBridgeTransfers"
   | "inactiveValidatorAlerts"
   | "forcedMigrations";

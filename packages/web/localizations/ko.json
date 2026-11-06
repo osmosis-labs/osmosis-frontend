@@ -903,6 +903,9 @@
     "free": "무료",
     "cheapest": "가장 저렴",
     "fastest": "가장 빠른",
+    "transferSpeed": "전송 속도",
+    "standardSpeed": "표준",
+    "fastSpeed": "빠름",
     "stepLabels": {
       "asset": "유산",
       "amount": "양",

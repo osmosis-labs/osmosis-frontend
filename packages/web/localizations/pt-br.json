@@ -903,6 +903,9 @@
     "free": "Livre",
     "cheapest": "Mais barato",
     "fastest": "O mais rápido",
+    "transferSpeed": "Velocidade da transferência",
+    "standardSpeed": "Padrão",
+    "fastSpeed": "Rápida",
     "stepLabels": {
       "asset": "Ativo",
       "amount": "Quantia",

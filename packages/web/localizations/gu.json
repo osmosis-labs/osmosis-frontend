@@ -903,6 +903,9 @@
     "free": "મફત",
     "cheapest": "સૌથી સસ્તું",
     "fastest": "સૌથી ઝડપી",
+    "transferSpeed": "ટ્રાન્સફર ઝડપ",
+    "standardSpeed": "માનક",
+    "fastSpeed": "ઝડપી",
     "stepLabels": {
       "asset": "એસેટ",
       "amount": "રકમ",

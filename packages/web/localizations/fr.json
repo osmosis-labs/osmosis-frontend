@@ -903,6 +903,9 @@
     "free": "Gratuit",
     "cheapest": "Le moins cher",
     "fastest": "Le plus rapide",
+    "transferSpeed": "Vitesse de transfert",
+    "standardSpeed": "Standard",
+    "fastSpeed": "Rapide",
     "stepLabels": {
       "asset": "Actif",
       "amount": "Montant",

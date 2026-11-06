@@ -903,6 +903,9 @@
     "free": "رایگان",
     "cheapest": "ارزان ترین",
     "fastest": "سریع ترین",
+    "transferSpeed": "سرعت انتقال",
+    "standardSpeed": "استاندارد",
+    "fastSpeed": "سریع",
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",

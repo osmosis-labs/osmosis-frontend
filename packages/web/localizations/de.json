@@ -903,6 +903,9 @@
     "free": "Frei",
     "cheapest": "Am billigsten",
     "fastest": "Am schnellsten",
+    "transferSpeed": "Übertragungsgeschwindigkeit",
+    "standardSpeed": "Standard",
+    "fastSpeed": "Schnell",
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
