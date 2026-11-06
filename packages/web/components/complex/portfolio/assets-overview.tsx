@@ -28,12 +28,7 @@ import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import {
-  Breakpoint,
-  useTranslation,
-  useWalletSelect,
-  useWindowSize,
-} from "~/hooks";
+import { useTranslation, useWalletSelect, useWindowSize } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
@@ -164,7 +159,7 @@ export const AssetsOverview: FunctionComponent<
     }))
   );
   const { isLoading: isWalletLoading } = useWalletSelect();
-  const { isMobile, width } = useWindowSize();
+  const { isMobile } = useWindowSize();
 
   const { address: walletAddress, isWalletConnected } = useWallet();
   const address = walletAddress ?? "";
@@ -255,8 +250,7 @@ export const AssetsOverview: FunctionComponent<
   // With no history to draw, the chart shrinks to a compact card. This is derived
   // state only: the saved preference is never written because of an error.
   const isHistoryError = Boolean(error) && !portfolioOverTimeData;
-  const isChartMinimized =
-    isChartMinimized_ || width < Breakpoint.lg || isHistoryError;
+  const isChartMinimized = isChartMinimized_ || isHistoryError;
 
   const localizedPortfolioOverTimeData = useMemo(
     () => getLocalizedPortfolioOverTimeData(portfolioOverTimeData),
@@ -290,61 +284,65 @@ export const AssetsOverview: FunctionComponent<
         marginBottom: isChartMinimized ? "" : `${CHART_CONTAINER_HEIGHT}px`,
       }}
     >
-      <header className="flex justify-between md:flex-col">
-        <div className="mr-6 flex flex-col">
-          <span className="body1 text-osmoverse-300">
-            {t("assets.totalBalance")}
-          </span>
-          <SkeletonLoader
-            className={classNames(
-              `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
-            )}
-            isLoaded={isTotalValueFetched || totalDisplayValue === undefined}
-          >
-            {isMobile ? (
-              <h4>
-                <PrivateText text={totalDisplayValue?.toString() ?? ""} />
-              </h4>
-            ) : (
-              <h3>
-                <PrivateText text={totalDisplayValue?.toString() ?? ""} />
-              </h3>
-            )}
-          </SkeletonLoader>
-          <SkeletonLoader
-            className={classNames(
-              isPortfolioOverTimeDataIsFetched ? "mt-2" : "mt-2 h-6 w-16"
-            )}
-            isLoaded={isPortfolioOverTimeDataIsFetched}
-          >
-            {performance && (
-              <PortfolioPerformance
-                selectedDifference={performance.selectedDifferencePricePretty}
-                selectedPercentage={performance.selectedPercentageRatePretty}
-                formattedDate={formattedDate}
-                showDate={showDate}
-              />
-            )}
-          </SkeletonLoader>
-          {isPartialTotal && unpricedAssets.length > 0 && (
-            <Tooltip
-              content={t("portfolio.unpricedAssetsTooltip", {
-                assets: unpricedAssets
-                  .map((asset) => asset.symbol ?? asset.coinMinimalDenom)
-                  .join(", "),
-              })}
+      {/* On mobile the left column dissolves into a grid so the minimised
+          chart sits beside the balance and the buttons span the row below. */}
+      <header className="flex justify-between md:grid md:grid-cols-[auto_minmax(0,1fr)] md:gap-x-4">
+        <div className="mr-6 flex flex-col md:contents">
+          <div className="flex flex-col md:col-start-1 md:row-start-1">
+            <span className="body1 text-osmoverse-300">
+              {t("assets.totalBalance")}
+            </span>
+            <SkeletonLoader
+              className={classNames(
+                `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
+              )}
+              isLoaded={isTotalValueFetched || totalDisplayValue === undefined}
             >
-              <span className="body2 mt-1 w-fit cursor-help text-osmoverse-300">
-                {t(
-                  unpricedAssets.length === 1
-                    ? "portfolio.unpricedAssets"
-                    : "portfolio.unpricedAssets_plural",
-                  { count: unpricedAssets.length.toString() }
-                )}
-              </span>
-            </Tooltip>
-          )}
-          <div className="flex items-center gap-2 pt-6 lg:gap-1">
+              {isMobile ? (
+                <h4>
+                  <PrivateText text={totalDisplayValue?.toString() ?? ""} />
+                </h4>
+              ) : (
+                <h3>
+                  <PrivateText text={totalDisplayValue?.toString() ?? ""} />
+                </h3>
+              )}
+            </SkeletonLoader>
+            <SkeletonLoader
+              className={classNames(
+                isPortfolioOverTimeDataIsFetched ? "mt-2" : "mt-2 h-6 w-16"
+              )}
+              isLoaded={isPortfolioOverTimeDataIsFetched}
+            >
+              {performance && (
+                <PortfolioPerformance
+                  selectedDifference={performance.selectedDifferencePricePretty}
+                  selectedPercentage={performance.selectedPercentageRatePretty}
+                  formattedDate={formattedDate}
+                  showDate={showDate}
+                />
+              )}
+            </SkeletonLoader>
+            {isPartialTotal && unpricedAssets.length > 0 && (
+              <Tooltip
+                content={t("portfolio.unpricedAssetsTooltip", {
+                  assets: unpricedAssets
+                    .map((asset) => asset.symbol ?? asset.coinMinimalDenom)
+                    .join(", "),
+                })}
+              >
+                <span className="body2 mt-1 w-fit cursor-help text-osmoverse-300">
+                  {t(
+                    unpricedAssets.length === 1
+                      ? "portfolio.unpricedAssets"
+                      : "portfolio.unpricedAssets_plural",
+                    { count: unpricedAssets.length.toString() }
+                  )}
+                </span>
+              </Tooltip>
+            )}
+          </div>
+          <div className="flex items-center gap-2 pt-6 lg:gap-1 md:col-span-2 md:row-start-2">
             <Button
               className="flex h-[48px] items-center gap-2 !rounded-full md:gap-1"
               size={isMobile ? "xsm" : undefined}
@@ -407,7 +405,7 @@ export const AssetsOverview: FunctionComponent<
             "w-full max-w-[344px]",
             "xl:w-[383px] xl:max-w-[383px]",
             "lg:w-[312px] lg:max-w-[312px]",
-            "md:w-full md:max-w-none"
+            "md:col-start-2 md:row-start-1 md:mt-0 md:h-auto md:min-h-[96px] md:w-full md:max-w-none md:self-stretch"
           )}
           as="div"
         >
@@ -419,11 +417,8 @@ export const AssetsOverview: FunctionComponent<
           ) : (
             <button
               className={classNames(
-                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900",
-                "lg:cursor-default lg:hover:bg-transparent"
+                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900 md:my-0"
               )}
-              // The full chart is not shown below the lg breakpoint
-              disabled={width < Breakpoint.lg}
               onClick={() => setIsChartMinimized(false)}
             >
               <PortfolioHistoricalChartMinimized
@@ -431,12 +426,13 @@ export const AssetsOverview: FunctionComponent<
                 isFetched={isPortfolioOverTimeDataIsFetched}
               />
               <div className="absolute z-50 h-full w-full">
-                <span className="body1 absolute top-2 right-3 text-osmoverse-400">
+                <span className="body1 md:caption absolute top-2 right-3 text-osmoverse-400 md:top-1 md:right-2">
                   {getActiveRangeDateText(range)}
                 </span>
+                {/* Touch has no hover, so the expand hint always shows on mobile */}
                 <Icon
                   id="resize-expand"
-                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100 lg:hidden"
+                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100 md:bottom-2 md:right-2 md:opacity-100"
                   height={16}
                   width={16}
                 />
@@ -457,7 +453,7 @@ export const AssetsOverview: FunctionComponent<
         as="div"
         unmount={false}
         appear={true}
-        className="absolute top-full w-full lg:hidden"
+        className="absolute top-full w-full"
       >
         <PortfolioHistoricalChart
           setIsChartMinimized={setIsChartMinimized}
