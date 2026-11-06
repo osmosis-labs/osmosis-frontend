@@ -2,6 +2,7 @@ import { FloatingDelayGroup } from "@floating-ui/react";
 import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent, memo } from "react";
 
@@ -113,6 +114,9 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
           ) => (
             <Tooltip
               key={`${id}${index}`}
+              // Taps open the tooltip on mobile, where the chip itself doesn't
+              // navigate, so the link inside it must be tappable.
+              interactive={isMobile}
               content={
                 <div className="space-y-3">
                   {inCurrency && outCurrency && (
@@ -189,6 +193,14 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
                                   : "pool.stableswapEnabled"
                       )}
                     </div>
+                  )}
+                  {isMobile && (
+                    <Link
+                      href={"/pool/" + id}
+                      className="block text-center text-sm font-semibold text-wosmongton-300 hover:text-wosmongton-200"
+                    >
+                      {t("pools.createPool.duplicateCheck.viewPool")}
+                    </Link>
                   )}
                 </div>
               }
