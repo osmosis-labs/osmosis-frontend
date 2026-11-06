@@ -115,7 +115,7 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
             <Tooltip
               key={`${id}${index}`}
               // Taps open the tooltip on mobile, where the chip itself doesn't
-              // navigate, so the link inside it must be tappable.
+              // navigate, so the pool id link inside it must be tappable.
               interactive={isMobile}
               content={
                 <div className="space-y-3">
@@ -139,9 +139,18 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
                   )}
 
                   <div className="flex justify-center space-x-1 text-center text-xs font-medium">
-                    <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
-                      {t("swap.pool", { id })}
-                    </p>
+                    {isMobile ? (
+                      <Link
+                        href={"/pool/" + id}
+                        className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5 text-wosmongton-300 underline"
+                      >
+                        {t("swap.pool", { id })}
+                      </Link>
+                    ) : (
+                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
+                        {t("swap.pool", { id })}
+                      </p>
+                    )}
 
                     {spreadFactor && (
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
@@ -193,14 +202,6 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
                                   : "pool.stableswapEnabled"
                       )}
                     </div>
-                  )}
-                  {isMobile && (
-                    <Link
-                      href={"/pool/" + id}
-                      className="block text-center text-sm font-semibold text-wosmongton-300 hover:text-wosmongton-200"
-                    >
-                      {t("pools.createPool.duplicateCheck.viewPool")}
-                    </Link>
                   )}
                 </div>
               }
