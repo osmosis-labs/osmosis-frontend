@@ -1,7 +1,8 @@
 import { edgeTrpcAssetsHandler } from "~/server/api-handlers/edge-trpc-assets";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-export default edgeTrpcAssetsHandler;
+export default toNodeApiHandler(edgeTrpcAssetsHandler);
 
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };

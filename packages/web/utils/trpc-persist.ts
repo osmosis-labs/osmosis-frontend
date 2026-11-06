@@ -15,9 +15,11 @@ export const PERSIST_EXCLUDED_KEYS = [
  * v4: TanStack Query v5 cache format; v4 caches hold a "loading" status that v5
  * cannot restore.
  * v5: `edge.transactions.getTransactions` gained `transfers`.
- * v6: `local.portfolio.getPortfolioAssets` replaced `assetVariants` with
- * unfiltered `assetVariantCandidates`.
- * v7: `local.portfolio.getPortfolioAssets` `heldAssets` gained `amount` and
+ * v6: discard plain unit-class field dumps cached before the OpenNext
+ * SuperJSON registry/constructor-identity fix. Stage used its own v6 for the
+ * portfolio variant change, so this deployment's v6 is only the SuperJSON bust.
+ * v7: `local.portfolio.getPortfolioAssets` replaced `assetVariants` with
+ * unfiltered `assetVariantCandidates`, and `heldAssets` gained `amount` and
  * `fiatValue`.
  * v8: `local.portfolio.getPortfolioAssets` gained `unpricedAssets`.
  */

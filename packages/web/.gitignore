@@ -47,5 +47,9 @@ robots.txt
 sitemap-*.xml
 sitemap.xml
 
-# Cloudflare Wrangler
+# Cloudflare / OpenNext
+.open-next
 .wrangler
+.dev.vars
+# pages/api and middleware.ts while cf:build has them set aside
+.cf-pages-aside

@@ -1,0 +1,53 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "osmosis-frontend-stage",
+  "main": "worker.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "osmosis-frontend-stage",
+    },
+    {
+      // This frontend's backend: worker.ts forwards `/api/*` here. Deploy it before this Worker.
+      "binding": "API",
+      "service": "osmosis-frontend-api-stage",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "osmosis-frontend-stage-cache",
+    },
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NEXT_CACHE_DO_QUEUE",
+        "class_name": "DOQueueHandler",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["DOQueueHandler"],
+    },
+  ],
+  // Cloudflare Images resizes /_next/image; without it OpenNext serves the originals.
+  "images": {
+    "binding": "IMAGES",
+  },
+  "observability": {
+    "enabled": true,
+  },
+  "upload_source_maps": true,
+  // Mangles identifiers on top of OpenNext's whitespace/syntax minification (~760KB gzip).
+  // Function and class names are kept (Wrangler's keep_names default), so profiles stay readable.
+  "minify": true,
+}
