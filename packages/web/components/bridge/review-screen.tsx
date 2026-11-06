@@ -30,6 +30,7 @@ import {
   NetworkFeeRow,
   ProviderFeesRow,
   TotalFeesRow,
+  TransferSpeedToggle,
 } from "./quote-detail";
 import { BridgeQuote } from "./use-bridge-quotes";
 import { SupportedAsset } from "./use-bridges-supported-assets";
@@ -154,6 +155,15 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
         />
       )}
       <TransferDetails {...quote} fromDisplayChain={fromChain} />
+      {quote.fastTransfer && (
+        <TransferSpeedToggle
+          fastTransfer={quote.fastTransfer}
+          // the signed transaction comes from the selected quote, so the
+          // choice is locked once signing starts
+          disabled={quote.isTxPending || Boolean(quote.multiTxPhase)}
+          className="mb-3"
+        />
+      )}
       {quote.selectedQuote && (
         <AssetBox
           type="to"

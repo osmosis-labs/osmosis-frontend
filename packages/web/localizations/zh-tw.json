@@ -902,6 +902,9 @@
     "free": "自由的",
     "cheapest": "最便宜",
     "fastest": "最快的",
+    "transferSpeed": "轉帳速度",
+    "standardSpeed": "標準",
+    "fastSpeed": "快速",
     "stepLabels": {
       "asset": "資產",
       "amount": "數量",

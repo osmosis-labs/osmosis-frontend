@@ -902,6 +902,9 @@
     "free": "Бесплатно",
     "cheapest": "Самый дешевый",
     "fastest": "Самый быстрый",
+    "transferSpeed": "Скорость перевода",
+    "standardSpeed": "Стандартный",
+    "fastSpeed": "Быстрый",
     "stepLabels": {
       "asset": "Объект",
       "amount": "Количество",

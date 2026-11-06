@@ -32,6 +32,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   multiTxBridgeRoutes: true,
   positionMigration: true,
   solanaSkipRoutes: false,
+  fastBridgeTransfers: false,
   inactiveValidatorAlerts: false,
   forcedMigrations: true,
 };

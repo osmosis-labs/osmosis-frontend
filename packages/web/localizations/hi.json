@@ -902,6 +902,9 @@
     "free": "मुक्त",
     "cheapest": "सबसे सस्ता",
     "fastest": "सबसे तेजी से",
+    "transferSpeed": "ट्रांसफ़र की गति",
+    "standardSpeed": "मानक",
+    "fastSpeed": "तेज़",
     "stepLabels": {
       "asset": "संपत्ति",
       "amount": "मात्रा",

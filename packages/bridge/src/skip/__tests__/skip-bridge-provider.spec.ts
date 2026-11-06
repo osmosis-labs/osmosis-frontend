@@ -1,4 +1,6 @@
 import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
+import { Dec } from "@osmosis-labs/unit";
+import { NativeEVMTokenConstantAddress } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import-compat/no-extraneous-dependencies
@@ -22,12 +24,15 @@ import {
 import { raiseMinAssetToDestinationInput, SkipBridgeProvider } from "..";
 import { SkipMsg, SkipMsgsRequest } from "../types";
 import {
+  ETH_BaseToOsmosisAllEth_GoFastMsgs,
+  ETH_BaseToOsmosisAllEth_GoFastRoute,
   ETH_EthereumToOsmosis_Msgs,
   ETH_EthereumToOsmosis_Route,
   ETH_OsmosisToEthereum_DestinationSwap_Msgs,
   ETH_OsmosisToEthereum_DestinationSwap_Route,
   ETH_OsmosisToEthereum_Msgs,
   ETH_OsmosisToEthereum_Route,
+  GoFastSkipAssets,
   SkipAssets,
   SkipChains,
   USDC_EthereumToOsmosisAlloy_MultiTxMsgs,
@@ -2674,5 +2679,263 @@ describe("SkipBridgeProvider getSupportedAssets failure propagation", () => {
         direction: "deposit",
       })
     ).rejects.toThrow();
+  });
+});
+
+describe("SkipBridgeProvider fast transfers", () => {
+  const allEthDenom =
+    "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH";
+  const allUsdcDenom =
+    "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
+
+  const baseEthToAllEthParams: GetBridgeQuoteParams = {
+    fromAmount: "10000000000000000",
+    fromAsset: {
+      denom: "ETH",
+      address: NativeEVMTokenConstantAddress,
+      decimals: 18,
+    },
+    fromChain: { chainId: 8453, chainName: "Base", chainType: "evm" },
+    toAsset: { denom: "allETH", address: allEthDenom, decimals: 18 },
+    toChain: {
+      chainId: "osmosis-1",
+      chainName: "osmosis",
+      chainType: "cosmos",
+    },
+    fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    toAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+  };
+
+  const makeProvider = (overrides: Partial<BridgeProviderContext> = {}) =>
+    new SkipBridgeProvider({
+      env: "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 500 }),
+      assetLists: MockAssetLists,
+      chainList: [],
+      getTimeoutHeight: jest.fn().mockResolvedValue({
+        revisionNumber: "1",
+        revisionHeight: "1000",
+      }),
+      ...overrides,
+    });
+
+  /**
+   * Mirrors the live API for Base ETH -> allETH: no standard route, and the
+   * Go Fast route only when the request sets go_fast. Records each body.
+   */
+  const useGoFastOnlyRouteHandler = (
+    routeBodies: Record<string, unknown>[],
+    fastRoute: object = ETH_BaseToOsmosisAllEth_GoFastRoute
+  ) =>
+    server.use(
+      http.post(
+        "https://api.skip.money/v2/fungible/route",
+        async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          routeBodies.push(body);
+          if (!body.go_fast) {
+            return HttpResponse.json(
+              { code: 5, message: "no routes found", details: [] },
+              { status: 404 }
+            );
+          }
+          return HttpResponse.json(fastRoute);
+        }
+      ),
+      http.post("https://api.skip.money/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_BaseToOsmosisAllEth_GoFastMsgs)
+      )
+    );
+
+  beforeEach(() => {
+    const ethereumChain = SkipChains.chains.find((c) => c.chain_id === "1")!;
+    server.use(
+      http.get("https://api.skip.money/v2/info/chains", () =>
+        HttpResponse.json({
+          chains: [
+            ...SkipChains.chains,
+            { ...ethereumChain, chain_name: "Base", chain_id: "8453" },
+          ],
+        })
+      ),
+      http.get("https://api.skip.money/v2/fungible/assets", () =>
+        HttpResponse.json({
+          chain_to_assets_map: {
+            ...SkipAssets.chain_to_assets_map,
+            "8453": GoFastSkipAssets["8453"],
+            "osmosis-1": {
+              // first, so the coingecko-less allUSDC entry is the one found
+              assets: [
+                ...GoFastSkipAssets["osmosis-1"].assets,
+                ...SkipAssets.chain_to_assets_map["osmosis-1"].assets,
+              ],
+            },
+          },
+        })
+      )
+    );
+  });
+
+  it("quotes a Go Fast route only when asked, in one request", async () => {
+    const routeBodies: Record<string, unknown>[] = [];
+    useGoFastOnlyRouteHandler(routeBodies);
+    const provider = makeProvider();
+
+    // standard quote: go_fast is never sent, so the pair has no route
+    await expect(
+      provider.getQuote({ ...baseEthToAllEthParams, allowMultiTx: true })
+    ).rejects.toThrow("no routes found");
+    expect(routeBodies.every((body) => !("go_fast" in body))).toBe(true);
+
+    routeBodies.length = 0;
+    const quote = await provider.getQuote({
+      ...baseEthToAllEthParams,
+      allowMultiTx: true,
+      fastTransfer: true,
+    });
+
+    // one request, carrying the same multi-tx permission as the standard one
+    expect(routeBodies).toEqual([
+      expect.objectContaining({ go_fast: true, allow_multi_tx: true }),
+    ]);
+    expect(quote.estimatedTime).toBe(10);
+    expect(quote.expectedOutput.amount).toBe("9932414730421164");
+    expect(quote.viaAxelar).toBe(false);
+    expect(quote.transactionRequest?.type).toBe("evm");
+  });
+
+  it("reports the Go Fast fee in the USDC it is charged in, deducted in transit", async () => {
+    useGoFastOnlyRouteHandler([]);
+
+    const quote = await makeProvider().getQuote({
+      ...baseEthToAllEthParams,
+      fastTransfer: true,
+    });
+
+    expect(quote.transferFee).toEqual({
+      amount: "42363",
+      denom: "USDC",
+      chainId: 8453,
+      address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      decimals: 6,
+      coinGeckoId: "usd-coin",
+      isAdditive: false,
+    });
+  });
+
+  it("marks a Go Fast fee it cannot express as one coin as unknown, not free", async () => {
+    const [bridgeFee] = ETH_BaseToOsmosisAllEth_GoFastRoute.estimated_fees;
+    useGoFastOnlyRouteHandler([], {
+      ...ETH_BaseToOsmosisAllEth_GoFastRoute,
+      estimated_fees: [
+        {
+          ...bridgeFee,
+          origin_asset: { ...bridgeFee.origin_asset, decimals: undefined },
+        },
+      ],
+    });
+
+    const quote = await makeProvider().getQuote({
+      ...baseEthToAllEthParams,
+      fastTransfer: true,
+    });
+
+    expect(quote.transferFee.amount).toBe("0");
+    expect(quote.transferFee.isUnknown).toBe(true);
+  });
+
+  it("refuses a fast quote when Skip answers go_fast with a standard route", async () => {
+    // e.g. the allETH -> Ethereum withdrawal: go_fast changed the route, but
+    // no Go Fast leg was used and the result paid less
+    server.use(
+      http.post("https://api.skip.money/v2/fungible/route", () =>
+        HttpResponse.json(ETH_EthereumToOsmosis_Route)
+      )
+    );
+
+    await expect(
+      makeProvider().getQuote({ ...baseEthToAllEthParams, fastTransfer: true })
+    ).rejects.toThrow("No fast transfer route found");
+  });
+
+  it("refuses a fast quote into USDC without requesting a route", async () => {
+    const routeBodies: Record<string, unknown>[] = [];
+    useGoFastOnlyRouteHandler(routeBodies);
+
+    await expect(
+      makeProvider().getQuote({
+        ...baseEthToAllEthParams,
+        // allUSDC has no coingecko_id in Skip's registry: matched by symbol
+        toAsset: { denom: "USDC", address: allUsdcDenom, decimals: 6 },
+        fastTransfer: true,
+      })
+    ).rejects.toThrow("Fast transfers into USDC are not offered");
+    expect(routeBodies).toHaveLength(0);
+  });
+
+  describe("supported assets", () => {
+    /** allETH plus a sibling variant that brings in the Base ETH source. */
+    const allEthFamily = [
+      {
+        chainName: "osmosis",
+        assets: [
+          {
+            coinMinimalDenom: allEthDenom,
+            variantGroupKey: allEthDenom,
+            counterparty: [],
+          },
+          {
+            coinMinimalDenom:
+              "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+            variantGroupKey: allEthDenom,
+            counterparty: [
+              {
+                chainName: "base",
+                chainId: 8453,
+                chainType: "evm",
+                address: NativeEVMTokenConstantAddress,
+                symbol: "ETH",
+                decimals: 18,
+              },
+            ],
+          },
+        ],
+      },
+    ] as unknown as BridgeProviderContext["assetLists"];
+
+    const getAllEthDepositSources = (allowFastTransfer: boolean) =>
+      makeProvider({
+        assetLists: allEthFamily,
+        getAssetUsdPrice: jest.fn().mockResolvedValue(new Dec(2500)),
+      }).getSupportedAssets({
+        chain: { chainId: "osmosis-1", chainType: "cosmos" },
+        asset: { denom: "allETH", address: allEthDenom, decimals: 18 },
+        direction: "deposit",
+        allowFastTransfer,
+      });
+
+    it("keeps a source only Go Fast can route while fast transfers are on", async () => {
+      const routeBodies: Record<string, unknown>[] = [];
+      useGoFastOnlyRouteHandler(routeBodies);
+
+      const sources = await getAllEthDepositSources(true);
+
+      expect(sources).toEqual([
+        expect.objectContaining({ chainId: 8453, chainType: "evm" }),
+      ]);
+      // the fast check only follows a failed standard check
+      expect(routeBodies.map((body) => Boolean(body.go_fast))).toEqual([
+        false,
+        true,
+      ]);
+    });
+
+    it("drops that source while fast transfers are off", async () => {
+      const routeBodies: Record<string, unknown>[] = [];
+      useGoFastOnlyRouteHandler(routeBodies);
+
+      expect(await getAllEthDepositSources(false)).toEqual([]);
+      expect(routeBodies).toHaveLength(1);
+    });
   });
 });
