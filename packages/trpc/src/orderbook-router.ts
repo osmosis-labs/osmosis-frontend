@@ -69,8 +69,8 @@ export const orderbookRouter = createTRPCRouter({
   getAllOrders: publicProcedure
     .input(GetInfiniteLimitOrdersInputSchema)
     .query(async ({ input, ctx }) => {
-      return maybeCachePaginatedItems({
-        getFreshItems: async () => {
+      const page = await maybeCachePaginatedItems({
+        getFreshItems: async ({ markIncomplete }) => {
           const { userOsmoAddress } = input;
           const pools = await getOrderbookPools();
           const activePools = pools.filter((p) => parseInt(p.poolId) < 2065);
@@ -122,6 +122,10 @@ export const orderbookRouter = createTRPCRouter({
           if (historicalOrdersError && allOrders.length === 0) {
             throw historicalOrdersError;
           }
+          if (historicalOrdersError) {
+            // the list holds only the open orders
+            markIncomplete();
+          }
 
           return allOrders.sort(defaultSortOrders);
         },
@@ -130,12 +134,13 @@ export const orderbookRouter = createTRPCRouter({
         cursor: input.cursor,
         limit: input.limit,
       });
+      return { ...page, historyUnavailable: page.incomplete === true };
     }),
   getAllOrdersSQS: publicProcedure
     .input(GetInfiniteLimitOrdersInputSchema)
     .query(async ({ input, ctx }) => {
-      return maybeCachePaginatedItems({
-        getFreshItems: async () => {
+      const page = await maybeCachePaginatedItems({
+        getFreshItems: async ({ markIncomplete }) => {
           const { userOsmoAddress, filter } = input;
 
           const shouldFetchActive =
@@ -174,16 +179,22 @@ export const orderbookRouter = createTRPCRouter({
           if (historicalOrdersError && allOrders.length === 0) {
             throw historicalOrdersError;
           }
+          if (historicalOrdersError) {
+            // the list holds only the open orders
+            markIncomplete();
+          }
           if (filter === "filled") {
             return allOrders.filter((o) => o.status === "filled");
           }
           return allOrders;
         },
-        cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}`,
+        // the filter changes the list, so each filter is cached on its own
+        cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}-${input.filter ?? "all"}`,
         ttl: 10000,
         cursor: input.cursor,
         limit: input.limit,
       });
+      return { ...page, historyUnavailable: page.incomplete === true };
     }),
   getOrderbookState: publicProcedure
     .input(OsmoAddressSchema.required())

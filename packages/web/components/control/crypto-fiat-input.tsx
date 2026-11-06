@@ -1,6 +1,9 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  isValidNumericalRawInput,
+  normalizeDecimalSeparator,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {
   FunctionComponent,
@@ -217,7 +220,8 @@ export const CryptoFiatInput: FunctionComponent<{
 
   const onInput = useCallback(
     (type: "fiat" | "crypto") => (value: string) => {
-      const nextValue = value;
+      const nextValue = normalizeDecimalSeparator(value);
+      if (nextValue === null) return;
       if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
       if (assetPrice && assetWithBalance) {
@@ -251,7 +255,7 @@ export const CryptoFiatInput: FunctionComponent<{
   // the setters propagate to the parent's onChange, which can't run during render.
   useEffect(() => {
     if (pendingRatioUpdate && assetWithBalance && assetPrice) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- see above
+      // eslint-disable-next-line hooks-compat/set-state-in-effect -- see above
       onUpdateRatio({
         assetPrice,
         nextValue: fiatInputRaw,

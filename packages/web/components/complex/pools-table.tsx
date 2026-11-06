@@ -409,7 +409,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width, shouldDisplayFeesData]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
+  // eslint-disable-next-line hooks-compat/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: poolsData,
     columns: collapsedColumns,

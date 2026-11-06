@@ -20,11 +20,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { useMeasure, useUnmount } from "react-use";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { BridgeReceiveAssetDropdown } from "~/components/bridge/bridge-receive-asset-dropdown";
-import { DepositAddressScreen } from "~/components/bridge/deposit-address-screen";
 import { CryptoFiatInput } from "~/components/control/crypto-fiat-input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import {
@@ -42,7 +41,7 @@ import {
   useFeatureFlags,
   useTranslation,
 } from "~/hooks";
-import { BridgeScreen, useBridgeStore } from "~/hooks/bridge";
+import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
@@ -318,7 +317,7 @@ export const AmountScreen = memo(
 
       // Default to crypto mode when price is not available
       if (!canonicalAssetPrice && inputUnit === "fiat") {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- falls back to crypto once the price query settles with no price; the user can still switch units afterwards
+        // eslint-disable-next-line hooks-compat/set-state-in-effect -- falls back to crypto once the price query settles with no price; the user can still switch units afterwards
         setInputUnit("crypto");
       }
     }, [
@@ -782,10 +781,6 @@ export const AmountScreen = memo(
       toChain,
     ]);
 
-    useUnmount(() => {
-      useBridgeStore.getState().setType("quote");
-    });
-
     /** If an asset is disabled */
     const areAssetTransfersDisabled = useMemo(() => {
       return direction === "withdraw"
@@ -1031,34 +1026,6 @@ export const AmountScreen = memo(
         />
       );
 
-    if (
-      featureFlags.bridgeDepositAddress &&
-      !quote.enabled &&
-      fromAsset &&
-      supportedBridgeInfo.depositAddressBridges.length > 0 &&
-      direction === "deposit" &&
-      canonicalAsset &&
-      fromChain &&
-      toChain &&
-      toAsset &&
-      !haltState.halted
-    ) {
-      useBridgeStore.getState().setType("deposit-address");
-      return (
-        <DepositAddressScreen
-          canonicalAsset={canonicalAsset}
-          direction={direction}
-          chainSelection={chainSelection}
-          assetDropdown={assetDropdown}
-          fromChain={fromChain}
-          toChain={toChain}
-          fromAsset={fromAsset}
-          toAsset={toAsset}
-          bridge={supportedBridgeInfo.depositAddressBridges[0]} // For now, only one bridge provider is supported
-        />
-      );
-    }
-
     /**
      * This condition will be met if:
      * - An asset is disabled, effectively its FF is turned off for whatever reason
@@ -1278,8 +1245,6 @@ export const AmountScreen = memo(
         </>
       );
     }
-
-    useBridgeStore.getState().setType("quote");
 
     /**
      * This will trigger an error boundary

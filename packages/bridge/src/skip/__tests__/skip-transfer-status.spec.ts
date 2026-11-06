@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 
 import { MockChains } from "../../__tests__/mock-chains";
@@ -332,6 +332,33 @@ describe("SkipTransferStatusProvider", () => {
     };
     const url = cosmosProvider.makeExplorerUrl(snapshot);
     expect(url).toBe("https://www.mintscan.io/cosmos/txs/cosmosTxHash");
+  });
+
+  it("links a route without an Axelar leg to the signed tx, not Axelarscan", () => {
+    const withdraw: TxSnapshot = {
+      ...baseTxSnapshot,
+      viaAxelar: false,
+      sendTxHash: "cosmosTxHash",
+      fromChain: {
+        chainId: "cosmoshub-4",
+        prettyName: "Cosmos Hub",
+        chainType: "cosmos",
+      },
+      toChain: { chainId: 1, prettyName: "Ethereum", chainType: "evm" },
+    };
+    expect(provider.makeExplorerUrl(withdraw)).toBe(
+      "https://www.mintscan.io/cosmos/txs/cosmosTxHash"
+    );
+
+    const deposit: TxSnapshot = {
+      ...baseTxSnapshot,
+      viaAxelar: false,
+      sendTxHash: "0xabc",
+      fromChain: { chainId: 1, prettyName: "Ethereum", chainType: "evm" },
+    };
+    expect(provider.makeExplorerUrl(deposit)).toBe(
+      "https://etherscan.io/tx/0xabc"
+    );
   });
 
   it("links a Solana-origin transfer to Solscan, then to the intermediate chain once advanced", () => {

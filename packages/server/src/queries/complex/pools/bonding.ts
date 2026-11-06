@@ -193,11 +193,14 @@ export async function getSharePoolBondDurations({
           const underlyingCoins = await getGammShareUnderlyingCoins({
             ...params,
             ...userShares.toCoin(),
-          }).catch((e) => captureErrorAndReturn(e, []));
-          const userSharesValue = await calcSumCoinsValueOrUnknown({
-            ...params,
-            coins: underlyingCoins,
-          });
+          }).catch((e) => captureErrorAndReturn(e, undefined));
+          // a failed lookup is an unknown value, not an empty position worth $0
+          const userSharesValue = underlyingCoins
+            ? await calcSumCoinsValueOrUnknown({
+                ...params,
+                coins: underlyingCoins,
+              })
+            : undefined;
           userLockedShareValue = userSharesValue
             ? new PricePretty(DEFAULT_VS_CURRENCY, userSharesValue)
             : undefined;

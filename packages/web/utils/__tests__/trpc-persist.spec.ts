@@ -73,14 +73,19 @@ describe("persisted query cache", () => {
   it("does not persist excluded procedures", async () => {
     const persister = makePersister("persist-spec-excluded");
     const source = new QueryClient();
-    source.setQueryData([["bridgeTransfer", "getDepositAddress"]], {
-      depositAddress: "addr",
-    });
+    source.setQueryData(
+      [["local", "bridgeTransfer", "getSupportedAssetsBalances"]],
+      {
+        balances: [],
+      }
+    );
     await save(source, persister);
 
     const target = await restore(persister);
     expect(
-      target.getQueryData([["bridgeTransfer", "getDepositAddress"]])
+      target.getQueryData([
+        ["local", "bridgeTransfer", "getSupportedAssetsBalances"],
+      ])
     ).toBeUndefined();
   });
 

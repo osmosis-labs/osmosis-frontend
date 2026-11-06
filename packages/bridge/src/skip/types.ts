@@ -47,6 +47,8 @@ export type SkipRouteRequestBase = {
    * swap, where Noble's forwarding cannot carry the swap memo).
    */
   allow_multi_tx?: boolean;
+  /** Opt-in route types. `/route` only; `/msgs` rejects the field. */
+  experimental_features?: "eureka"[];
   smart_swap_options?: {
     evm_swaps?: boolean;
     split_routes?: boolean;
@@ -121,7 +123,21 @@ export type SkipOperation =
   | { swap: SkipSwap }
   | { evm_swap: SkipEvmSwap }
   | { axelar_transfer: SkipAxelarTransfer }
-  | { cctp_transfer: SkipCctpTransfer };
+  | { cctp_transfer: SkipCctpTransfer }
+  | { eureka_transfer: SkipEurekaTransfer };
+
+/**
+ * IBC Eureka transfer between the Cosmos Hub and Ethereum. Its relay fee is
+ * reported as a SMART_RELAY estimated fee, like CCTP.
+ */
+export type SkipEurekaTransfer = {
+  from_chain_id: string;
+  to_chain_id: string;
+  denom_in: string;
+  denom_out: string;
+  bridge_id: string;
+  smart_relay?: boolean;
+};
 
 /** A swap performed on the destination EVM chain by the Axelar GMP executor. */
 export type SkipEvmSwap = {

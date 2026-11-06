@@ -1,7 +1,7 @@
 import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 import { createPublicClient } from "viem";
 
@@ -290,6 +290,7 @@ describe("SkipBridgeProvider", () => {
         isAdditive: true,
       },
       estimatedTime: 30,
+      viaAxelar: true,
       transactionRequest: {
         type: "evm",
         to: "0xD397883c12b71ea39e0d9f6755030205f31A1c96",

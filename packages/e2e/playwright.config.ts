@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-compat/no-extraneous-dependencies */
 import { defineConfig, devices } from "@playwright/test";
 
 import "dotenv/config";

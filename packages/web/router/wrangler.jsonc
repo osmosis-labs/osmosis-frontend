@@ -14,7 +14,7 @@
   "vars": {
     // Share of browsers routed to Cloudflare (0-100). This file is the source of truth: a deploy
     // resets dashboard edits, so set it to "0" in an emergency and commit the change afterwards.
-    "CF_PERCENT": "0",
+    "CF_PERCENT": "100",
   },
   // Attach to app.osmosis.zone deliberately (see README), not on every deploy.
   "workers_dev": false,

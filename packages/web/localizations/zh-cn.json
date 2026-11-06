@@ -116,17 +116,6 @@
       "chainHalted": "Osmosis 链停止，交易暂时禁用。"
     }
   },
-  "store": {
-    "headerTitle": "提升您的体验",
-    "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
-    "featured": "特色",
-    "searchPlaceholder": "搜索",
-    "getFeatured": "获得特色",
-    "featuredDescription": "在应用商店上架并接触成千上万的用户。如果您想上榜或被推荐，请联系我们，我们将保持沟通。",
-    "applyButton": "申请",
-    "storeDisclaimer": "部分内容由与 Osmosis Labs 或其任何附属公司无关的第三方准备，Osmosis Labs 对此类内容不承担责任。Osmosis Labs 不对内容中的任何错误或延迟，或因依赖任何内容而采取的任何行动承担责任。信息仅供参考，不构成投资建议。这不是购买或出售特定数字资产或采用特定投资策略的建议。 Osmosis Labs 不对所提供的任何信息的准确性、适当性或有效性，或针对特定资产作出任何陈述。显示的价格仅用于说明目的。实际加密货币价格及相关统计数据可能有所不同。所呈现的数据可能反映在 Osmosis Labs 交易所及选定的其他加密货币交易所上交易的资产。",
-    "allAppsHeader": "所有应用"
-  },
   "createFirstPositionCta": {
     "title": "创建您的第一个 Supercharged 职位",
     "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
@@ -203,6 +192,11 @@
   "portfolio": {
     "buy": "买",
     "sell": "卖",
+    "chartTemporarilyUnavailable": "图表暂时不可用",
+    "pricesUnavailable": "价格不可用",
+    "unpricedAssets": "+ {count} 个资产无价格",
+    "unpricedAssets_plural": "+ {count} 个资产无价格",
+    "unpricedAssetsTooltip": "未计入总额：{assets}",
     "yourBalances": "您的余额",
     "yourPositions": "您的职位",
     "searchBalances": "搜索余额",
@@ -276,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "计算金额溢出",
     "depositNoBalance": "您没有可以存入的资产",
+    "amountTooSmall": "数量太小",
     "emptyAmount": "数量为空",
     "generic": "错误",
     "highSwapFee": "交易费太高",
@@ -312,6 +307,7 @@
     "invalidAmounts": "金额无效",
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
+    "walletRequestTimedOut": "{wallet} 未及时响应。未签名或发送任何内容，请重试。",
     "insufficientFeeTokens": {
       "title": "没有余额足够的手续费代币",
       "body": "请在 Osmosis 上充值 OSMO 或其他受支持的手续费代币以支付网络费用。",
@@ -326,24 +322,24 @@
   "estimated": "估计的",
   "halt": {
     "deposit": {
-      "bridge_down": "存款已停止。原住民桥梁路线已中断。",
-      "extended_unstable_market": "存款已停止。该资产长期不稳定且处于非活跃状态。",
-      "planned_shutdown": "存款已停止。资产计划关闭。",
-      "source_chain_killed": "存款已停止。资金链已停止运营。",
-      "manual": "存款已停止，请谨慎操作。",
-      "unknown": "Deposits halted."
+      "bridge_down": "存入已暂停。原生跨链桥路线已中断。",
+      "extended_unstable_market": "存入已暂停。该资产长期不稳定且不活跃。",
+      "planned_shutdown": "存入已暂停。该资产计划下线。",
+      "source_chain_killed": "存入已暂停。源链已停止运行。",
+      "manual": "存入已暂停，请谨慎操作。",
+      "unknown": "存入已暂停。"
     },
     "withdrawal": {
-      "bridge_down": "提款已停止。本地桥梁路线已中断。",
-      "source_chain_killed": "提现已停止。源链已停止运营。",
-      "manual": "提款已暂停，请谨慎操作。",
-      "unknown": "Withdrawals halted."
+      "bridge_down": "提币已暂停。原生跨链桥路线已中断。",
+      "source_chain_killed": "提币已暂停。源链已停止运行。",
+      "manual": "提币已暂停，请谨慎操作。",
+      "unknown": "提币已暂停。"
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
-    "source_chain_killed": "该资产的供应链已停止运作。",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "ibc_client": "连接该资产所在链的 IBC 客户端一直不稳定。",
+    "source_chain_killed": "该资产的源链已停止运行。",
+    "market": "该资产长期以来流动性和交易量都非常低。",
     "manual": "不稳定，请谨慎行事。",
     "unknown": "不稳定，请谨慎行事。"
   },
@@ -395,14 +391,13 @@
     "info": "统计数据",
     "pools": "资金池",
     "stake": "质押",
-    "store": "应用",
     "vote": "投票",
     "featureRequests": "功能请求",
-    "more": "更多的",
-    "new": "新的",
     "settings": "设置"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "每天 {amount}",
+    "spendLimitLeftToday": "今日剩余 {amount}",
     "toast": {
       "oneClickTradingActive": "一键交易活跃",
       "oneClickTradingDisabled": "一键交易已禁用",
@@ -422,20 +417,20 @@
       "introducingSubtitle": "进行更快、更轻松的交易，无需多个钱包批准的麻烦。",
       "learnMore": "了解更多",
       "startTradingButton": "开始一键交易",
-      "defaultParameters": "默认设置为 1 小时，损失保护限额为 5,000 美元。",
+      "defaultParameters": "默认设置为 7 天，每日支出限额为 5,000 美元。",
       "changeButton": "编辑设置"
     },
     "reviewOrder": {
       "recapRowTitle": "一键交易限制",
       "enableTitle": "开始一键交易",
       "enableDescription": "交易更快捷、更轻松",
-      "paramsDescription": "{sessionLength}会话，具有{spendLimit}损失保护限制",
+      "paramsDescription": "{sessionLength}会话，每日支出限额为{spendLimit}",
       "defaultSpendLimit": "5,000 美元",
       "change": "改变",
       "edit": "编辑",
       "exceeded": "超出",
       "exceededTooltip": {
-        "title": "超过当前损失保护限制",
+        "title": "超出您的每日支出限额",
         "body": "您必须在钱包中手动批准此交易。"
       }
     },
@@ -449,7 +444,7 @@
       "header": "一键交易",
       "description": "一键交易让您可以在此设备上安全地进行交易，而无需在钱包中签署每笔交易。",
       "enableTitle": "启用一键交易",
-      "spendLimitTitle": "损失保障限额",
+      "spendLimitTitle": "每日支出限额",
       "sessionPeriodTitle": "会议期间",
       "startButton": "开始一键交易",
       "editSessionButton": "保存更改",
@@ -645,6 +640,8 @@
     "title": "移除流动性"
   },
   "requestRejected": "请求拒绝",
+  "waitingForWallet": "正在等待您的钱包...",
+  "signInMobileWallet": "请在您的手机钱包中签名...",
   "settings": {
     "filterDust": "滤尘",
     "selectLanguage": "选择语言",
@@ -908,8 +905,7 @@
     "stepLabels": {
       "asset": "资产",
       "amount": "数量",
-      "review": "审查",
-      "deposit": "订金"
+      "review": "审查"
     },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",
@@ -1017,10 +1013,10 @@
     "insufficientFundsForFees": "费用资金不足",
     "youNeedFundsToPay": "您需要资金来支付{chain}网络费和桥接费。",
     "youNeedFundsToPayWithFee": "您尝试转移的金额太低，无法支付{chain}上 {feeAmount} {feeCurrency} 的桥接费用。请尝试更大的金额。",
-    "transferAmountTooLowValueLoss": "转账金额太低",
-    "valueLossTooHighToBridge": "扣除费用后的转账金额太低。价值损失太高，无法成功桥接。请尝试更大的金额。",
     "assetsDepositsUnavailable": "{asset}存款不可用",
-    "assetWithdrawalsUnavailable": "{asset}提现不可用",
+    "assetWithdrawalsToChainUnavailable": "暂不支持将 {asset} 提现到 {chain}",
+    "routeLiquidityTooLow": "此路径流动性不足",
+    "routeLiquidityTooLowBody": "目前没有足够的流动性以合理价格完成此笔转账。请尝试其他网络或代币，或稍后再试。",
     "noAvailableDeposits": "目前找不到可用的路线或提供商。请稍后重试或使用其他应用程序将您的资金转入 Osmosis。",
     "noAvailableWithdrawals": "目前找不到可用的路线或提供商。请稍后重试或设置其他应用程序以从 Osmosis 转移资金。",
     "somethingIsntWorking": "有些事情不起作用……",
@@ -1032,43 +1028,10 @@
     "balanceUnavailable": "无法加载您的 {chain} 余额",
     "balanceUnavailableDescription": "我们无法连接 {chain} 来查询您的余额，因此可能显示为 0。您的资金不受影响。请重试，或使用下方的选项。",
     "retryBalance": "重试",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "{asset} 存入已暂停",
+    "withdrawalsHalted": "{asset} 提币已暂停",
     "noNativeTransfers": "{asset}的原生转账不可用",
     "noNativeTransfersDescription": "请使用以下替代提供商之一。",
-    "sendFromWalletOrExchange": "从您的钱包或交易所发送",
-    "scanWithMobileWallet": "使用您的手机钱包扫描",
-    "or": "或者",
-    "copied": "已复制",
-    "copyToClipboard": "复制到剪贴板",
-    "showQrCode": "显示二维码",
-    "yourDepositAddress": "您的{denom}存款地址",
-    "copyAddressToClipboard": "将地址复制到剪贴板",
-    "copyAddress": "复制地址",
-    "receiveOnlyAsset": "此地址只能从{denom}网络接收来自{network}网络的资产。发送任何其他资产都可能导致永久损失。",
-    "minimumDeposit": "最低存款",
-    "nomic": {
-      "estimatedTime": "1-8 小时",
-      "awaitingBtc": "等待比特币",
-      "transferringYourBtc": "转移你的比特币",
-      "depositStatus": "存款状态",
-      "depositSuccess": "存款成功",
-      "pendingDeposit": "待存款",
-      "estimatedAboutTime": "估计约为{time}",
-      "from": "从",
-      "to": "到",
-      "asset": "资产",
-      "amountBtc": "数量 BTC",
-      "totalValue": "总价值",
-      "transactionHash": "交易哈希",
-      "viewOnExplorer": "在资源管理器中查看",
-      "totalFees": "总费用"
-    },
-    "doNotSendFundsToThisAddress": "请勿向该地址汇款。",
-    "addressExpired": "此地址已过期。请申请一个新地址。",
-    "addressAboutToExpire": "此地址即将过期。请申请新地址以避免资金损失。",
-    "createNewDepositAddress": "创建新的存款地址",
-    "transactionDetails": "交易详情",
     "confirmAmount": "确认金额",
     "enterChainAddress": "输入{chain}地址",
     "wormholeRedeem": {
@@ -1171,10 +1134,6 @@
     "default": {
       "title": "渗透区贸易",
       "description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建"
-    },
-    "apps": {
-      "title": "渗透应用商店",
-      "description": "交易只是第一步。利用杠杆、金库等，让您的资产发挥作用并取得更多成就"
     },
     "disclaimer": {
       "title": "渗透免责声明",
@@ -1328,11 +1287,11 @@
   "limitOrders": {
     "historyTable": {
       "columns": {
-        "order": "命令",
+        "order": "订单",
         "amount": "数量",
         "price": "价格",
-        "orderPlaced": "订单已下",
-        "status": "地位"
+        "orderPlaced": "下单时间",
+        "status": "状态"
       },
       "emptyState": {
         "title": "暂无近期订单",
@@ -1343,55 +1302,56 @@
       "errorState": {
         "title": "无法加载您的订单",
         "subtitle": "请稍后再试。"
-      }
+      },
+      "historyUnavailable": "订单历史记录暂时不可用。正在显示您的未结订单。"
     },
     "aboveMarket": {
-      "title": "限制价格高于市场价格",
-      "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
+      "title": "限价高于市场价格",
+      "description": "如果继续，您的订单可能会以不理想的价格成交。"
     },
     "belowMarket": {
-      "title": "限制价格低于市场价格",
-      "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
+      "title": "限价低于市场价格",
+      "description": "如果继续，您的订单可能会以不理想的价格成交。"
     },
     "enterAnAmountTo": "输入金额",
     "toSell": "出售",
     "toBuy": "购买",
-    "sell": "卖",
-    "sold": "卖",
-    "percentFilled": "已填充百分比",
-    "status": "地位",
+    "sell": "卖出",
+    "sold": "已卖出",
+    "percentFilled": "已成交百分比",
+    "status": "状态",
     "price": "价格",
-    "buy": "买",
+    "buy": "买入",
     "pay": "支付",
-    "open": "打开",
-    "filled": "填充",
-    "claimable": "可索偿",
-    "claimAndClose": "认领并关闭",
+    "open": "挂单中",
+    "filled": "已成交",
+    "claimable": "可领取",
+    "claimAndClose": "领取并关闭",
     "close": "关闭",
-    "claim": "宣称",
+    "claim": "领取",
     "accept": "接受",
-    "cancelled": "取消",
+    "cancelled": "已取消",
     "cancel": "取消",
     "daysAgo": "{days}天前",
     "hoursAgo": "{hours}小时前",
     "buyWith": "使用{coinA}或{coinB}购买",
     "orderHistory": "订单历史",
-    "tradeAnotherAssetOr": "将另一种资产交易为{coinA}或{coinB}",
-    "tradeAnotherAsset": "用{coinDenom}交易另一种资产",
+    "tradeAnotherAssetOr": "用其他资产换取{coinA}或{coinB}",
+    "tradeAnotherAsset": "用其他资产换取{coinDenom}",
     "sellAnAsset": "出售资产",
-    "swapAnAsset": "交换资产",
+    "swapAnAsset": "兑换资产",
     "of": "的",
-    "insufficientFunds": "不充足的资金",
+    "insufficientFunds": "余额不足",
     "startTrading": "开始交易",
     "tradeFees": "交易费（订单成交时）",
     "youNeed": "你需要",
     "stablecoin": "稳定币",
     "quoteUpdated": "报价已更新",
-    "fundsOsmosisToBuyAssets": "Osmosis 上的资金用于购买资产。",
+    "fundsOsmosisToBuyAssets": "资金才能在 Osmosis 上购买资产。",
     "chooseAnOption": "选择一个选项以继续。",
-    "lowerSlippageToleranceRecommended": "建议降低滑动公差。",
-    "tryHigherSlippage": "尝试更高的最大滑动容忍度。",
-    "reviewTrade": "回顾贸易",
+    "lowerSlippageToleranceRecommended": "建议降低滑点容差。",
+    "tryHigherSlippage": "请尝试提高最大滑点容差。",
+    "reviewTrade": "查看交易",
     "highPriceImpact": {
       "title": "价格影响较高",
       "description": "此交易将使市场价格变动{impact}，因此您收到的金额可能远低于显示的金额。"
@@ -1404,53 +1364,64 @@
     },
     "transferFromAnotherNetwork": "从其他网络或钱包转移",
     "whatIsOrderClaim": {
-      "title": "什么是订单索取？",
-      "description": "在大多数情况下，当限价订单成交时，资金会自动添加到您的余额中。但在极少数情况下，必须手动从已成交的订单中领取资金。<inlang-LineFeed><inlang-LineFeed>此认领流程涉及批准您钱包中所有未认领的已完成订单的单笔交易，这会产生象征性的网络费用。"
+      "title": "什么是订单领取？",
+      "description": "在大多数情况下，限价订单成交后，资金会自动添加到您的余额中。但在极少数情况下，需要从已成交的订单中手动领取资金。\n\n领取时，只需在钱包中批准一笔交易，即可领取所有未领取的已成交订单，并需支付少量网络费用。"
     },
     "whatIsAStablecoin": {
       "title": "什么是稳定币？",
       "description": "稳定币是一种加密货币，其价值与另一种资产（例如法定货币或黄金）挂钩，以保持稳定的价格。在 Osmosis 上，用于购买和出售资产的主要稳定币是 USDC 和 USDT。"
     },
-    "claimAll": "索取全部",
-    "addFunds": "增加资金",
+    "claimAll": "全部领取",
+    "addFunds": "添加资金",
     "selectAnAssetTo": {
       "buy": "选择要购买的资产",
       "sell": "选择要出售的资产"
     },
-    "payWith": "使用。。。支付",
-    "receive": "收到",
-    "swapFromAnotherAsset": "从另一项资产交换",
+    "payWith": "支付",
+    "receive": "获得",
+    "swapFromAnotherAsset": "从其他资产兑换",
     "connectYourWallet": "连接你的钱包",
     "toSeeYourBalances": "查看你的余额",
     "searchAssets": "搜索资产",
-    "below": "以下",
-    "above": "多于",
-    "currentPrice": "时价",
+    "below": "低于",
+    "above": "高于",
+    "currentPrice": "当前价格",
     "whenDenomPriceIs": "当{denom}价格为",
     "orderType": "订单类型",
     "confirm": "确认",
-    "market": "市场",
-    "limit": "限制",
-    "trade": "贸易",
+    "market": "市价",
+    "limit": "限价",
+    "trade": "交易",
     "swapToAnotherAsset": "转换为其他资产",
     "invalidPrice": "价格无效",
     "priceTooLow": "价格太低",
     "priceTooHigh": "价格太高",
-    "unavailable": "不适用于{denom}",
+    "marketPriceUnavailable": "市场价格不可用",
+    "quoteOffPeg": "报价资产偏离 $1 过多",
+    "quoteOffPegWarning": "{denom} 当前交易价格为 {price}。限价假定 1 {denom} = $1。",
+    "quotePegUnverified": "无法核对 {denom} 与 $1 的价格。限价假定 1 {denom} = $1。",
+    "unavailable": "{denom} 不可用",
     "orderHistoryHeaders": {
-      "past": "过去的",
-      "pending": "待办的",
-      "filled": "已填写订单并领取"
+      "past": "历史",
+      "pending": "未完成",
+      "filled": "待领取的已成交订单"
     },
     "priceReaches": "如果{denom}价格达到{price}",
-    "belowMinimumAmount": "{amount}最小值",
+    "belowMinimumAmount": "最低 {amount}",
     "noOrderbookForPair": "{base}/{quote} 不存在 orderbook。创建一个以启用此交易对的 limit orders。",
     "createOrderbook": "创建 Orderbook",
     "noOrderbookExists": "{denom} 没有 orderbook",
     "clickToCreateOrderbook": "点击为此交易对创建 orderbook。",
     "creationInProgress": "该交易对的订单簿创建已在另一个标签页中进行",
     "creationAwaitingConfirmation": "此交易对之前的订单簿创建仍在等待链上确认。请几分钟后重试。",
-    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。"
+    "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。",
+    "returned": "已退回",
+    "partlyFilled": "部分成交",
+    "returnedUnfilled": "已退回（未成交）",
+    "alreadyReceived": "已收到",
+    "howPayoutsWork": "付款如何进行？",
+    "payoutNote": "已成交的金额通常会自动支付到您的钱包，往往随着订单成交分多次支付，并且可能在您取消前数小时或数天就已到账。如果订单显示“领取”，说明部分已成交金额尚未支付。取消只会退回未成交的金额。",
+    "limitOrder": "限价单"
   },
   "tradeDetails": {
     "priceImpact": {
@@ -1487,6 +1458,32 @@
     "dontShowAgain": "不再显示",
     "dismiss": "解雇",
     "convert": "转变"
+  },
+  "forcedMigration": {
+    "remindMeLater": "稍后提醒我",
+    "deadline": "截止日期：{date}",
+    "heldElsewhere": "您还在流动性池中持有 {symbols}。",
+    "heldUnconvertible": "您持有 {symbols}，但目前无法转换。请稍后再查看。",
+    "viewPortfolio": "查看投资组合",
+    "poolPosition": "池 #{poolId}",
+    "holdingsTitle": "持有资产",
+    "liquidityPoolsTitle": "流动性池",
+    "limitOrdersTitle": "限价单",
+    "bonded": "已绑定",
+    "superfluidStaked": "超流质押中",
+    "unlocking": "解锁中",
+    "unlockingUntil": "解锁至 {date}",
+    "unlockEndsAfterDeadline": "解锁将在 {deadline} 之后完成。",
+    "withdraw": "提取",
+    "migratePosition": "迁移",
+    "migratedAmountsNote": "其中一部分作为流动性存入新池，其余退回到您的钱包。",
+    "migrateUnavailable": "暂时无法迁移",
+    "unlock": "解锁",
+    "cancelOrder": "取消订单",
+    "claim": "领取",
+    "claimAndCancel": "领取并取消",
+    "conversionUnavailable": "当前无法转换，因此提取已暂停。",
+    "positionMoved": "自打开以来仓位价值变化过大，请重试。"
   },
   "assetVariantsConversion": {
     "title": "标准化资产",
