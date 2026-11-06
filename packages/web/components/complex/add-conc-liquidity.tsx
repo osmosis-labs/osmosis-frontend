@@ -182,7 +182,9 @@ const AddConcLiqView: FunctionComponent<
               />
             </div>
           )}
-        <div className="flex w-full gap-1">
+        {/* Phones: no gap, so the price and depth charts read as one chart
+            rather than being split by a line of the modal background. */}
+        <div className="flex w-full gap-1 md:gap-0">
           <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:min-w-0 md:gap-0 md:pb-7 md:pl-3 md:pt-[4.5rem]">
             {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
