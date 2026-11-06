@@ -374,6 +374,7 @@ const TableGroupHeader = ({
                     className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
                     width={24}
                     height={24}
+                    viewBox="0 0 24 24"
                   />
                 </div>
               </GenericDisclaimer>
@@ -416,6 +417,7 @@ const TableGroupHeader = ({
                   className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
                   width={24}
                   height={24}
+                  viewBox="0 0 24 24"
                 />
               </div>
             </GenericDisclaimer>
