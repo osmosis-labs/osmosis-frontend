@@ -188,7 +188,9 @@ const AddConcLiqView: FunctionComponent<
               </>
             )}
           </div>
-          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
+          {/* md and below hide the price history beside it, so the depth
+              chart and range inputs take the full width. */}
+          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:w-full md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
               <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
