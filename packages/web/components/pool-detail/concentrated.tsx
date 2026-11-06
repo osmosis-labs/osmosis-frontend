@@ -492,7 +492,8 @@ const ChartHeader: FunctionComponent<{
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
       classes={{
-        buttons: "sm:hidden",
+        // Phones: date-range buttons stay visible, left-aligned above the price.
+        buttons: "sm:justify-start sm:pr-0",
         pricesHeaderContainerClass: "sm:flex-col",
       }}
     />
