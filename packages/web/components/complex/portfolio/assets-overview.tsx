@@ -290,7 +290,7 @@ export const AssetsOverview: FunctionComponent<
         marginBottom: isChartMinimized ? "" : `${CHART_CONTAINER_HEIGHT}px`,
       }}
     >
-      <header className="flex justify-between">
+      <header className="flex justify-between md:flex-col">
         <div className="mr-6 flex flex-col">
           <span className="body1 text-osmoverse-300">
             {t("assets.totalBalance")}
@@ -403,10 +403,11 @@ export const AssetsOverview: FunctionComponent<
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
           className={classNames(
-            "mt-auto flex h-[156px] w-full flex-col items-end lg:hidden",
+            "mt-auto flex h-[156px] w-full flex-col items-end",
             "w-full max-w-[344px]",
             "xl:w-[383px] xl:max-w-[383px]",
-            "lg:w-[312px] lg:max-w-[312px]"
+            "lg:w-[312px] lg:max-w-[312px]",
+            "md:w-full md:max-w-none"
           )}
           as="div"
         >
@@ -418,8 +419,11 @@ export const AssetsOverview: FunctionComponent<
           ) : (
             <button
               className={classNames(
-                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
+                "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900",
+                "lg:cursor-default lg:hover:bg-transparent"
               )}
+              // The full chart is not shown below the lg breakpoint
+              disabled={width < Breakpoint.lg}
               onClick={() => setIsChartMinimized(false)}
             >
               <PortfolioHistoricalChartMinimized
@@ -432,7 +436,7 @@ export const AssetsOverview: FunctionComponent<
                 </span>
                 <Icon
                   id="resize-expand"
-                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                  className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100 lg:hidden"
                   height={16}
                   width={16}
                 />
