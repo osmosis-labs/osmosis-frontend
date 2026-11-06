@@ -272,7 +272,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               // at every width and the depth chart's current-price line meets
               // the price line.
               <div className="flex h-[340px] flex-col py-7 sm:py-3">
-                <div className="flex items-start gap-2">
+                <div className="flex items-start gap-2 sm:items-end">
                   <div className="min-w-0 flex-1">
                     {!chartConfig.isHistoricalDataLoading &&
                       !chartConfig.historicalChartUnavailable && (
@@ -492,9 +492,11 @@ const ChartHeader: FunctionComponent<{
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
       classes={{
-        // Phones: date-range buttons stay visible, left-aligned above the price.
+        // Phones: the price (with its "X per Y" caption beside it) on top and
+        // the date-range buttons below, left-aligned, on the same row as the
+        // zoom buttons.
+        pricesHeaderRootContainer: "sm:flex-col",
         buttons: "sm:justify-start sm:pr-0",
-        pricesHeaderContainerClass: "sm:flex-col",
       }}
     />
   );

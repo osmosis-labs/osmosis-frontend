@@ -447,6 +447,12 @@ const ChartHeader: FunctionComponent<{
       quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
+      // Phones: the price on top and the date-range buttons below,
+      // left-aligned, on the same row as the zoom buttons.
+      classes={{
+        pricesHeaderRootContainer: "md:flex-col",
+        buttons: "md:justify-start md:pr-0",
+      }}
     />
   );
 });
