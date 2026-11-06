@@ -169,18 +169,33 @@ const AddConcLiqView: FunctionComponent<
         <span className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.priceRange")}
         </span>
+        {/* Phones: the price header gets its own full-width row above the
+            charts, so it can't push the price chart's plot down. The price
+            chart then uses the depth chart's fixed offsets (72px top for the
+            zoom buttons, 52px bottom), so the two price scales line up. */}
+        {!chartConfig.isHistoricalDataLoading &&
+          !chartConfig.historicalChartUnavailable && (
+            <div className="hidden px-4 pb-3 md:block">
+              <ChartHeader
+                chartConfig={chartConfig}
+                addLiquidityConfig={addLiquidityConfig}
+              />
+            </div>
+          )}
         <div className="flex w-full gap-1">
-          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:min-w-0 md:gap-3 md:py-4 md:pl-3">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:min-w-0 md:gap-0 md:pb-7 md:pl-3 md:pt-[4.5rem]">
             {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
               <ChartUnavailable />
             ) : (
               <>
-                <ChartHeader
-                  chartConfig={chartConfig}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
+                <div className="md:hidden">
+                  <ChartHeader
+                    chartConfig={chartConfig}
+                    addLiquidityConfig={addLiquidityConfig}
+                  />
+                </div>
                 <Chart
                   chartConfig={chartConfig}
                   addLiquidityConfig={addLiquidityConfig}
@@ -406,14 +421,6 @@ const ChartHeader: FunctionComponent<{
       quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
-      // Phones: the price and its "X per Y" caption stack in the narrower
-      // price history column.
-      classes={{
-        pricesHeaderContainerClass: "md:flex-col",
-        // The caption doesn't wrap by default; let it wrap in the narrow column.
-        priceSubheaderClass: "md:[&>div]:whitespace-normal",
-        buttons: "md:flex-wrap md:justify-start md:pr-0",
-      }}
     />
   );
 });
