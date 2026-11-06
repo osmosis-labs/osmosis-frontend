@@ -26,7 +26,11 @@ import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { AddConcentratedLiquidityConfig, useTranslation } from "~/hooks";
+import {
+  AddConcentratedLiquidityConfig,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import {
   type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
@@ -85,6 +89,7 @@ const AddConcLiqView: FunctionComponent<
     isInactivePool?: boolean;
   } & CustomClasses
 > = memo(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
+  const { isMobile } = useWindowSize();
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -152,6 +157,31 @@ const AddConcLiqView: FunctionComponent<
     setPriceRange(rangeWithCurrencyDecimals);
   }, [setPriceRange, rangeWithCurrencyDecimals]);
 
+  // Rendered inside the depth chart box on desktop and in the price header row
+  // on phones, where they leave the charts more height.
+  const zoomButtons = (
+    <>
+      <ChartButton
+        alt="refresh"
+        icon="refresh-ccw"
+        selected={false}
+        onClick={() => chartConfig.resetZoom()}
+      />
+      <ChartButton
+        alt="zoom out"
+        icon="zoom-out"
+        selected={false}
+        onClick={chartConfig.zoomOut}
+      />
+      <ChartButton
+        alt="zoom in"
+        icon="zoom-in"
+        selected={false}
+        onClick={chartConfig.zoomIn}
+      />
+    </>
+  );
+
   return (
     <>
       <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
@@ -169,23 +199,26 @@ const AddConcLiqView: FunctionComponent<
         <span className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.priceRange")}
         </span>
-        {/* Phones: the price header gets its own full-width row above the
-            charts, so it can't push the price chart's plot down. The price
-            chart then uses the depth chart's fixed offsets (72px top for the
-            zoom buttons, 52px bottom), so the two price scales line up. */}
-        {!chartConfig.isHistoricalDataLoading &&
-          !chartConfig.historicalChartUnavailable && (
-            <div className="hidden px-4 pb-3 md:block">
-              <ChartHeader
-                chartConfig={chartConfig}
-                addLiquidityConfig={addLiquidityConfig}
-              />
-            </div>
-          )}
+        {/* Phones: the price header and the zoom buttons get their own
+            full-width row above the charts, so neither pushes a plot down.
+            Both charts then start 16px from the top and end 52px from the
+            bottom, so the two price scales line up. */}
+        <div className="hidden items-end gap-2 px-4 pb-3 md:flex">
+          <div className="min-w-0 flex-1">
+            {!chartConfig.isHistoricalDataLoading &&
+              !chartConfig.historicalChartUnavailable && (
+                <ChartHeader
+                  chartConfig={chartConfig}
+                  addLiquidityConfig={addLiquidityConfig}
+                />
+              )}
+          </div>
+          <div className="flex h-6 shrink-0 gap-1">{zoomButtons}</div>
+        </div>
         {/* Phones: no gap, so the price and depth charts read as one chart
             rather than being split by a line of the modal background. */}
         <div className="flex w-full gap-1 md:gap-0">
-          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:min-w-0 md:gap-0 md:pb-7 md:pl-3 md:pt-[4.5rem]">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:min-w-0 md:gap-0 md:pb-7 md:pl-3 md:pt-4">
             {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
@@ -209,26 +242,9 @@ const AddConcLiqView: FunctionComponent<
               chart narrows to about a fifth of the row and the range inputs
               narrow too. */}
           <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:w-auto md:shrink-0">
-            <div className="flex flex-1 flex-col md:w-[20vw] md:flex-none">
-              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 md:mr-0.5 md:mt-4 md:gap-0.5">
-                <ChartButton
-                  alt="refresh"
-                  icon="refresh-ccw"
-                  selected={false}
-                  onClick={() => chartConfig.resetZoom()}
-                />
-                <ChartButton
-                  alt="zoom out"
-                  icon="zoom-out"
-                  selected={false}
-                  onClick={chartConfig.zoomOut}
-                />
-                <ChartButton
-                  alt="zoom in"
-                  icon="zoom-in"
-                  selected={false}
-                  onClick={chartConfig.zoomIn}
-                />
+            <div className="flex flex-1 flex-col md:w-[20vw] md:flex-none md:pt-4">
+              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 md:hidden">
+                {zoomButtons}
               </div>
               <ConcentratedLiquidityDepthChart
                 min={Number(rangeWithCurrencyDecimals[0].toString())}
@@ -265,7 +281,15 @@ const AddConcLiqView: FunctionComponent<
                   },
                   [setMaxRange]
                 )}
-                offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                // The right margin leaves room for the drag handles; on phones
+                // they need far less than desktop's 36px, and the space goes
+                // to the narrow depth chart instead.
+                offset={{
+                  top: 0,
+                  right: isMobile ? 12 : 36,
+                  bottom: 24 + 28,
+                  left: 0,
+                }}
                 horizontal
                 fullRange={fullRange}
               />
@@ -288,7 +312,7 @@ const AddConcLiqView: FunctionComponent<
                   {isRangeAprFetching ? (
                     <Spinner className="m-auto mt-1.5" />
                   ) : (
-                    <h5 className="text-osmoverse-100 md:text-subtitle1 md:font-subtitle1">
+                    <h5 className="text-osmoverse-100 md:text-h6 md:font-h6">
                       {currentRangeApr.maxDecimals(1).toString() ?? ""}{" "}
                       {t("pool.APR")}
                     </h5>
@@ -688,7 +712,7 @@ const PriceInputBox: FunctionComponent<{
       );
 
   return (
-    <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900 md:max-w-[7.25rem]">
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900 md:max-w-[6.5rem]">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
       {isFullRange ? (
         <div className="flex h-[41px] items-center px-2">
