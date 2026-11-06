@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24h ટ્રેડિંગ વોલ્યુમ",
+    "24hVolume": "24h વોલ્યુમ",
     "amountDaysUnbonding": "{numDays} દિવસ અનબોન્ડિંગ",
     "amountDaysUnbonding_plural": "{numDays} દિવસ અનબોન્ડિંગ",
     "APR": "APR",

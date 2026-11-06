@@ -80,9 +80,14 @@ export const MyPositionCard: FunctionComponent<{
         setCollapsed(false);
       }}
     >
+      {/* Phones: a grid with the logos and liquidity value on the top row,
+          name/status beside the APR, and the selected range full width. The
+          wrapper divs dissolve (`contents`) so their children sit in it. The
+          name column is sized to fit the pool name first, so the right-hand
+          column (labels wrap) gives way before the name has to. */}
       <div
         className={classNames(
-          "flex place-content-between items-center gap-6 xl:flex-col",
+          "flex place-content-between items-center gap-6 xl:flex-col sm:grid sm:grid-cols-[fit-content(100%)_minmax(min-content,1fr)] sm:items-start sm:gap-x-3 sm:gap-y-3",
           { "cursor-pointer": !collapsed }
         )}
         onClick={(e) => {
@@ -90,9 +95,9 @@ export const MyPositionCard: FunctionComponent<{
           setCollapsed(true);
         }}
       >
-        <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3 xs:flex-col xs:items-start">
+        <div className="flex items-center gap-9 xl:w-full sm:contents">
           <PoolAssetsIcon
-            className="!w-[78px] sm:w-auto"
+            className="!w-[78px] sm:col-start-1 sm:row-start-1 sm:w-auto"
             assets={currentCoins.map((poolAsset) => ({
               coinImageUrl: poolAsset.currency.coinImageUrl,
               coinDenom: poolAsset.denom,
@@ -100,8 +105,11 @@ export const MyPositionCard: FunctionComponent<{
             }))}
           />
 
-          <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px] xl:flex-grow-0">
-            <div className="flex items-center gap-[6px] xs:flex-col xs:items-start">
+          <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px] xl:flex-grow-0 sm:col-start-1 sm:row-start-2 sm:min-w-0">
+            {/* The pool name wraps only as a last resort. On phones the
+                spread factor always takes its own line, so it doesn't widen
+                the name column. */}
+            <div className="flex flex-wrap items-center gap-x-[6px] sm:flex-col sm:items-start">
               <PoolAssetsName
                 size="md"
                 assetDenoms={currentCoins.map(({ denom, currency }) => ({
@@ -114,7 +122,9 @@ export const MyPositionCard: FunctionComponent<{
                 {!hasPositionDetailsError && (
                   <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
                     {positionDetails?.spreadFactor.toString() ?? ""}{" "}
-                    {t("clPositions.spreadFactor")}
+                    <span className="whitespace-nowrap">
+                      {t("clPositions.spreadFactor")}
+                    </span>
                   </span>
                 )}
               </SkeletonLoader>
@@ -131,7 +141,7 @@ export const MyPositionCard: FunctionComponent<{
             </SkeletonLoader>
           </div>
         </div>
-        <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
+        <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:contents">
           {showSelectedRange && (
             <RangeDataGroup
               lowerPrice={lowerPrice}
@@ -140,10 +150,17 @@ export const MyPositionCard: FunctionComponent<{
             />
           )}
           <PositionDataGroup
+            // Phones: top right, beside the logos.
+            className="sm:col-start-2 sm:row-start-1 sm:items-end"
             label={t("clPositions.myLiquidity")}
             value={currentValue ? formatPretty(currentValue) : "–"}
           />
-          <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
+          <SkeletonLoader
+            // Phones: pulled up so it sits just under My Liquidity rather
+            // than a full grid row gap below it.
+            className="sm:col-start-2 sm:row-start-2 sm:-mt-2 sm:justify-self-end"
+            isLoaded={!isLoadingPositionDetails}
+          >
             {!hasPositionDetailsError && (
               <PositionDataGroup
                 label={t("pool.APR")}
@@ -182,13 +199,19 @@ const PositionDataGroup: FunctionComponent<{
   label: string;
   value: string | ReactNode;
   isSuperfluid?: boolean;
-}> = ({ label, value, isSuperfluid = false }) => (
-  <div className="flex-grow-1 flex max-w-[17rem] flex-shrink-0 flex-col items-end gap-2 xl:max-w-none xl:items-start">
+  className?: string;
+}> = ({ label, value, isSuperfluid = false, className }) => (
+  <div
+    className={classNames(
+      "flex-grow-1 flex max-w-[17rem] flex-shrink-0 flex-col items-end gap-2 xl:max-w-none xl:items-start",
+      className
+    )}
+  >
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
       <h6
         className={classNames(
-          "text-white w-full truncate text-right xl:text-left",
+          "text-white w-full truncate text-right xl:text-left sm:text-right",
           {
             "text-superfluid-gradient": isSuperfluid,
           }
@@ -211,6 +234,7 @@ const RangeDataGroup: FunctionComponent<{
 
   return (
     <PositionDataGroup
+      className="sm:col-span-2 sm:row-start-3"
       label={t("clPositions.selectedRange")}
       value={
         <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
