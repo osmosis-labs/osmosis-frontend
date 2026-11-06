@@ -332,6 +332,11 @@ export const useBridgeQuotes = ({
       // Every time the input amount changes, deactivate the controlled mode.
       // Best quotes will be selected automatically.
       setBridgeProviderControlledMode(false);
+      // The speed toggle resets the same way: a new amount gets new quotes,
+      // and the fast option may cost a different share of it or not exist at
+      // all (Go Fast caps order size). Typing the old amount back does not
+      // bring the opt-in back.
+      setFastTransferOptInKey(undefined);
     },
     300,
     [inputAmountRaw]
@@ -349,11 +354,10 @@ export const useBridgeQuotes = ({
   );
 
   /**
-   * Identifies one transfer. A different pair, address or amount is a
-   * different transfer with new quotes, and the fast option may cost a
-   * different share of it or not exist at all (Go Fast caps order size). So
-   * the speed toggle's opt-in only holds for the transfer it was made for,
-   * and every other transfer starts on standard again.
+   * Identifies the pair and addresses of one transfer. A different pair or
+   * address is a different transfer, so the speed toggle's opt-in only holds
+   * for the one it was made for, and every other transfer starts on standard
+   * again. Amount changes clear the opt-in outright (see the debounce above).
    */
   const transferKey = [
     fromChain?.chainId,
@@ -362,7 +366,6 @@ export const useBridgeQuotes = ({
     toAsset?.address,
     fromAddress,
     toAddress,
-    inputAmount.toString(),
   ].join("|");
   const isFastTransferSelected = fastTransferOptInKey === transferKey;
   const setFastTransferSelected = useCallback(
