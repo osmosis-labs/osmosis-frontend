@@ -37,12 +37,37 @@ export class BasePage {
    * or 1CT enabled), we continue without error.
    */
   async connectWallet() {
+    await this.fitWindowToMacRunnerDisplay()
     await this.connectWalletBtn.click()
     await this.kepltWalletBtn.click()
     await this.page.waitForTimeout(1000)
     await waitForKeplrApproval(this.page.context())
     await this.getWalletBalance()
     await this.dismissVariantsPopupIfPresent()
+  }
+
+  /**
+   * macOS CI runners have a 1024x768 display, but Playwright sizes the headed
+   * window to fit the 1440px viewport. Keplr opens its approval popup beside
+   * the window's right edge, which is then off screen, and Chrome refuses to
+   * create a mostly off-screen window, so the popup never appears. Shrink the
+   * window to fit the display; the emulated viewport (and so the page layout)
+   * is unaffected.
+   */
+  private async fitWindowToMacRunnerDisplay() {
+    if (process.platform !== 'darwin' || process.env.HEADLESS === 'true') return
+    const cdp = await this.page.context().newCDPSession(this.page)
+    try {
+      const { windowId } = await cdp.send('Browser.getWindowForTarget')
+      await cdp.send('Browser.setWindowBounds', {
+        windowId,
+        bounds: { left: 0, top: 0, width: 1000, height: 740 },
+      })
+      const { bounds } = await cdp.send('Browser.getWindowBounds', { windowId })
+      console.log(`Browser window bounds: ${JSON.stringify(bounds)}`)
+    } finally {
+      await cdp.detach().catch(() => {})
+    }
   }
 
   /**
