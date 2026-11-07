@@ -312,7 +312,7 @@ jobs:
       group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-swap-osmo-tests
       cancel-in-progress: true
     timeout-minutes: 15
-    runs-on: macos-14
+    runs-on: macos-26
     needs: [resolve-deployment, check-balances]
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
@@ -351,7 +351,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-26 above due to
           # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
           # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
           # HEADLESS: "true"
@@ -377,7 +377,7 @@ jobs:
       group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-swap-usdc-tests
       cancel-in-progress: true
     timeout-minutes: 15
-    runs-on: macos-14
+    runs-on: macos-26
     needs: [resolve-deployment, preview-swap-osmo-tests, check-balances]
     steps:
       - name: Check out repository
@@ -411,7 +411,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-26 above due to
           # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
           # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
           # HEADLESS: "true"
@@ -433,7 +433,7 @@ jobs:
       cancel-in-progress: true
     timeout-minutes: 10
     needs: resolve-deployment
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -458,7 +458,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-26 above due to
           # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
           # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
           # HEADLESS: "true"
@@ -529,7 +529,7 @@ jobs:
       group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-trade-tests
       cancel-in-progress: true
     timeout-minutes: 15
-    runs-on: macos-14
+    runs-on: macos-26
     needs:
       [
         resolve-deployment,
@@ -572,7 +572,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-26 above due to
           # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
           # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
           # HEADLESS: "true"
@@ -592,7 +592,7 @@ jobs:
       group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-claim-tests
       cancel-in-progress: true
     timeout-minutes: 10
-    runs-on: macos-14
+    runs-on: macos-26
     needs: [resolve-deployment, check-balances]
     steps:
       - name: Check out repository
@@ -619,7 +619,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-26 above due to
           # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
           # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
           # HEADLESS: "true"
