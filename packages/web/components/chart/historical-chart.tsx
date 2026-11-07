@@ -115,6 +115,9 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
 
   return (
     <Chart
+      // The chart does not redraw its price axis when the formatter changes,
+      // so remount it when masking is toggled.
+      key={maskPrices ? "masked" : "unmasked"}
       Controller={AreaChartController}
       options={options}
       series={[
