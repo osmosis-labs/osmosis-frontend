@@ -39,6 +39,23 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
   };
 }
 
+export const defaultLocalization: DeepPartial<
+  TimeChartOptions["localization"]
+> = {
+  priceFormatter,
+  timeFormatter: (timePoint: Time) => {
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+
+    return timepointToString(timePoint, formatOptions, "en-US");
+  },
+};
+
 const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
     fontFamily: theme.fontFamily.caption.join(","),
@@ -92,20 +109,7 @@ const defaultOptions: DeepPartial<TimeChartOptions> = {
     touch: false,
     mouse: false,
   },
-  localization: {
-    priceFormatter,
-    timeFormatter: (timePoint: Time) => {
-      const formatOptions: Intl.DateTimeFormatOptions = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      };
-
-      return timepointToString(timePoint, formatOptions, "en-US");
-    },
-  },
+  localization: defaultLocalization,
   timeScale: {
     timeVisible: true,
     secondsVisible: false,
