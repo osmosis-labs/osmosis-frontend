@@ -205,6 +205,17 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
   }, [userSharePool?.availableShares, bondDurations]);
   const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
+  // The bonded/available breakdown reveals values, so it is hidden when masked.
+  const showBreakdown = Boolean(
+    userSharePool && !userSharePool.valueUnknown && !hideBalances
+  );
+  const showNextReward = Boolean(
+    userSharePool &&
+    (userSharePool.valueUnknown
+      ? userSharePool.lockedShares?.toDec().isPositive()
+      : userSharePool.lockedValue.toDec().isPositive())
+  );
+
   const setShowModal = useCallback(
     (setter: Function, show: boolean) => () => setter(show),
     []
@@ -470,29 +481,27 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
                 </div>
               </div>
 
-              <div className="flex flex-1 gap-4 1.5md:flex-col">
-                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
-                  {!userSharePool.valueUnknown && !hideBalances && (
-                    <PriceBreakdownChart
-                      prices={[
-                        {
-                          label: t("pool.bonded"),
-                          price: userSharePool.lockedValue,
-                        },
-                        {
-                          label: t("pool.available"),
-                          price: userSharePool.availableValue,
-                        },
-                      ]}
-                    />
-                  )}
-                  {(userSharePool.valueUnknown
-                    ? userSharePool.lockedShares?.toDec().isPositive()
-                    : userSharePool.lockedValue.toDec().isPositive()) && (
-                    <NextRewardLine />
-                  )}
+              {(showBreakdown || showNextReward) && (
+                <div className="flex flex-1 gap-4 1.5md:flex-col">
+                  <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
+                    {showBreakdown && (
+                      <PriceBreakdownChart
+                        prices={[
+                          {
+                            label: t("pool.bonded"),
+                            price: userSharePool.lockedValue,
+                          },
+                          {
+                            label: t("pool.available"),
+                            price: userSharePool.availableValue,
+                          },
+                        ]}
+                      />
+                    )}
+                    {showNextReward && <NextRewardLine />}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
       </section>
