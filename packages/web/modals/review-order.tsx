@@ -100,6 +100,9 @@ interface ReviewOrderProps {
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
+  /** Note that the limit order's quote asset is off its $1 peg, or that its
+   *  peg couldn't be checked. */
+  limitQuotePegNote?: string;
   /**
    * Price impact for the quote being reviewed, as the router reports it (sign
    * included). Optional because this modal is shared by all three tabs.
@@ -159,6 +162,7 @@ export function ReviewOrder({
   toAsset,
   fromAsset,
   isBeyondOppositePrice = false,
+  limitQuotePegNote,
   priceImpactTokenOut,
   priceImpactUnknown,
   quoteAmount,
@@ -1075,6 +1079,11 @@ export function ReviewOrder({
                   }
                 />
               </div>
+              {limitQuotePegNote && (
+                <p className="caption px-2 text-osmoverse-300">
+                  {limitQuotePegNote}
+                </p>
+              )}
               {isBeyondOppositePrice && orderType === "limit" && (
                 <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                   <Icon
@@ -1354,14 +1363,25 @@ const OneClickTradingActiveSessionParamsEdit = ({
       onClick={onClick}
     >
       <span className="body1 text-wosmongton-200 whitespace-nowrap">
-        {changes.includes("spendLimit") ? (
-          <span className="text-bullish-400">
-            {transactionParams?.spendLimit.toString()}
+        {changes.includes("spendLimit") || !remainingSpendLimit ? (
+          <span
+            className={
+              changes.includes("spendLimit") ? "text-bullish-400" : undefined
+            }
+          >
+            {t("oneClickTrading.spendLimitPerDay", {
+              amount: transactionParams?.spendLimit.toString() ?? "",
+            })}
           </span>
         ) : (
-          <span> {remainingSpendLimit} </span>
+          <span>
+            {" "}
+            {t("oneClickTrading.spendLimitLeftToday", {
+              amount: remainingSpendLimit,
+            })}{" "}
+          </span>
         )}
-        {" / "}
+        {" · "}
         {changes.includes("sessionPeriod") &&
         transactionParams?.sessionPeriod.end ? (
           <span className="text-bullish-400">

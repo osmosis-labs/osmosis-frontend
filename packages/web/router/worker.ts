@@ -28,7 +28,7 @@ export type RouterEnv = {
 
 const router = {
   async fetch(request: Request, env: RouterEnv): Promise<Response> {
-    const { backend, setCookies } = decideBackend(
+    const { backend, reason, setCookies } = decideBackend(
       request,
       parsePercent(env.CF_PERCENT)
     );
@@ -38,6 +38,18 @@ const router = {
       request,
       env
     );
+
+    console.log({
+      event: "router_request",
+      method: request.method,
+      path: new URL(request.url).pathname.slice(0, 512),
+      rayId: request.headers.get("cf-ray"),
+      selectedBackend: backend,
+      routeReason: reason,
+      servedBy,
+      status: response.status,
+      fallback: fallback ?? null,
+    });
 
     // Upgrade responses carry a socket that must be returned untouched.
     if (response.status === 101) return response;
@@ -71,9 +83,8 @@ async function dispatch(
       if (response.status < 500) return { response, servedBy: "cf" };
       failure = String(response.status);
       await response.body?.cancel();
-    } catch (error) {
+    } catch {
       failure = "error";
-      console.error("Production Worker threw on a page load", error);
     }
     return {
       response: await send("vercel", request, env),
@@ -86,23 +97,61 @@ async function dispatch(
   if (response.status === 404 && isBuildAsset(request)) {
     await response.body?.cancel();
     const other = otherBackend(backend);
-    return { response: await send(other, request, env), servedBy: other };
+    return {
+      response: await send(other, request, env),
+      servedBy: other,
+      fallback: `${backend}-404`,
+    };
   }
   return { response, servedBy: backend };
 }
 
-function send(
+async function send(
   backend: Backend,
   request: Request,
   env: RouterEnv
 ): Promise<Response> {
-  if (backend === "cf") return env.PRODUCTION.fetch(request);
-  if (!env.VERCEL_ORIGIN) return fetch(request);
-
-  const url = new URL(request.url);
-  return fetch(
-    new Request(new URL(url.pathname + url.search, env.VERCEL_ORIGIN), request)
-  );
+  const started = Date.now();
+  const context = {
+    event: "router_upstream",
+    backend,
+    method: request.method,
+    path: new URL(request.url).pathname.slice(0, 512),
+    rayId: request.headers.get("cf-ray"),
+  };
+  try {
+    let response: Response;
+    if (backend === "cf") {
+      response = await env.PRODUCTION.fetch(request);
+    } else if (!env.VERCEL_ORIGIN) {
+      response = await fetch(request);
+    } else {
+      const url = new URL(request.url);
+      response = await fetch(
+        new Request(
+          new URL(url.pathname + url.search, env.VERCEL_ORIGIN),
+          request
+        )
+      );
+    }
+    const log = {
+      ...context,
+      status: response.status,
+      durationMs: Date.now() - started,
+      outcome: response.status >= 500 ? "http_error" : "response",
+    };
+    if (response.status >= 500) console.error(log);
+    else console.log(log);
+    return response;
+  } catch (error) {
+    console.error({
+      ...context,
+      outcome: "exception",
+      durationMs: Date.now() - started,
+      errorType: error instanceof Error ? error.name : "Unknown",
+    });
+    throw error;
+  }
 }
 
 export default router;

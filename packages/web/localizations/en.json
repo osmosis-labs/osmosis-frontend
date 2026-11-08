@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",
+    "amountTooSmall": "Amount is too small",
     "emptyAmount": "Amount is empty",
     "generic": "Error",
     "highSwapFee": "Swap fee too high",
@@ -395,6 +396,8 @@
     "settings": "Settings"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} per day",
+    "spendLimitLeftToday": "{amount} left today",
     "toast": {
       "oneClickTradingActive": "1-Click Trading active",
       "oneClickTradingDisabled": "1-Click Trading disabled",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
-      "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
+      "defaultParameters": "Default settings are set to 7 days with a $5,000 USD daily spending limit.",
       "changeButton": "Edit settings"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Click Trading limit",
       "enableTitle": "Start 1-Click Trading",
       "enableDescription": "Quicker, easier trading",
-      "paramsDescription": "{sessionLength} session with {spendLimit} loss protection limit",
+      "paramsDescription": "{sessionLength} session with {spendLimit} daily spending limit",
       "defaultSpendLimit": "$5,000 USD",
       "change": "Change",
       "edit": "Edit",
       "exceeded": "Exceeded",
       "exceededTooltip": {
-        "title": "Exceeds current loss-protection limit",
+        "title": "Exceeds your daily spending limit",
         "body": "You will have to manually approve this transaction in your wallet."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1-Click Trading",
       "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
       "enableTitle": "Enable 1-Click Trading",
-      "spendLimitTitle": "Loss protection limit",
+      "spendLimitTitle": "Daily spending limit",
       "sessionPeriodTitle": "Session period",
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "Asset",
       "amount": "Amount",
-      "review": "Review",
-      "deposit": "Deposit"
+      "review": "Review"
     },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "Insufficient funds for fees",
     "youNeedFundsToPay": "You need funds to pay network and bridging fees on {chain}.",
     "youNeedFundsToPayWithFee": "The amount you are trying to transfer is too low to cover the bridging fee of {feeAmount} {feeCurrency} on {chain}. Please try a larger amount.",
-    "transferAmountTooLowValueLoss": "Transfer amount too low",
-    "valueLossTooHighToBridge": "The transfer amount is too low after fees. Value loss would be too high to bridge successfully. Please try a larger amount.",
     "assetsDepositsUnavailable": "{asset} deposits are unavailable",
-    "assetWithdrawalsUnavailable": "{asset} withdrawals are unavailable",
+    "assetWithdrawalsToChainUnavailable": "{asset} withdrawals to {chain} are unavailable",
+    "routeLiquidityTooLow": "Not enough liquidity for this route",
+    "routeLiquidityTooLowBody": "There isn't enough liquidity to route this transfer at a fair price right now. Try a different network or token, or try again later.",
     "noAvailableDeposits": "Currently no available routes or providers can be found. Please try again later or use an alternative application to transfer your funds to Osmosis.",
     "noAvailableWithdrawals": "Currently no available routes or providers can be found. Please try again later or set an alternative application to transfer your funds from Osmosis.",
     "somethingIsntWorking": "Something isn’t working…",
@@ -1030,39 +1032,6 @@
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Native transfers unavailable for {asset}",
     "noNativeTransfersDescription": "Please use one of the alternative providers below.",
-    "sendFromWalletOrExchange": "Send from your wallet or exchange",
-    "scanWithMobileWallet": "Scan with your mobile wallet",
-    "or": "or",
-    "copied": "Copied",
-    "copyToClipboard": "Copy to clipboard",
-    "showQrCode": "Show QR code",
-    "yourDepositAddress": "Your {denom} deposit address",
-    "copyAddressToClipboard": "Copy address to clipboard",
-    "copyAddress": "Copy address",
-    "receiveOnlyAsset": "This address can only receive {denom} from {network} network. Sending any other assets may result in permanent loss.",
-    "minimumDeposit": "Minimum deposit",
-    "nomic": {
-      "estimatedTime": "1-8 hr",
-      "awaitingBtc": "Awaiting BTC",
-      "transferringYourBtc": "Transferring your BTC",
-      "depositStatus": "Deposit status",
-      "depositSuccess": "Deposit successful",
-      "pendingDeposit": "Pending deposit",
-      "estimatedAboutTime": "Estimated about {time}",
-      "from": "From",
-      "to": "To",
-      "asset": "Asset",
-      "amountBtc": "Amount BTC",
-      "totalValue": "Total value",
-      "transactionHash": "Transaction hash",
-      "viewOnExplorer": "View on explorer",
-      "totalFees": "Total fees"
-    },
-    "doNotSendFundsToThisAddress": "Do not send funds to this address.",
-    "addressExpired": "This deposit address has expired. Please request a new deposit address now.",
-    "addressAboutToExpire": "This address is about to expire. Please request a new address to avoid losing funds.",
-    "createNewDepositAddress": "Create new deposit address",
-    "transactionDetails": "Transaction details",
     "confirmAmount": "Confirm Amount",
     "enterChainAddress": "Enter {chain} address",
     "wormholeRedeem": {
@@ -1427,6 +1396,10 @@
     "invalidPrice": "Invalid price",
     "priceTooLow": "Price too low",
     "priceTooHigh": "Price too high",
+    "marketPriceUnavailable": "Market price unavailable",
+    "quoteOffPeg": "Quote asset is too far from $1",
+    "quoteOffPegWarning": "{denom} is trading at {price}. Limit prices assume 1 {denom} = $1.",
+    "quotePegUnverified": "Couldn't check {denom} against $1. Limit prices assume 1 {denom} = $1.",
     "unavailable": "Unavailable for {denom}",
     "orderHistoryHeaders": {
       "past": "Past",
@@ -1447,7 +1420,8 @@
     "returnedUnfilled": "Returned (unfilled)",
     "alreadyReceived": "Already received",
     "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount."
+    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount.",
+    "limitOrder": "Limit Order"
   },
   "tradeDetails": {
     "priceImpact": {
