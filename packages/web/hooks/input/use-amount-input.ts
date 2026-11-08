@@ -2,6 +2,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import {
+  AmountTooSmallError,
   EmptyAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
@@ -20,6 +21,20 @@ import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
+
+/** Drops digits past `decimals` fractional places, so an amount never has
+ *  more precision than the asset's base unit. Expects an already valid raw
+ *  numerical input. */
+function truncateToDecimals(input: string, decimals: number): string {
+  const dotIndex = input.indexOf(".");
+  if (dotIndex === -1) return input;
+  const fractionLength = input.length - dotIndex - 1;
+  if (fractionLength <= decimals) return input;
+  // a 0-decimal asset has no fractional part, so the dot goes too
+  return decimals === 0
+    ? input.slice(0, dotIndex)
+    : input.slice(0, dotIndex + 1 + decimals);
+}
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user’s currency balance as input. Includes support for debounce on input.
@@ -84,13 +99,22 @@ export function useAmountInput({
       // check validity of raw input
       if (!isValidNumericalRawInput(updatedAmount)) return;
 
+      // Any input is cut to the asset's decimals: a digit typed at the end
+      // past the limit is ignored, and an insertion drops the last digit.
+      if (currency) {
+        updatedAmount = truncateToDecimals(
+          updatedAmount,
+          currency.coinDecimals
+        );
+      }
+
       if (fraction != null) {
         setFraction(null);
       }
 
       setAmount_(updatedAmount);
     },
-    [fraction]
+    [fraction, currency]
   );
 
   // clear fraction when user changes currency
@@ -233,6 +257,17 @@ export function useAmountInput({
 
   const error = useMemo(() => {
     if (!amount) {
+      // a non-zero input that truncates to zero base units (e.g. the asset
+      // changed to one with fewer decimals) is not an empty input
+      if (
+        currency &&
+        fraction == null &&
+        inputAmount !== "" &&
+        isValidNumericalRawInput(inputAmount) &&
+        new Dec(inputAmount === "." ? "0" : inputAmount).isPositive()
+      ) {
+        return new AmountTooSmallError("Amount too small");
+      }
       return new EmptyAmountError("Empty amount");
     }
     if (!isValidNumericalRawInput(inputAmount)) {
@@ -250,7 +285,15 @@ export function useAmountInput({
     ) {
       return new InsufficientBalanceForFeeError("Insufficient balance for fee");
     }
-  }, [amount, inputAmount, isBalancesFetched, balance, maxAmountWithGas]);
+  }, [
+    amount,
+    currency,
+    fraction,
+    inputAmount,
+    isBalancesFetched,
+    balance,
+    maxAmountWithGas,
+  ]);
 
   const reset = useCallback(() => {
     setAmount("");

@@ -2,6 +2,7 @@ import { FloatingDelayGroup } from "@floating-ui/react";
 import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent, memo } from "react";
 
@@ -28,16 +29,24 @@ type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
 export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
 }> = memo(({ route }) => {
-  const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
-    ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
-    : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
-  const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
-    ? findOsmosisCurrency((route as RouteInGivenOut).tokenOutDenom)
-    : findOsmosisCurrency(
-        (route as RouteOutGivenIn).tokenOutDenoms[
-          (route as RouteOutGivenIn).tokenOutDenoms.length - 1
-        ]
-      );
+  // The route's own hop currencies come from the asset list, as the pool
+  // tooltips use them. The static chain config is only a fallback: it misses
+  // assets (PHOTON) and carries short symbols (USDC.noble as "USDC.n") that
+  // don't map to an icon.
+  const sendCurrency =
+    route.pools[0]?.inCurrency ??
+    ((route as RouteOutGivenIn).tokenInDenom
+      ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
+      : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]));
+  const lastOutCurrency =
+    route.pools[route.pools.length - 1]?.outCurrency ??
+    ((route as RouteInGivenOut).tokenOutDenom
+      ? findOsmosisCurrency((route as RouteInGivenOut).tokenOutDenom)
+      : findOsmosisCurrency(
+          (route as RouteOutGivenIn).tokenOutDenoms[
+            (route as RouteOutGivenIn).tokenOutDenoms.length - 1
+          ]
+        ));
 
   if (!sendCurrency || !lastOutCurrency) return null;
 
@@ -105,6 +114,9 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
           ) => (
             <Tooltip
               key={`${id}${index}`}
+              // Taps open the tooltip on mobile, where the chip itself doesn't
+              // navigate, so the pool id link inside it must be tappable.
+              interactive={isMobile}
               content={
                 <div className="space-y-3">
                   {inCurrency && outCurrency && (
@@ -127,9 +139,18 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
                   )}
 
                   <div className="flex justify-center space-x-1 text-center text-xs font-medium">
-                    <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
-                      {t("swap.pool", { id })}
-                    </p>
+                    {isMobile ? (
+                      <Link
+                        href={"/pool/" + id}
+                        className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5 text-wosmongton-300 underline"
+                      >
+                        {t("swap.pool", { id })}
+                      </Link>
+                    ) : (
+                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
+                        {t("swap.pool", { id })}
+                      </p>
+                    )}
 
                     {spreadFactor && (
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">

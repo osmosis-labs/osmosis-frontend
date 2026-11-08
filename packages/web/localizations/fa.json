@@ -270,6 +270,7 @@
   "errors": {
     "calculatingShareOutAmount": "مشکل محاسباتی در بدست آوردن مقدار خروجی",
     "depositNoBalance": "شما هیچ دارایی برای واریز وجه انتخاب نکردید",
+    "amountTooSmall": "مقدار بسیار کم است",
     "emptyAmount": "مقدار خالی است",
     "generic": "خطا",
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
@@ -321,24 +322,24 @@
   "estimated": "تخمین زده",
   "halt": {
     "deposit": {
-      "bridge_down": "واریزها متوقف شده است. مسیر پل بومی خراب است.",
+      "bridge_down": "واریزها متوقف شده است. مسیر پل بومی از کار افتاده است.",
       "extended_unstable_market": "واریز وجه متوقف شده است. دارایی برای مدت طولانی ناپایدار و غیرفعال بوده است.",
-      "planned_shutdown": "سپرده‌ها متوقف شدند. دارایی برای تعطیلی برنامه‌ریزی شده است.",
+      "planned_shutdown": "واریزها متوقف شده است. توقف این دارایی برنامه‌ریزی شده است.",
       "source_chain_killed": "واریز وجه متوقف شد. زنجیره منبع (Source Chain) فعالیت خود را متوقف کرده است.",
       "manual": "واریز وجه متوقف شده است، احتیاط کنید.",
-      "unknown": "Deposits halted."
+      "unknown": "واریزها متوقف شده است."
     },
     "withdrawal": {
       "bridge_down": "برداشت‌ها متوقف شد. مسیر پل بومی از کار افتاده است.",
       "source_chain_killed": "برداشت‌ها متوقف شد. زنجیره منبع فعالیت خود را متوقف کرده است.",
       "manual": "برداشت‌ها متوقف شده است، احتیاط کنید.",
-      "unknown": "Withdrawals halted."
+      "unknown": "برداشت‌ها متوقف شده است."
     }
   },
   "unstable": {
-    "ibc_client": "IBC client to this asset's chain has been unstable.",
+    "ibc_client": "کلاینت IBC متصل به زنجیره این دارایی ناپایدار بوده است.",
     "source_chain_killed": "زنجیره منبع برای این دارایی متوقف شده است.",
-    "market": "This asset has had very low liquidity and trading volume for an extended period.",
+    "market": "این دارایی برای مدت طولانی نقدینگی و حجم معاملات بسیار پایینی داشته است.",
     "manual": "ناپایدار، احتیاط کنید.",
     "unknown": "ناپایدار، احتیاط کنید."
   },
@@ -395,6 +396,8 @@
     "settings": "تنظیمات"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} در روز",
+    "spendLimitLeftToday": "{amount} باقی‌مانده امروز",
     "toast": {
       "oneClickTradingActive": "1- روی معامله فعال کلیک کنید",
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
@@ -414,20 +417,20 @@
       "introducingSubtitle": "بدون دردسر تأییدیه های کیف پول های متعدد، معاملات سریع تر و آسان تر انجام دهید.",
       "learnMore": "بیشتر بدانید",
       "startTradingButton": "شروع تجارت با 1 کلیک",
-      "defaultParameters": "تنظیمات پیش‌فرض روی 1 ساعت با محدودیت محافظت از ضرر 5000 دلار آمریکا تنظیم شده است.",
+      "defaultParameters": "تنظیمات پیش‌فرض روی ۷ روز با سقف هزینه روزانه ۵٬۰۰۰ دلار آمریکا تنظیم شده است.",
       "changeButton": "ویرایش تنظیمات"
     },
     "reviewOrder": {
       "recapRowTitle": "1-روی محدودیت معاملاتی کلیک کنید",
       "enableTitle": "شروع تجارت با 1 کلیک",
       "enableDescription": "تجارت سریع تر و راحت تر",
-      "paramsDescription": "جلسه {sessionLength} با محدودیت محافظت از دست دادن {lossProtectionLimit}",
+      "paramsDescription": "جلسه {sessionLength} با سقف هزینه روزانه {spendLimit}",
       "defaultSpendLimit": "5000 دلار آمریکا",
       "change": "تغییر دهید",
       "edit": "ویرایش کنید",
       "exceeded": "فراتر رفت",
       "exceededTooltip": {
-        "title": "از حد حفاظت از ضرر فعلی فراتر می رود",
+        "title": "از سقف هزینه روزانه شما بیشتر است",
         "body": "شما باید به صورت دستی این تراکنش را در کیف پول خود تأیید کنید."
       }
     },
@@ -441,7 +444,7 @@
       "header": "1- روی تجارت کلیک کنید",
       "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
       "enableTitle": "تجارت 1 کلیکی را فعال کنید",
-      "spendLimitTitle": "حد حفاظت از دست دادن",
+      "spendLimitTitle": "سقف هزینه روزانه",
       "sessionPeriodTitle": "دوره جلسه",
       "startButton": "شروع تجارت با 1 کلیک",
       "editSessionButton": "ذخیره تغییرات",
@@ -902,8 +905,7 @@
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",
-      "review": "مرور",
-      "deposit": "سپرده گذاری"
+      "review": "مرور"
     },
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",
@@ -1011,10 +1013,10 @@
     "insufficientFundsForFees": "بودجه ناکافی برای هزینه ها",
     "youNeedFundsToPay": "برای پرداخت هزینه های شبکه و پل زدن در {chain} به بودجه نیاز دارید.",
     "youNeedFundsToPayWithFee": "مبلغی که سعی در انتقال آن دارید برای پوشش هزینه پل زدن {feeAmount} {feeCurrency} در {chain} بسیار کم است. لطفاً مبلغ بیشتری را امتحان کنید.",
-    "transferAmountTooLowValueLoss": "مبلغ انتقال بسیار کم است",
-    "valueLossTooHighToBridge": "مبلغ انتقال پس از کسر هزینه‌ها بسیار کم است. از دست دادن ارزش برای اتمام موفقیت‌آمیز پل بسیار زیاد خواهد بود. لطفاً مبلغ بیشتری را امتحان کنید.",
     "assetsDepositsUnavailable": "سپرده‌های {asset} در دسترس نیستند",
-    "assetWithdrawalsUnavailable": "برداشت‌های {asset} در دسترس نیست",
+    "assetWithdrawalsToChainUnavailable": "برداشت {asset} به {chain} در دسترس نیست",
+    "routeLiquidityTooLow": "نقدینگی کافی برای این مسیر وجود ندارد",
+    "routeLiquidityTooLowBody": "در حال حاضر نقدینگی کافی برای انجام این انتقال با قیمت منصفانه وجود ندارد. شبکه یا توکن دیگری را امتحان کنید یا بعداً دوباره تلاش کنید.",
     "noAvailableDeposits": "در حال حاضر هیچ مسیر یا ارائه دهنده ای در دسترس نیست. لطفاً بعداً دوباره امتحان کنید یا از یک برنامه جایگزین برای انتقال وجوه خود به Osmosis استفاده کنید.",
     "noAvailableWithdrawals": "در حال حاضر هیچ مسیر یا ارائه دهنده ای در دسترس نیست. لطفاً بعداً دوباره امتحان کنید یا یک برنامه جایگزین برای انتقال وجوه خود از Osmosis تنظیم کنید.",
     "somethingIsntWorking": "یه چیزی کار نمیکنه…",
@@ -1026,43 +1028,10 @@
     "balanceUnavailable": "بارگیری موجودی {chain} شما ممکن نشد",
     "balanceUnavailableDescription": "نتوانستیم برای بررسی موجودی شما به {chain} متصل شویم، بنابراین ممکن است ۰ نمایش داده شود. دارایی‌های شما تحت تأثیر قرار نگرفته‌اند. دوباره تلاش کنید یا از گزینه‌های زیر استفاده کنید.",
     "retryBalance": "تلاش دوباره",
-    "depositsHalted": "{asset} deposits are halted",
-    "withdrawalsHalted": "{asset} withdrawals are halted",
+    "depositsHalted": "واریز {asset} متوقف شده است",
+    "withdrawalsHalted": "برداشت {asset} متوقف شده است",
     "noNativeTransfers": "انتقالات بومی برای {asset} در دسترس نیست",
     "noNativeTransfersDescription": "لطفاً از یکی از ارائه‌دهندگان جایگزین زیر استفاده کنید.",
-    "sendFromWalletOrExchange": "از کیف پول یا صرافی خود ارسال کنید",
-    "scanWithMobileWallet": "با کیف پول موبایل خود اسکن کنید",
-    "or": "یا",
-    "copied": "کپی شده است",
-    "copyToClipboard": "در کلیپ بورد کپی کنید",
-    "showQrCode": "نمایش کد QR",
-    "yourDepositAddress": "آدرس سپرده شما {denom}",
-    "copyAddressToClipboard": "آدرس را در کلیپ بورد کپی کنید",
-    "copyAddress": "آدرس را کپی کنید",
-    "receiveOnlyAsset": "این آدرس فقط می‌تواند {denom} را از شبکه {network} دریافت کند. ارسال هر گونه دارایی دیگر ممکن است منجر به از دست دادن دائمی شود.",
-    "minimumDeposit": "حداقل سپرده",
-    "nomic": {
-      "estimatedTime": "۱-۸ ساعت",
-      "awaitingBtc": "در انتظار بیت کوین",
-      "transferringYourBtc": "انتقال بیت کوین شما",
-      "depositStatus": "وضعیت سپرده",
-      "depositSuccess": "موفقیت در سپرده گذاری",
-      "pendingDeposit": "سپرده معلق",
-      "estimatedAboutTime": "تخمین زده شده درباره {time}",
-      "from": "از",
-      "to": "به",
-      "asset": "دارایی",
-      "amountBtc": "مقدار BTC",
-      "totalValue": "ارزش کل",
-      "transactionHash": "هش تراکنش",
-      "viewOnExplorer": "مشاهده در اکسپلورر",
-      "totalFees": "مجموع هزینه ها"
-    },
-    "doNotSendFundsToThisAddress": "از ارسال وجوه به این آدرس خودداری کنید.",
-    "addressExpired": "این آدرس منقضی شده است. لطفا یک مورد جدید درخواست کنید.",
-    "addressAboutToExpire": "این آدرس رو به اتمام است. لطفاً برای جلوگیری از از دست دادن وجوه، یک آدرس جدید درخواست کنید.",
-    "createNewDepositAddress": "آدرس سپرده جدید ایجاد کنید",
-    "transactionDetails": "جزئیات معامله",
     "confirmAmount": "مبلغ را تأیید کنید",
     "enterChainAddress": "آدرس {chain} وارد کنید",
     "wormholeRedeem": {
@@ -1319,9 +1288,9 @@
     "historyTable": {
       "columns": {
         "order": "سفارش",
-        "amount": "میزان",
+        "amount": "مقدار",
         "price": "قیمت",
-        "orderPlaced": "سفارش ثبت شد",
+        "orderPlaced": "زمان ثبت",
         "status": "وضعیت"
       },
       "emptyState": {
@@ -1337,31 +1306,31 @@
       "historyUnavailable": "تاریخچه سفارش‌ها در حال حاضر در دسترس نیست. سفارش‌های باز شما نمایش داده می‌شود."
     },
     "aboveMarket": {
-      "title": "محدودیت قیمت بالاتر از قیمت بازار",
-      "description": "در صورت ادامه، سفارش شما به عنوان سفارش بازار با قیمت بازار پردازش می شود."
+      "title": "قیمت محدود بالاتر از قیمت بازار",
+      "description": "در صورت ادامه، ممکن است سفارش شما با قیمت نامطلوبی اجرا شود."
     },
     "belowMarket": {
-      "title": "محدود کردن قیمت زیر قیمت بازار",
-      "description": "در صورت ادامه، سفارش شما به عنوان سفارش بازار با قیمت بازار پردازش می شود."
+      "title": "قیمت محدود پایین‌تر از قیمت بازار",
+      "description": "در صورت ادامه، ممکن است سفارش شما با قیمت نامطلوبی اجرا شود."
     },
-    "enterAnAmountTo": "مقداری را وارد کنید",
-    "toSell": "برای فروش",
-    "toBuy": "برای خرید",
+    "enterAnAmountTo": "مقدار",
+    "toSell": "فروش را وارد کنید",
+    "toBuy": "خرید را وارد کنید",
     "sell": "فروش",
     "sold": "فروخته شد",
-    "percentFilled": "درصد پر شده",
+    "percentFilled": "درصد اجراشده",
     "status": "وضعیت",
     "price": "قیمت",
-    "buy": "خرید کنید",
+    "buy": "خرید",
     "pay": "پرداخت",
-    "open": "باز کن",
-    "filled": "پر شده است",
-    "claimable": "قابل ادعا",
-    "claimAndClose": "ادعا کنید و ببندید",
+    "open": "باز",
+    "filled": "اجرا شده",
+    "claimable": "قابل دریافت",
+    "claimAndClose": "دریافت و بستن",
     "close": "بستن",
-    "claim": "ادعا کنید",
-    "accept": "تایید کنید",
-    "cancelled": "لغو شد",
+    "claim": "دریافت",
+    "accept": "پذیرش",
+    "cancelled": "لغو شده",
     "cancel": "لغو کنید",
     "daysAgo": "{days} روز قبل",
     "hoursAgo": "{hours} ساعت قبل",
@@ -1372,17 +1341,17 @@
     "sellAnAsset": "فروش یک دارایی",
     "swapAnAsset": "یک دارایی را مبادله کنید",
     "of": "از",
-    "insufficientFunds": "بودجه ناکافی",
-    "startTrading": "تجارت را شروع کنید",
-    "tradeFees": "هزینه های تجارت (در صورت تکمیل سفارش)",
-    "youNeed": "تو نیاز داری",
-    "stablecoin": "استیبل کوین",
-    "quoteUpdated": "نقل قول به روز شد",
-    "fundsOsmosisToBuyAssets": "سرمایه در اسموز برای خرید دارایی.",
+    "insufficientFunds": "موجودی ناکافی",
+    "startTrading": "شروع معامله",
+    "tradeFees": "کارمزد معامله (هنگام اجرای سفارش)",
+    "youNeed": "برای خرید دارایی در Osmosis به",
+    "stablecoin": "استیبل‌کوین",
+    "quoteUpdated": "قیمت پیشنهادی به‌روز شد",
+    "fundsOsmosisToBuyAssets": "نیاز دارید.",
     "chooseAnOption": "گزینه ای را برای ادامه انتخاب کنید.",
     "lowerSlippageToleranceRecommended": "تحمل لغزش کمتر توصیه می شود.",
-    "tryHigherSlippage": "حداکثر تحمل لغزش را امتحان کنید.",
-    "reviewTrade": "تجارت را بررسی کنید",
+    "tryHigherSlippage": "حداکثر تحمل لغزش بالاتری را امتحان کنید.",
+    "reviewTrade": "بررسی معامله",
     "highPriceImpact": {
       "title": "تأثیر قیمت بالا است",
       "description": "این معامله قیمت بازار را به میزان {impact} تغییر می‌دهد، بنابراین ممکن است بسیار کمتر از مبلغ نشان‌داده‌شده دریافت کنید."
@@ -1395,43 +1364,47 @@
     },
     "transferFromAnotherNetwork": "انتقال از شبکه یا کیف پول دیگر",
     "whatIsOrderClaim": {
-      "title": "ادعای سفارش چیست؟",
-      "description": "در اکثر موارد، هنگامی که یک سفارش محدود پر می شود، وجوه به طور خودکار به موجودی شما اضافه می شود. اما در برخی موارد نادر، وجوه باید به صورت دستی از سفارش پر شده درخواست شود.<inlang-LineFeed>\nاین فرآیند ادعا شامل تأیید یک تراکنش واحد در کیف پول شما برای تمام سفارشات تکمیل نشده است که مستلزم کارمزد اسمی شبکه است."
+      "title": "دریافت وجه سفارش چیست؟",
+      "description": "در بیشتر موارد، وقتی یک سفارش محدود اجرا می‌شود، وجوه به‌طور خودکار به موجودی شما اضافه می‌شود. اما در موارد نادری، باید وجوه را به‌صورت دستی از سفارش اجراشده دریافت کنید.\n\nبرای این کار کافی است یک تراکنش را در کیف پول خود برای همه سفارش‌های اجراشده‌ی دریافت‌نشده تأیید کنید که کارمزد شبکه ناچیزی دارد."
     },
     "whatIsAStablecoin": {
       "title": "استیبل کوین چیست؟",
       "description": "استیبل کوین ها نوعی از ارزهای دیجیتال هستند که ارزش آن به دارایی دیگری مانند ارز فیات یا طلا متصل می شود تا قیمت آن ثابت بماند. در اسموز، استیبل کوین های اولیه برای خرید و فروش دارایی ها USDC و USDT هستند."
     },
-    "claimAll": "ادعای همه",
+    "claimAll": "دریافت همه",
     "addFunds": "اضافه کردن وجوه",
     "selectAnAssetTo": {
       "buy": "دارایی را برای خرید انتخاب کنید",
       "sell": "دارایی را برای فروش انتخاب کنید"
     },
     "payWith": "پرداخت با",
-    "receive": "دريافت كردن",
-    "swapFromAnotherAsset": "تعویض از دارایی دیگر",
+    "receive": "دریافت",
+    "swapFromAnotherAsset": "مبادله از دارایی دیگر",
     "connectYourWallet": "کیف پول خود را وصل کنید",
     "toSeeYourBalances": "برای دیدن موجودی خود",
     "searchAssets": "جستجوی دارایی ها",
-    "below": "زیر",
-    "above": "در بالا",
+    "below": "پایین‌تر از",
+    "above": "بالاتر از",
     "currentPrice": "قیمت فعلی",
     "whenDenomPriceIs": "وقتی قیمت {denom} است",
     "orderType": "نوع سفارش",
     "confirm": "تایید",
     "market": "بازار",
-    "limit": "حد",
-    "trade": "تجارت",
-    "swapToAnotherAsset": "تعویض به دارایی دیگر",
+    "limit": "محدود",
+    "trade": "معامله",
+    "swapToAnotherAsset": "مبادله به دارایی دیگر",
     "invalidPrice": "قیمت نامعتبر",
     "priceTooLow": "قیمت خیلی پایین",
     "priceTooHigh": "قیمت خیلی بالاست",
+    "marketPriceUnavailable": "قیمت بازار در دسترس نیست",
+    "quoteOffPeg": "دارایی مظنه بیش از حد از ۱ دلار فاصله دارد",
+    "quoteOffPegWarning": "{denom} با قیمت {price} معامله می‌شود. قیمت‌های محدود فرض می‌کنند 1 {denom} = $1.",
+    "quotePegUnverified": "بررسی {denom} در برابر ۱ دلار ممکن نشد. قیمت‌های محدود فرض می‌کنند 1 {denom} = $1.",
     "unavailable": "برای {denom} در دسترس نیست",
     "orderHistoryHeaders": {
       "past": "گذشته",
-      "pending": "انتظار",
-      "filled": "سفارشات تکمیل شده برای ادعا"
+      "pending": "در انتظار",
+      "filled": "سفارش‌های اجراشده برای دریافت"
     },
     "priceReaches": "اگر قیمت {denom} به {price} برسد.",
     "belowMinimumAmount": "حداقل {amount}",
@@ -1447,7 +1420,8 @@
     "returnedUnfilled": "بازگردانده‌شده (اجرانشده)",
     "alreadyReceived": "قبلاً دریافت شده",
     "howPayoutsWork": "پرداخت‌ها چگونه انجام می‌شوند؟",
-    "payoutNote": "مبالغ اجراشده معمولاً به‌طور خودکار به کیف پول شما واریز می‌شوند، اغلب در چند پرداخت همزمان با اجرای سفارش، و ممکن است ساعت‌ها یا روزها پیش از لغو سفارش برسند. اگر برای سفارشی «ادعا کنید» نمایش داده شود، بخشی از مبلغ اجراشده هنوز پرداخت نشده است. لغو سفارش فقط مبلغ اجرانشده را بازمی‌گرداند."
+    "payoutNote": "مبالغ اجراشده معمولاً به‌طور خودکار به کیف پول شما واریز می‌شوند، اغلب در چند پرداخت همزمان با اجرای سفارش، و ممکن است ساعت‌ها یا روزها پیش از لغو سفارش برسند. اگر برای سفارشی «دریافت» نمایش داده شود، بخشی از مبلغ اجراشده هنوز پرداخت نشده است. لغو سفارش فقط مبلغ اجرانشده را بازمی‌گرداند.",
+    "limitOrder": "سفارش محدود"
   },
   "tradeDetails": {
     "priceImpact": {
