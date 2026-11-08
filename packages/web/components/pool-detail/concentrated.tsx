@@ -337,31 +337,19 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                           : (lastChartData?.close ?? 0),
                         depth: xRange[1],
                       }}
+                      annotationLabel={
+                        currentPrice
+                          ? formatPretty(currentPrice, formatOpts)
+                          : undefined
+                      }
                       offset={{
                         top: 0,
-                        right: currentPrice
-                          ? currentPrice.gt(new Dec(100))
-                            ? 120
-                            : 56
-                          : 36,
                         bottom: 24 + 28,
                         left: 0,
                       }}
                       horizontal
                     />
                   </div>
-                  {currentPrice && (
-                    <h6
-                      className={classNames(
-                        "absolute right-0 top-[51%] max-w-[2rem] text-right",
-                        {
-                          caption: currentPrice.lt(new Dec(0.01)),
-                        }
-                      )}
-                    >
-                      {formatPretty(currentPrice, formatOpts)}
-                    </h6>
-                  )}
                 </div>
               </div>
             )}
