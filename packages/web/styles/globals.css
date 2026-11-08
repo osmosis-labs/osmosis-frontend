@@ -22,10 +22,11 @@
   ::-webkit-scrollbar-corner {
     background: rgba(0, 0, 0, 0);
   }
-  /* Firefox has no ::-webkit-scrollbar. Scoped to browsers without it because
+  /* Firefox can't style ::-webkit-scrollbar. Scoped away from Chromium because
      Chromium 121+ ignores the ::-webkit-scrollbar rules above once scrollbar-color
-     or scrollbar-width is set. */
-  @supports not selector(::-webkit-scrollbar) {
+     or scrollbar-width is set. Firefox 153+ reports the selector as supported
+     without implementing its styling, so it is matched by -moz-appearance. */
+  @supports (not selector(::-webkit-scrollbar)) or (-moz-appearance: none) {
     * {
       scrollbar-width: thin;
       scrollbar-color: theme("colors.osmoverse.600") transparent;
