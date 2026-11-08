@@ -128,12 +128,35 @@ export class PoolsPage extends BasePage {
 
   async getTopTenPoolsByAPR() {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..'
-    const aprList = []
-    for (let i = 0; i < 10; i++) {
-      const tt = this.page.locator(loc).nth(i).locator('//td').nth(3)
-      const text: string = await tt.innerText()
-      aprList.push(text)
+    const readAprs = async () => {
+      const aprList: string[] = []
+      for (let i = 0; i < 10; i++) {
+        const tt = this.page.locator(loc).nth(i).locator('//td').nth(3)
+        aprList.push(await tt.innerText())
+      }
+      return aprList
     }
+    // Sort by APR (descending on first click) so the rows read are the top ten
+    // by APR. Pools with no APR data sort last, so they are never read here.
+    // The table sorts on the upper bound, the last percentage in a range cell
+    // such as "3.1% - 77.2%"; an empty cell parses as NaN and fails the check.
+    await this.page
+      .locator('//thead//button[normalize-space()="APR"]')
+      .click()
+    const upperBound = (apr: string) =>
+      Number([...apr.matchAll(/([\d.]+)%/g)].pop()?.[1] ?? NaN)
+    await expect
+      .poll(
+        async () => {
+          const values = (await readAprs()).map(upperBound)
+          return values.every(
+            (n, i) => !Number.isNaN(n) && (i === 0 || n <= values[i - 1]),
+          )
+        },
+        { timeout: 15000 },
+      )
+      .toBe(true)
+    const aprList = await readAprs()
     console.log(`Top 10 pools APRs: ${aprList}`)
     return aprList
   }
