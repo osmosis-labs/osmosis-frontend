@@ -28,7 +28,6 @@ export type SupportedBridgeInfo = {
   allBridges: Bridge[];
   quoteBridges: Bridge[];
   externalUrlBridges: Bridge[];
-  depositAddressBridges: Bridge[];
 };
 
 interface AmountAndConfirmationScreenProps {
@@ -166,12 +165,10 @@ export const AmountAndReviewScreen = memo(
           allBridges: [],
           quoteBridges: [],
           externalUrlBridges: [],
-          depositAddressBridges: [],
         };
 
       const bridgeInfo = {
         allBridges: new Set<Bridge>(),
-        depositAddressBridges: new Set<Bridge>(),
         quoteBridges: new Set<Bridge>(),
         externalUrlBridges: new Set<Bridge>(),
       };
@@ -185,9 +182,6 @@ export const AmountAndReviewScreen = memo(
         }
         if (variants.includes("external-url")) {
           bridgeInfo.externalUrlBridges.add(bridge as Bridge);
-        }
-        if (variants.includes("deposit-address")) {
-          bridgeInfo.depositAddressBridges.add(bridge as Bridge);
         }
         bridgeInfo.allBridges.add(bridge as Bridge);
       };
@@ -213,7 +207,6 @@ export const AmountAndReviewScreen = memo(
         allBridges: Array.from(bridgeInfo.allBridges),
         quoteBridges: Array.from(bridgeInfo.quoteBridges),
         externalUrlBridges: Array.from(bridgeInfo.externalUrlBridges),
-        depositAddressBridges: Array.from(bridgeInfo.depositAddressBridges),
       };
     }, [
       direction,

@@ -102,7 +102,7 @@ describe("decideBackend", () => {
       1
     );
 
-    expect(pinned).toEqual({ backend: "cf", setCookies: [] });
+    expect(pinned).toEqual({ backend: "cf", reason: "bucket", setCookies: [] });
   });
 
   it.each(["abc", "-1", "10000", ""])(

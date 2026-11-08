@@ -1,6 +1,6 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { RatePretty } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { Address, Hex } from "viem";
@@ -15,6 +15,10 @@ export interface BridgeProviderContext {
   cache: LRUCache<string, CacheEntry>;
   assetLists: AssetList[];
   chainList: Chain[];
+
+  /** Current USD price of an Osmosis asset by minimal denom. Optional: when
+   *  absent or failing, route-checking of withdraw destinations is skipped. */
+  getAssetUsdPrice?(coinMinimalDenom: string): Promise<Dec>;
 
   /** Provides current timeout height for a chain of given chainId.
    *  If a destination address is provided, the bech32Prefix will be used to get the chain. */
@@ -83,18 +87,6 @@ export interface BridgeProvider {
   getTransactionStep?: (
     params: GetBridgeTransactionStepParams
   ) => Promise<CosmosBridgeTransactionRequest>;
-
-  /**
-   * If the provider supports deposit address transfers:
-   * Requests for a deposit address generated from the given params.
-   * Sending to the deposit address automatically triggers the transfer.
-   *
-   * @param params The parameters from a prior quote request.
-   * @returns A promise that resolves to a deposit address ready for signing.
-   */
-  getDepositAddress?: (
-    params: GetDepositAddressParams
-  ) => Promise<BridgeDepositAddress>;
 
   /**
    * Retrieves an external bridge URL for the given assets.
@@ -324,11 +316,11 @@ export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
 /**
  * Specifies the types of transfers supported by the asset.
- * This helps the frontend determine which assets can be quoted,
- * used for deposit addresses, or have external URLs.
+ * This helps the frontend determine which assets can be quoted
+ * or have external URLs.
  */
 export const bridgeSupportedAssetSchema = bridgeAssetSchema.extend({
-  transferTypes: z.array(z.enum(["quote", "deposit-address", "external-url"])),
+  transferTypes: z.array(z.enum(["quote", "external-url"])),
 });
 
 export type BridgeSupportedAsset = z.infer<typeof bridgeSupportedAssetSchema>;
@@ -365,42 +357,6 @@ export const getBridgeSupportedAssetsParams = z.object({
 
 export type GetBridgeSupportedAssetsParams = z.infer<
   typeof getBridgeSupportedAssetsParams
->;
-
-export interface BridgeDepositAddress {
-  depositAddress: string;
-  expirationTimeMs: number;
-  minimumDeposit: BridgeCoin;
-  networkFee: BridgeCoin;
-  providerFee: RatePretty;
-  estimatedTime: string;
-}
-
-export const getDepositAddressParamsSchema = z.object({
-  /**
-   * The originating chain information.
-   */
-  fromChain: bridgeChainSchema,
-  /**
-   * The destination chain information.
-   */
-  toChain: bridgeChainSchema,
-  /**
-   * The asset on the originating chain.
-   */
-  fromAsset: bridgeAssetSchema,
-  /**
-   * The asset on the destination chain.
-   */
-  toAsset: bridgeAssetSchema,
-  /**
-   * The address on the destination chain where the assets are to be received.
-   */
-  toAddress: z.string(),
-});
-
-export type GetDepositAddressParams = z.infer<
-  typeof getDepositAddressParamsSchema
 >;
 
 export const getBridgeExternalUrlSchema = z.object({
@@ -623,6 +579,12 @@ export interface BridgeQuote {
    */
   quoteId?: string;
 
+  /**
+   * False when the route has no Axelar leg (CCTP, Eureka), so an Axelarscan
+   * link would not find the transfer. Unset where not known.
+   */
+  viaAxelar?: boolean;
+
   /** Sign doc. For multi-tx routes this is the FIRST step's sign doc. */
   transactionRequest?: BridgeTransactionRequest;
 
@@ -797,7 +759,6 @@ const txSnapshotSchema = z.object({
     })
   ),
   estimatedArrivalUnix: z.number(),
-  nomicCheckpointIndex: z.number().optional(),
   /** The quote's `quoteId`, sent with Squid status requests. */
   quoteId: z.string().optional(),
   /**
@@ -806,6 +767,8 @@ const txSnapshotSchema = z.object({
    * intermediate chain (e.g. noble-1) rather than the route's from chain.
    */
   trackingChainId: z.string().optional(),
+  /** The quote's `viaAxelar`; false makes the explorer link skip Axelarscan. */
+  viaAxelar: z.boolean().optional(),
   /**
    * For a transfer whose tracked tx was signed on Solana: the tx's recent
    * blockhash. A Solana tx that has not landed by the time its blockhash

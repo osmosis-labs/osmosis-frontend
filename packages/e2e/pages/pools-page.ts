@@ -1,5 +1,5 @@
 /* eslint-disable import-compat/no-extraneous-dependencies */
-import type { Locator, Page } from '@playwright/test'
+import { type Locator, type Page, expect } from '@playwright/test'
 
 import { BasePage } from './base-page'
 
@@ -72,16 +72,44 @@ export class PoolsPage extends BasePage {
     return num
   }
 
-  async getTopTenPoolsByLiquidity() {
+  /** Numeric values of one column across the first ten pool rows. */
+  private async getTopTenColumnValues(column: number) {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..'
-    const liquidityList = []
+    const values: number[] = []
     for (let i = 0; i < 10; i++) {
-      const tt = this.page.locator(loc).nth(i).locator('//td').nth(2)
+      const tt = this.page.locator(loc).nth(i).locator('//td').nth(column)
       const text: string = await tt.innerText()
-      const n: number = Number(text.replace(/[^0-9.-]+/g, ''))
-      liquidityList.push(n)
+      values.push(Number(text.replace(/[^0-9.-]+/g, '')))
     }
+    return values
+  }
+
+  /** Clicks a column's sort header, then waits until its first ten rows are in
+   *  descending order. Only for a column that is not the current sort, since a
+   *  second click on the active column flips it to ascending. */
+  private async sortDescendingBy(headerLabel: string, column: number) {
+    await this.page
+      .locator(`//thead//button[normalize-space()="${headerLabel}"]`)
+      .click()
+    await expect
+      .poll(
+        async () => {
+          const values = await this.getTopTenColumnValues(column)
+          return values.every((n, i) => i === 0 || n <= values[i - 1])
+        },
+        { timeout: 15000 },
+      )
+      .toBe(true)
+  }
+
+  async getTopTenPoolsByLiquidity() {
+    // The table opens sorted by 24h volume, where a small pool with a busy day
+    // can rank in the top ten, so sort by liquidity before reading the column.
+    await this.sortDescendingBy('Liquidity', 2)
+    const liquidityList = await this.getTopTenColumnValues(2)
     console.log(`Top 10 pools Liquidity: ${liquidityList}`)
+    // Restore the default volume sort for the volume check that follows.
+    await this.sortDescendingBy('Volume (24H)', 1)
     return liquidityList
   }
 
@@ -100,12 +128,35 @@ export class PoolsPage extends BasePage {
 
   async getTopTenPoolsByAPR() {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..'
-    const aprList = []
-    for (let i = 0; i < 10; i++) {
-      const tt = this.page.locator(loc).nth(i).locator('//td').nth(3)
-      const text: string = await tt.innerText()
-      aprList.push(text)
+    const readAprs = async () => {
+      const aprList: string[] = []
+      for (let i = 0; i < 10; i++) {
+        const tt = this.page.locator(loc).nth(i).locator('//td').nth(3)
+        aprList.push(await tt.innerText())
+      }
+      return aprList
     }
+    // Sort by APR (descending on first click) so the rows read are the top ten
+    // by APR. Pools with no APR data sort last, so they are never read here.
+    // The table sorts on the upper bound, the last percentage in a range cell
+    // such as "3.1% - 77.2%"; an empty cell parses as NaN and fails the check.
+    await this.page
+      .locator('//thead//button[normalize-space()="APR"]')
+      .click()
+    const upperBound = (apr: string) =>
+      Number([...apr.matchAll(/([\d.]+)%/g)].pop()?.[1] ?? NaN)
+    await expect
+      .poll(
+        async () => {
+          const values = (await readAprs()).map(upperBound)
+          return values.every(
+            (n, i) => !Number.isNaN(n) && (i === 0 || n <= values[i - 1]),
+          )
+        },
+        { timeout: 15000 },
+      )
+      .toBe(true)
+    const aprList = await readAprs()
     console.log(`Top 10 pools APRs: ${aprList}`)
     return aprList
   }
