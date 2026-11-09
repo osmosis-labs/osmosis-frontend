@@ -75,8 +75,17 @@ export class TransactionsPage extends BasePage {
     return this;
   }
 
+  /**
+   * Opens a transaction's details. A click on a freshly loaded list can land
+   * before the row opens anything, so click again until the details (their
+   * close button) show.
+   */
   async viewTransactionByNumber(number: number) {
-    await this.transactionRow.nth(number).click();
+    const row = this.transactionRow.nth(number);
+    await expect(async () => {
+      await row.click({ timeout: 5_000 });
+      await expect(this.closeTransactionBtn).toBeVisible({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
   }
 
   /**
@@ -98,8 +107,15 @@ export class TransactionsPage extends BasePage {
     await this.page.locator(loc).click({ timeout: 3000 });
   }
 
+  /**
+   * The app clears the selected transaction 300 ms after the details close
+   * (use-transaction-details-state.tsx), so a row clicked sooner opens and is
+   * then emptied. Wait that out before the next row.
+   */
   async closeTransaction() {
-    await this.closeTransactionBtn.click();
+    await this.closeTransactionBtn.click({ timeout: 5_000 });
+    await this.closeTransactionBtn.waitFor({ state: "hidden" });
+    await this.page.waitForTimeout(400);
   }
 
   async viewOnExplorerIsVisible() {
