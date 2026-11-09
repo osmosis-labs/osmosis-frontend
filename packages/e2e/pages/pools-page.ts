@@ -25,9 +25,7 @@ export class PoolsPage extends BasePage {
 
   async goto() {
     await this.page.goto('/')
-    await this.page.waitForTimeout(2000)
     await this.poolsLink.click()
-    await this.page.waitForTimeout(2000)
     // Wait for any pool row to appear (previously hard-coded pool/1464 which can
     // drop off the first page when liquidity rankings shift).
     const anyPoolRow = '//tr/td//a[contains(@href, "/pool/")]/../..'
@@ -53,16 +51,14 @@ export class PoolsPage extends BasePage {
     // of stalling the click until the 90s test timeout with nothing to read.
     await poolLink.waitFor({ timeout: 10000 })
     await poolLink.click()
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
+    await this.page.waitForURL(`**/pool/${id}`, { waitUntil: 'commit' })
     await super.printUrl()
     return new PoolPage(this.page)
   }
 
   async searchForPool(poolName: string) {
+    // viewPool waits for the matching row, so no settle time is needed here.
     await this.searchInput.fill(poolName)
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
   }
 
   async getPoolsNumber() {

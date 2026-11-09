@@ -171,11 +171,11 @@ export class TradePage extends BasePage {
     );
   }
 
-  async gotoOrdersHistory(timeout = 1) {
-    await this.page.waitForTimeout(1000);
+  /** @param settleSeconds - extra wait for orders that are still indexing. */
+  async gotoOrdersHistory(settleSeconds = 0) {
     await this.orderHistoryLink.click();
-    await this.page.waitForTimeout(1000);
-    await new Promise((f) => setTimeout(f, timeout * 1000));
+    await this.page.waitForURL(/\/transactions/, { waitUntil: "commit" });
+    if (settleSeconds > 0) await this.page.waitForTimeout(settleSeconds * 1000);
     const currentUrl = this.page.url();
     console.log(`FE opened at: ${currentUrl}`);
   }
@@ -190,7 +190,7 @@ export class TradePage extends BasePage {
 
   async openLimit() {
     await this.limitTabBtn.click();
-    await this.page.waitForTimeout(1000);
+    await this.limitPrice.waitFor({ state: "visible" });
   }
 
   async getLimitPrice() {
@@ -201,8 +201,12 @@ export class TradePage extends BasePage {
 
   async setLimitPriceChange(change: string) {
     const locator = `//button/span[contains(@class, "body2") and .="${change}"]`;
+    const before = await this.limitPrice.inputValue();
     await this.page.locator(locator).click();
-    await this.page.waitForTimeout(1000);
+    // On a retry the preset may already be applied and the price unchanged.
+    await expect(this.limitPrice)
+      .not.toHaveValue(before, { timeout: 2000 })
+      .catch(() => {});
   }
 
   async setLimitPrice(price: string) {
@@ -211,21 +215,23 @@ export class TradePage extends BasePage {
   }
 
   async flipTokenPair() {
+    const before = await this.getExchangeRate();
     await this.flipAssetsBtn.click();
-    await this.page.waitForTimeout(2000);
+    await expect(this.exchangeRate).not.toHaveText(before);
     console.log("Fliped token pair.");
   }
 
   async clickMaxAmountButton() {
     await this.swapMaxBtn.click({ timeout: 2000 });
-    await this.page.waitForTimeout(1000);
+    await expect(this.inputAmount).not.toHaveValue("");
     console.log("Clicked Max token amount button.");
   }
 
   async enterAmount(amount: string) {
     // Just enter an amount for the swap and wait for a quote
+    // The quote itself is awaited where it is needed: showSwapInfo and the
+    // trade buttons wait for it to load.
     await this.inputAmount.fill(amount, { timeout: 2000 });
-    await this.page.waitForTimeout(1000);
     await expect(this.inputAmount).toHaveValue(amount, { timeout: 1000 });
     const exchangeRate = await this.getExchangeRate();
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
@@ -261,8 +267,8 @@ export class TradePage extends BasePage {
   /**
    * If the review-trade dialog shows a 1-Click Trading toggle in the "checked"
    * state, disable it so the test exercises the full Keplr approval flow.
-   * Uses a short 500ms visibility check -- call sites add a 500ms waitForTimeout
-   * before invoking this, giving ~1s total for the dialog to render.
+   * Call sites wait for the dialog's Confirm button first, so the toggle has
+   * rendered by the time this checks it.
    */
   async disable1CTIfNeeded() {
     const oneClickToggle =
@@ -322,7 +328,7 @@ export class TradePage extends BasePage {
     });
 
     await this.swapBtn.click({ timeout: 4000 });
-    await this.page.waitForTimeout(500);
+    await this.confirmSwapBtn.waitFor({ state: "visible" });
     await this.disable1CTIfNeeded();
     await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
@@ -335,8 +341,6 @@ export class TradePage extends BasePage {
     const tokenLocator = "//div//button[@type]//img[@alt]";
     const fromToken = this.page.locator(tokenLocator).nth(0);
     await fromToken.click();
-    // we expect that after 1 second token filter is displayed.
-    await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder("Search").fill(token);
     const fromLocator = this.page.locator(
       `//div/button[@data-testid='token-select-asset']//span[.='${token}']`
@@ -354,12 +358,9 @@ export class TradePage extends BasePage {
       "//div//button[@data-testid='token-out']//img[@alt]"
     );
     // Select From Token
+    // fill and click wait for the picker and the filtered row themselves.
     await fromToken.click({ timeout: 10000 });
-    // we expect that after 1 second token filter is displayed.
-    await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder("Search").fill(from);
-    // Allow search to filter results
-    await this.page.waitForTimeout(500);
     const fromLocator = this.page
       .locator(
         `//div/button[@data-testid='token-select-asset']//span[.='${from}']`
@@ -370,11 +371,7 @@ export class TradePage extends BasePage {
     await fromLocator.click({ timeout: 10000 });
     // Select To Token
     await toToken.click({ timeout: 10000 });
-    // we expect that after 1 second token filter is displayed.
-    await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder("Search").fill(to);
-    // Allow search to filter results
-    await this.page.waitForTimeout(500);
     const toLocator = this.page
       .locator(
         `//div/button[@data-testid='token-select-asset']//span[.='${to}']`
@@ -383,10 +380,9 @@ export class TradePage extends BasePage {
     // Wait for token to be visible before clicking
     await toLocator.waitFor({ state: "visible", timeout: 10000 });
     await toLocator.click({ timeout: 10000 });
-    // we expect that after 2 seconds exchange rate is populated.
-    await this.page.waitForTimeout(2000);
-    expect(await this.getExchangeRate()).toContain(from);
-    expect(await this.getExchangeRate()).toContain(to);
+    // The rate re-renders once the pair's price loads.
+    await expect(this.exchangeRate).toContainText(from, { timeout: 20_000 });
+    await expect(this.exchangeRate).toContainText(to);
   }
 
   async getExchangeRate() {
@@ -407,7 +403,6 @@ export class TradePage extends BasePage {
         timeout: 10000,
       });
       console.log(`Trx url: ${trxUrl}`);
-      await this.page.reload();
       return trxUrl;
     } catch (error) {
       // The "View explorer" link lives in the same success toast that the WS
@@ -419,7 +414,6 @@ export class TradePage extends BasePage {
         console.log(
           `Success-toast link absent; using captured tx hash: ${fallbackUrl}`
         );
-        await this.page.reload();
         return fallbackUrl;
       }
       throw error;
@@ -583,7 +577,7 @@ export class TradePage extends BasePage {
         });
 
         await this.buyBtn.click();
-        await this.page.waitForTimeout(500);
+        await this.confirmSwapBtn.waitFor({ state: "visible" });
         await this.disable1CTIfNeeded();
 
         if (slippagePercent) {
@@ -735,7 +729,7 @@ export class TradePage extends BasePage {
         });
 
         await this.sellBtn.click();
-        await this.page.waitForTimeout(500);
+        await this.confirmSwapBtn.waitFor({ state: "visible" });
         await this.disable1CTIfNeeded();
 
         if (slippagePercent) {
@@ -1030,7 +1024,7 @@ export class TradePage extends BasePage {
     });
 
     await this.sellBtn.click();
-    await this.page.waitForTimeout(500);
+    await this.confirmSwapBtn.waitFor({ state: "visible" });
     await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
@@ -1070,7 +1064,7 @@ export class TradePage extends BasePage {
     });
 
     await this.buyBtn.click();
-    await this.page.waitForTimeout(500);
+    await this.confirmSwapBtn.waitFor({ state: "visible" });
     await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
@@ -1150,7 +1144,7 @@ export class TradePage extends BasePage {
         });
 
         await this.swapBtn.click({ timeout: 4000 });
-        await this.page.waitForTimeout(500);
+        await this.confirmSwapBtn.waitFor({ state: "visible" });
         await this.disable1CTIfNeeded();
 
         if (slippagePercent) {

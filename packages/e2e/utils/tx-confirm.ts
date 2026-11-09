@@ -23,7 +23,7 @@ export function buildExplorerTxUrl(hash: string): string {
 export interface PollTxOptions {
   /** Overall budget in ms before giving up. */
   timeout?: number;
-  /** Delay between polls in ms. */
+  /** Delay between polls in ms. Blocks are under a second apart. */
   intervalMs?: number;
   /** Abort early (e.g. when the WebSocket toast already confirmed success). */
   signal?: AbortSignal;
@@ -42,7 +42,7 @@ export interface PollTxOptions {
  */
 export async function pollTxOnChain(
   hash: string,
-  { timeout = 40_000, intervalMs = 2_000, signal }: PollTxOptions = {}
+  { timeout = 40_000, intervalMs = 300, signal }: PollTxOptions = {}
 ): Promise<{ code: number; height?: string; raw_log?: string }> {
   const url = `${REST_ENDPOINT.replace(/\/+$/, "")}/cosmos/tx/v1beta1/txs/${hash}`;
   const deadline = Date.now() + timeout;

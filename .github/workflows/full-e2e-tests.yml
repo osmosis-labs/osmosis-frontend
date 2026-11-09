@@ -127,7 +127,7 @@ jobs:
         env:
           BASE_URL: https://stage.osmosis.zone
           E2E_FULL: "true"
-        run: npx playwright test pools select
+        run: npx playwright test pools select --workers 2
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v6

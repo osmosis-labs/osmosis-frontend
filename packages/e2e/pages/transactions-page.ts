@@ -77,7 +77,6 @@ export class TransactionsPage extends BasePage {
 
   async viewTransactionByNumber(number: number) {
     await this.transactionRow.nth(number).click();
-    await this.page.waitForTimeout(1000);
   }
 
   /**

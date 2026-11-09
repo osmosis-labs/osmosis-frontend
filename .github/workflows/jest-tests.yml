@@ -2,6 +2,11 @@ name: Jest Tests Workflow
 
 on: [push]
 
+# A newer push to the same branch supersedes this run. Stage runs always finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/stage' }}
+
 jobs:
   test:
     runs-on: ubuntu-latest

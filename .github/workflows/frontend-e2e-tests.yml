@@ -518,7 +518,8 @@ jobs:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
         run: |
           cd packages/e2e
-          npx playwright test pools select
+          # No wallet, so nothing is shared between tests: run them in parallel.
+          npx playwright test pools select --workers 2
       - name: upload pools test results
         if: failure()
         id: pools-test-results
