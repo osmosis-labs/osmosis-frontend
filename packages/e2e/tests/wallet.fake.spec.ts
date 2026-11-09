@@ -24,8 +24,10 @@ import { fetchTokenPrices } from "../utils/price-utils";
 const { OSMO, ATOM, TIA, USDC } = TOKEN_DENOMS;
 
 interface Quote {
-  amountIn?: { denom: string; amount: string };
-  amountOut?: string;
+  /** Set on exact-in quotes only, where the input is a coin. */
+  inDenom?: string;
+  inAmount?: string;
+  outAmount?: string;
   poolIds: string[];
 }
 
@@ -104,6 +106,51 @@ function readSwap(msg: AminoMsg): Swap {
 const units = (amount: bigint, decimals: number) =>
   Number(amount) / 10 ** decimals;
 
+/**
+ * SQS returns the fixed leg of a quote as a coin and the computed leg as a
+ * bare integer: amount_in is a coin on exact-in quotes, amount_out on
+ * exact-out ones.
+ */
+const quoteAmount = (a: any): string | undefined =>
+  typeof a === "object" ? a?.amount : a;
+
+/**
+ * Checks the signed slippage bound against the quote for the traded amount:
+ * min out is the quote less the 1% slippage on exact in, max in is the quote
+ * plus 1% on exact out. Allows 0.5% either way for a quote refresh between the
+ * last response seen here and the one the app signed.
+ */
+function expectSlippageBound(swap: Swap, quotesSeen: Quote[]) {
+  // The page also quotes one unit for the rate label, so match the amount
+  // actually traded and take the latest such quote.
+  const quote = quotesSeen
+    .filter((q) =>
+      swap.exactIn
+        ? q.inDenom === swap.inDenom && q.inAmount === String(swap.inAmount)
+        : q.inDenom === undefined && q.outAmount === String(swap.outAmount)
+    )
+    .pop();
+  expect(quote, "No quote for the traded amount was captured.").toBeDefined();
+  expect(swap.poolIds).toEqual(quote!.poolIds);
+  const [signed, bound] = swap.exactIn
+    ? [swap.outAmount, Number(quote!.outAmount) * 0.99]
+    : [swap.inAmount, Number(quote!.inAmount) * 1.01];
+  expect(Number(signed)).toBeGreaterThanOrEqual(bound * 0.995);
+  expect(Number(signed)).toBeLessThanOrEqual(bound * 1.005);
+}
+
+/**
+ * Price at an orderbook or concentrated liquidity tick (exponent at price one
+ * is -6): each 9,000,000 ticks the price moves a power of ten, in equal steps
+ * between.
+ */
+function tickToPrice(tick: number): number {
+  const ticksPerPower = 9_000_000;
+  const powers = Math.trunc(tick / ticksPerPower);
+  const step = 10 ** (-6 + powers - (tick < 0 ? 1 : 0));
+  return 10 ** powers + (tick - powers * ticksPerPower) * step;
+}
+
 test.describe("Wallet flows with a fake wallet", () => {
   let context: BrowserContext;
   let page: Page;
@@ -113,13 +160,13 @@ test.describe("Wallet flows with a fake wallet", () => {
   let pageErrors: string[];
 
   test.beforeEach(async () => {
+    pageErrors = [];
     context = await chromium.launchPersistentContext(
       "",
       new TestConfig().getBrowserConfig(true)
     );
     page = context.pages()[0];
     wallet = await FakeWallet.install(context);
-    pageErrors = [];
     page.on("console", (m) => {
       if (m.type() === "error") pageErrors.push(m.text().slice(0, 500));
     });
@@ -133,12 +180,17 @@ test.describe("Wallet flows with a fake wallet", () => {
         return;
       const body = await response.json().catch(() => undefined);
       if (!body?.route) return;
+      const exactIn = typeof body.amount_in === "object";
       quotes.push({
-        amountIn: body.amount_in,
-        amountOut: body.amount_out,
-        poolIds: body.route.flatMap((r: any) =>
-          r.pools.map((p: any) => String(p.id))
-        ),
+        inDenom: exactIn ? body.amount_in?.denom : undefined,
+        inAmount: quoteAmount(body.amount_in),
+        outAmount: quoteAmount(body.amount_out),
+        // Exact-out quotes list each route's pools from the output side; the
+        // signed message lists them from the input side.
+        poolIds: body.route.flatMap((r: any) => {
+          const ids = r.pools.map((p: any) => String(p.id));
+          return exactIn ? ids : ids.reverse();
+        }),
       });
     });
     tradePage = new TradePage(page);
@@ -197,24 +249,7 @@ test.describe("Wallet flows with a fake wallet", () => {
     expect(swap.inDenom).toBe(expected.inDenom);
     expect(swap.outDenom).toBe(expected.outDenom);
     expect(swap.inAmount).toBe(BigInt(expected.inAmount));
-    // The page also quotes one unit for the rate label; use the latest quote
-    // for the amount actually traded.
-    const quote = quotesSeen
-      .filter(
-        (q) =>
-          q.amountIn?.denom === expected.inDenom &&
-          q.amountIn?.amount === expected.inAmount
-      )
-      .pop();
-    expect(quote, "No quote for the traded amount was captured.").toBeDefined();
-    expect(swap.poolIds).toEqual(quote!.poolIds);
-    // 1% slippage was set. Allow 0.5% for a quote refresh between the last
-    // response seen here and the one the app signed.
-    const quoted = Number(quote!.amountOut);
-    expect(Number(swap.outAmount)).toBeLessThanOrEqual(quoted * 1.005);
-    expect(Number(swap.outAmount)).toBeGreaterThanOrEqual(
-      quoted * 0.99 * 0.995
-    );
+    expectSlippageBound(swap, quotesSeen);
   }
 
   test("Swap OSMO to ATOM signs the quoted route", async () => {
@@ -243,12 +278,13 @@ test.describe("Wallet flows with a fake wallet", () => {
     await tradePage.openBuyTab();
     await tradePage.selectAsset("ATOM");
     await tradePage.enterAmount("1.12");
-    const { msgs } = await confirmTrade(tradePage.buyBtn);
+    const { msgs, quotes: seen } = await confirmTrade(tradePage.buyBtn);
     expect(msgs).toHaveLength(1);
     const swap = readSwap(msgs[0]);
     expect(swap.sender).toBe(wallet.address);
     expect(swap.inDenom).toBe(USDC.denom);
     expect(swap.outDenom).toBe(ATOM.denom);
+    expectSlippageBound(swap, seen);
     // USDC is the dollar here: exact in spends $1.12, exact out caps it at
     // $1.12 plus the 1% slippage.
     const usdcIn = units(swap.inAmount, USDC.decimals);
@@ -260,12 +296,13 @@ test.describe("Wallet flows with a fake wallet", () => {
     await tradePage.openSellTab();
     await tradePage.selectAsset("ATOM");
     await tradePage.enterAmount("1.11");
-    const { msgs } = await confirmTrade(tradePage.sellBtn);
+    const { msgs, quotes: seen } = await confirmTrade(tradePage.sellBtn);
     expect(msgs).toHaveLength(1);
     const swap = readSwap(msgs[0]);
     expect(swap.sender).toBe(wallet.address);
     expect(swap.inDenom).toBe(ATOM.denom);
     expect(swap.outDenom).toBe(USDC.denom);
+    expectSlippageBound(swap, seen);
     // Exact out receives $1.11; exact in guarantees $1.11 less 1% slippage.
     const usdcOut = units(swap.outAmount, USDC.decimals);
     expect(usdcOut).toBeGreaterThanOrEqual(1.11 * 0.985);
@@ -290,6 +327,10 @@ test.describe("Wallet flows with a fake wallet", () => {
     );
     expect(contract).toBe(book?.contract_address);
     expect(msg.place_limit.order_direction).toBe("ask");
+    // The tick is the dollar limit price over the USDC price; OSMO and USDC
+    // both have 6 decimals, so no further scaling. Allow 1% for USDC's price.
+    const tickPrice = tickToPrice(Number(msg.place_limit.tick_id));
+    expect(Math.abs(tickPrice / limitPrice - 1)).toBeLessThan(0.01);
     expect(funds).toEqual([
       { denom: OSMO.denom, amount: msg.place_limit.quantity },
     ]);
