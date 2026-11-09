@@ -133,7 +133,8 @@ export class BasePage {
     await this.connectedWalletBtn.click({ timeout: 10_000 })
     const logoutBtn = this.page.locator('//button[@title="Log Out"]')
     await logoutBtn.click({ timeout: 10_000 })
-    await expect(this.connectWalletBtn).toBeVisible({ timeout: 6000 })
+    // Logging out can take several seconds on a busy preview.
+    await expect(this.connectWalletBtn).toBeVisible({ timeout: 15_000 })
   }
 
   /**

@@ -265,6 +265,19 @@ export class TradePage extends BasePage {
   }
 
   /**
+   * Waits for the review dialog after a trade button click. A click that
+   * lands while the quote is refreshing opens nothing, so fail within 10 s
+   * and let the caller's retry loop click again.
+   */
+  private async waitForReview() {
+    await this.confirmSwapBtn
+      .waitFor({ state: "visible", timeout: 10_000 })
+      .catch(() => {
+        throw new Error("The review dialog did not open.");
+      });
+  }
+
+  /**
    * If the review-trade dialog shows a 1-Click Trading toggle in the "checked"
    * state, disable it so the test exercises the full Keplr approval flow.
    * Call sites wait for the dialog's Confirm button first, so the toggle has
@@ -328,7 +341,7 @@ export class TradePage extends BasePage {
     });
 
     await this.swapBtn.click({ timeout: 4000 });
-    await this.confirmSwapBtn.waitFor({ state: "visible" });
+    await this.waitForReview();
     await this.disable1CTIfNeeded();
     await this.acknowledgeLossIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
@@ -577,7 +590,7 @@ export class TradePage extends BasePage {
         });
 
         await this.buyBtn.click();
-        await this.confirmSwapBtn.waitFor({ state: "visible" });
+        await this.waitForReview();
         await this.disable1CTIfNeeded();
 
         if (slippagePercent) {
@@ -729,7 +742,7 @@ export class TradePage extends BasePage {
         });
 
         await this.sellBtn.click();
-        await this.confirmSwapBtn.waitFor({ state: "visible" });
+        await this.waitForReview();
         await this.disable1CTIfNeeded();
 
         if (slippagePercent) {
@@ -1024,7 +1037,7 @@ export class TradePage extends BasePage {
     });
 
     await this.sellBtn.click();
-    await this.confirmSwapBtn.waitFor({ state: "visible" });
+    await this.waitForReview();
     await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
@@ -1064,7 +1077,7 @@ export class TradePage extends BasePage {
     });
 
     await this.buyBtn.click();
-    await this.confirmSwapBtn.waitFor({ state: "visible" });
+    await this.waitForReview();
     await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
@@ -1144,7 +1157,7 @@ export class TradePage extends BasePage {
         });
 
         await this.swapBtn.click({ timeout: 4000 });
-        await this.confirmSwapBtn.waitFor({ state: "visible" });
+        await this.waitForReview();
         await this.disable1CTIfNeeded();
 
         if (slippagePercent) {
@@ -1168,7 +1181,8 @@ export class TradePage extends BasePage {
       } catch (error: any) {
         const isDisabledError =
           error.message?.includes("disabled") ||
-          error.message?.includes("toBeEnabled");
+          error.message?.includes("toBeEnabled") ||
+          error.message?.includes("review dialog did not open");
 
         if (attempt < maxRetries && isDisabledError) {
           console.warn(
