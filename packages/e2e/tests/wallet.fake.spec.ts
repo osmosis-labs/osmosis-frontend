@@ -128,23 +128,25 @@ async function findPositionHolder(poolId: string) {
     /\/+$/,
     ""
   );
+  // An LCD error must fail the test, not read as "no holder" and skip it.
+  const get = async (path: string) => {
+    const res = await fetch(`${lcd}${path}`);
+    if (!res.ok) throw new Error(`LCD ${res.status} for ${path}`);
+    return res.json();
+  };
   const query = encodeURIComponent(`create_position.pool_id='${poolId}'`);
-  const txs = (await (
-    await fetch(
-      `${lcd}/cosmos/tx/v1beta1/txs?query=${query}&order_by=ORDER_BY_DESC&pagination.limit=20`
-    )
-  ).json()) as { tx_responses?: any[] };
+  const txs = (await get(
+    `/cosmos/tx/v1beta1/txs?query=${query}&order_by=ORDER_BY_DESC&pagination.limit=20`
+  )) as { tx_responses?: any[] };
   const senders = [
     ...new Set<string>(
       (txs.tx_responses ?? []).map((t) => t.tx.body.messages[0].sender)
     ),
   ];
   for (const address of senders) {
-    const { positions } = (await (
-      await fetch(
-        `${lcd}/osmosis/concentratedliquidity/v1beta1/positions/${address}?pool_id=${poolId}`
-      )
-    ).json()) as { positions?: { position: any }[] };
+    const { positions } = (await get(
+      `/osmosis/concentratedliquidity/v1beta1/positions/${address}?pool_id=${poolId}`
+    )) as { positions?: { position: any }[] };
     const held = positions?.find((p) => p.position.pool_id === poolId);
     if (held) {
       return {
@@ -417,9 +419,9 @@ test.describe("Wallet flows with a fake wallet", () => {
   test("A swap larger than the balance cannot be submitted", async () => {
     await tradePage.selectPair("USDC", "ATOM");
     await tradePage.enterAmount("100000000");
-    await expect(
-      page.locator('//button[.="Insufficient balance"]')
-    ).toBeVisible({ timeout: 30_000 });
+    const button = page.locator('//button[.="Insufficient balance"]');
+    await expect(button).toBeVisible({ timeout: 30_000 });
+    await expect(button).toBeDisabled();
     expect(await wallet.signedDocs(page)).toHaveLength(0);
   });
 
