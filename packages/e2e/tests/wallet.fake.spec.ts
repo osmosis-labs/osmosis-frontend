@@ -403,7 +403,7 @@ test.describe("Wallet flows with a fake wallet", () => {
     const outInput = page.getByPlaceholder("0").nth(1);
     test.skip(!(await outInput.isEditable()), "inGivenOut flag is off.");
     await outInput.fill("0.005");
-    const { msgs } = await confirmTrade();
+    const { msgs, quotes: seen } = await confirmTrade();
     expect(msgs).toHaveLength(1);
     const swap = readSwap(msgs[0]);
     expect(swap.sender).toBe(wallet.address);
@@ -411,12 +411,7 @@ test.describe("Wallet flows with a fake wallet", () => {
     expect(swap.inDenom).toBe(OSMO.denom);
     expect(swap.outDenom).toBe(ATOM.denom);
     expect(swap.outAmount).toBe(BigInt(5000));
-    // Max in: what 0.005 ATOM costs in OSMO, plus at most 1% slippage.
-    const prices = await fetchTokenPrices([OSMO.denom, ATOM.denom]);
-    const fairOsmo = (0.005 * prices[ATOM.denom]) / prices[OSMO.denom];
-    const maxIn = units(swap.inAmount, OSMO.decimals);
-    expect(maxIn).toBeGreaterThan(fairOsmo * 0.97);
-    expect(maxIn).toBeLessThan(fairOsmo * 1.05);
+    expectSlippageBound(swap, seen);
   });
 
   test("A swap larger than the balance cannot be submitted", async () => {
@@ -441,13 +436,12 @@ test.describe("Wallet flows with a fake wallet", () => {
       .click();
     const checkbox = '[role="checkbox"], input[type="checkbox"]';
     // The first rows can be a banner rather than a validator.
-    await modal
+    const row = modal
       .locator("tbody tr")
       .filter({ has: page.locator(checkbox) })
-      .first()
-      .locator(checkbox)
-      .first()
-      .click();
+      .first();
+    const rowText = await row.innerText();
+    await row.locator(checkbox).first().click();
     await modal.getByText(/^Set Squad and Stake 1 OSMO$/).click();
     await wallet.waitForTx();
     const msgs = await wallet.lastSignedMsgs(page);
@@ -458,9 +452,15 @@ test.describe("Wallet flows with a fake wallet", () => {
     const [preference, delegation] = msgs;
     expect(preference.value.delegator).toBe(wallet.address);
     expect(preference.value.preferences).toHaveLength(1);
-    expect(preference.value.preferences[0].val_oper_address).toMatch(
-      /^osmovaloper1/
-    );
+    // The signed validator is the one ticked: its moniker is in that row.
+    const valoper = preference.value.preferences[0].val_oper_address;
+    expect(valoper).toMatch(/^osmovaloper1/);
+    const { validator } = (await (
+      await fetch(
+        `${(process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone").replace(/\/+$/, "")}/cosmos/staking/v1beta1/validators/${valoper}`
+      )
+    ).json()) as { validator: { description: { moniker: string } } };
+    expect(rowText).toContain(validator.description.moniker.trim());
     // Weights are 18-decimal fractions: one validator takes all of it.
     expect(preference.value.preferences[0].weight).toBe("1000000000000000000");
     expect(delegation.value).toEqual({
@@ -621,9 +621,12 @@ test.describe("Concentrated liquidity removal with a fake wallet", () => {
           `${lcd}/osmosis/concentratedliquidity/v1beta1/position_by_id?position_id=${positionId}`
         )
       ).json()) as {
-        position: { position: { address: string; liquidity: string } };
+        position: {
+          position: { address: string; pool_id: string; liquidity: string };
+        };
       };
       expect(position.position.address).toBe(holder!.address);
+      expect(position.position.pool_id).toBe(CL_POOL_ID);
       // Amino carries the decimal liquidity as an integer scaled by 1e18.
       const signed = Number(msgs[0].value.liquidity_amount) / 1e18;
       const half = Number(position.position.liquidity) / 2;
