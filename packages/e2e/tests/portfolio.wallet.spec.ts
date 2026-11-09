@@ -2,7 +2,8 @@ import { type BrowserContext, type Page, expect, test } from '@playwright/test'
 import { PortfolioPage } from '../pages/portfolio-page'
 import { SetupKeplr } from '../setup-keplr'
 
-test.describe('Test Portfolio feature', () => {
+// PR runs check balances with the fake wallet (wallet.fake.spec.ts).
+test.describe('Test Portfolio feature @full', () => {
   let context: BrowserContext
   const privateKey = process.env.PRIVATE_KEY ?? 'pk'
   let portfolioPage: PortfolioPage

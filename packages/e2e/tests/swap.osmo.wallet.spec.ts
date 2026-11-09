@@ -10,7 +10,9 @@ import { deriveAddress } from "../utils/wallet-utils";
 // A round trip: the return leg sends back exactly what the outbound leg
 // received, so the wallet only pays fees and spread instead of drifting
 // further from OSMO into ATOM on every run.
-test.describe("Test Swap to/from OSMO feature", () => {
+// PR runs check this swap with the fake wallet (wallet.fake.spec.ts); the
+// real round trip runs in the full suite.
+test.describe("Test Swap to/from OSMO feature @full", () => {
   test.describe.configure({ mode: "serial" });
 
   let context: BrowserContext;

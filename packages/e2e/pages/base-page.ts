@@ -48,6 +48,17 @@ export class BasePage {
   }
 
   /**
+   * Connects the fake wallet (utils/fake-wallet.ts), which approves without
+   * a popup.
+   */
+  async connectFakeWallet() {
+    await this.connectWalletBtn.click()
+    await this.kepltWalletBtn.click()
+    await this.getWalletBalance()
+    await this.dismissVariantsPopupIfPresent()
+  }
+
+  /**
    * macOS CI runners have a 1024x768 display, but Playwright sizes the headed
    * window to fit the 1440px viewport. Keplr opens its approval popup beside
    * the window's right edge, which is then off screen, and Chrome refuses to

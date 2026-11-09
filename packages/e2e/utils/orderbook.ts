@@ -22,7 +22,9 @@ interface CanonicalOrderbook {
   contract_address: string;
 }
 
-async function fetchCanonicalOrderbooks(): Promise<CanonicalOrderbook[]> {
+export async function fetchCanonicalOrderbooks(): Promise<
+  CanonicalOrderbook[]
+> {
   const response = await fetch(`${SQS_BASE_URL}/pools/canonical-orderbooks`, {
     signal: AbortSignal.timeout(15_000),
   });
