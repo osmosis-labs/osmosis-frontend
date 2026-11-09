@@ -599,6 +599,8 @@ jobs:
   # ignores (pending states and other environments).
   e2e-gate:
     if: always() && needs.resolve-deployment.result != 'skipped'
+    # Reads only the results of the jobs it needs; the token is unused.
+    permissions: {}
     needs:
       [
         resolve-deployment,
