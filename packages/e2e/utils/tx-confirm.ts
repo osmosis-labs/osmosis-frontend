@@ -126,3 +126,78 @@ export function isSequenceMismatch(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error);
   return message.includes("account sequence mismatch");
 }
+
+/**
+ * How much of `denom` a confirmed tx paid to `address`, as a display amount
+ * floored to 6 decimals (the precision the trade input accepts).
+ *
+ * Swap tests send back exactly what the outbound leg received, so the shared
+ * wallet's balances don't drift run after run. Reading the amount from the
+ * tx's own `coin_received` and `coin_spent` events, rather than from a balance delta, keeps it
+ * exact while other runs trade from the same wallet.
+ */
+export async function getTxReceivedAmount(
+  txUrlOrHash: string | null,
+  address: string,
+  denom: string,
+  decimals: number,
+  timeout = 20_000
+): Promise<string> {
+  // Accepts the explorer link from the success toast, which ends in the hash.
+  const hash = /[0-9a-f]{64}/i.exec(txUrlOrHash ?? "")?.[0]?.toLowerCase();
+  if (!hash) throw new Error(`No tx hash in "${txUrlOrHash}"`);
+  const url = `${REST_ENDPOINT.replace(/\/+$/, "")}/cosmos/tx/v1beta1/txs/${hash}`;
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) }).catch(
+      () => undefined
+    );
+    if (res?.ok) {
+      const json = (await res.json()) as {
+        tx_response?: {
+          events?: {
+            type: string;
+            attributes: { key: string; value: string }[];
+          }[];
+        };
+      };
+      // Net of what the wallet spent of the same denom, so a route that passes
+      // the token through the wallet mid-route isn't counted twice.
+      let received = BigInt(0);
+      for (const event of json.tx_response?.events ?? []) {
+        const attr = (key: string) =>
+          event.attributes.find((a) => a.key === key)?.value ?? "";
+        const sign =
+          event.type === "coin_received" && attr("receiver") === address
+            ? BigInt(1)
+            : event.type === "coin_spent" && attr("spender") === address
+              ? BigInt(-1)
+              : BigInt(0);
+        if (sign === BigInt(0)) continue;
+        for (const coin of attr("amount").split(",")) {
+          const match = /^(\d+)(.+)$/.exec(coin.trim());
+          if (match?.[2] === denom) received += sign * BigInt(match[1]);
+        }
+      }
+      if (received <= BigInt(0)) {
+        throw new Error(`tx ${hash} paid no ${denom} to ${address}`);
+      }
+      // Floor to 6 decimals so the return leg never asks for more than arrived.
+      const pow10 = (n: number) => BigInt(`1${"0".repeat(n)}`);
+      const micro =
+        decimals >= 6
+          ? received / pow10(decimals - 6)
+          : received * pow10(6 - decimals);
+      if (micro === BigInt(0)) {
+        throw new Error(`tx ${hash} paid less than 0.000001 of ${denom}`);
+      }
+      const whole = micro / BigInt(1_000_000);
+      const fraction = (micro % BigInt(1_000_000)).toString().padStart(6, "0");
+      return `${whole}.${fraction}`.replace(/\.?0+$/, "");
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+  }
+  throw new Error(
+    `tx ${hash} not found on ${REST_ENDPOINT} within ${timeout}ms`
+  );
+}

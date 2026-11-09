@@ -50,8 +50,10 @@ export const ACCOUNT_REQUIREMENTS: Record<string, AccountBalanceRequirement[]> =
       // minAmount = actual consumed + 5% buffer (only fail when tests would genuinely fail)
       // warnAmount = ~2x consumed (top-up reminder before it becomes critical)
       // trade.wallet.spec.ts: buy 1.12 USDC, sell 1.11+1.01 ATOM, limit 1.01 OSMO
-      // swap.usdc.wallet.spec.ts: 0.5 USDC, 0.015 ATOM, 0.02 TIA, 0.01 INJ, 0.025 AKT
-      // swap.osmo.wallet.spec.ts: 0.2 OSMO, 0.01 ATOM
+      // swap.usdc.wallet.spec.ts: 0.1-0.2 USDC out and the same amount back
+      // swap.osmo.wallet.spec.ts: 0.2 OSMO out and the same amount back
+      // The swap tests are round trips that start from USDC or OSMO, so they
+      // need no TIA, INJ or AKT on hand.
       {
         token: "USDC",
         minAmount: 1.7,
@@ -70,24 +72,6 @@ export const ACCOUNT_REQUIREMENTS: Record<string, AccountBalanceRequirement[]> =
         warnAmount: 2.5,
         unit: "usd",
         note: "USD-denominated (MTN-157): the limit sell is fiat-mode (~$1.01), so required OSMO scales inversely with price. Fixed token thresholds went stale as OSMO fell and created a topup dead-zone (3.4 OSMO cleared the old 2.5-token gate yet starved the sells). min covers the fiat sell (~$1.01) PLUS the swap.osmo 0.2 OSMO swap (token-denominated), with deliberate price headroom: at $1.3 the USD floor still funds the fixed 0.2 OSMO swap until OSMO reaches ~$1.45 (1.01 + 0.2*1.45 = 1.30), well above the current ~$0.04; warn≈2x. NB: the 0.2 OSMO swap is a fixed token need, so this USD floor under-provisions only once OSMO climbs past ~$1.45; revisit then. NB: the check-balances auto-topup dispatches --ref stage, so the scaled target only applies once this is merged to stage.",
-      },
-      {
-        token: "TIA",
-        minAmount: 0.022,
-        warnAmount: 0.05,
-        note: "~0.02 consumed (swap TIA)",
-      },
-      {
-        token: "INJ",
-        minAmount: 0.011,
-        warnAmount: 0.025,
-        note: "~0.01 consumed (swap INJ)",
-      },
-      {
-        token: "AKT",
-        minAmount: 0.027,
-        warnAmount: 0.06,
-        note: "~0.025 consumed (swap AKT)",
       },
     ],
   };

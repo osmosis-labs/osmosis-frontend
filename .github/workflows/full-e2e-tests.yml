@@ -1,0 +1,155 @@
+name: Full frontend E2E tests
+
+# The full matrix against stage: every pair, token and order type, including
+# the tests tagged @full that PR runs leave out, and the claim tests. PR runs
+# (frontend-e2e-tests.yml) check one representative case per path.
+#
+# It runs on the stage -> master release PR, against the stage build being
+# released, so every release gets the full matrix; `release-gate` is the check
+# to require on master. It can also be run by hand from the Actions tab.
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+
+# One run per release PR (a newer push to stage replaces it); manual runs
+# queue behind each other.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || 'manual' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # On a release PR, waits until the stage deployment of the commit being
+  # released is live, so the tests run against it rather than the previous
+  # build. Other PRs into master (hotfix branches) skip the whole workflow.
+  stage-deploy:
+    if: github.event_name != 'pull_request' || github.head_ref == 'stage'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      statuses: read
+    steps:
+      - name: Wait for the stage deployment
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          # The hosting provider's commit status; change with the hosting.
+          STATUS_CONTEXT: "Vercel – osmosis-frontend"
+        run: |
+          for _ in $(seq 1 60); do
+            STATE=$(gh api "repos/$REPO/commits/$SHA/statuses?per_page=100" \
+              --jq "[.[] | select(.context == \"$STATUS_CONTEXT\")][0].state // empty")
+            case "$STATE" in
+              success) echo "Stage build for $SHA is live."; exit 0 ;;
+              failure | error) echo "Stage deployment of $SHA failed."; exit 1 ;;
+            esac
+            sleep 20
+          done
+          echo "Timed out waiting for the stage deployment of $SHA."
+          exit 1
+
+  wallet-tests:
+    needs: stage-deploy
+    timeout-minutes: 45
+    runs-on: macos-26
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.18.1.cjs
+            /packages/*/package.json
+            /packages/e2e/
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+      - name: Install Playwright
+        run: yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Cancel leftover open orders
+        continue-on-error: true
+        env:
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          ACCOUNT_LABEL: "E2E Test Account (pre-test cleanup)"
+          # The wallet is shared with PR runs; leave their in-flight orders alone.
+          MIN_ORDER_AGE_MINUTES: "20"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+      - name: Run wallet tests
+        working-directory: packages/e2e
+        env:
+          BASE_URL: https://stage.osmosis.zone
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          E2E_FULL: "true"
+        run: npx playwright test swap.osmo.wallet swap.usdc.wallet trade.wallet claim portfolio transactions
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: full-wallet-test-results
+          path: packages/e2e/playwright-report
+
+  no-wallet-tests:
+    needs: stage-deploy
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /yarn.lock
+            /.yarnrc.yml
+            /.yarn-4.18.1.cjs
+            /packages/*/package.json
+            /packages/e2e/
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+      - name: Install Playwright
+        run: yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+      - name: Run pools and pair selection tests
+        working-directory: packages/e2e
+        env:
+          BASE_URL: https://stage.osmosis.zone
+          E2E_FULL: "true"
+        run: npx playwright test pools select
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: full-no-wallet-test-results
+          path: packages/e2e/playwright-report
+
+  # The required check on master: passes only when the stage build was live
+  # and both suites passed.
+  release-gate:
+    if: always() && github.event_name == 'pull_request' && github.head_ref == 'stage'
+    needs: [stage-deploy, wallet-tests, no-wallet-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check every job passed
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          FAILED=$(jq -r 'to_entries[] | select(.value.result != "success") | "\(.key): \(.value.result)"' <<< "$NEEDS")
+          if [ -n "$FAILED" ]; then
+            echo "These jobs did not pass:"
+            echo "$FAILED"
+            exit 1
+          fi
+          echo "Full E2E matrix passed on the stage build."

@@ -5,6 +5,9 @@ name: Preview frontend E2E tests
 # plus pushes to stage for post-merge validation. Draft PRs skip the suite
 # entirely — the preview E2E tests spend real funds on every run.
 #
+# Each suite runs one representative case per path. The full matrix (tests
+# tagged @full, plus the claim tests) runs in full-e2e-tests.yml.
+#
 # PRs start from Vercel's deployment_status event rather than polling the
 # Vercel API. Stage can't: the monitoring workflows delete every GitHub
 # deployment on the stage head, so stage waits on Vercel's commit status for
@@ -578,7 +581,7 @@ jobs:
           # HEADLESS: "true"
         run: |
           cd packages/e2e
-          npx playwright test trade
+          npx playwright test trade.wallet
       - name: upload Trade test results
         if: failure()
         id: preview-trade-test-results
@@ -587,49 +590,40 @@ jobs:
           name: preview-trade-test-results
           path: packages/e2e/playwright-report
 
-  preview-claim-tests:
-    concurrency:
-      group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-claim-tests
-      cancel-in-progress: true
-    timeout-minutes: 10
-    runs-on: macos-26
-    needs: [resolve-deployment, check-balances]
+  # The one required E2E check. A skipped job counts as passing a required
+  # check, so when resolve-deployment or check-balances fails, the suites
+  # behind it skip and the PR would go green untested. This job runs whatever
+  # happened upstream and passes only when every suite passed, or when
+  # resolve-deployment decided there is nothing to test (a draft, a superseded
+  # commit or a fork PR). It is skipped only on deployment events the workflow
+  # ignores (pending states and other environments).
+  e2e-gate:
+    if: always() && needs.resolve-deployment.result != 'skipped'
+    needs:
+      [
+        resolve-deployment,
+        check-balances,
+        preview-swap-osmo-tests,
+        preview-swap-usdc-tests,
+        preview-portfolio-trx-tests,
+        preview-pools-and-select-pair-tests,
+        preview-trade-tests,
+      ]
+    runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v6
-        with:
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /package.json
-            /yarn.lock
-            /.yarnrc.yml
-            /.yarn-4.18.1.cjs
-            /packages/*/package.json
-            /packages/e2e/
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          package-manager-cache: false
-          node-version: 24.x
-      - name: Install Playwright
-        run: |
-          echo "$GITHUB_OUTPUT"
-          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
-      - name: Run Claim tests
+      - name: Check every suite passed
         env:
-          BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          # Linux-headless mode (PR #4319) — disabled in favour of macos-26 above due to
-          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
-          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
-          # HEADLESS: "true"
+          RUN: ${{ needs.resolve-deployment.outputs.run }}
+          NEEDS: ${{ toJSON(needs) }}
         run: |
-          cd packages/e2e
-          npx playwright test claim
-      - name: upload Claim test results
-        if: failure()
-        id: claim-test-results
-        uses: actions/upload-artifact@v6
-        with:
-          name: preview-claim-test-results
-          path: packages/e2e/playwright-report
+          if [ "$(jq -r '."resolve-deployment".result' <<< "$NEEDS")" = "success" ] && [ "$RUN" != "true" ]; then
+            echo "Nothing to test for this commit."
+            exit 0
+          fi
+          FAILED=$(jq -r 'to_entries[] | select(.value.result != "success") | "\(.key): \(.value.result)"' <<< "$NEEDS")
+          if [ -n "$FAILED" ]; then
+            echo "These E2E jobs did not pass:"
+            echo "$FAILED"
+            exit 1
+          fi
+          echo "All E2E suites passed."
