@@ -599,10 +599,16 @@ jobs:
   # behind it skip and the PR would go green untested. This job runs whatever
   # happened upstream and passes only when every suite passed, or when
   # resolve-deployment decided there is nothing to test (a draft, a superseded
-  # commit or a fork PR). It is skipped only on deployment events the workflow
-  # ignores (pending states and other environments).
+  # commit or a fork PR). It also runs, and fails, when the preview deployment
+  # itself failed: no success event follows then, so a skipped gate would be
+  # the only check on the commit. It is skipped only on deployment events for
+  # other environments.
   e2e-gate:
-    if: always() && needs.resolve-deployment.result != 'skipped'
+    if: >-
+      always() && (needs.resolve-deployment.result != 'skipped'
+        || (github.event_name == 'deployment_status'
+          && github.event.deployment.environment == 'Preview – osmosis-frontend'
+          && contains(fromJSON('["failure", "error"]'), github.event.deployment_status.state)))
     # Reads only the results of the jobs it needs; the token is unused.
     permissions: {}
     needs:
@@ -621,7 +627,12 @@ jobs:
         env:
           RUN: ${{ needs.resolve-deployment.outputs.run }}
           NEEDS: ${{ toJSON(needs) }}
+          DEPLOYMENT_STATE: ${{ github.event.deployment_status.state }}
         run: |
+          if [ "$DEPLOYMENT_STATE" = "failure" ] || [ "$DEPLOYMENT_STATE" = "error" ]; then
+            echo "The preview deployment failed ($DEPLOYMENT_STATE), so no E2E suite ran."
+            exit 1
+          fi
           if [ "$(jq -r '."resolve-deployment".result' <<< "$NEEDS")" = "success" ] && [ "$RUN" != "true" ]; then
             echo "Nothing to test for this commit."
             exit 0
