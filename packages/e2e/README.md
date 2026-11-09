@@ -242,11 +242,11 @@ stalled initial page load surfaces as a recoverable retry rather than a hard
 
 ### E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`)
 
-| Token | Min  | Warn | Unit  | Used By                                     |
-| ----- | ---- | ---- | ----- | ------------------------------------------- |
-| USDC  | 1.7  | 3.5  | token | ~1.62 consumed (trade buy + swaps)          |
-| ATOM  | 2.27 | 4.5  | token | ~2.16 consumed (trade sell + limit + swaps) |
-| OSMO  | 1.27 | 2.5  | token | ~1.21 consumed (limit sell + swap)          |
+| Token | Min   | Warn  | Unit  | Used By                                     |
+| ----- | ----- | ----- | ----- | ------------------------------------------- |
+| USDC  | 1.7   | 3.5   | token | ~1.62 consumed (trade buy + swaps)          |
+| ATOM  | 2.27  | 4.5   | token | ~2.16 consumed (trade sell + limit + swaps) |
+| OSMO  | $1.30 | $2.50 | usd   | ~$1.01 limit sell, plus the 0.2 OSMO swap   |
 
 ---
 
