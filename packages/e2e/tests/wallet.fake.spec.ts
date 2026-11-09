@@ -104,6 +104,59 @@ function readSwap(msg: AminoMsg): Swap {
   }
 }
 
+/** OSMO/ATOM concentrated liquidity pool. */
+const CL_POOL_ID = "1135";
+
+/**
+ * Price at a concentrated liquidity tick (exponent at price one is -6): each
+ * 9,000,000 ticks the price moves a power of ten, in equal steps between.
+ */
+function tickToPrice(tick: number): number {
+  const ticksPerPower = 9_000_000;
+  const powers = Math.trunc(tick / ticksPerPower);
+  const step = 10 ** (-6 + powers - (tick < 0 ? 1 : 0));
+  return 10 ** powers + (tick - powers * ticksPerPower) * step;
+}
+
+/**
+ * A public address that holds a position in `poolId`, found from recent
+ * position creations, with that position. Positions belong to whoever opened
+ * them, so the address is read live rather than pinned.
+ */
+async function findPositionHolder(poolId: string) {
+  const lcd = (process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone").replace(
+    /\/+$/,
+    ""
+  );
+  const query = encodeURIComponent(`create_position.pool_id='${poolId}'`);
+  const txs = (await (
+    await fetch(
+      `${lcd}/cosmos/tx/v1beta1/txs?query=${query}&order_by=ORDER_BY_DESC&pagination.limit=20`
+    )
+  ).json()) as { tx_responses?: any[] };
+  const senders = [
+    ...new Set<string>(
+      (txs.tx_responses ?? []).map((t) => t.tx.body.messages[0].sender)
+    ),
+  ];
+  for (const address of senders) {
+    const { positions } = (await (
+      await fetch(
+        `${lcd}/osmosis/concentratedliquidity/v1beta1/positions/${address}?pool_id=${poolId}`
+      )
+    ).json()) as { positions?: { position: any }[] };
+    const held = positions?.find((p) => p.position.pool_id === poolId);
+    if (held) {
+      return {
+        address,
+        positionId: String(held.position.position_id),
+        liquidity: String(held.position.liquidity),
+      };
+    }
+  }
+  return undefined;
+}
+
 const units = (amount: bigint, decimals: number) =>
   Number(amount) / 10 ** decimals;
 
@@ -343,6 +396,118 @@ test.describe("Wallet flows with a fake wallet", () => {
     expect(usd).toBeLessThan(1.01 * 1.01);
   });
 
+  test("Swap exact out signs the requested output", async () => {
+    await tradePage.selectPair("OSMO", "ATOM");
+    // The output field is the second amount input; it only takes input when
+    // the inGivenOut feature flag is on.
+    const outInput = page.getByPlaceholder("0").nth(1);
+    test.skip(!(await outInput.isEditable()), "inGivenOut flag is off.");
+    await outInput.fill("0.005");
+    const { msgs } = await confirmTrade();
+    expect(msgs).toHaveLength(1);
+    const swap = readSwap(msgs[0]);
+    expect(swap.sender).toBe(wallet.address);
+    expect(swap.exactIn).toBe(false);
+    expect(swap.inDenom).toBe(OSMO.denom);
+    expect(swap.outDenom).toBe(ATOM.denom);
+    expect(swap.outAmount).toBe(BigInt(5000));
+    // Max in: what 0.005 ATOM costs in OSMO, plus at most 1% slippage.
+    const prices = await fetchTokenPrices([OSMO.denom, ATOM.denom]);
+    const fairOsmo = (0.005 * prices[ATOM.denom]) / prices[OSMO.denom];
+    const maxIn = units(swap.inAmount, OSMO.decimals);
+    expect(maxIn).toBeGreaterThan(fairOsmo * 0.97);
+    expect(maxIn).toBeLessThan(fairOsmo * 1.05);
+  });
+
+  test("A swap larger than the balance cannot be submitted", async () => {
+    await tradePage.selectPair("USDC", "ATOM");
+    await tradePage.enterAmount("100000000");
+    await expect(
+      page.locator('//button[.="Insufficient balance"]')
+    ).toBeVisible({ timeout: 30_000 });
+    expect(await wallet.signedDocs(page)).toHaveLength(0);
+  });
+
+  test("Stake OSMO with a new validator squad", async () => {
+    await page.goto("/stake");
+    await page.locator("main input").first().fill("1");
+    await page.getByText("Stake", { exact: true }).last().click();
+    // An address with no validator set builds a squad first; setting it and
+    // staking is one tx.
+    const modal = page.locator(".ReactModal__Content").last();
+    await page
+      .locator(".ReactModal__Content")
+      .getByText("Build stake squad to continue")
+      .click();
+    const checkbox = '[role="checkbox"], input[type="checkbox"]';
+    // The first rows can be a banner rather than a validator.
+    await modal
+      .locator("tbody tr")
+      .filter({ has: page.locator(checkbox) })
+      .first()
+      .locator(checkbox)
+      .first()
+      .click();
+    await modal.getByText(/^Set Squad and Stake 1 OSMO$/).click();
+    await wallet.waitForTx();
+    const msgs = await wallet.lastSignedMsgs(page);
+    expect(msgs.map((m) => m.type)).toEqual([
+      "osmosis/MsgSetValidatorSetPreference",
+      "osmosis/MsgDelegateToValidatorSet",
+    ]);
+    const [preference, delegation] = msgs;
+    expect(preference.value.delegator).toBe(wallet.address);
+    expect(preference.value.preferences).toHaveLength(1);
+    expect(preference.value.preferences[0].val_oper_address).toMatch(
+      /^osmovaloper1/
+    );
+    // Weights are 18-decimal fractions: one validator takes all of it.
+    expect(preference.value.preferences[0].weight).toBe("1000000000000000000");
+    expect(delegation.value).toEqual({
+      delegator: wallet.address,
+      coin: { denom: OSMO.denom, amount: "1000000" },
+    });
+  });
+
+  test("Add concentrated liquidity in the shown price range", async () => {
+    await page.goto(`/pool/${CL_POOL_ID}`);
+    await page.getByText("Create a position").first().click();
+    const modal = page.locator(".ReactModal__Content").last();
+    await modal.getByText("Moderate", { exact: true }).click();
+    // Inputs: upper price, lower price, then the OSMO and ATOM amounts.
+    const inputs = modal.locator("input");
+    await inputs.nth(2).fill("10");
+    await expect(inputs.nth(3)).not.toHaveValue("0");
+    const [upper, lower, , atomAmount] = await Promise.all(
+      [0, 1, 2, 3].map((i) => inputs.nth(i).inputValue())
+    );
+    await modal.locator("button", { hasText: /^Add Liquidity$/ }).click();
+    await wallet.waitForTx();
+    const msgs = await wallet.lastSignedMsgs(page);
+    expect(msgs).toHaveLength(1);
+    expect(msgs[0].type).toBe("osmosis/cl-create-position");
+    const v = msgs[0].value;
+    expect(v.pool_id).toBe(CL_POOL_ID);
+    expect(v.sender).toBe(wallet.address);
+    const provided = Object.fromEntries(
+      v.tokens_provided.map((c: any) => [c.denom, c.amount])
+    );
+    expect(provided[OSMO.denom]).toBe("10000000");
+    expect(Number(provided[ATOM.denom])).toBe(
+      Math.round(Number(atomAmount) * 10 ** ATOM.decimals)
+    );
+    // The ticks are the range shown, in ATOM per OSMO.
+    expect(tickToPrice(Number(v.lower_tick))).toBeCloseTo(Number(lower), 5);
+    expect(tickToPrice(Number(v.upper_tick))).toBeCloseTo(Number(upper), 5);
+    // Minimums are 95% of the deposit; token0 is OSMO in this pool.
+    expect(v.token_min_amount0).toBe(
+      String(Math.floor(Number(provided[OSMO.denom]) * 0.95))
+    );
+    expect(v.token_min_amount1).toBe(
+      String(Math.floor(Number(provided[ATOM.denom]) * 0.95))
+    );
+  });
+
   test("Portfolio lists every token the wallet holds", async () => {
     test.setTimeout(120_000);
     const { balances } = await lcdGet<{
@@ -373,6 +538,98 @@ test.describe("Wallet flows with a fake wallet", () => {
         minimalDenom: denom,
       });
       expect(balance).toMatch(/\d/);
+    }
+  });
+});
+
+// The same swap at phone width, where the layout differs. At phone width the
+// app offers only Keplr Mobile (WalletConnect), which a fake extension cannot
+// stand in for, so the wallet connects at desktop width first; the session
+// carries over when the window shrinks. Mobile wallet pairing is not covered.
+test.describe("Wallet flows on a phone-width viewport", () => {
+  test("Swap OSMO to ATOM signs the same message as on desktop", async () => {
+    const context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserConfig(true)
+    );
+    try {
+      const wallet = await FakeWallet.install(context);
+      const page = context.pages()[0];
+      const tradePage = new TradePage(page);
+      await tradePage.goto();
+      await tradePage.connectFakeWallet();
+      await page.setViewportSize({ width: 390, height: 844 });
+      await tradePage.selectPair("OSMO", "ATOM");
+      await tradePage.enterAmount("0.2");
+      await expect(tradePage.swapBtn).toBeEnabled({ timeout: 30_000 });
+      await tradePage.swapBtn.click();
+      await tradePage.confirmSwapBtn.waitFor();
+      await tradePage.acknowledgeLossIfNeeded();
+      await tradePage.confirmSwapBtn.click();
+      await wallet.waitForTx();
+      const swap = readSwap((await wallet.lastSignedMsgs(page))[0]);
+      expect(swap.sender).toBe(wallet.address);
+      expect(swap.inDenom).toBe(OSMO.denom);
+      expect(swap.outDenom).toBe(ATOM.denom);
+      expect(swap.inAmount).toBe(BigInt(200000));
+      expect(swap.outAmount > BigInt(0)).toBe(true);
+    } finally {
+      await context.close();
+    }
+  });
+});
+
+// Removing liquidity needs a position, so this impersonates (read-only) an
+// address that holds one in the pool.
+test.describe("Concentrated liquidity removal with a fake wallet", () => {
+  test("Remove half a position", async () => {
+    test.setTimeout(150_000);
+    const holder = await findPositionHolder(CL_POOL_ID);
+    test.skip(
+      !holder,
+      `No recent position holder found in pool ${CL_POOL_ID}.`
+    );
+    const context = await chromium.launchPersistentContext(
+      "",
+      new TestConfig().getBrowserConfig(true)
+    );
+    try {
+      const wallet = await FakeWallet.install(context, holder!.address);
+      const page = context.pages()[0];
+      await page.goto(`/pool/${CL_POOL_ID}`);
+      await new TradePage(page).connectFakeWallet();
+      await page.getByText("Selected Range").first().click();
+      await page
+        .locator("button", { hasText: /^Remove Liquidity$/ })
+        .first()
+        .click();
+      const modal = page.locator(".ReactModal__Content").last();
+      await modal.getByText("50%", { exact: true }).click();
+      await modal.locator("button", { hasText: /^Remove Liquidity$/ }).click();
+      await wallet.waitForTx();
+      const msgs = await wallet.lastSignedMsgs(page);
+      expect(msgs).toHaveLength(1);
+      expect(msgs[0].type).toBe("osmosis/cl-withdraw-position");
+      expect(msgs[0].value.sender).toBe(holder!.address);
+      // The user may hold several positions; the first card is the newest.
+      const positionId = msgs[0].value.position_id;
+      const lcd = (
+        process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone"
+      ).replace(/\/+$/, "");
+      const { position } = (await (
+        await fetch(
+          `${lcd}/osmosis/concentratedliquidity/v1beta1/position_by_id?position_id=${positionId}`
+        )
+      ).json()) as {
+        position: { position: { address: string; liquidity: string } };
+      };
+      expect(position.position.address).toBe(holder!.address);
+      // Amino carries the decimal liquidity as an integer scaled by 1e18.
+      const signed = Number(msgs[0].value.liquidity_amount) / 1e18;
+      const half = Number(position.position.liquidity) / 2;
+      expect(Math.abs(signed - half) / half).toBeLessThan(0.0001);
+    } finally {
+      await context.close();
     }
   });
 });
