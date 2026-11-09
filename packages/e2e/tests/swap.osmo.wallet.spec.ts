@@ -7,9 +7,9 @@ import { notice } from "../utils/github-notice";
 import { getTxReceivedAmount } from "../utils/tx-confirm";
 import { deriveAddress } from "../utils/wallet-utils";
 
-// A round trip: the return leg sends back exactly what the outbound leg
-// received, so the wallet only pays fees and spread instead of drifting
-// further from OSMO into ATOM on every run.
+// A round trip: the return leg sends back what the outbound leg received
+// (to six decimals), so the wallet only pays fees and spread instead of
+// drifting further from OSMO into ATOM on every run.
 test.describe("Test Swap to/from OSMO feature", () => {
   test.describe.configure({ mode: "serial" });
 

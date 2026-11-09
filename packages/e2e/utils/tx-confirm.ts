@@ -131,10 +131,11 @@ export function isSequenceMismatch(error: unknown): boolean {
  * How much of `denom` a confirmed tx paid to `address`, as a display amount
  * floored to 6 decimals (the precision the trade input accepts).
  *
- * Swap tests send back exactly what the outbound leg received, so the shared
- * wallet's balances don't drift run after run. Reading the amount from the
- * tx's own `coin_received` and `coin_spent` events, rather than from a balance delta, keeps it
- * exact while other runs trade from the same wallet.
+ * Swap tests send back what the outbound leg received, so the shared wallet's
+ * balances don't drift run after run. For tokens with more than six decimals,
+ * up to 0.000001 stays behind. Reading the amount from the tx's own
+ * `coin_received` and `coin_spent` events, rather than from a balance delta,
+ * keeps it exact while other runs trade from the same wallet.
  */
 export async function getTxReceivedAmount(
   txUrlOrHash: string | null,
