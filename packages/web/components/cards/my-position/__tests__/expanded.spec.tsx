@@ -31,7 +31,7 @@ describe("AssetsInfo", () => {
         new Dec(200.02).mul(DecUtils.getTenExponentN(6))
       ),
     ];
-    const totalValue = new PricePretty(DEFAULT_VS_CURRENCY, "300.5");
+    const totalValue = new PricePretty(DEFAULT_VS_CURRENCY, "300");
 
     render(
       <AssetsInfo
@@ -47,7 +47,7 @@ describe("AssetsInfo", () => {
     expect(screen.getByText("200 OSMO")).toBeInTheDocument();
     expect(screen.getByText("200.002 PEPE")).toBeInTheDocument();
     expect(screen.getByText("200.02 USDC")).toBeInTheDocument();
-    expect(screen.getByText("($300.50)")).toBeInTheDocument();
+    expect(screen.getByText("($300.00)")).toBeInTheDocument();
   });
 
   it("should handle assets with very small decimals", () => {
