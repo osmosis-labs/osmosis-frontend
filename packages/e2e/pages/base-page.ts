@@ -128,9 +128,11 @@ export class BasePage {
       this.connectedWalletBtn,
       'Wallet should be connected.',
     ).toBeVisible({ timeout: 4000 })
-    await this.connectedWalletBtn.click({ timeout: 2000 })
+    // The profile panel can re-render as balances refresh after a trade,
+    // detaching the button mid-click; the click retries within its timeout.
+    await this.connectedWalletBtn.click({ timeout: 10_000 })
     const logoutBtn = this.page.locator('//button[@title="Log Out"]')
-    await logoutBtn.click({ timeout: 2000 })
+    await logoutBtn.click({ timeout: 10_000 })
     await expect(this.connectWalletBtn).toBeVisible({ timeout: 6000 })
   }
 
