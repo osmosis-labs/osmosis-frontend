@@ -8,6 +8,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master') && github.sha || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/master' }}
 
+# Read-only by default: checkout, the assetlist lookup and the osmosisd
+# release download only read.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
