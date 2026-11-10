@@ -61,10 +61,8 @@ E2E_FULL=true npx playwright test swap.usdc.wallet  # include @full tests
 ```
 
 The swap tests are round trips: the return leg sends back the amount the
-outbound leg received, read from the tx's events and floored to six decimals
-(the precision the trade input accepts), so the wallet pays only fees and
-spread instead of drifting into other tokens. For tokens with more decimals,
-such as INJ, up to 0.000001 of the token can stay behind.
+outbound leg received, read exactly from the tx's events, so the wallet pays
+only fees and spread instead of drifting into other tokens.
 
 Set `headless: false` in the Playwright config to run in a visible browser.
 

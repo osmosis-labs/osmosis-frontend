@@ -10,6 +10,7 @@ name: Full frontend E2E tests
 on:
   workflow_dispatch:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - master
 
@@ -23,28 +24,29 @@ permissions:
   contents: read
 
 jobs:
-  # On a release PR, waits until the stage deployment of the commit being
-  # released is live, so the tests run against it rather than the previous
-  # build. Other PRs into master (hotfix branches) skip the whole workflow.
+  # Waits until the stage deployment of the commit under test (the release
+  # PR's head, or the commit a manual run started on) is live, so the tests
+  # run against it rather than the previous build. Other PRs into master
+  # (hotfix branches, forks) and draft release PRs skip the suites; the
+  # suites spend real funds.
   stage-deploy:
-    if: github.event_name != 'pull_request' || github.head_ref == 'stage'
+    if: github.event_name != 'pull_request' || (github.head_ref == 'stage' && github.event.pull_request.head.repo.fork == false && github.event.pull_request.draft == false)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
       statuses: read
     steps:
       - name: Wait for the stage deployment
-        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          SHA: ${{ github.event.pull_request.head.sha }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           # The hosting provider's commit status; change with the hosting.
           STATUS_CONTEXT: "Vercel – osmosis-frontend"
         run: |
           for _ in $(seq 1 60); do
             STATE=$(gh api "repos/$REPO/commits/$SHA/statuses?per_page=100" \
-              --jq "[.[] | select(.context == \"$STATUS_CONTEXT\")][0].state // empty")
+              --jq "[.[] | select(.context == \"$STATUS_CONTEXT\")][0].state // empty") || true
             case "$STATE" in
               success) echo "Stage build for $SHA is live."; exit 0 ;;
               failure | error) echo "Stage deployment of $SHA failed."; exit 1 ;;
@@ -127,7 +129,7 @@ jobs:
         env:
           BASE_URL: https://stage.osmosis.zone
           E2E_FULL: "true"
-        run: npx playwright test pools select
+        run: npx playwright test pools select trade-quote-select
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v6
@@ -136,9 +138,11 @@ jobs:
           path: packages/e2e/playwright-report
 
   # The required check on master: passes only when the stage build was live
-  # and both suites passed.
+  # and both suites passed. It runs on manual runs too: a manual run tags the
+  # same commit as the release PR, and a skipped check would count as passing.
+  # For a fork or draft release PR it fails, since stage-deploy was skipped.
   release-gate:
-    if: always() && github.event_name == 'pull_request' && github.head_ref == 'stage'
+    if: always() && (github.event_name != 'pull_request' || github.head_ref == 'stage')
     needs: [stage-deploy, wallet-tests, no-wallet-tests]
     runs-on: ubuntu-latest
     steps:
