@@ -120,41 +120,26 @@ function tickToPrice(tick: number): number {
 
 /**
  * A public address that holds a position in `poolId`, found from recent
- * position creations, with that position. Positions belong to whoever opened
- * them, so the address is read live rather than pinned.
+ * position creations. Positions belong to whoever opened them, so the address
+ * is read live rather than pinned. An LCD error fails the test (lcdGet
+ * throws) rather than reading as "no holder" and skipping it.
  */
 async function findPositionHolder(poolId: string) {
-  const lcd = (process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone").replace(
-    /\/+$/,
-    ""
-  );
-  // An LCD error must fail the test, not read as "no holder" and skip it.
-  const get = async (path: string) => {
-    const res = await fetch(`${lcd}${path}`);
-    if (!res.ok) throw new Error(`LCD ${res.status} for ${path}`);
-    return res.json();
-  };
   const query = encodeURIComponent(`create_position.pool_id='${poolId}'`);
-  const txs = (await get(
-    `/cosmos/tx/v1beta1/txs?query=${query}&order_by=ORDER_BY_DESC&pagination.limit=20`
-  )) as { tx_responses?: any[] };
+  const txs = await lcdGet<{ tx_responses?: any[] }>(
+    `/cosmos/tx/v1beta1/txs?query=${query}&order_by=ORDER_BY_DESC&limit=20`
+  );
   const senders = [
     ...new Set<string>(
       (txs.tx_responses ?? []).map((t) => t.tx.body.messages[0].sender)
     ),
   ];
   for (const address of senders) {
-    const { positions } = (await get(
+    const { positions } = await lcdGet<{ positions?: { position: any }[] }>(
       `/osmosis/concentratedliquidity/v1beta1/positions/${address}?pool_id=${poolId}`
-    )) as { positions?: { position: any }[] };
+    );
     const held = positions?.find((p) => p.position.pool_id === poolId);
-    if (held) {
-      return {
-        address,
-        positionId: String(held.position.position_id),
-        liquidity: String(held.position.liquidity),
-      };
-    }
+    if (held) return { address };
   }
   return undefined;
 }
@@ -457,11 +442,9 @@ test.describe("Wallet flows with a fake wallet", () => {
     // The signed validator is the one ticked: its moniker is in that row.
     const valoper = preference.value.preferences[0].val_oper_address;
     expect(valoper).toMatch(/^osmovaloper1/);
-    const { validator } = (await (
-      await fetch(
-        `${(process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone").replace(/\/+$/, "")}/cosmos/staking/v1beta1/validators/${valoper}`
-      )
-    ).json()) as { validator: { description: { moniker: string } } };
+    const { validator } = await lcdGet<{
+      validator: { description: { moniker: string } };
+    }>(`/cosmos/staking/v1beta1/validators/${valoper}`);
     expect(rowText).toContain(validator.description.moniker.trim());
     // Weights are 18-decimal fractions: one validator takes all of it.
     expect(preference.value.preferences[0].weight).toBe("1000000000000000000");
@@ -549,7 +532,7 @@ test.describe("Wallet flows with a fake wallet", () => {
 // stand in for, so the wallet connects at desktop width first; the session
 // carries over when the window shrinks. Mobile wallet pairing is not covered.
 test.describe("Wallet flows on a phone-width viewport", () => {
-  test("Swap OSMO to ATOM signs the same message as on desktop", async () => {
+  test("Swap OSMO to ATOM signs the entered pair and amount", async () => {
     const context = await chromium.launchPersistentContext(
       "",
       new TestConfig().getBrowserConfig(true)
@@ -615,18 +598,13 @@ test.describe("Concentrated liquidity removal with a fake wallet", () => {
       expect(msgs[0].value.sender).toBe(holder!.address);
       // The user may hold several positions; the first card is the newest.
       const positionId = msgs[0].value.position_id;
-      const lcd = (
-        process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone"
-      ).replace(/\/+$/, "");
-      const { position } = (await (
-        await fetch(
-          `${lcd}/osmosis/concentratedliquidity/v1beta1/position_by_id?position_id=${positionId}`
-        )
-      ).json()) as {
+      const { position } = await lcdGet<{
         position: {
           position: { address: string; pool_id: string; liquidity: string };
         };
-      };
+      }>(
+        `/osmosis/concentratedliquidity/v1beta1/position_by_id?position_id=${positionId}`
+      );
       expect(position.position.address).toBe(holder!.address);
       expect(position.position.pool_id).toBe(CL_POOL_ID);
       // Amino carries the decimal liquidity as an integer scaled by 1e18.
