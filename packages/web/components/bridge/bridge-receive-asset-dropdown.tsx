@@ -10,7 +10,6 @@ import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
 import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
-import { depositHaltReasonKey } from "~/utils/halt-reasons";
 import { getLogoURIs } from "~/utils/logo-uri";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
@@ -26,6 +25,9 @@ interface BridgeReceiveAssetDropdownProps {
    * Falls back to `setToAsset` when not provided.
    */
   onUserSelectAsset?: (asset: SupportedAsset) => void;
+  /** The deposit variants to offer, first one recommended. Excludes halted
+   *  variants, which can't receive a deposit. */
+  depositVariants: string[];
   assetsInOsmosis: MinimalAsset[];
   counterpartySupportedAssetsByChainId: Record<string, SupportedAsset[]>;
 }
@@ -68,6 +70,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
   toAsset,
   setToAsset,
   onUserSelectAsset,
+  depositVariants,
   assetsInOsmosis,
   counterpartySupportedAssetsByChainId,
 }) => {
@@ -102,8 +105,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
                     className={classNames("opacity-0 transition-opacity", {
                       "opacity-100":
                         direction === "deposit"
-                          ? toAsset.address ===
-                            Object.keys(fromAsset.supportedVariants)[0]
+                          ? toAsset.address === depositVariants[0]
                           : toAsset.address ===
                             counterpartySupportedAssetsByChainId[
                               toAsset.chainId
@@ -137,78 +139,62 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
           <MenuItems className="absolute top-full right-0 z-[1000] mt-3 flex max-h-64 min-w-[285px] flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2">
             {direction === "deposit" ? (
               <>
-                {Object.keys(fromAsset.supportedVariants).map(
-                  (variantCoinMinimalDenom, index) => {
-                    const asset = assetsInOsmosis.find(
-                      (asset) =>
-                        asset.coinMinimalDenom === variantCoinMinimalDenom
-                    )!;
+                {depositVariants.map((variantCoinMinimalDenom, index) => {
+                  const asset = assetsInOsmosis.find(
+                    (asset) =>
+                      asset.coinMinimalDenom === variantCoinMinimalDenom
+                  )!;
 
-                    const onClick = () => {
-                      (onUserSelectAsset ?? setToAsset)({
-                        chainType: "cosmos",
-                        address: asset.coinMinimalDenom,
-                        decimals: asset.coinDecimals,
-                        chainId: OsmosisChainInfo.chainId,
-                        denom: asset.coinDenom,
-                        supportedVariants: {},
-                        transferTypes: [],
-                      });
-                    };
+                  const onClick = () => {
+                    (onUserSelectAsset ?? setToAsset)({
+                      chainType: "cosmos",
+                      address: asset.coinMinimalDenom,
+                      decimals: asset.coinDecimals,
+                      chainId: OsmosisChainInfo.chainId,
+                      denom: asset.coinDenom,
+                      supportedVariants: {},
+                      transferTypes: [],
+                    });
+                  };
 
-                    const isSelected =
-                      toAsset?.address === asset.coinMinimalDenom;
+                  const isSelected =
+                    toAsset?.address === asset.coinMinimalDenom;
 
-                    const isCanonicalAsset = index === 0;
+                  const isCanonicalAsset = index === 0;
 
-                    // A halted variant can't receive the deposit, so it stays
-                    // visible but can't be picked.
-                    const isHalted = asset.areDepositsHalted;
-
-                    return (
-                      <MenuItem key={asset.coinDenom} disabled={isHalted}>
-                        <button
-                          type="button"
-                          disabled={isHalted}
-                          className={classNames(
-                            "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
-                            isSelected && "bg-osmoverse-700",
-                            isHalted && "cursor-not-allowed opacity-50"
-                          )}
-                          onClick={onClick}
-                        >
-                          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
-                            <EntityImage
-                              logoURIs={getLogoURIs(asset.coinImageUrl)}
-                              name={asset.coinName}
-                              symbol={asset.coinDenom}
-                              width={32}
-                              height={32}
-                            />
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="body1 md:body2">
-                              {t("transfer.depositAs")} {asset.coinDenom}
+                  return (
+                    <MenuItem key={asset.coinDenom}>
+                      <button
+                        type="button"
+                        className={classNames(
+                          "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
+                          isSelected && "bg-osmoverse-700"
+                        )}
+                        onClick={onClick}
+                      >
+                        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                          <EntityImage
+                            logoURIs={getLogoURIs(asset.coinImageUrl)}
+                            name={asset.coinName}
+                            symbol={asset.coinDenom}
+                            width={32}
+                            height={32}
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <p className="body1 md:body2">
+                            {t("transfer.depositAs")} {asset.coinDenom}
+                          </p>
+                          {isCanonicalAsset && (
+                            <p className="body2 text-osmoverse-300">
+                              {t("transfer.recommended")}
                             </p>
-                            {isHalted ? (
-                              <p className="body2 text-osmoverse-300">
-                                {t(
-                                  depositHaltReasonKey(asset.depositHaltReason)
-                                )}
-                              </p>
-                            ) : (
-                              isCanonicalAsset && (
-                                <p className="body2 text-osmoverse-300">
-                                  {t("transfer.recommended")}
-                                </p>
-                              )
-                            )}
-                          </div>
-                        </button>
-                      </MenuItem>
-                    );
-                  }
-                )}
+                          )}
+                        </div>
+                      </button>
+                    </MenuItem>
+                  );
+                })}
               </>
             ) : (
               <>

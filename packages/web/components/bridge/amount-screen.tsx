@@ -640,15 +640,29 @@ export const AmountScreen = memo(
       }
     );
 
+    /** The deposit variants offered for the source asset, first one
+     *  recommended. Halted variants can't receive a deposit, so they are left
+     *  out. */
+    const depositVariants = useMemo(
+      () =>
+        Object.keys(fromAsset?.supportedVariants ?? {}).filter(
+          (variant) =>
+            !assetsInOsmosis?.find((a) => a.coinMinimalDenom === variant)
+              ?.areDepositsHalted
+        ),
+      [assetsInOsmosis, fromAsset]
+    );
+
     /**
      * Deposit
      * Set and maintain the destination asset based on the source asset.
      *
      * The source asset's variants grow as each bridge's lookup finishes, so
-     * the first variant can change after the first pick, e.g. a halted variant
-     * that answered quickly being overtaken by a working one (MTN-522). Follow
-     * the first variant until the user picks a receive asset, as the withdraw
-     * effect below does.
+     * the first variant can change after the first pick, e.g. a working
+     * variant answering after halted ones (MTN-522). Follow the first deposit
+     * variant until the user picks a receive asset, as the withdraw effect
+     * below does. A halted variant is only picked while no other is known, so
+     * the halt banner explains why.
      */
     useEffect(() => {
       if (
@@ -660,7 +674,8 @@ export const AmountScreen = memo(
           userHasPickedToAssetRef.current = false;
         }
 
-        const recommendedAddress = Object.keys(fromAsset.supportedVariants)[0];
+        const recommendedAddress =
+          depositVariants[0] ?? Object.keys(fromAsset.supportedVariants)[0];
         const shouldSeed = isNil(toAsset);
         const shouldRealign =
           !userHasPickedToAssetRef.current &&
@@ -683,7 +698,14 @@ export const AmountScreen = memo(
           transferTypes: [],
         });
       }
-    }, [assetsInOsmosis, toAsset, direction, setToAsset, fromAsset]);
+    }, [
+      assetsInOsmosis,
+      toAsset,
+      direction,
+      setToAsset,
+      fromAsset,
+      depositVariants,
+    ]);
 
     /**
      * Withdraw
@@ -922,11 +944,15 @@ export const AmountScreen = memo(
 
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
-        ? !isNil(fromAsset) &&
-            Object.keys(fromAsset.supportedVariants).length > 1
+        ? depositVariants.length > 1
         : !isNil(toAsset) &&
             counterpartySupportedAssetsByChainId[toAsset.chainId]?.length > 1;
-    }, [counterpartySupportedAssetsByChainId, direction, fromAsset, toAsset]);
+    }, [
+      counterpartySupportedAssetsByChainId,
+      direction,
+      depositVariants,
+      toAsset,
+    ]);
 
     const resetAssets = () => {
       setFromAsset(undefined);
@@ -1041,6 +1067,7 @@ export const AmountScreen = memo(
           toAsset={toAsset}
           setToAsset={setToAsset}
           onUserSelectAsset={onUserSelectToAsset}
+          depositVariants={depositVariants}
           assetsInOsmosis={assetsInOsmosis}
           counterpartySupportedAssetsByChainId={
             counterpartySupportedAssetsByChainId
@@ -1206,9 +1233,6 @@ export const AmountScreen = memo(
                 </div>
               )
             )}
-            {/* A deposit halt belongs to the receive variant, so keep its
-                dropdown here: the user can switch to a working variant. */}
-            {direction === "deposit" && haltState.halted && assetDropdown}
             {/* A failed balance lookup must be visible: without this the
                 user only sees the options button and assumes a zero balance. */}
             {!haltState.halted && hasBalanceError && fromChain && (
