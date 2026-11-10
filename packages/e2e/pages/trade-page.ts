@@ -143,7 +143,8 @@ export class TradePage extends BasePage {
         if (attempt > 0) {
           console.log(`Retry goto attempt ${attempt}/${retries}...`);
         }
-        await this.page.goto("/", { timeout: 30_000 });
+        // The trade tool opens on Buy; these flows start from Swap.
+        await this.page.goto("/?tab=swap", { timeout: 30_000 });
         await this.waitForTradeUi();
         const currentUrl = this.page.url();
         console.log(`FE opened at: ${currentUrl}`);

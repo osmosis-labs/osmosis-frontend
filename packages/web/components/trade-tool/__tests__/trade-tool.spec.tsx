@@ -38,8 +38,9 @@ jest.mock("~/hooks/use-wallet", () => ({
 }));
 
 jest.mock("~/components/assets", () => ({ Icon: () => null }));
+const mockPlaceLimitTool = jest.fn(() => null);
 jest.mock("~/components/place-limit-tool", () => ({
-  PlaceLimitTool: () => null,
+  PlaceLimitTool: () => mockPlaceLimitTool(),
 }));
 jest.mock("~/components/swap-tool", () => ({ SwapTool: () => null }));
 jest.mock("~/components/swap-tool/order-type-selector", () => ({
@@ -105,5 +106,33 @@ describe("TradeTool limit orders kill switch", () => {
     });
 
     expect(mockSetters.type).not.toHaveBeenCalled();
+  });
+});
+
+describe("TradeTool default tab", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    for (const key of Object.keys(mockQueryState)) delete mockQueryState[key];
+    for (const key of Object.keys(mockSetters)) delete mockSetters[key];
+    mockPlaceLimitTool.mockClear();
+    mockFlags = { _isInitialized: true, limitOrders: true };
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  // The limit tool reads `tab` from the URL and treats a missing one as
+  // sell, so it must not render under the Buy tab until `tab=buy` is set.
+  it("writes tab=buy and renders no tool until the URL has it", () => {
+    render(<TradeTool setPreviousTrade={jest.fn()} />);
+    expect(mockPlaceLimitTool).not.toHaveBeenCalled();
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(mockSetters.tab).toHaveBeenCalledWith("buy");
+    expect(mockPlaceLimitTool).not.toHaveBeenCalled();
   });
 });

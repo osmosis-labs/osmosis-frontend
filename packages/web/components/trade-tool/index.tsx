@@ -52,6 +52,9 @@ const TradeViewChart = dynamic(
 
 const ORDERBOOK_POOL_TABS = [SwapToolTab.BUY, SwapToolTab.SELL];
 
+/** Opens on Buy so the Market/Limit toggle is the first thing people see. */
+const DEFAULT_TAB = SwapToolTab.BUY;
+
 interface TradeToolProps {
   swapToolProps?: SwapToolProps;
   previousTrade?: PreviousTrade;
@@ -78,8 +81,9 @@ interface TradeToolProps {
 /**
  * The trade tool's tab, order type and denoms all live in the URL. On a
  * statically optimised page `router.query` is empty until the router is
- * ready, so rendering earlier reads the defaults: `tab` falls back to swap,
- * SwapTool mounts and clears `type`, and a `type=limit` deep link is lost.
+ * ready, so rendering earlier reads the defaults: `tab` falls back to the
+ * default tab, the wrong tool mounts and a `?tab=swap` or `type=limit` deep
+ * link is lost.
  *
  * Readiness also waits for `useIsClient` rather than using `isReady`
  * directly: a page without query params can be ready on the first browser
@@ -111,15 +115,21 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     children,
   } = props;
   const { t } = useTranslation();
-  const [tabParam, setTab] = useQueryState(
+  // Read without a default: the limit tool, the price selectors and the
+  // review modal read `tab` from the URL themselves and fall back to sell or
+  // swap, so a missing or invalid tab is written into the URL below rather
+  // than defaulted here alone.
+  const [tabQuery, setTab] = useQueryState(
     "tab",
-    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
-      SwapToolTab.SWAP
-    )
+    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab))
   );
+  const tabParam = tabQuery ?? DEFAULT_TAB;
   const allowedTabs = orderbookPool ? ORDERBOOK_POOL_TABS : undefined;
   const tab =
     allowedTabs && !allowedTabs.includes(tabParam) ? allowedTabs[0] : tabParam;
+  // Until the URL holds the tab shown, render no tool: in that window the
+  // limit tool would place sell orders under the Buy tab.
+  const isTabInUrl = tab === tabQuery;
 
   // Kill switch for limit orders: hides the Market/Limit toggle so Buy and
   // Sell only place market orders (PlaceLimitTool forces the type too).
@@ -129,15 +139,15 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   const limitOrdersDisabled =
     featureFlags._isInitialized && !featureFlags.limitOrders;
 
-  // On an orderbook pool page, write Buy and a limit order into the URL when
-  // they are missing: the limit tool reads them from there.
+  // Write the tab shown into the URL when it's missing, invalid or not
+  // allowed here, and on an orderbook pool page a limit order when the type
+  // is missing: the limit tool reads both from there.
   const [typeParam, setTypeParam] = useQueryState("type");
   useEffect(() => {
-    if (!orderbookPool) return;
-    const fixTab = tab !== tabParam;
-    const fixType = limitOnly
-      ? typeParam !== "limit" && !limitOrdersDisabled
-      : !typeParam;
+    const fixTab = !isTabInUrl;
+    const fixType =
+      Boolean(orderbookPool) &&
+      (limitOnly ? typeParam !== "limit" && !limitOrdersDisabled : !typeParam);
     if (!fixTab && !fixType) return;
     return deferQueryCorrection(() => {
       if (fixTab) setTab(tab);
@@ -148,7 +158,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     limitOnly,
     limitOrdersDisabled,
     tab,
-    tabParam,
+    isTabInUrl,
     typeParam,
     setTab,
     setTypeParam,
@@ -416,6 +426,8 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
       ? { height: cardHeight }
       : undefined;
   const chartHeight = !isChartOnOwnRow ? sideHeight : undefined;
+
+  if (!isTabInUrl) return null;
 
   // The widget keeps the same position in the tree in every layout (the
   // chart, book and orders are empty slots when not shown), so expanding,
