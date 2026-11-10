@@ -29,8 +29,8 @@ import {
   ExpandDetailsControlContent,
   NetworkFeeRow,
   ProviderFeesRow,
+  QuoteDetailRow,
   TotalFeesRow,
-  TransferSpeedToggle,
 } from "./quote-detail";
 import { BridgeQuote } from "./use-bridge-quotes";
 import { SupportedAsset } from "./use-bridges-supported-assets";
@@ -152,17 +152,6 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           walletImageUrl={fromWalletIcon}
           value={quote.selectedQuote.quote.input.fiatValue}
           coin={quote.selectedQuote.quote.input.amount}
-        />
-      )}
-      {/* Above the collapsible details, as on the amount screen, so the
-          choice is seen first. */}
-      {quote.fastTransfer && (
-        <TransferSpeedToggle
-          fastTransfer={quote.fastTransfer}
-          // the signed transaction comes from the selected quote, so the
-          // choice is locked once signing starts
-          disabled={quote.isTxPending || Boolean(quote.multiTxPhase)}
-          className="mt-3"
         />
       )}
       <TransferDetails {...quote} fromDisplayChain={fromChain} />
@@ -476,6 +465,14 @@ const TransferDetails: FunctionComponent<
 
   const { estimatedTime } = selectedQuote;
   const estTime = estimatedTime.humanize();
+  // The speed is picked on the amount screen; review only shows the choice.
+  const speedLabel = quote.fastTransfer
+    ? t(
+        quote.fastTransfer.isFastSelected
+          ? "transfer.fastSpeed"
+          : "transfer.standardSpeed"
+      )
+    : undefined;
   const collapsedHeight = isMobile ? 46 : 74;
   const expandedPadding = isMobile ? 10 : 0;
 
@@ -511,7 +508,10 @@ const TransferDetails: FunctionComponent<
                 )}
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p className="first-letter:capitalize">{estTime}</p>
+                  <p className="first-letter:capitalize">
+                    {estTime}
+                    {speedLabel && ` · ${speedLabel}`}
+                  </p>
                 </div>
               </div>
             )}
@@ -538,6 +538,14 @@ const TransferDetails: FunctionComponent<
               isRefetchingQuote={quote.isRefetchingQuote}
               selectedQuote={selectedQuote}
             />
+            {speedLabel && (
+              <QuoteDetailRow
+                label={t("transfer.transferSpeed")}
+                isLoading={quote.isRefetchingQuote}
+              >
+                <p className="text-osmoverse-100">{speedLabel}</p>
+              </QuoteDetailRow>
+            )}
             <EstimatedTimeRow
               isRefetchingQuote={quote.isRefetchingQuote}
               selectedQuote={selectedQuote}
