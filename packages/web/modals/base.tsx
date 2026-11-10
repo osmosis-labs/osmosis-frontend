@@ -45,12 +45,6 @@ export const ModalBase = ({
   return (
     <ReactModal
       isOpen={isOpen}
-      // react-modal's aria-hidden handling hides one app element while open.
-      // The portal is a child of <body>, so with body as the app element the
-      // modal hid itself, and the open-instance counter drifts when a modal
-      // reopens within closeTimeoutMS, which left the page hidden until reload.
-      // The dialog carries aria-modal, so assistive tech already ignores the
-      // content behind it.
       ariaHideApp={false}
       onRequestClose={(e) => {
         e.preventDefault();
