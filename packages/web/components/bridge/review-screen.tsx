@@ -154,16 +154,18 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           coin={quote.selectedQuote.quote.input.amount}
         />
       )}
-      <TransferDetails {...quote} fromDisplayChain={fromChain} />
+      {/* Above the collapsible details, as on the amount screen, so the
+          choice is seen first. */}
       {quote.fastTransfer && (
         <TransferSpeedToggle
           fastTransfer={quote.fastTransfer}
           // the signed transaction comes from the selected quote, so the
           // choice is locked once signing starts
           disabled={quote.isTxPending || Boolean(quote.multiTxPhase)}
-          className="mb-3"
+          className="mt-3"
         />
       )}
+      <TransferDetails {...quote} fromDisplayChain={fromChain} />
       {quote.selectedQuote && (
         <AssetBox
           type="to"
