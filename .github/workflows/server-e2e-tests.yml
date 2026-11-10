@@ -4,10 +4,11 @@ on:
   workflow_dispatch:
   push:
 
-# A newer push to the same branch supersedes this run. Stage runs always finish.
+# A newer push to the same branch supersedes this run. Stage and master runs are
+# keyed on their commit, and manual runs are kept apart from push runs.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/stage' }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master') && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/master' }}
 
 jobs:
   setup-matrix:

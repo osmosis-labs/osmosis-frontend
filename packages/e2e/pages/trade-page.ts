@@ -190,7 +190,14 @@ export class TradePage extends BasePage {
 
   async openLimit() {
     await this.limitTabBtn.click();
-    await this.limitPrice.waitFor({ state: "visible" });
+    await this.limitPrice
+      .waitFor({ state: "visible", timeout: 15_000 })
+      .catch((cause) => {
+        throw new Error(
+          "The limit price input did not appear (the spot price may be slow to load).",
+          { cause }
+        );
+      });
   }
 
   async getLimitPrice() {
@@ -272,22 +279,29 @@ export class TradePage extends BasePage {
   private async waitForReview() {
     await this.confirmSwapBtn
       .waitFor({ state: "visible", timeout: 10_000 })
-      .catch(() => {
-        throw new Error("The review dialog did not open.");
+      .catch((cause) => {
+        // Only a timeout means the dialog did not open; rethrow anything else.
+        if (cause?.name !== "TimeoutError") throw cause;
+        throw new Error("The review dialog did not open.", { cause });
       });
   }
 
   /**
    * If the review-trade dialog shows a 1-Click Trading toggle in the "checked"
    * state, disable it so the test exercises the full Keplr approval flow.
-   * Call sites wait for the dialog's Confirm button first, so the toggle has
-   * rendered by the time this checks it.
+   * Call sites wait for the dialog's Confirm button first, but the toggle's
+   * checked state can be restored a moment later, so allow it a short window.
    */
   async disable1CTIfNeeded() {
-    const oneClickToggle =
-      '//div[@role="dialog"]//button[@data-state="checked"]';
-    if (await this.page.locator(oneClickToggle).isVisible({ timeout: 500 })) {
-      await this.page.locator(oneClickToggle).click({ timeout: 3000 });
+    const oneClickToggle = this.page.locator(
+      '//div[@role="dialog"]//button[@data-state="checked"]'
+    );
+    const checked = await oneClickToggle
+      .waitFor({ state: "visible", timeout: 500 })
+      .then(() => true)
+      .catch(() => false);
+    if (checked) {
+      await oneClickToggle.click({ timeout: 3000 });
       console.log("Disabled 1-Click Trading toggle.");
     }
   }
@@ -1186,10 +1200,17 @@ export class TradePage extends BasePage {
 
         if (attempt < maxRetries && isDisabledError) {
           console.warn(
-            `⚠️  RACE CONDITION DETECTED: Swap button disabled ` +
+            `⚠️  Swap did not reach Confirm: ${error.message} ` +
               `(attempt ${attempt + 1}/${maxRetries + 1}). ` +
               `Waiting for quote to stabilize and retrying...`
           );
+
+          // Dismiss a review dialog that did open, so the retry can click Swap.
+          await this.page.keyboard.press("Escape");
+          await this.page
+            .locator(".ReactModal__Overlay")
+            .waitFor({ state: "hidden", timeout: 2000 })
+            .catch(() => {});
 
           await this.page.waitForTimeout(1500);
 

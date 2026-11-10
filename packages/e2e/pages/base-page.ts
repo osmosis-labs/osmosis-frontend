@@ -113,7 +113,8 @@ export class BasePage {
   /** Dismisses the "Variants Detected" modal that may appear on staging deploys. */
   async dismissVariantsPopupIfPresent() {
     try {
-      const dismissBtn = this.page.getByRole('button', { name: 'Dismiss' })
+      // By text, not role: see connectWalletBtn.
+      const dismissBtn = this.page.locator('button', { hasText: /^Dismiss$/ })
       await dismissBtn.waitFor({ state: 'visible', timeout: 4000 })
       await dismissBtn.click()
       console.log('Dismissed "Variants Detected" popup.')

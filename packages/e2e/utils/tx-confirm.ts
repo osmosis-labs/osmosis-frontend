@@ -61,7 +61,13 @@ export async function pollTxOnChain(
   const url = `${REST_ENDPOINT.replace(/\/+$/, "")}/cosmos/tx/v1beta1/txs/${hash}`;
   const deadline = Date.now() + timeout;
 
+  // A 404 (not indexed yet) polls again quickly; a rate limit, server error or
+  // network error backs off so parallel jobs don't hammer the public LCD.
+  const backoffMs = 2_000;
+  let delayMs = intervalMs;
+
   while (Date.now() < deadline) {
+    delayMs = intervalMs;
     if (signal?.aborted) {
       throw new Error("pollTxOnChain aborted");
     }
@@ -79,6 +85,7 @@ export async function pollTxOnChain(
 
     try {
       const res = await fetch(url, { signal: attemptController.signal });
+      if (res.status === 429 || res.status >= 500) delayMs = backoffMs;
       if (res.ok) {
         const json = (await res.json()) as {
           tx_response?: {
@@ -114,6 +121,7 @@ export async function pollTxOnChain(
         throw err;
       }
       // transient fetch error / per-attempt timeout — keep polling
+      delayMs = backoffMs;
     } finally {
       clearTimeout(attemptTimer);
       signal?.removeEventListener("abort", onCallerAbort);
@@ -124,7 +132,7 @@ export async function pollTxOnChain(
     const remaining = deadline - Date.now();
     if (remaining <= 0) break;
     await new Promise((resolve) =>
-      setTimeout(resolve, Math.min(intervalMs, remaining))
+      setTimeout(resolve, Math.min(delayMs, remaining))
     );
   }
 

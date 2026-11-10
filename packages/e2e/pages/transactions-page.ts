@@ -83,7 +83,11 @@ export class TransactionsPage extends BasePage {
   async viewTransactionByNumber(number: number) {
     const row = this.transactionRow.nth(number);
     await expect(async () => {
-      await row.click({ timeout: 5_000 });
+      // Once open, the details overlay covers the list and would intercept a
+      // second click, so only click while they are closed.
+      if (!(await this.closeTransactionBtn.isVisible())) {
+        await row.click({ timeout: 5_000 });
+      }
       await expect(this.closeTransactionBtn).toBeVisible({ timeout: 3_000 });
     }).toPass({ timeout: 30_000 });
   }

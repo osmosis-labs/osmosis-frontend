@@ -29,7 +29,8 @@ export class PoolsPage extends BasePage {
     // Wait for any pool row to appear (previously hard-coded pool/1464 which can
     // drop off the first page when liquidity rankings shift).
     const anyPoolRow = '//tr/td//a[contains(@href, "/pool/")]/../..'
-    await this.page.locator(anyPoolRow).first().waitFor({ timeout: 10000 })
+    // Covers loading /pools and the pools query; returns as soon as a row renders.
+    await this.page.locator(anyPoolRow).first().waitFor({ timeout: 30_000 })
     await super.printUrl()
     await this.dismissVariantsPopupIfPresent()
   }
