@@ -16,6 +16,7 @@ jobs:
             "math",
             "bridge",
             "tx",
+            "trpc",
             "proto-codecs",
             "unit",
           ]

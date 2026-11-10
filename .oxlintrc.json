@@ -21,7 +21,6 @@
     "**/.wrangler/**",
     "**/build/**",
     "**/dist/**",
-    "packages/web/e2e/keplr-extension/**",
     "packages/web/public/tradingview/**",
     "packages/proto-codecs/src/codegen/**"
   ],
@@ -209,7 +208,7 @@
     {
       "files": [
         "packages/web/pages/**/*.{js,cjs,mjs,jsx,ts,tsx}",
-        "packages/web/playwright.config.ts",
+        "packages/e2e/playwright.config.ts",
         "packages/web/api-worker/worker.ts",
         "packages/web/router/worker.ts",
         "packages/web/localizations/dayjs-locale-*.js"
