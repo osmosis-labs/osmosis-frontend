@@ -347,8 +347,11 @@ export const assetsRouter = createTRPCRouter({
 
             // Grouping runs on the sorted list, before pagination, so a page
             // never splits a group. Search results stay flat so a query for a
-            // variant's symbol finds its row directly.
-            const isGrouping = Boolean(groupVariants && !search);
+            // variant's symbol finds its row directly. Lists that exclude variants
+            // (Top Gainers, New) stay flat too, or grouping would add them back.
+            const isGrouping = Boolean(
+              groupVariants && !search && !excludeVariants
+            );
             const alloyMembers = isGrouping
               ? await getAlloyMembers({ ...ctx, listedAssets: assets })
               : new Map<string, Set<string>>();
