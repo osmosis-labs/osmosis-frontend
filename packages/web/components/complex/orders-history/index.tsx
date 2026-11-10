@@ -450,6 +450,7 @@ const TableOrderRow = memo(
       output,
       price,
       placed_at,
+      cancelled_at,
       status,
       percentFilled,
       totalFilled,
@@ -495,9 +496,11 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
         case "cancelled":
-          if (!placedAt) return;
-          const dayDiff = dayjs(new Date()).diff(placedAt, "d");
-          const hourDiff = dayjs(new Date()).diff(placedAt, "h");
+          // Count from the cancel, not the placement, so the age says when the order ended.
+          if (!cancelled_at) return;
+          const cancelledAt = dayjs.unix(cancelled_at);
+          const dayDiff = dayjs(new Date()).diff(cancelledAt, "d");
+          const hourDiff = dayjs(new Date()).diff(cancelledAt, "h");
 
           return (
             <span className="body2 md:caption text-osmoverse-300">

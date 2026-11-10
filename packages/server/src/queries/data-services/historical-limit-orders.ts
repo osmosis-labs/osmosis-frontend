@@ -15,6 +15,10 @@ export interface HistoricalLimitOrder {
   status: string;
   contract: string;
   claimed_quantity: string;
+  cancel_tx_hash: string | null;
+  cancel_timestamp: string | null;
+  /** One entry per payout, oldest first. Null means Numia has no payout data for the order, not that nothing was paid. */
+  claims: { tx_hash: string; timestamp: string; amount: string }[] | null;
 }
 
 export function queryHistoricalOrders(

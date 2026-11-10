@@ -75,9 +75,15 @@ const OrderDetails = ({
   const shownQuantity = isPartlyFilledPastOrder
     ? order.totalFilled
     : order?.placed_quantity;
-  const shownOutput = isPartlyFilledPastOrder
-    ? order.output.mul(order.percentFilled)
-    : order?.output;
+  // The payouts are what reached the wallet after the claim bot's fee, so prefer them to quantity × price.
+  const paidOut = order?.claims?.length
+    ? order.claims.reduce((sum, { amount }) => sum.add(amount), new Dec(0))
+    : undefined;
+  const shownOutput =
+    paidOut ??
+    (isPartlyFilledPastOrder
+      ? order.output.mul(order.percentFilled)
+      : order?.output);
   // Like OrderProgressBar, show a fill under 1% as 1% so it never reads "0%" next to "Partly filled".
   const percentFilledOfPastOrder = isPartlyFilledPastOrder
     ? new RatePretty(
@@ -117,6 +123,26 @@ const OrderDetails = ({
   const formattedDate = order?.placed_at
     ? `${formattedMonth} ${formattedDateDayYearHourMinute}`
     : undefined;
+
+  // Cancelling sends a claim for any unpaid fill in the same transaction, so that payout and the cancel share a link.
+  const transactions = [
+    ...(order?.claims ?? []).map(({ tx, claimed_at, amount }) => ({
+      label: t("limitOrders.paidOut"),
+      tx,
+      at: claimed_at,
+      amount,
+    })),
+    ...(order?.cancel_tx && order.cancelled_at
+      ? [
+          {
+            label: t("limitOrders.cancelled"),
+            tx: order.cancel_tx,
+            at: order.cancelled_at,
+            amount: undefined,
+          },
+        ]
+      : []),
+  ];
 
   const statusComponent = (() => {
     if (!order) return;
@@ -508,6 +534,34 @@ const OrderDetails = ({
               }
             />
           )}
+          {transactions.map(({ label, tx, at, amount }) => (
+            <RecapRow
+              key={`${label}-${tx}`}
+              className="sm:py-0"
+              left={<span className="subtitle1 sm:caption">{label}</span>}
+              right={
+                <a
+                  className="body2 sm:caption text-wosmongton-300 hover:text-wosmongton-200"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href={`https://www.mintscan.io/osmosis/txs/${tx}`}
+                >
+                  {amount &&
+                    `${formatPretty(
+                      new CoinPretty(
+                        {
+                          coinDecimals: tokenOut?.decimals ?? 0,
+                          coinDenom: tokenOut?.symbol ?? "",
+                          coinMinimalDenom: tokenOut?.coinMinimalDenom ?? "",
+                        },
+                        amount
+                      )
+                    )} · `}
+                  {dayjs.unix(at).format("MMM D, HH:mm")} &#x2197;
+                </a>
+              }
+            />
+          ))}
         </div>
         {!!order && order.status !== "open" && (
           <p className="caption text-osmoverse-300">

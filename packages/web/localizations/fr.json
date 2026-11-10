@@ -1419,6 +1419,7 @@
     "partlyFilled": "Partiellement exécuté",
     "returnedUnfilled": "Restitué (non exécuté)",
     "alreadyReceived": "Déjà reçu",
+    "paidOut": "Payé",
     "howPayoutsWork": "Comment fonctionnent les paiements ?",
     "payoutNote": "Les montants exécutés sont généralement versés automatiquement sur votre portefeuille, souvent en plusieurs versements au fur et à mesure que l'ordre est exécuté, et peuvent arriver des heures ou des jours avant que vous n'annuliez. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée. L'annulation ne restitue que le montant non exécuté.",
     "limitOrder": "Ordre à cours limité"

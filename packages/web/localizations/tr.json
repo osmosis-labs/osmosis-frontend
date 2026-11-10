@@ -1419,6 +1419,7 @@
     "partlyFilled": "Kısmen gerçekleşti",
     "returnedUnfilled": "İade edildi (gerçekleşmeyen)",
     "alreadyReceived": "Zaten alındı",
+    "paidOut": "Ödendi",
     "howPayoutsWork": "Ödemeler nasıl çalışır?",
     "payoutNote": "Gerçekleşen tutarlar genellikle cüzdanınıza otomatik olarak, çoğu zaman emir gerçekleştikçe birkaç ödeme halinde aktarılır ve iptal etmenizden saatler ya da günler önce gelebilir. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir. İptal etmek yalnızca gerçekleşmeyen tutarı iade eder.",
     "limitOrder": "Limit emir"
