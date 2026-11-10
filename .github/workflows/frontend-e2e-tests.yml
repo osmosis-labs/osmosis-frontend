@@ -56,6 +56,7 @@ jobs:
       statuses: read
     outputs:
       run: ${{ steps.resolve.outputs.run }}
+      draft: ${{ steps.resolve.outputs.draft }}
       branch: ${{ steps.resolve.outputs.branch }}
       environment_url: ${{ steps.resolve.outputs.environment_url }}
     steps:
@@ -129,7 +130,9 @@ jobs:
             PR=$(gh api "repos/$REPO/commits/$SHA/pulls" \
               --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\" and .head.ref != \"stage\")][0] // empty")
             [ -n "$PR" ] || skip "$SHA is not the head of an open PR."
-            [ "$(jq -r '.draft' <<< "$PR")" = "false" ] || skip "PR is a draft."
+            # The gate fails for drafts (see e2e-gate), so tell it why.
+            [ "$(jq -r '.draft' <<< "$PR")" = "false" ] ||
+              { echo "draft=true" >> "$GITHUB_OUTPUT"; skip "PR is a draft."; }
             # Fork PRs have no access to the E2E secrets.
             [ "$(jq -r '.head.repo.fork' <<< "$PR")" = "false" ] || skip "PR is from a fork."
             BRANCH=$(jq -r '.head.ref' <<< "$PR")
@@ -523,7 +526,7 @@ jobs:
         run: |
           cd packages/e2e
           # No wallet, so nothing is shared between tests: run them in parallel.
-          npx playwright test pools select --workers 2
+          npx playwright test pools select trade-quote-select --workers 2
       - name: upload pools test results
         if: failure()
         id: pools-test-results
@@ -599,11 +602,14 @@ jobs:
   # check, so when resolve-deployment or check-balances fails, the suites
   # behind it skip and the PR would go green untested. This job runs whatever
   # happened upstream and passes only when every suite passed, or when
-  # resolve-deployment decided there is nothing to test (a draft, a superseded
-  # commit or a fork PR). It also runs, and fails, when the preview deployment
-  # itself failed: no success event follows then, so a skipped gate would be
-  # the only check on the commit. It is skipped only on deployment events for
-  # other environments.
+  # resolve-deployment decided there is nothing to test (a superseded commit
+  # or a fork PR). It fails for a draft: when the draft is marked ready, the
+  # new run's gate appears only once its suites finish, and until then branch
+  # protection would see the draft's result. It also runs, and fails, when the
+  # preview deployment itself failed: no success event follows then, so a
+  # skipped gate would be the only check on the commit. It is skipped on
+  # deployment events for other environments, and on Preview statuses other
+  # than success, failure and error.
   e2e-gate:
     if: >-
       always() && (needs.resolve-deployment.result != 'skipped'
@@ -627,11 +633,16 @@ jobs:
       - name: Check every suite passed
         env:
           RUN: ${{ needs.resolve-deployment.outputs.run }}
+          DRAFT: ${{ needs.resolve-deployment.outputs.draft }}
           NEEDS: ${{ toJSON(needs) }}
           DEPLOYMENT_STATE: ${{ github.event.deployment_status.state }}
         run: |
           if [ "$DEPLOYMENT_STATE" = "failure" ] || [ "$DEPLOYMENT_STATE" = "error" ]; then
             echo "The preview deployment failed ($DEPLOYMENT_STATE), so no E2E suite ran."
+            exit 1
+          fi
+          if [ "$DRAFT" = "true" ]; then
+            echo "The PR is a draft, so no E2E suite ran. Mark it ready for review to run them."
             exit 1
           fi
           if [ "$(jq -r '."resolve-deployment".result' <<< "$NEEDS")" = "success" ] && [ "$RUN" != "true" ]; then

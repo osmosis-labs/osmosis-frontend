@@ -7,8 +7,8 @@ import { notice } from "../utils/github-notice";
 import { getTxReceivedAmount } from "../utils/tx-confirm";
 import { deriveAddress } from "../utils/wallet-utils";
 
-// Round trips from USDC: each return leg sends back what its outbound leg
-// received (to six decimals), so the wallet only pays fees and spread. PR runs
+// Round trips from USDC: each return leg sends back exactly what its outbound
+// leg received, so the wallet only pays fees and spread. PR runs
 // check one pair; the rest run in the full suite (@full), since they exercise
 // the same swap path with a different token.
 const ROUND_TRIPS = [
