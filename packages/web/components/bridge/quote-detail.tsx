@@ -301,7 +301,7 @@ export const ExpandDetailsControlContent: FunctionComponent<{
 };
 
 /** Base detail row with label, and children for contents. */
-export const QuoteDetailRow: FunctionComponent<
+const QuoteDetailRow: FunctionComponent<
   PropsWithChildren<{
     label: string;
     isLoading: boolean;

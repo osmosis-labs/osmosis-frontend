@@ -55,15 +55,6 @@ export const normalizeUrl = (url: string): string => {
   return url;
 };
 
-export const ellipsisText = (str: string, maxLength: number): string => {
-  if (!str) return "";
-  const trimmedStr = str.trim();
-  if (str.length > maxLength) {
-    return trimmedStr.slice(0, maxLength - 3).concat("...");
-  }
-  return trimmedStr;
-};
-
 export const camelCaseToSnakeCase = (input: string) => {
   return input.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
 };

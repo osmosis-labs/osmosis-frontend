@@ -10,9 +10,7 @@ import { useStakeToEnterActiveSet } from "~/hooks/use-inactive-delegations";
 import { formatPretty } from "~/utils/formatter";
 import { InactiveDelegation } from "~/utils/inactive-delegations";
 
-export const inactiveStatusTranslationKey = (
-  status: InactiveDelegation["status"]
-) =>
+const inactiveStatusTranslationKey = (status: InactiveDelegation["status"]) =>
   status === "jailed"
     ? "stake.inactiveValidators.statusJailed"
     : "stake.inactiveValidators.statusInactive";
@@ -53,7 +51,7 @@ export const inactiveStatusTextClass = (
 ) => (status === "jailed" ? "text-rust-300" : "text-osmoverse-300");
 
 /** Red when any delegation is jailed, the softer rust-400 tone otherwise. */
-export const inactiveWarningToneClasses = (hasJailed: boolean) =>
+const inactiveWarningToneClasses = (hasJailed: boolean) =>
   hasJailed
     ? { border: "border-rust-600", icon: "text-rust-600" }
     : { border: "border-rust-400", icon: "text-rust-400" };
