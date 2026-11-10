@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { LinkifiedText } from "~/components/linkified-text";
@@ -20,6 +20,8 @@ export const AssetCell: FunctionComponent<
     onClickWatchlist: () => void;
     isUnstable: boolean;
     unstableReason?: string;
+    /** Rendered beside the symbol, e.g. a control for the asset's variants. */
+    denomAccessory: ReactNode;
   }>
 > = ({
   coinDenom,
@@ -31,6 +33,7 @@ export const AssetCell: FunctionComponent<
   onClickWatchlist,
   isUnstable,
   unstableReason,
+  denomAccessory,
 }) => {
   const { t } = useTranslation();
 
@@ -96,11 +99,19 @@ export const AssetCell: FunctionComponent<
             )}
           </div>
         )}
-        {coinDenom && (
-          <span className="body2 md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
-            {coinDenom}
-          </span>
-        )}
+        {coinDenom &&
+          (denomAccessory ? (
+            <div className="flex items-center gap-2 overflow-hidden">
+              <span className="body2 md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400">
+                {coinDenom}
+              </span>
+              {denomAccessory}
+            </div>
+          ) : (
+            <span className="body2 md:caption overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400 md:w-28">
+              {coinDenom}
+            </span>
+          ))}
       </div>
     </div>
   );

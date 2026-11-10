@@ -2,10 +2,12 @@ import {
   AssetFilterSchema,
   AvailableRangeValues,
   AvailableTimeDurations,
+  captureError,
   captureErrorAndReturn,
   createSortSchema,
   CursorPaginationSchema,
   DEFAULT_VS_CURRENCY,
+  getAlloyContractAddress,
   getAsset,
   getAssetCoingeckoCoin,
   getAssetHistoricalPrice,
@@ -16,6 +18,7 @@ import {
   getAssetWithUserBalance,
   getAssetWithVariants,
   getBridgeAsset,
+  getCachedTransmuterTotalPoolLiquidity,
   getCategoryImageSamples,
   getCoinGeckoCoinMarketChart,
   getMarketAsset,
@@ -31,6 +34,7 @@ import {
   TimeFrame,
   withSqsPriceFallback,
 } from "@osmosis-labs/server";
+import type { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { compareCommon, isNil, sort } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
@@ -268,6 +272,9 @@ export const assetsRouter = createTRPCRouter({
           ] as const).optional(),
           watchListDenoms: z.array(z.string()).optional(),
           excludeVariants: z.boolean().optional(),
+          /** Nest non-canonical variants under their canonical asset's row
+           *  (as `variants`) instead of listing them as rows of their own. */
+          groupVariants: z.boolean().optional(),
           excludeStablecoins: z.boolean().optional(),
           minLiquidity: z.number().optional(),
           minVolume24h: z.number().optional(),
@@ -287,6 +294,7 @@ export const assetsRouter = createTRPCRouter({
           limit,
           includePreview,
           excludeVariants,
+          groupVariants,
           excludeStablecoins,
           minLiquidity,
           minVolume24h,
@@ -337,37 +345,92 @@ export const assetsRouter = createTRPCRouter({
                   volume24h: undefined,
                 }));
 
+            // Grouping runs on the sorted list, before pagination, so a page
+            // never splits a group. Search results stay flat so a query for a
+            // variant's symbol finds its row directly.
+            const isGrouping = Boolean(groupVariants && !search);
+            const alloyMembers = isGrouping
+              ? await getAlloyMembers({ ...ctx, listedAssets: assets })
+              : new Map<string, Set<string>>();
+            if (isGrouping) {
+              // An alloy's dust holdings fail the liquidity filter above, but every
+              // member belongs in its group, so add them back unfiltered.
+              const listed = new Set(assets.map((a) => a.coinMinimalDenom));
+              const missing = [...alloyMembers.entries()].flatMap(
+                ([alloyDenom, members]) =>
+                  [...members]
+                    .filter((denom) => !listed.has(denom))
+                    .map((denom) => {
+                      try {
+                        return getAsset({ ...ctx, anyDenom: denom });
+                      } catch {
+                        // pool holds a denom the asset list doesn't know
+                        return undefined;
+                      }
+                    })
+                    .filter(
+                      (asset): asset is NonNullable<typeof asset> =>
+                        asset?.variantGroupKey === alloyDenom
+                    )
+              );
+              if (missing.length) {
+                assets.push(
+                  ...(await mapGetMarketAssets({
+                    ...ctx,
+                    assets: missing,
+                    minLiquidity: 0,
+                    sqsPriceFallback: marketDataAvailable,
+                  }))
+                );
+              }
+            }
+            const maybeGroup = (sorted: typeof assets) =>
+              isGrouping
+                ? groupVariantsUnderCanonical(
+                    sorted,
+                    alloyMembers,
+                    watchListDenoms
+                  )
+                : sorted.map((asset) => ({
+                    ...asset,
+                    variants: [] as typeof assets,
+                  }));
+
             // sorting
             if (sortInput) {
               // user sorting
 
-              return sort(assets, sortInput.keyPath, sortInput.direction);
+              return maybeGroup(
+                sort(assets, sortInput.keyPath, sortInput.direction)
+              );
             } else if (search) {
               return sortAssetSearchResults(assets, {
                 search,
                 watchListDenoms,
-              });
+              }).then(maybeGroup);
             } else {
               // default sorting, maybe with watchlist
 
               if (watchListDenoms) {
                 // default sort watchlist to top
-                return assets.sort((a, b) => {
-                  // 1. watchlist denoms sorted by volume 24h desc
-                  if (
-                    watchListDenoms.includes(a.coinDenom) &&
-                    watchListDenoms.includes(b.coinDenom)
-                  )
-                    return compareCommon(a.volume24h, b.volume24h);
-                  if (watchListDenoms.includes(a.coinDenom)) return -1;
-                  if (watchListDenoms.includes(b.coinDenom)) return 1;
+                return maybeGroup(
+                  assets.sort((a, b) => {
+                    // 1. watchlist denoms sorted by volume 24h desc
+                    if (
+                      watchListDenoms.includes(a.coinDenom) &&
+                      watchListDenoms.includes(b.coinDenom)
+                    )
+                      return compareCommon(a.volume24h, b.volume24h);
+                    if (watchListDenoms.includes(a.coinDenom)) return -1;
+                    if (watchListDenoms.includes(b.coinDenom)) return 1;
 
-                  // 2. rest of the assets by volume 24h desc
-                  return compareCommon(a.volume24h, b.volume24h);
-                });
+                    // 2. rest of the assets by volume 24h desc
+                    return compareCommon(a.volume24h, b.volume24h);
+                  })
+                );
               } else {
                 // default sort by volume24h desc
-                return sort(assets, "volume24h");
+                return maybeGroup(sort(assets, "volume24h"));
               }
             }
           },
@@ -379,6 +442,7 @@ export const assetsRouter = createTRPCRouter({
             categories,
             includePreview,
             excludeVariants,
+            groupVariants,
             excludeStablecoins,
             minLiquidity,
             minVolume24h,
@@ -981,3 +1045,100 @@ export const assetsRouter = createTRPCRouter({
         })
     ),
 });
+
+/** A variant that is not in its canonical asset's alloy joins the group only with at
+ *  least this much liquidity (USD), so thin or abandoned listings stay out of it. */
+const MIN_NON_ALLOY_VARIANT_LIQUIDITY = new Dec(50_000);
+
+/** Denoms each listed alloy's transmuter currently holds, keyed by alloyed denom.
+ *  An alloy whose transmuter can't be read is left out, so its variants fall back to
+ *  the liquidity rule. */
+async function getAlloyMembers({
+  listedAssets,
+  chainList,
+  assetLists,
+}: {
+  listedAssets: MinimalAsset[];
+  chainList: Chain[];
+  assetLists: AssetList[];
+}): Promise<Map<string, Set<string>>> {
+  const alloys = listedAssets.flatMap(({ coinMinimalDenom, isAlloyed }) => {
+    const contract = isAlloyed
+      ? getAlloyContractAddress(coinMinimalDenom)
+      : undefined;
+    return contract ? [{ alloyDenom: coinMinimalDenom, contract }] : [];
+  });
+  const entries = await Promise.all(
+    alloys.map(async ({ alloyDenom, contract }) => {
+      try {
+        const liquidity = await getCachedTransmuterTotalPoolLiquidity(
+          contract,
+          chainList,
+          assetLists
+        );
+        return [
+          alloyDenom,
+          new Set(liquidity.map(({ asset }) => asset.coinMinimalDenom)),
+        ] as const;
+      } catch (e) {
+        captureError(e);
+        return undefined;
+      }
+    })
+  );
+  return new Map(entries.filter((e) => e !== undefined));
+}
+
+/** Folds variants into their canonical asset's row, in the given (already sorted)
+ *  order, so the group sits where the canonical asset ranks and its row shows the
+ *  canonical asset's own figures. Figures are not summed: volume would count swaps
+ *  between variants twice, and an alloy's market cap already includes the variants
+ *  that back it.
+ *
+ *  A group holds every asset in the canonical asset's alloy (even dust), plus other
+ *  variants with at least `MIN_NON_ALLOY_VARIANT_LIQUIDITY`. Variants below that are
+ *  left out of the list; search still finds them. A variant stays a row of its own
+ *  when its canonical asset is not in the list, or when the user watchlisted it, so it
+ *  keeps its place at the top. Grouping is by full denom (`variantGroupKey` is the
+ *  canonical asset's `coinMinimalDenom`), never by symbol. */
+function groupVariantsUnderCanonical<
+  TAsset extends {
+    coinDenom: string;
+    coinMinimalDenom: string;
+    variantGroupKey?: string;
+    liquidity?: PricePretty;
+  },
+>(
+  assets: TAsset[],
+  alloyMembers: Map<string, Set<string>>,
+  watchListDenoms: string[] = []
+): (TAsset & { variants: TAsset[] })[] {
+  const denoms = new Set(
+    assets.map(({ coinMinimalDenom }) => coinMinimalDenom)
+  );
+  const watched = new Set(watchListDenoms);
+  const isGroupedVariant = (asset: TAsset) =>
+    !!asset.variantGroupKey &&
+    asset.variantGroupKey !== asset.coinMinimalDenom &&
+    denoms.has(asset.variantGroupKey) &&
+    !watched.has(asset.coinDenom);
+  const belongsInGroup = (asset: TAsset) =>
+    alloyMembers.get(asset.variantGroupKey!)?.has(asset.coinMinimalDenom) ||
+    (asset.liquidity?.toDec().gte(MIN_NON_ALLOY_VARIANT_LIQUIDITY) ?? false);
+
+  const variantsByCanonical = new Map<string, TAsset[]>();
+  for (const asset of assets) {
+    if (!isGroupedVariant(asset) || !belongsInGroup(asset)) continue;
+    const key = asset.variantGroupKey!;
+    const group = variantsByCanonical.get(key) ?? [];
+    group.push(asset);
+    variantsByCanonical.set(key, group);
+  }
+
+  return assets
+    .filter((asset) => !isGroupedVariant(asset))
+    .map((asset) => ({
+      ...asset,
+      variants: variantsByCanonical.get(asset.coinMinimalDenom) ?? [],
+    }));
+}
