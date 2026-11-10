@@ -538,18 +538,20 @@ export const AssetsInfoTable: FunctionComponent<{
       : 0;
 
   // pagination
-  const lastRow = rows[rows.length - 1];
+  // Compare against the flattened row count: with variant groups expanded,
+  // `row.index` is a row's position among its siblings, not in `rows`.
+  const lastRowIndex = rows.length - 1;
   const lastVirtualRow = virtualRows[virtualRows.length - 1];
   const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
   useEffect(() => {
     if (
-      lastRow &&
+      lastRowIndex >= 0 &&
       lastVirtualRow &&
-      lastRow.index === lastVirtualRow.index &&
+      lastVirtualRow.index === lastRowIndex &&
       canLoadMore
     )
       fetchNextPage();
-  }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
+  }, [lastRowIndex, lastVirtualRow, canLoadMore, fetchNextPage]);
 
   return (
     <div className="w-full">
