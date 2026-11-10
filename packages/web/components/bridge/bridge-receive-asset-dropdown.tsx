@@ -20,9 +20,9 @@ interface BridgeReceiveAssetDropdownProps {
   toAsset: SupportedAsset;
   setToAsset: (asset: SupportedAsset) => void;
   /**
-   * Records a deliberate user selection of a withdraw variant, distinctly from
-   * the parent's auto-seed/realign writes that also go through `setToAsset`.
-   * Withdraw branch only; falls back to `setToAsset` when not provided.
+   * Records a deliberate user selection of a variant, distinctly from the
+   * parent's auto-seed/realign writes that also go through `setToAsset`.
+   * Falls back to `setToAsset` when not provided.
    */
   onUserSelectAsset?: (asset: SupportedAsset) => void;
   assetsInOsmosis: MinimalAsset[];
@@ -144,7 +144,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
                     )!;
 
                     const onClick = () => {
-                      setToAsset({
+                      (onUserSelectAsset ?? setToAsset)({
                         chainType: "cosmos",
                         address: asset.coinMinimalDenom,
                         decimals: asset.coinDecimals,

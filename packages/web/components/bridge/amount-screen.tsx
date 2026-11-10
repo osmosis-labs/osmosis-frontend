@@ -184,13 +184,13 @@ export const AmountScreen = memo(
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
 
-    // True once the user deliberately picks a withdraw variant from the receive
-    // dropdown. While true, the realign effect won't re-point `toAsset` to the
-    // provider list's current index 0, so a later provider settle or a
-    // background refetch that cosmetically reorders index 0 can't swap the asset
+    // True once the user deliberately picks a variant from the receive
+    // dropdown. While true, the deposit and withdraw effects won't re-point
+    // `toAsset` to the provider list's current index 0, so a later provider
+    // settle or a background refetch that reorders index 0 can't swap the asset
     // out from under a deliberate choice. Self-resets whenever `toAsset` returns
     // to nil (chain switch resetAssets(), or the parent's onTransfer reset) —
-    // see the realign effect, which is the single reset point.
+    // see those two effects, which are the only reset points.
     const userHasPickedToAssetRef = useRef(false);
 
     const {
@@ -616,6 +616,9 @@ export const AmountScreen = memo(
               // keep showing the previous account's spendable amount. Look
               // up the unfiltered data: a now-empty balance is filtered out
               // of `nextData` but must still replace the stale one.
+              // Also take a changed variant list: it grows as each bridge's
+              // lookup finishes, and the deposit destination follows its
+              // first entry.
               const refreshed = data?.find(
                 (asset) =>
                   asset.address === fromAsset.address &&
@@ -623,7 +626,9 @@ export const AmountScreen = memo(
               );
               if (
                 refreshed &&
-                !refreshed.amount.toDec().equals(fromAsset.amount.toDec())
+                (!refreshed.amount.toDec().equals(fromAsset.amount.toDec()) ||
+                  Object.keys(refreshed.supportedVariants).join() !==
+                    Object.keys(fromAsset.supportedVariants).join())
               ) {
                 setFromAsset(refreshed);
               }
@@ -637,18 +642,34 @@ export const AmountScreen = memo(
 
     /**
      * Deposit
-     * Set the initial destination asset based on the source asset.
+     * Set and maintain the destination asset based on the source asset.
+     *
+     * The source asset's variants grow as each bridge's lookup finishes, so
+     * the first variant can change after the first pick, e.g. a halted variant
+     * that answered quickly being overtaken by a working one (MTN-522). Follow
+     * the first variant until the user picks a receive asset, as the withdraw
+     * effect below does.
      */
     useEffect(() => {
       if (
         direction === "deposit" &&
         !isNil(fromAsset) &&
-        !isNil(assetsInOsmosis) &&
-        isNil(toAsset)
+        !isNil(assetsInOsmosis)
       ) {
+        if (isNil(toAsset)) {
+          userHasPickedToAssetRef.current = false;
+        }
+
+        const recommendedAddress = Object.keys(fromAsset.supportedVariants)[0];
+        const shouldSeed = isNil(toAsset);
+        const shouldRealign =
+          !userHasPickedToAssetRef.current &&
+          !isNil(toAsset) &&
+          toAsset.address !== recommendedAddress;
+        if (!shouldSeed && !shouldRealign) return;
+
         const destinationAsset = assetsInOsmosis.find(
-          (a) =>
-            a.coinMinimalDenom === Object.keys(fromAsset.supportedVariants)[0]
+          (a) => a.coinMinimalDenom === recommendedAddress
         )!;
 
         setToAsset({
