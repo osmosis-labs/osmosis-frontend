@@ -47,24 +47,26 @@ export interface AccountBalanceRequirement {
 export const ACCOUNT_REQUIREMENTS: Record<string, AccountBalanceRequirement[]> =
   {
     "E2E Test Account": [
-      // minAmount = actual consumed + 5% buffer (only fail when tests would genuinely fail)
-      // warnAmount = ~2x consumed (top-up reminder before it becomes critical)
-      // trade.wallet.spec.ts: buy 1.12 USDC, sell 1.11+1.01 ATOM, limit 1.01 OSMO
-      // swap.usdc.wallet.spec.ts: 0.1-0.2 USDC out and the same amount back
-      // swap.osmo.wallet.spec.ts: 0.2 OSMO out and the same amount back
+      // minAmount gates the PR smoke job (check-balances skips it below this),
+      // so it covers only what that job spends: the swap.usdc.wallet round
+      // trip (0.1-0.2 USDC out and back) and the trade.wallet OSMO limit order
+      // (~$1.01, placed and cancelled), plus gas.
+      // warnAmount sizes auto-topup for the full suite on stage, which has no
+      // balance gate of its own: trade.wallet buy 1.12 USDC, sell 1.11+1.01
+      // ATOM, limit 1.01 OSMO; swap.osmo.wallet 0.2 OSMO out and back.
       // The swap tests are round trips that start from USDC or OSMO, so they
       // need no TIA, INJ or AKT on hand.
       {
         token: "USDC",
-        minAmount: 1.7,
+        minAmount: 0.3,
         warnAmount: 3.5,
-        note: "~1.62 consumed (trade buy + swaps). USDC is the alloy since the assetlist identity handover; the topup account must hold allUSDC (convert Noble 1:1 via the transmuter) for auto-topup to fund it.",
+        note: "PR smoke: ~0.2 (swap round trip). Full suite: ~1.62 (trade buy + swaps). USDC is the alloy since the assetlist identity handover; the topup account must hold allUSDC (convert Noble 1:1 via the transmuter) for auto-topup to fund it.",
       },
       {
         token: "ATOM",
-        minAmount: 2.27,
+        minAmount: 0,
         warnAmount: 4.5,
-        note: "~2.16 consumed (trade sell + limit + swaps)",
+        note: "PR smoke: none. Full suite: ~2.16 (trade sell + limit + swaps)",
       },
       {
         token: "OSMO",

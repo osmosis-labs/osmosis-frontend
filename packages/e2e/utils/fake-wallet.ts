@@ -27,7 +27,7 @@ import { createHash } from "node:crypto";
 
 import type { BrowserContext, Page } from "@playwright/test";
 
-import { REST_ENDPOINT } from "./config";
+import { REST_ENDPOINT, lcdGet } from "./config";
 
 /**
  * The E2E topup account. It holds every token the flows trade, and its
@@ -84,13 +84,9 @@ export class FakeWallet {
     context: BrowserContext,
     address = FAKE_WALLET_ADDRESS
   ): Promise<FakeWallet> {
-    const res = await fetch(
-      `${REST_ENDPOINT.replace(/\/+$/, "")}/cosmos/auth/v1beta1/accounts/${address}`,
-      { signal: AbortSignal.timeout(15_000) }
-    );
-    const json = (await res.json()) as {
+    const json = await lcdGet<{
       account?: { pub_key?: { key?: string } };
-    };
+    }>(`/cosmos/auth/v1beta1/accounts/${address}`);
     const pubKeyBase64 = json.account?.pub_key?.key;
     if (!pubKeyBase64) {
       throw new Error(`${address} has no public key on ${REST_ENDPOINT}`);

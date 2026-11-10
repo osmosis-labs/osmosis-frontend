@@ -11,6 +11,7 @@ import { PortfolioPage } from "../pages/portfolio-page";
 import { TradePage } from "../pages/trade-page";
 import { TestConfig } from "../test-config";
 import { TOKEN_DENOMS } from "../utils/balance-checker";
+import { lcdGet } from "../utils/config";
 import { type AminoMsg, FakeWallet } from "../utils/fake-wallet";
 import { fetchCanonicalOrderbooks } from "../utils/orderbook";
 import { fetchTokenPrices } from "../utils/price-utils";
@@ -213,7 +214,7 @@ test.describe("Wallet flows with a fake wallet", () => {
   /**
    * Reviews and confirms the trade behind `button`, waits for the app to
    * report success, and returns the signed messages plus the quotes received
-   * up to the Confirm click. Limit orders have no slippage setting.
+   * up to signing. Limit orders have no slippage setting.
    */
   async function confirmTrade(
     button = tradePage.swapBtn,
@@ -225,9 +226,11 @@ test.describe("Wallet flows with a fake wallet", () => {
     await tradePage.disable1CTIfNeeded();
     if (slippage) await tradePage.setSlippageTolerance(slippage);
     await tradePage.acknowledgeLossIfNeeded();
-    const quotesSoFar = [...quotes];
     await tradePage.confirmSwapBtn.click();
     await wallet.waitForTx();
+    // Taken after signing: each quote's body is parsed asynchronously, so the
+    // quote for the traded amount can be recorded just after the Confirm click.
+    const quotesSoFar = [...quotes];
     expect(wallet.broadcasts, "More than one tx was broadcast.").toHaveLength(
       1
     );
@@ -342,20 +345,18 @@ test.describe("Wallet flows with a fake wallet", () => {
 
   test("Portfolio lists every token the wallet holds", async () => {
     test.setTimeout(120_000);
-    const res = await fetch(
-      `${process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone"}/cosmos/bank/v1beta1/balances/${wallet.address}?pagination.limit=1000`
-    );
-    const { balances } = (await res.json()) as {
+    const { balances } = await lcdGet<{
       balances: { denom: string; amount: string }[];
-    };
+    }>(`/cosmos/bank/v1beta1/balances/${wallet.address}?pagination.limit=1000`);
     const prices = await fetchTokenPrices(balances.map((b) => b.denom));
-    // Tokens worth a cent or more; dust and unpriced tokens may be hidden.
+    // Tokens worth at least the app's $0.02 dust cut-off; dust and unpriced
+    // tokens may be hidden.
     const held = Object.entries(TOKEN_DENOMS).filter(
       ([, { denom, decimals }]) => {
         const amount = balances.find((b) => b.denom === denom)?.amount;
         return (
           amount &&
-          units(BigInt(amount), decimals) * (prices[denom] ?? 0) >= 0.01
+          units(BigInt(amount), decimals) * (prices[denom] ?? 0) >= 0.02
         );
       }
     );
@@ -363,10 +364,10 @@ test.describe("Wallet flows with a fake wallet", () => {
 
     const portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
-    await portfolioPage.hideZeroBalances();
-    await portfolioPage.viewMoreBalances();
-    // "View more" lists every row, so no search is needed.
+    // The balances table only renders rows near the viewport, so search for
+    // each token rather than relying on its row being in the DOM.
     for (const [name, { denom }] of held) {
+      await portfolioPage.searchForToken(name);
       const balance = await portfolioPage.getBalanceFor({
         name,
         minimalDenom: denom,
