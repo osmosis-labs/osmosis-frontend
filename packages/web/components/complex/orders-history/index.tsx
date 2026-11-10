@@ -468,9 +468,10 @@ const TableOrderRow = memo(
     const lineAsset =
       isUnfilledCancel && order_direction === "bid" ? quoteAsset : baseAsset;
 
-    const placedAt = dayjs.unix(placed_at);
-    const formattedTime = placedAt.format("h:mm A");
-    const formattedDate = placedAt.format("MMM D");
+    // The mapper stores 0 when Numia has no place time, so leave it blank rather than show 1 Jan 1970.
+    const placedAt = placed_at ? dayjs.unix(placed_at) : undefined;
+    const formattedTime = placedAt?.format("h:mm A");
+    const formattedDate = placedAt?.format("MMM D");
 
     const statusString = (() => {
       switch (status) {
@@ -494,6 +495,7 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
         case "cancelled":
+          if (!placedAt) return;
           const dayDiff = dayjs(new Date()).diff(placedAt, "d");
           const hourDiff = dayjs(new Date()).diff(placedAt, "h");
 

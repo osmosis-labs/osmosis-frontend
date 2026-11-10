@@ -113,7 +113,10 @@ const OrderDetails = ({
     .unix(order?.placed_at ?? 0)
     .format("DD, YYYY, HH:mm");
 
-  const formattedDate = `${formattedMonth} ${formattedDateDayYearHourMinute}`;
+  // The mapper stores 0 when Numia has no place time, so leave it blank rather than show 1 Jan 1970.
+  const formattedDate = order?.placed_at
+    ? `${formattedMonth} ${formattedDateDayYearHourMinute}`
+    : undefined;
 
   const statusComponent = (() => {
     if (!order) return;
