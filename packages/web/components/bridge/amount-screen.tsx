@@ -1206,6 +1206,9 @@ export const AmountScreen = memo(
                 </div>
               )
             )}
+            {/* A deposit halt belongs to the receive variant, so keep its
+                dropdown here: the user can switch to a working variant. */}
+            {direction === "deposit" && haltState.halted && assetDropdown}
             {/* A failed balance lookup must be visible: without this the
                 user only sees the options button and assumes a zero balance. */}
             {!haltState.halted && hasBalanceError && fromChain && (

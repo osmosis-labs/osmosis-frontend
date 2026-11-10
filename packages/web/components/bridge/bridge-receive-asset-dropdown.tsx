@@ -10,6 +10,7 @@ import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
 import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
+import { depositHaltReasonKey } from "~/utils/halt-reasons";
 import { getLogoURIs } from "~/utils/logo-uri";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
@@ -160,13 +161,19 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
 
                     const isCanonicalAsset = index === 0;
 
+                    // A halted variant can't receive the deposit, so it stays
+                    // visible but can't be picked.
+                    const isHalted = asset.areDepositsHalted;
+
                     return (
-                      <MenuItem key={asset.coinDenom}>
+                      <MenuItem key={asset.coinDenom} disabled={isHalted}>
                         <button
                           type="button"
+                          disabled={isHalted}
                           className={classNames(
                             "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
-                            isSelected && "bg-osmoverse-700"
+                            isSelected && "bg-osmoverse-700",
+                            isHalted && "cursor-not-allowed opacity-50"
                           )}
                           onClick={onClick}
                         >
@@ -183,10 +190,18 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<
                             <p className="body1 md:body2">
                               {t("transfer.depositAs")} {asset.coinDenom}
                             </p>
-                            {isCanonicalAsset && (
+                            {isHalted ? (
                               <p className="body2 text-osmoverse-300">
-                                {t("transfer.recommended")}
+                                {t(
+                                  depositHaltReasonKey(asset.depositHaltReason)
+                                )}
                               </p>
+                            ) : (
+                              isCanonicalAsset && (
+                                <p className="body2 text-osmoverse-300">
+                                  {t("transfer.recommended")}
+                                </p>
+                              )
                             )}
                           </div>
                         </button>
