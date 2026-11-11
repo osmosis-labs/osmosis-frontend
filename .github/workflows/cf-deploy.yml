@@ -2,10 +2,13 @@ name: Cloudflare deploy
 
 # Builds and deploys the Cloudflare Worker pair: the API Worker first
 # (`cf:api:deploy`), then the pages Worker that binds to it (`cf:deploy`).
-# Called by cf-deploy-stage.yml (stage Workers) and cf-preview.yml (one
-# Worker pair per PR, named by scripts/cf-preview-config.mjs).
 #
-# Everything comes from the GitHub environment passed as `environment`. Unset
+#   push to stage  -> osmosis-frontend-stage + osmosis-frontend-api-stage
+#                     (configs as committed), environment `cloudflare-stage`
+#   push to master -> osmosis-frontend-production + osmosis-frontend-api-production
+#                     (scripts/cf-production-config.mjs), environment `cloudflare-production`
+#
+# Everything comes from that GitHub environment. Unset
 # or empty values are left out, so `packages/web/.env` defaults and code
 # fallbacks still apply (an empty string would override them).
 #
@@ -30,8 +33,8 @@ name: Cloudflare deploy
 #
 # Worker runtime secrets, uploaded with `--secrets-file` when set. Deploys only
 # add secrets, so values set in the Cloudflare dashboard stay when these are
-# unset (the stage environment can leave them out). Preview Workers are new
-# for each PR, so cloudflare-preview needs them:
+# unset. osmosis-frontend-api-production does not exist yet, so the first
+# master deploy needs the API secrets in cloudflare-production:
 #   pages Worker: COINGECKO_API_KEY, NUMIA_API_KEY
 #   API Worker:   COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
 #                 SWAPPED_COM_SK, CF_GITHUB_API_TOKEN (uploaded as GITHUB_API_TOKEN),
@@ -39,27 +42,27 @@ name: Cloudflare deploy
 #                 NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS
 
 on:
-  workflow_call:
-    inputs:
-      environment:
-        description: GitHub environment holding the values above.
-        required: true
-        type: string
-      pr-number:
-        description: Deploy PR <n>'s preview Worker pair instead of the configs as committed.
-        required: false
-        type: number
-        default: 0
+  push:
+    branches: [stage, master]
+  workflow_dispatch:
+
+# One deploy per branch at a time. Queue instead of cancelling one midway;
+# the newest push still lands last.
+concurrency:
+  group: cf-deploy-${{ github.ref_name }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
   deploy:
+    # workflow_dispatch can pick any branch; only these two have Workers.
+    if: github.ref_name == 'stage' || github.ref_name == 'master'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
-      name: ${{ inputs.environment }}
+      name: ${{ github.ref_name == 'master' && 'cloudflare-production' || 'cloudflare-stage' }}
       url: ${{ steps.pages.outputs.url }}
     defaults:
       run:
@@ -85,11 +88,9 @@ jobs:
       - name: Install dependencies
         run: corepack yarn install --immutable
 
-      - name: Point the configs at the PR's preview Workers
-        if: inputs.pr-number > 0
-        env:
-          PR_NUMBER: ${{ inputs.pr-number }}
-        run: node scripts/cf-preview-config.mjs --pr "$PR_NUMBER"
+      - name: Point the configs at the production Workers
+        if: github.ref_name == 'master'
+        run: node scripts/cf-production-config.mjs
 
       - name: Export build values
         env:
