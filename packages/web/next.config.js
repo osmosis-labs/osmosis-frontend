@@ -12,12 +12,15 @@ const config = {
   env: {
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
-    // exposed; the URLs carry API keys and stay server-side.
-    NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: Object.keys(process.env)
-      .map((name) => /^EVM_RPC_URL_(\d+)$/.exec(name))
-      .filter((match) => match && process.env[match[0]]?.trim())
-      .map((match) => match?.[1])
-      .join(","),
+    // exposed; the URLs carry API keys and stay server-side. An explicit list
+    // wins, for builds (Cloudflare CI) whose RPC URLs are Worker secrets only.
+    NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS:
+      process.env.NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS?.trim() ||
+      Object.keys(process.env)
+        .map((name) => /^EVM_RPC_URL_(\d+)$/.exec(name))
+        .filter((match) => match && process.env[match[0]]?.trim())
+        .map((match) => match?.[1])
+        .join(","),
   },
   // CI lints (lint-and-check-format.yml) and type-checks (`yarn typecheck`) every push,
   // so skip both here to save ~40s on each Vercel build.

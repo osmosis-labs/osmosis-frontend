@@ -1,0 +1,80 @@
+name: Cloudflare preview
+
+# One Worker pair per PR (osmosis-frontend-pr-<n> on workers.dev, bound to
+# osmosis-frontend-api-pr-<n>), redeployed on every push and deleted when the
+# PR closes. Values come from the `cloudflare-preview` environment (see
+# cf-deploy.yml); it must allow deployments from any branch.
+#
+# Only `pull_request`, never `pull_request_target`: the build runs PR code with
+# Cloudflare credentials, so fork PRs (no secrets) are skipped.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+# Closing a PR cancels its in-flight deploy before the cleanup runs.
+concurrency:
+  group: cf-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.fork == false
+    uses: ./.github/workflows/cf-deploy.yml
+    with:
+      environment: cloudflare-preview
+      pr-number: ${{ github.event.pull_request.number }}
+    secrets: inherit
+
+  cleanup:
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: cloudflare-preview
+    steps:
+      # The merge ref is gone once a PR closes; the default branch has the script.
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: |
+            /packages/web/scripts/
+            /yarn.lock
+          sparse-checkout-cone-mode: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Resolve preview Worker names
+        id: names
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node packages/web/scripts/cf-preview-config.mjs --pr "$PR_NUMBER" --names
+
+      - name: Delete preview Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          # Pages first: it binds to the API Worker.
+          WORKERS: ${{ steps.names.outputs.pages_worker }} ${{ steps.names.outputs.api_worker }}
+        run: |
+          set -euo pipefail
+          # The lockfile's wrangler, without installing the workspace.
+          version=$(awk '/^"wrangler@npm:/ { found = 1; next } found && /^  version:/ { print $2; exit }' yarn.lock)
+          [ -n "$version" ] || { echo "wrangler version not found in yarn.lock"; exit 1; }
+          cd "$RUNNER_TEMP"
+          for worker in $WORKERS; do
+            if output=$(npx --yes "wrangler@$version" delete "$worker" --force 2>&1); then
+              echo "$output"
+            elif grep -qiE 'does not exist|not found|\[code: 10007\]' <<< "$output"; then
+              echo "$worker was not deployed; nothing to delete."
+            else
+              echo "$output"
+              exit 1
+            fi
+          done

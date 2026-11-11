@@ -1,0 +1,221 @@
+name: Cloudflare deploy
+
+# Builds and deploys the Cloudflare Worker pair: the API Worker first
+# (`cf:api:deploy`), then the pages Worker that binds to it (`cf:deploy`).
+# Called by cf-deploy-stage.yml (stage Workers) and cf-preview.yml (one
+# Worker pair per PR, named by scripts/cf-preview-config.mjs).
+#
+# Everything comes from the GitHub environment passed as `environment`. Unset
+# or empty values are left out, so `packages/web/.env` defaults and code
+# fallbacks still apply (an empty string would override them).
+#
+# Required:
+#   secrets.CLOUDFLARE_API_TOKEN   Workers Scripts:Edit, Workers R2 Storage:Edit
+#   vars.CLOUDFLARE_ACCOUNT_ID     the Osmosis Labs account
+#
+# Build-time values, inlined by `next build` and the API Worker's esbuild
+# defines (vars, since they ship in the client bundle):
+#   NEXT_PUBLIC_SIDECAR_BASE_URL, NEXT_PUBLIC_HISTORICAL_DATA_URL,
+#   NEXT_PUBLIC_IS_TESTNET, NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE,
+#   NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE, NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE,
+#   NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE, NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY,
+#   NEXT_PUBLIC_WALLETCONNECT_RELAY_URL, NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
+#   NEXT_PUBLIC_SQUID_INTEGRATOR_ID, NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS,
+#   NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH, NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS,
+#   NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT, NEXT_PUBLIC_TRPC_LOGS,
+#   NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS, ASSET_LIST_COMMIT_HASH
+#
+# Build-time secrets (the /assets prerender runs server queries):
+#   COINGECKO_API_KEY, NUMIA_API_KEY
+#
+# Worker runtime secrets, uploaded with `--secrets-file` when set. Deploys only
+# add secrets, so values set in the Cloudflare dashboard stay when these are
+# unset (the stage environment can leave them out). Preview Workers are new
+# for each PR, so cloudflare-preview needs them:
+#   pages Worker: COINGECKO_API_KEY, NUMIA_API_KEY
+#   API Worker:   COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
+#                 SWAPPED_COM_SK, CF_GITHUB_API_TOKEN (uploaded as GITHUB_API_TOKEN),
+#                 EVM_RPC_URL_<chainId> for the chains in
+#                 NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: GitHub environment holding the values above.
+        required: true
+        type: string
+      pr-number:
+        description: Deploy PR <n>'s preview Worker pair instead of the configs as committed.
+        required: false
+        type: number
+        default: 0
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.pages.outputs.url }}
+    defaults:
+      run:
+        working-directory: packages/web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-24.x
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      - name: Point the configs at the PR's preview Workers
+        if: inputs.pr-number > 0
+        env:
+          PR_NUMBER: ${{ inputs.pr-number }}
+        run: node scripts/cf-preview-config.mjs --pr "$PR_NUMBER"
+
+      - name: Export build values
+        env:
+          BUILD_KEYS: >-
+            NEXT_PUBLIC_SIDECAR_BASE_URL NEXT_PUBLIC_HISTORICAL_DATA_URL
+            NEXT_PUBLIC_IS_TESTNET NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE
+            NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE
+            NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY
+            NEXT_PUBLIC_WALLETCONNECT_RELAY_URL NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
+            NEXT_PUBLIC_SQUID_INTEGRATOR_ID NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS
+            NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS
+            NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT NEXT_PUBLIC_TRPC_LOGS
+            NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS ASSET_LIST_COMMIT_HASH
+            COINGECKO_API_KEY NUMIA_API_KEY
+          NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ vars.NEXT_PUBLIC_SIDECAR_BASE_URL }}
+          NEXT_PUBLIC_HISTORICAL_DATA_URL: ${{ vars.NEXT_PUBLIC_HISTORICAL_DATA_URL }}
+          NEXT_PUBLIC_IS_TESTNET: ${{ vars.NEXT_PUBLIC_IS_TESTNET }}
+          NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE }}
+          NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE }}
+          NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE }}
+          NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE }}
+          NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY: ${{ vars.NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY }}
+          NEXT_PUBLIC_WALLETCONNECT_RELAY_URL: ${{ vars.NEXT_PUBLIC_WALLETCONNECT_RELAY_URL }}
+          NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID: ${{ vars.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID }}
+          NEXT_PUBLIC_SQUID_INTEGRATOR_ID: ${{ vars.NEXT_PUBLIC_SQUID_INTEGRATOR_ID }}
+          NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS: ${{ vars.NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS }}
+          NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH: ${{ vars.NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH }}
+          NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS: ${{ vars.NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS }}
+          NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT: ${{ vars.NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT }}
+          NEXT_PUBLIC_TRPC_LOGS: ${{ vars.NEXT_PUBLIC_TRPC_LOGS }}
+          NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: ${{ vars.NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS }}
+          ASSET_LIST_COMMIT_HASH: ${{ vars.ASSET_LIST_COMMIT_HASH }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+        run: |
+          set -euo pipefail
+          for key in $BUILD_KEYS; do
+            value="${!key-}"
+            [ -n "$value" ] || continue
+            delimiter="EOF_$(openssl rand -hex 12)"
+            printf '%s<<%s\n%s\n%s\n' "$key" "$delimiter" "$value" "$delimiter" >> "$GITHUB_ENV"
+            echo "set $key"
+          done
+
+      # The API bundle imports the workspace packages' build output and
+      # config/generated (api-worker/README.md). cf:deploy rebuilds both later;
+      # turbo's local cache makes the second build:packages cheap.
+      - name: Build workspace packages and lists
+        env:
+          # generate:lists reads the asset list commit from the GitHub API.
+          GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          corepack yarn build:packages
+          corepack yarn generate:lists
+
+      # Secret values live only in this step's env and the 0600 files it writes.
+      # Wrangler lets process env override the file, and `dotenv -c production`
+      # only fills keys that are unset, so every key here is set from GitHub.
+      - name: Deploy API Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_SECRET_KEYS: COINGECKO_API_KEY NUMIA_API_KEY
+          API_SECRET_KEYS: >-
+            COINGECKO_API_KEY NUMIA_API_KEY SKIP_API_KEY SOLANA_RPC_URL SWAPPED_COM_SK
+            GITHUB_API_TOKEN EVM_RPC_URL_1 EVM_RPC_URL_10 EVM_RPC_URL_56 EVM_RPC_URL_137
+            EVM_RPC_URL_250 EVM_RPC_URL_314 EVM_RPC_URL_1284 EVM_RPC_URL_8453
+            EVM_RPC_URL_42161 EVM_RPC_URL_43114 EVM_RPC_URL_81457
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
+          # Secret names can't start with GITHUB_. A PAT, not the job token,
+          # which expires when this job ends.
+          GITHUB_API_TOKEN: ${{ secrets.CF_GITHUB_API_TOKEN }}
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+          SWAPPED_COM_SK: ${{ secrets.SWAPPED_COM_SK }}
+          EVM_RPC_URL_1: ${{ secrets.EVM_RPC_URL_1 }}
+          EVM_RPC_URL_10: ${{ secrets.EVM_RPC_URL_10 }}
+          EVM_RPC_URL_56: ${{ secrets.EVM_RPC_URL_56 }}
+          EVM_RPC_URL_137: ${{ secrets.EVM_RPC_URL_137 }}
+          EVM_RPC_URL_250: ${{ secrets.EVM_RPC_URL_250 }}
+          EVM_RPC_URL_314: ${{ secrets.EVM_RPC_URL_314 }}
+          EVM_RPC_URL_1284: ${{ secrets.EVM_RPC_URL_1284 }}
+          EVM_RPC_URL_8453: ${{ secrets.EVM_RPC_URL_8453 }}
+          EVM_RPC_URL_42161: ${{ secrets.EVM_RPC_URL_42161 }}
+          EVM_RPC_URL_43114: ${{ secrets.EVM_RPC_URL_43114 }}
+          EVM_RPC_URL_81457: ${{ secrets.EVM_RPC_URL_81457 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          # Values are read from the environment, never passed on a command line.
+          write_secrets() {
+            local file="$1"; shift
+            jq -n '[$ARGS.positional[] | select((env[.] // "") != "") | {(.): env[.]}] | add // {}' \
+              --args "$@" > "$file"
+            echo "$file: $(jq -r 'keys | join(", ") | if . == "" then "none" else . end' "$file")"
+          }
+          write_secrets "$RUNNER_TEMP/cf-pages-secrets.json" $PAGES_SECRET_KEYS
+          write_secrets "$RUNNER_TEMP/cf-api-secrets.json" $API_SECRET_KEYS
+
+          args=()
+          file="$RUNNER_TEMP/cf-api-secrets.json"
+          [ "$(jq length "$file")" = "0" ] || args+=(--secrets-file "$file")
+          corepack yarn cf:api:deploy "${args[@]}"
+
+      - name: Build and deploy pages Worker
+        id: pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          # generate:lists reads the asset list commit from the GitHub API.
+          GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          args=()
+          file="$RUNNER_TEMP/cf-pages-secrets.json"
+          [ "$(jq length "$file")" = "0" ] || args+=(--secrets-file "$file")
+          log="$RUNNER_TEMP/cf-pages-deploy.log"
+          corepack yarn cf:deploy "${args[@]}" 2>&1 | tee "$log"
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' "$log" | tail -n 1 || true)
+          if [ -n "$url" ]; then
+            echo "url=$url" >> "$GITHUB_OUTPUT"
+            echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Remove secrets files
+        if: always()
+        run: rm -f "$RUNNER_TEMP"/cf-*-secrets.json
