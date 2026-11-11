@@ -1,7 +1,8 @@
 import { poolHandler } from "~/server/api-handlers/pool";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-export default poolHandler;
+export default toNodeApiHandler(poolHandler);
 
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };

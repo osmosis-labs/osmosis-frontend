@@ -1,7 +1,8 @@
 import { edgeTrpcPoolsHandler } from "~/server/api-handlers/edge-trpc-pools";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-export default edgeTrpcPoolsHandler;
+export default toNodeApiHandler(edgeTrpcPoolsHandler);
 
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };

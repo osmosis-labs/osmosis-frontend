@@ -30,6 +30,9 @@ const config = {
     customExportConditions: [""],
   },
   testPathIgnorePatterns: ["e2e"],
+  // Build output (`output: "standalone"` and the OpenNext bundle) contains copies of workspace
+  // package.json files, which otherwise collide in Jest's module map.
+  modulePathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/.open-next/"],
 };
 
 const esmModules = [

@@ -1,8 +1,8 @@
 import { broadcastTransactionHandler } from "~/server/api-handlers/broadcast-transaction";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-export default broadcastTransactionHandler;
+export default toNodeApiHandler(broadcastTransactionHandler);
 
 export const config = {
-  runtime: "edge",
-  regions: ["cdg1"], // Only execute this function in the Paris region
+  api: { bodyParser: false },
 };

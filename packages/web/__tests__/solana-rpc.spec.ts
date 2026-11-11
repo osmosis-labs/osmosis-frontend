@@ -1,7 +1,11 @@
+import { Readable, Writable } from "node:stream";
+
 // eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { delay, http, HttpResponse } from "msw";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 import { server } from "~/__tests__/msw";
+import nodeSolanaRpcHandler, { config } from "~/pages/api/solana-rpc";
 import { solanaRpcHandler } from "~/server/api-handlers/solana-rpc";
 import { resetServerFlagCache } from "~/utils/server-flags";
 
@@ -77,6 +81,84 @@ afterEach(() => {
 it("rejects non-POST requests", async () => {
   const result = await solanaRpcHandler({ method: "GET" } as Request);
   expect(result.status).toBe(405);
+});
+
+describe("Node API route", () => {
+  async function callNodeRoute(body: string, origin = `https://${APP_HOST}`) {
+    const req = Object.assign(Readable.from([Buffer.from(body)]), {
+      method: "POST",
+      url: "/api/solana-rpc",
+      headers: {
+        host: APP_HOST,
+        "x-forwarded-proto": "https",
+        "content-type": "application/json",
+        origin,
+      },
+    });
+    const chunks: Uint8Array[] = [];
+    const res = Object.assign(
+      new Writable({
+        write(chunk, _encoding, callback) {
+          chunks.push(new Uint8Array(chunk));
+          callback();
+        },
+      }),
+      { statusCode: 200, setHeader: jest.fn() }
+    );
+
+    await nodeSolanaRpcHandler(
+      req as unknown as NextApiRequest,
+      res as unknown as NextApiResponse
+    );
+
+    return {
+      status: res.statusCode,
+      headers: res.setHeader,
+      body: JSON.parse(Buffer.concat(chunks).toString("utf8")),
+    };
+  }
+
+  it("disables Next's body parser to preserve the raw request stream", () => {
+    expect(config).toEqual({ api: { bodyParser: false } });
+  });
+
+  it("forwards a streamed request and writes the Fetch response to Node", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await callNodeRoute(JSON.stringify(allowedRequest));
+
+    expect(result.status).toBe(200);
+    expect(result.headers).toHaveBeenCalledWith(
+      "content-type",
+      "application/json"
+    );
+    expect(result.body).toEqual({
+      jsonrpc: "2.0",
+      id: 7,
+      result: { ok: true },
+    });
+    expect(calls).toEqual([allowedRequest]);
+  });
+
+  it("preserves the same-origin check through the Node adapter", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await callNodeRoute(
+      JSON.stringify(allowedRequest),
+      "https://evil.test"
+    );
+
+    expect(result.status).toBe(403);
+    expect(result.body).toEqual({ error: "Forbidden" });
+    expect(calls).toHaveLength(0);
+  });
+
+  it("returns invalid JSON errors from a raw request stream", async () => {
+    const result = await callNodeRoute("{not json");
+
+    expect(result.status).toBe(400);
+    expect(result.body).toEqual({ error: "Invalid JSON" });
+  });
 });
 
 describe("solana-skip-routes flag gate", () => {

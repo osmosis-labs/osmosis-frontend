@@ -1,7 +1,11 @@
+import { Readable, Writable } from "node:stream";
+
 // eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 import { server } from "~/__tests__/msw";
+import nodeEvmRpcHandler, { config } from "~/pages/api/evm-rpc";
 import { evmRpcHandler } from "~/server/api-handlers/evm-rpc";
 import { resetServerFlagCache } from "~/utils/server-flags";
 
@@ -266,4 +270,53 @@ it("falls back when the key is not enabled for the chain", async () => {
 
   expect(result.status).toBe(200);
   expect(publicCalls).toHaveLength(1);
+});
+
+describe("Node API route", () => {
+  async function callNodeRoute(body: string) {
+    const req = Object.assign(Readable.from([Buffer.from(body)]), {
+      method: "POST",
+      url: "/api/evm-rpc?chainId=137",
+      headers: {
+        host: APP_HOST,
+        "x-forwarded-proto": "https",
+        "content-type": "application/json",
+        origin: `https://${APP_HOST}`,
+      },
+    });
+    const chunks: Uint8Array[] = [];
+    const res = Object.assign(
+      new Writable({
+        write(chunk, _encoding, callback) {
+          chunks.push(new Uint8Array(chunk));
+          callback();
+        },
+      }),
+      { statusCode: 200, setHeader: jest.fn() }
+    );
+
+    await nodeEvmRpcHandler(
+      req as unknown as NextApiRequest,
+      res as unknown as NextApiResponse
+    );
+
+    return {
+      status: res.statusCode,
+      body: JSON.parse(Buffer.concat(chunks).toString("utf8")),
+    };
+  }
+
+  it("disables Next's body parser to preserve the raw request stream", () => {
+    expect(config).toEqual({ api: { bodyParser: false } });
+  });
+
+  it("forwards a streamed request, query string included", async () => {
+    const keyed = upstreamAnswers(KEYED_RPC);
+
+    const result = await callNodeRoute(JSON.stringify(balanceOf));
+
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual({ jsonrpc: "2.0", id: 3, result: "0x2a" });
+    expect(keyed).toHaveLength(1);
+  });
 });

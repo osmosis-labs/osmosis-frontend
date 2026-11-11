@@ -1,7 +1,8 @@
 import { evmRpcHandler } from "~/server/api-handlers/evm-rpc";
+import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-export default evmRpcHandler;
+export default toNodeApiHandler(evmRpcHandler);
 
 export const config = {
-  runtime: "edge",
+  api: { bodyParser: false },
 };
