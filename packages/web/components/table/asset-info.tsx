@@ -627,8 +627,16 @@ export const AssetsInfoTable: FunctionComponent<{
         </thead>
         <tbody>
           {paddingTop > 0 && paddingTop - topOffset > 0 && (
+            // Once scrolled, this spacer is the table's first row, so it carries
+            // the same column widths as the body rows.
             <tr>
-              <td style={{ height: paddingTop - topOffset }} />
+              {collapsedColumns.map((_, index) => (
+                <td
+                  key={index}
+                  className={classNames(index !== 0 && "w-28")}
+                  style={{ height: paddingTop - topOffset }}
+                />
+              ))}
             </tr>
           )}
           {isLoading && (
