@@ -59,7 +59,8 @@
     "NEXT_PUBLIC_TRPC_LOGS",
     "SKIP_API_KEY",
     "SOLANA_RPC_URL",
-    "EVM_RPC_URL_*"
+    "EVM_RPC_URL_*",
+    "CSP_MODE"
   ],
   "globalDependencies": [".oxlintrc.json"]
 }

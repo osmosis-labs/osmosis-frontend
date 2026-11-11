@@ -22,6 +22,7 @@ export const API_HANDLER_IDS = [
   "swappedSignature",
   "skipTrackTx",
   "skipTxStatus",
+  "cspReport",
 ] as const;
 
 export type ApiHandlerId = (typeof API_HANDLER_IDS)[number];
@@ -146,6 +147,12 @@ export const API_ROUTES: readonly ApiRoute[] = [
     handlerId: "skipTxStatus",
     match: "exact",
     pathname: "/api/skip-tx-status",
+  },
+  {
+    page: "csp-report.ts",
+    handlerId: "cspReport",
+    match: "exact",
+    pathname: "/api/csp-report",
   },
 ];
 
