@@ -10,6 +10,7 @@ import { useStore } from "zustand";
 import { IS_TESTNET } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import { checkEvmReceiptOutcome } from "~/utils/evm-rpc";
 import { checkSolanaSignatureOutcome } from "~/utils/solana";
 
 import {
@@ -36,7 +37,10 @@ export function getTransferHistoryStore(): TransferHistoryStore {
     new SquidTransferStatusProvider(
       process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
       network,
-      ChainList
+      ChainList,
+      // Settles EVM transfers from their receipt: a reverted tx is only a
+      // 404 to Squid, and so is one not mined or indexed yet.
+      checkEvmReceiptOutcome
     ),
     new SkipTransferStatusProvider(
       network,
@@ -69,7 +73,9 @@ export function getTransferHistoryStore(): TransferHistoryStore {
       },
       // Resolves Solana-signed transfers from the chain: a tx that never
       // landed is invisible to Skip, including after a reload.
-      checkSolanaSignatureOutcome
+      checkSolanaSignatureOutcome,
+      // Same for EVM transfers: a reverted tx never reaches Skip.
+      checkEvmReceiptOutcome
     ),
     new IbcTransferStatusProvider(ChainList, AssetLists),
     // Kept after the Int3face bridge provider's removal so past int3face
