@@ -663,6 +663,10 @@ export const AmountScreen = memo(
      * variant until the user picks a receive asset, as the withdraw effect
      * below does. A halted variant is only picked while no other is known, so
      * the halt banner explains why.
+     *
+     * A picked variant is kept only while it can still receive the deposit. A
+     * refresh can drop it from the source asset's variants, or mark it halted
+     * while another variant works (the halt view has no dropdown to leave it).
      */
     useEffect(() => {
       if (
@@ -677,10 +681,15 @@ export const AmountScreen = memo(
         const recommendedAddress =
           depositVariants[0] ?? Object.keys(fromAsset.supportedVariants)[0];
         const shouldSeed = isNil(toAsset);
-        const shouldRealign =
-          !userHasPickedToAssetRef.current &&
+        const isPickUnavailable =
           !isNil(toAsset) &&
-          toAsset.address !== recommendedAddress;
+          (depositVariants.length > 0
+            ? !depositVariants.includes(toAsset.address)
+            : !(toAsset.address in fromAsset.supportedVariants));
+        const shouldRealign =
+          !isNil(toAsset) &&
+          toAsset.address !== recommendedAddress &&
+          (!userHasPickedToAssetRef.current || isPickUnavailable);
         if (!shouldSeed && !shouldRealign) return;
 
         const destinationAsset = assetsInOsmosis.find(

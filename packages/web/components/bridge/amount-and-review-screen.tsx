@@ -187,8 +187,12 @@ export const AmountAndReviewScreen = memo(
       };
 
       if (direction === "deposit") {
-        Object.entries(fromAsset.supportedVariants[toAsset.address]).forEach(
-          ([bridge, variants]) => addToBridgeInfo(bridge as Bridge, variants)
+        // A refreshed source asset can drop the selected variant for one
+        // render, until the amount screen's deposit effect realigns `toAsset`.
+        Object.entries(
+          fromAsset.supportedVariants[toAsset.address] ?? {}
+        ).forEach(([bridge, variants]) =>
+          addToBridgeInfo(bridge as Bridge, variants)
         );
       } else if (direction === "withdraw") {
         const counterpartyAssets =
