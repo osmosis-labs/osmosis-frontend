@@ -357,20 +357,23 @@ export const assetsRouter = createTRPCRouter({
               : new Map<string, Set<string>>();
             if (isGrouping) {
               // An alloy's dust holdings fail the liquidity filter above, but every
-              // member belongs in its group, so add them back unfiltered.
+              // member belongs in its group, so add them back without the liquidity
+              // filter. They still pass the request's verified, preview and
+              // category filters.
               const listed = new Set(assets.map((a) => a.coinMinimalDenom));
+              const eligible = new Map(
+                getAssets({
+                  ...ctx,
+                  onlyVerified,
+                  includePreview,
+                  categories,
+                }).map((asset) => [asset.coinMinimalDenom, asset])
+              );
               const missing = [...alloyMembers.entries()].flatMap(
                 ([alloyDenom, members]) =>
                   [...members]
                     .filter((denom) => !listed.has(denom))
-                    .map((denom) => {
-                      try {
-                        return getAsset({ ...ctx, anyDenom: denom });
-                      } catch {
-                        // pool holds a denom the asset list doesn't know
-                        return undefined;
-                      }
-                    })
+                    .map((denom) => eligible.get(denom))
                     .filter(
                       (asset): asset is NonNullable<typeof asset> =>
                         asset?.variantGroupKey === alloyDenom
