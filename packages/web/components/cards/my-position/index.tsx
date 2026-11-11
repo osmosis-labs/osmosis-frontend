@@ -7,6 +7,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { PrivateText } from "~/components/privacy";
 import { useTranslation } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import {
@@ -142,6 +143,7 @@ export const MyPositionCard: FunctionComponent<{
           <PositionDataGroup
             label={t("clPositions.myLiquidity")}
             value={currentValue ? formatPretty(currentValue) : "–"}
+            isPrivate
           />
           <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
             {!hasPositionDetailsError && (
@@ -182,7 +184,9 @@ const PositionDataGroup: FunctionComponent<{
   label: string;
   value: string | ReactNode;
   isSuperfluid?: boolean;
-}> = ({ label, value, isSuperfluid = false }) => (
+  /** Mask the value when the user has enabled "Hide balances". */
+  isPrivate?: boolean;
+}> = ({ label, value, isSuperfluid = false, isPrivate = false }) => (
   <div className="flex-grow-1 flex max-w-[17rem] flex-shrink-0 flex-col items-end gap-2 xl:max-w-none xl:items-start">
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
@@ -194,7 +198,7 @@ const PositionDataGroup: FunctionComponent<{
           }
         )}
       >
-        {value}
+        {isPrivate ? <PrivateText text={value} /> : value}
       </h6>
     ) : (
       value

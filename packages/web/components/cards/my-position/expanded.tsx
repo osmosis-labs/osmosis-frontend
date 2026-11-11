@@ -27,6 +27,7 @@ import React, {
 import { FallbackImg } from "~/components/assets";
 import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
@@ -576,7 +577,9 @@ export const AssetsInfo: FunctionComponent<
                     />
                   </div>
                   <span className="whitespace-nowrap">
-                    {formatPretty(asset, { maxDecimals: 6 })}
+                    <PrivateText
+                      text={formatPretty(asset, { maxDecimals: 6 })}
+                    />
                   </span>
                 </div>
               ))}
@@ -584,7 +587,7 @@ export const AssetsInfo: FunctionComponent<
           </div>
           <div>
             <div className="text-white-full">
-              ({totalValue?.toString() ?? "–"})
+              (<PrivateText text={totalValue?.toString() ?? "–"} />)
             </div>
           </div>
         </div>
@@ -724,7 +727,10 @@ const SuperfluidPositionInfo: FunctionComponent<
         />
         <div className="md:caption flex flex-col">
           <span>{validatorName}</span>
-          <span>~{equivalentStakedAmount.trim(true).toString()}</span>
+          <span>
+            ~
+            <PrivateText text={equivalentStakedAmount.trim(true).toString()} />
+          </span>
         </div>
         <div className="md:caption flex flex-col pl-8 text-right md:pl-4">
           <span className="text-superfluid-gradient">

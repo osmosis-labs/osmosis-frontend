@@ -16,6 +16,7 @@ import {
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Spinner } from "~/components/loaders/spinner";
+import { PrivateText } from "~/components/privacy";
 import { Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
@@ -579,7 +580,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
           </span>
           <div>
             <h4 className="text-osmoverse-100">
-              {userPoolValue?.toString() ?? "–"}
+              <PrivateText text={userPoolValue?.toString() ?? "–"} />
             </h4>
             <span className="subtitle1 text-osmoverse-300">
               {numUserPositions === 1
@@ -617,7 +618,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
                 {asset.currency.coinDenom}
               </span>
               <span className="text-osmoverse-100">
-                {formatPretty(asset, { maxDecimals: 2 })}
+                <PrivateText text={formatPretty(asset, { maxDecimals: 2 })} />
               </span>
             </div>
           ))}
