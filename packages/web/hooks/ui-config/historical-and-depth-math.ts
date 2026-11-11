@@ -109,10 +109,7 @@ export function computeYRange({
   return [finalMin, finalMax];
 }
 
-export function getLiqFrom(
-  target: Int,
-  list: ActiveLiquidityPerTickRange[]
-): number {
+function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
   for (let i = 0; i < list.length; i++) {
     if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
       return Number(list[i].liquidityAmount.toString());

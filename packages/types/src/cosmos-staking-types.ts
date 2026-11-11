@@ -28,11 +28,6 @@ export type Delegation = {
   };
 };
 
-export type UnbondingDelegations = {
-  unbonding_responses: UnbondingDelegation[];
-  // pagination: {}
-};
-
 export type UnbondingDelegation = {
   delegator_address: string;
   validator_address: string;

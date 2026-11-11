@@ -16,7 +16,7 @@ import {
 } from "~/utils/forced-migrations";
 import { api } from "~/utils/trpc";
 
-export const FORCED_MIGRATIONS_FILE_PATH = "cms/forced-migrations.json";
+const FORCED_MIGRATIONS_FILE_PATH = "cms/forced-migrations.json";
 
 const readSnoozedAtMs = (key: string): number | undefined => {
   try {

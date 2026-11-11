@@ -85,8 +85,8 @@ export interface ActiveForcedMigration {
 }
 
 /** Default and cap for `positionExit.maxSlippagePercent`. */
-export const DEFAULT_POSITION_EXIT_TOLERANCE_PERCENT = 5;
-export const MAX_POSITION_EXIT_TOLERANCE_PERCENT = 10;
+const DEFAULT_POSITION_EXIT_TOLERANCE_PERCENT = 5;
+const MAX_POSITION_EXIT_TOLERANCE_PERCENT = 10;
 
 const isValidTolerance = (value: unknown): value is number =>
   typeof value === "number" &&
@@ -250,7 +250,7 @@ function getForcedMigrationProblem(entry: any): string | undefined {
   return undefined;
 }
 
-export function getForcedMigrationStage(
+function getForcedMigrationStage(
   migration: ForcedMigration,
   now: Date
 ): ForcedMigrationStage {
