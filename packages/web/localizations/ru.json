@@ -498,6 +498,7 @@
   },
   "pool": {
     "24hrTradingVolume": "Объем торгов за 24 часа",
+    "24hVolume": "Объем 24ч",
     "amountDaysUnbonding": "{numDays} день отсоединения",
     "amountDaysUnbonding_plural": "{numDays} дней отсоединения",
     "APR": "АПР",

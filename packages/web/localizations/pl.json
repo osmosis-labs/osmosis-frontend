@@ -498,6 +498,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
+    "24hVolume": "Wolumen 24h",
     "amountDaysUnbonding": "{numDays} dzień rozłączenia",
     "amountDaysUnbonding_plural": "{numDays} dni rozwiązywania",
     "APR": "APR",

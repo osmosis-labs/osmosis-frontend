@@ -8,7 +8,7 @@ import {
   ConcentratedLiquidityPool,
   SharePool,
 } from "~/components/pool-detail";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useNavBar } from "~/hooks";
 import { TradeTokens } from "~/modals";
 import { api } from "~/utils/trpc";
@@ -17,7 +17,6 @@ const Pool: FunctionComponent = () => {
   const router = useRouter();
   const poolId = typeof router.query.id === "string" ? router.query.id : "";
   const { t } = useTranslation();
-  const { isMobile } = useWindowSize();
   const isValidPoolId = Boolean(poolId && !isNaN(+poolId));
 
   const {
@@ -107,7 +106,7 @@ const Pool: FunctionComponent = () => {
           <SkeletonLoader className="h-8 !rounded-xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />
         </div>
-      ) : pool.type === "concentrated" && !isMobile ? (
+      ) : pool.type === "concentrated" ? (
         <ConcentratedLiquidityPool poolId={pool.id} />
       ) : pool.type === "weighted" || pool.type === "stable" ? (
         <SharePool pool={pool} />

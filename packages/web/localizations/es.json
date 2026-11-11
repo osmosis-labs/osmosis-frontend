@@ -498,6 +498,7 @@
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
+    "24hVolume": "Volumen 24h",
     "amountDaysUnbonding": "{numDays} día para desabonar",
     "amountDaysUnbonding_plural": "{numDays} día para desabonar",
     "APR": "TPA",

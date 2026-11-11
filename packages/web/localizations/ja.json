@@ -498,6 +498,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24時間取引高",
+    "24hVolume": "24時間取引高",
     "amountDaysUnbonding": "{numDays}日の結合解除",
     "amountDaysUnbonding_plural": "{numDays}日間の結合解除",
     "APR": "4月",

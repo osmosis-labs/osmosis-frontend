@@ -17,9 +17,10 @@ import {
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
   useTranslation,
+  useWindowSize,
 } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { ModalBase, ModalBaseProps, ModalCloseButton } from "~/modals/base";
 import { api } from "~/utils/trpc";
 
 import { SuperfluidValidatorModal } from "./superfluid-validator";
@@ -43,6 +44,7 @@ export const AddLiquidityModal: FunctionComponent<
   const { chainId } = OsmosisChainInfo;
   const { wallet, txTypeInProgress } = useWallet(chainId);
   const isSendingMsg = !wallet || txTypeInProgress !== "";
+  const { isMobile } = useWindowSize();
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainId,
@@ -330,6 +332,11 @@ export const AddLiquidityModal: FunctionComponent<
           hideCloseButton
           className="max-h-[98vh] !max-w-[57.5rem] overflow-auto"
         >
+          {/* The desktop header shows a "prices shown in" caption where the
+              close button would sit, so the button is hidden there and the
+              backdrop closes the modal. On mobile the modal fills the screen,
+              leaving no backdrop to tap, and the caption is hidden. */}
+          {isMobile && <ModalCloseButton onClick={props.onRequestClose} />}
           <AddConcLiquidity
             addLiquidityConfig={addConliqConfig}
             zap={{

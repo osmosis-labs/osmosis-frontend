@@ -4,10 +4,12 @@ import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
+  EvmReceiptCheck,
   TransferStatusProvider,
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
+import { createEvmReceiptWatch } from "../interface";
 import { SquidProviderId } from "./constants";
 import type { SquidStatusResponse } from "./types";
 
@@ -23,7 +25,13 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   constructor(
     protected readonly integratorId: string,
     env: BridgeEnvironment,
-    protected readonly chainList: Chain[]
+    protected readonly chainList: Chain[],
+    /**
+     * Optional. Resolves EVM transfers from their source-chain receipt: a
+     * reverted tx never reaches Squid, which only answers 404 for it, and a
+     * tx not mined or indexed yet must not count as failed.
+     */
+    protected readonly checkEvmReceipt?: EvmReceiptCheck
   ) {
     this.apiUrl =
       env === "mainnet"
@@ -47,8 +55,15 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
       toChain: { chainId: toChainId },
       quoteId,
     } = snapshot;
+    const watchReceipt = createEvmReceiptWatch(snapshot, this.checkEvmReceipt);
     await poll({
       fn: async () => {
+        // Squid can't tell a reverted tx from one not mined or indexed yet:
+        // check the receipt until it turns up.
+        const receipt = await watchReceipt();
+        if (receipt === "reverted") {
+          return { id: sendTxHash, status: "failed" } as BridgeTransferStatus;
+        }
         try {
           const url = new URL(`${this.apiUrl}/v2/status`);
           url.searchParams.append("transactionId", sendTxHash);
@@ -97,7 +112,13 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
           } as BridgeTransferStatus;
         } catch (e) {
           const error = e as Error | ApiClientError;
-          if (error instanceof ApiClientError && error.status === 404) {
+          // Within the receipt window, Squid not knowing the tx is no proof
+          // of failure: it may not be mined, or (once landed) not indexed yet.
+          if (
+            error instanceof ApiClientError &&
+            error.status === 404 &&
+            receipt === "settled"
+          ) {
             notFoundCount++;
             if (notFoundCount >= maxNotFoundCount) {
               return {

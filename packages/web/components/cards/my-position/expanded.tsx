@@ -27,6 +27,7 @@ import React, {
 import { FallbackImg } from "~/components/assets";
 import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
@@ -300,15 +301,17 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
         <div className="flex w-full flex-col gap-4 sm:flex-col">
-          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+          {/* Phones: the row wrappers dissolve and `order` lists Total
+              Rewards Earned after Principal Assets. */}
+          <div className="flex flex-wrap justify-between gap-3 sm:contents">
             <AssetsInfo
-              className="flex-1 sm:w-full"
+              className="flex-1 sm:order-1 sm:w-full"
               title={t("clPositions.currentAssets")}
               assets={currentCoins}
               totalValue={currentValue}
             />
             <AssetsInfo
-              className="flex-1 sm:w-full"
+              className="flex-1 sm:order-3 sm:w-full"
               title={t("clPositions.totalRewardsEarned")}
               assets={totalRewardCoins}
               totalValue={totalEarnedValue}
@@ -317,18 +320,18 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               }
             />
           </div>
-          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+          <div className="flex flex-wrap justify-between gap-3 sm:contents">
             {(principalCoins?.length ?? 0) < 1 &&
             positionPerformance ? undefined : (
               <AssetsInfo
-                className="flex-1 sm:w-full"
+                className="flex-1 sm:order-2 sm:w-full"
                 title={t("clPositions.principalAssets")}
                 assets={principalCoins}
                 totalValue={principalValue}
               />
             )}
             <AssetsInfo
-              className="flex-1 sm:w-full"
+              className="flex-1 sm:order-4 sm:w-full"
               title={t("clPositions.unclaimedRewards")}
               assets={claimableRewardCoins}
               totalValue={claimableRewardsValue}
@@ -338,7 +341,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             />
           </div>
           {unbondEndTime && !superfluidData && (
-            <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+            <div className="flex flex-wrap justify-between gap-3 sm:order-5 sm:flex-col">
               <div className="flex flex-col text-right md:pl-4">
                 <span>
                   {t("clPositions.unbondingFromNow", {
@@ -408,59 +411,62 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           >
             {t("clPositions.collectRewards")}
           </PositionButton>
-          <Tooltip
-            disabled={!hasPositionDetailsError}
-            className="cursor-default"
-            content={t("clPositions.errorFetchingPositions")}
-          >
-            <PositionButton
-              disabled={
-                !status ||
-                Boolean(txTypeInProgress) ||
-                Boolean(superfluidData?.undelegationEndTime) ||
-                status === "unbonding" ||
-                !Boolean(account)
-              }
-              onClick={() => {
-                if (superfluidData?.delegationLockId) {
-                  prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                    transactionContext,
-                    [
-                      {
-                        lockId: superfluidData.delegationLockId,
-                        isSynthetic: true,
-                      },
-                    ]
-                  )
-                    .then((prepared) => signAndBroadcast(...prepared))
-                    .catch(console.error);
-                } else setActiveModal("remove");
-              }}
-              isLoading={isLoadingPositionDetails}
+          {/* Phones: Remove and Increase wrap together, as one line. */}
+          <div className="contents sm:flex sm:flex-wrap sm:gap-3">
+            <Tooltip
+              disabled={!hasPositionDetailsError}
+              className="cursor-default"
+              content={t("clPositions.errorFetchingPositions")}
             >
-              {Boolean(superfluidData?.delegationLockId)
-                ? t("clPositions.unstake")
-                : t("clPositions.removeLiquidity")}
-            </PositionButton>
-          </Tooltip>
-          <Tooltip
-            disabled={!hasPositionDetailsError}
-            className="cursor-default"
-            content={t("clPositions.errorFetchingPositions")}
-          >
-            <PositionButton
-              disabled={
-                !status ||
-                Boolean(txTypeInProgress) ||
-                Boolean(superfluidData?.undelegationEndTime) ||
-                status === "unbonding"
-              }
-              onClick={() => setActiveModal("increase")}
-              isLoading={isLoadingPositionDetails}
+              <PositionButton
+                disabled={
+                  !status ||
+                  Boolean(txTypeInProgress) ||
+                  Boolean(superfluidData?.undelegationEndTime) ||
+                  status === "unbonding" ||
+                  !Boolean(account)
+                }
+                onClick={() => {
+                  if (superfluidData?.delegationLockId) {
+                    prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                      transactionContext,
+                      [
+                        {
+                          lockId: superfluidData.delegationLockId,
+                          isSynthetic: true,
+                        },
+                      ]
+                    )
+                      .then((prepared) => signAndBroadcast(...prepared))
+                      .catch(console.error);
+                  } else setActiveModal("remove");
+                }}
+                isLoading={isLoadingPositionDetails}
+              >
+                {Boolean(superfluidData?.delegationLockId)
+                  ? t("clPositions.unstake")
+                  : t("clPositions.removeLiquidity")}
+              </PositionButton>
+            </Tooltip>
+            <Tooltip
+              disabled={!hasPositionDetailsError}
+              className="cursor-default"
+              content={t("clPositions.errorFetchingPositions")}
             >
-              {t("clPositions.increaseLiquidity")}
-            </PositionButton>
-          </Tooltip>
+              <PositionButton
+                disabled={
+                  !status ||
+                  Boolean(txTypeInProgress) ||
+                  Boolean(superfluidData?.undelegationEndTime) ||
+                  status === "unbonding"
+                }
+                onClick={() => setActiveModal("increase")}
+                isLoading={isLoadingPositionDetails}
+              >
+                {t("clPositions.increaseLiquidity")}
+              </PositionButton>
+            </Tooltip>
+          </div>
 
           {eligibleMigration && (
             <PositionButton
@@ -553,17 +559,21 @@ export const AssetsInfo: FunctionComponent<
   const { t } = useTranslation();
 
   return (
+    // Phones: the total moves up beside the title; the asset row dissolves
+    // (`contents`) so its children sit in the grid.
     <div
       className={classNames(
-        "subtitle1 flex flex-col gap-2 text-osmoverse-400",
+        "subtitle1 flex flex-col gap-2 text-osmoverse-400 sm:grid sm:grid-cols-[1fr_auto]",
         className
       )}
     >
-      <div>{title}</div>
+      <div className="sm:col-start-1 sm:row-start-1">{title}</div>
       {assets.length > 0 ? (
-        <div className="flex flex-wrap gap-3">
-          <div className="flex gap-2">
-            <div className="flex flex-wrap gap-x-5 gap-y-3">
+        <div className="flex flex-wrap gap-3 sm:contents">
+          <div className="flex gap-2 sm:col-span-2 sm:row-start-2">
+            {/* Phones: one asset per line in every section, so the sections
+                line up rather than each wrapping at its own width. */}
+            <div className="flex flex-wrap gap-x-5 gap-y-3 sm:flex-col">
               {assets.map((asset) => (
                 <div key={asset.denom} className="flex items-center gap-2">
                   <div className="h-[24px] w-[24px] flex-shrink-0 overflow-hidden rounded-full">
@@ -575,21 +585,27 @@ export const AssetsInfo: FunctionComponent<
                       width={24}
                     />
                   </div>
-                  <span className="whitespace-nowrap">
-                    {formatPretty(asset, { maxDecimals: 6 })}
+                  {/* Phones: may break between amount and symbol on very
+                      narrow cards rather than running past the edge. */}
+                  <span className="whitespace-nowrap sm:whitespace-normal">
+                    <PrivateText
+                      text={formatPretty(asset, { maxDecimals: 6 })}
+                    />
                   </span>
                 </div>
               ))}
             </div>
           </div>
-          <div>
+          <div className="sm:col-start-2 sm:row-start-1">
             <div className="text-white-full">
-              ({totalValue?.toString() ?? "–"})
+              (<PrivateText text={totalValue?.toString() ?? "–"} />)
             </div>
           </div>
         </div>
       ) : emptyText ? (
-        <span className="italic">{t("clPositions.checkBackForRewards")}</span>
+        <span className="italic sm:col-span-2">
+          {t("clPositions.checkBackForRewards")}
+        </span>
       ) : null}
     </div>
   );
@@ -724,7 +740,10 @@ const SuperfluidPositionInfo: FunctionComponent<
         />
         <div className="md:caption flex flex-col">
           <span>{validatorName}</span>
-          <span>~{equivalentStakedAmount.trim(true).toString()}</span>
+          <span>
+            ~
+            <PrivateText text={equivalentStakedAmount.trim(true).toString()} />
+          </span>
         </div>
         <div className="md:caption flex flex-col pl-8 text-right md:pl-4">
           <span className="text-superfluid-gradient">

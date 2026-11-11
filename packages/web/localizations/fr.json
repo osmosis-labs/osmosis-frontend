@@ -498,6 +498,7 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
+    "24hVolume": "Volume 24h",
     "amountDaysUnbonding": "Détachement de {numDays} jours",
     "amountDaysUnbonding_plural": "{numDays} jours de blocage",
     "APR": "TAP",
