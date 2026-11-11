@@ -349,13 +349,6 @@ export const useBridgeQuotes = ({
    */
   const [fastTransferOptInKey, setFastTransferOptInKey] = useState<string>();
 
-  const onChangeBridgeProvider = useCallback((bridge: Bridge) => {
-    setSelectedBridgeProvider(bridge);
-    setBridgeProviderControlledMode(true);
-    // Picking a provider picks its standard quote.
-    setFastTransferOptInKey(undefined);
-  }, []);
-
   // Input
   const [debouncedInputValue, setDebouncedInputValue] =
     useState(inputAmountRaw);
@@ -440,12 +433,18 @@ export const useBridgeQuotes = ({
    * quote request with `fastTransfer: true`, and the selection rule below
    * decides whether the user ever sees it.
    *
-   * Withdrawals send it too. Skip offers no Osmosis-source fast routes today,
-   * so those requests come back with no route, but nothing here assumes fast
-   * routes are deposit-only.
+   * Go Fast only routes from EVM chains today, so deposits from other chains
+   * and withdrawals (which start on Osmosis) also need
+   * `fastBridgeTransfersNonEvmSources`. Until it is on, those pairs send no
+   * fast request on each refresh and their first quote is not held for one.
+   * Turn it on once Skip offers fast routes from Cosmos chains or out of
+   * Osmosis.
    */
+  const isEvmSourceDeposit = !isWithdraw && fromChain?.chainType === "evm";
   const fastTransferBridges =
-    featureFlags.fastBridgeTransfers === true
+    featureFlags.fastBridgeTransfers === true &&
+    (isEvmSourceDeposit ||
+      featureFlags.fastBridgeTransfersNonEvmSources === true)
       ? bridges.filter((bridge) => FAST_TRANSFER_BRIDGES.includes(bridge))
       : [];
   const quoteRequests = [
@@ -750,8 +749,9 @@ export const useBridgeQuotes = ({
   /**
    * The fast quote the speed toggle offers. It is compared with the selected
    * quote rather than the best one, so the choice is still offered when the
-   * user picked another provider. Turning the toggle on then switches to the
-   * fast quote's provider. A default fast quote is never offered here: it is
+   * user picked another provider. Turning the toggle on selects the fast quote
+   * without changing `selectedBridgeProvider`, so turning it off returns to
+   * that provider's quote. A default fast quote is never offered here: it is
    * already selected, with no opt-in needed.
    */
   const fastTransferOption =
@@ -767,10 +767,40 @@ export const useBridgeQuotes = ({
   // to. If a refresh removes it (e.g. the amount went over Go Fast's cap),
   // the selection falls back to the standard quote, with no stale fast quote
   // left to sign.
+  const optedInFastQuoteQuery = isFastTransferSelected
+    ? fastTransferOption
+    : undefined;
   const selectedQuoteQuery =
-    isFastTransferSelected && fastTransferOption
-      ? fastTransferOption
-      : selectedProviderQuoteQuery;
+    optedInFastQuoteQuery ?? selectedProviderQuoteQuery;
+
+  /**
+   * `successfulQuotes` as the provider dropdown lists them: an opted-in fast
+   * quote takes its provider's place, so the highlighted row shows the time,
+   * output and fee of the quote that will be signed.
+   */
+  const dropdownQuotes = optedInFastQuoteQuery
+    ? [
+        ...successfulQuotes.filter(
+          ({ data }) =>
+            data.provider.id !== optedInFastQuoteQuery.data.provider.id
+        ),
+        optedInFastQuoteQuery,
+      ]
+    : successfulQuotes;
+
+  const optedInFastProvider = optedInFastQuoteQuery?.data.provider.id;
+  const onChangeBridgeProvider = useCallback(
+    (bridge: Bridge) => {
+      // That row is the selected quote already. Picking it must not drop the
+      // opt-in and fall back to the provider's standard quote.
+      if (bridge === optedInFastProvider) return;
+      setSelectedBridgeProvider(bridge);
+      setBridgeProviderControlledMode(true);
+      // Picking a provider picks its standard quote.
+      setFastTransferOptInKey(undefined);
+    },
+    [optedInFastProvider]
+  );
 
   const selectedQuote = useMemo(() => {
     return selectedQuoteQuery?.data;
@@ -2149,7 +2179,8 @@ export const useBridgeQuotes = ({
     setLossAcknowledged,
     warningNeedsAcknowledgement,
 
-    successfulQuotes,
+    /** Per-provider quotes for the dropdown (see `dropdownQuotes`). */
+    successfulQuotes: dropdownQuotes,
     isAllQuotesSuccessful: isAllSuccessful,
     selectedBridgeProvider,
     setSelectedBridgeProvider: onChangeBridgeProvider,

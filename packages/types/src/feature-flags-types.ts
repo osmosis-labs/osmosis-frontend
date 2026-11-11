@@ -25,5 +25,6 @@ export type AvailableFlags =
   | "positionMigration"
   | "solanaSkipRoutes"
   | "fastBridgeTransfers"
+  | "fastBridgeTransfersNonEvmSources"
   | "inactiveValidatorAlerts"
   | "forcedMigrations";

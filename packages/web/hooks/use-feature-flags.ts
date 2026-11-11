@@ -33,6 +33,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   positionMigration: true,
   solanaSkipRoutes: false,
   fastBridgeTransfers: false,
+  fastBridgeTransfersNonEvmSources: false,
   inactiveValidatorAlerts: false,
   forcedMigrations: true,
 };
