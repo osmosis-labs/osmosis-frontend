@@ -1,5 +1,6 @@
 import { FunctionComponent } from "react";
 
+import { PrivateText } from "~/components/privacy";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useCollectAllRewards } from "~/hooks/use-collect-all-rewards";
@@ -29,9 +30,13 @@ export const CollectAllRewardsButton: FunctionComponent<{
       disabled={!hasClaimableRewards}
     >
       {t("clPositions.collectAllRewards")}
-      {hasClaimableRewards && totalValue
-        ? ` (${formatFiatPrice(totalValue)})`
-        : ""}
+      {hasClaimableRewards && totalValue ? (
+        <>
+          {" ("}
+          <PrivateText text={formatFiatPrice(totalValue)} />
+          {")"}
+        </>
+      ) : null}
     </Button>
   );
 };
