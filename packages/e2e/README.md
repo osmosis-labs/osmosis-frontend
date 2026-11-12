@@ -66,8 +66,10 @@ only fees and spread instead of drifting into other tokens.
 
 ### Fake wallet tests
 
-`tests/wallet.fake.spec.ts` runs the wallet flows (swaps, buy, sell, a limit
-order, the portfolio) without a key or funds, on any runner and in parallel.
+`tests/wallet.fake.spec.ts` runs the wallet flows (exact-in and exact-out
+swaps, buy, sell, a limit order, staking with a new validator squad,
+concentrated liquidity add and remove, the portfolio, the insufficient-balance
+state and a phone-width layout) without a key or funds, on any runner and in parallel.
 `utils/fake-wallet.ts` stands in for the Keplr extension: it impersonates a
 funded address read-only (the topup account by default, or
 `FAKE_WALLET_ADDRESS`), records every sign request, and intercepts the

@@ -52,9 +52,15 @@ export class BasePage {
    * a popup.
    */
   async connectFakeWallet() {
-    await this.connectWalletBtn.click()
+    // The visible one: on a phone the header's button is inside the menu.
+    const connect = this.page
+      .locator('button', { hasText: /^Connect wallet$/ })
+      .filter({ visible: true })
+    await connect.first().click()
     await this.kepltWalletBtn.click()
-    await this.getWalletBalance()
+    await expect(connect, 'Wallet should be connected.').toHaveCount(0, {
+      timeout: 15_000,
+    })
     await this.dismissVariantsPopupIfPresent()
   }
 
