@@ -419,9 +419,15 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     disabled={!hasClaimableRewards}
                   >
                     {t("clPositions.collectAllRewards")}
-                    {hasClaimableRewards && collectAllRewardsValue
-                      ? ` (${formatFiatPrice(collectAllRewardsValue)})`
-                      : ""}
+                    {hasClaimableRewards && collectAllRewardsValue ? (
+                      <>
+                        {" ("}
+                        <PrivateText
+                          text={formatFiatPrice(collectAllRewardsValue)}
+                        />
+                        {")"}
+                      </>
+                    ) : null}
                   </Button>
 
                   <Button
