@@ -49,3 +49,6 @@ sitemap.xml
 
 # Cloudflare Wrangler
 .wrangler
+
+# OpenNext build output (Cloudflare Workers builds)
+.open-next

@@ -490,6 +490,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
+    "24hVolume": "24h volume",
     "amountDaysUnbonding": "{numDays} day unbonding",
     "amountDaysUnbonding_plural": "{numDays} days unbonding",
     "APR": "APR",

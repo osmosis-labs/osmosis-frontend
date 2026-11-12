@@ -2,7 +2,7 @@ import { useCallback, useState, useSyncExternalStore } from "react";
 
 import { useIsClient } from "~/hooks/use-is-client";
 
-export const AlloyedAssetsToastSeenThisSessionKey =
+const AlloyedAssetsToastSeenThisSessionKey =
   "seen-alloyed-assets-toast-this-session";
 
 const readHasSeenToastThisSession = (): boolean => {

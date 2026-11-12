@@ -31,7 +31,7 @@ import { isServerFlagEnabled } from "~/utils/server-flags";
 /** Read methods the browser calls through wagmi and viem public clients:
  *  balances and contract reads, fee and gas estimation, and receipt polling
  *  after the wallet broadcasts. */
-export const ALLOWED_EVM_RPC_METHODS = new Set([
+const ALLOWED_EVM_RPC_METHODS = new Set([
   "eth_chainId",
   "eth_blockNumber",
   "eth_getBlockByNumber",

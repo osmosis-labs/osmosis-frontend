@@ -23,7 +23,7 @@ import { isSameOrigin } from "~/utils/same-origin";
 import { isServerFlagEnabled } from "~/utils/server-flags";
 
 /** Methods the in-app Solana bridge flow calls from the browser. */
-export const ALLOWED_SOLANA_RPC_METHODS = new Set([
+const ALLOWED_SOLANA_RPC_METHODS = new Set([
   // SPL balances of a deposit source
   "getTokenAccountsByOwner",
   // withdrawal destination check (a wallet, not a token account)

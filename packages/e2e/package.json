@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf .next",
-    "test": "npx playwright test",
+    "clean": "rm -rf node_modules; rm -rf playwright-report test-results",
+    "test:playwright": "npx playwright test",
     "test:tooling": "playwright test tooling.spec.ts",
     "typecheck": "tsc --noEmit",
     "setup": "yarn install && npx playwright install --with-deps chromium",

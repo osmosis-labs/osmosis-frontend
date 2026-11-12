@@ -490,6 +490,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24 घंटे ट्रेडिंग वॉल्यूम",
+    "24hVolume": "24 घंटे वॉल्यूम",
     "amountDaysUnbonding": "{numDays} दिन अनबॉन्डिंग",
     "amountDaysUnbonding_plural": "{numDays} दिन अनबॉन्डिंग",
     "APR": "एपीआर",

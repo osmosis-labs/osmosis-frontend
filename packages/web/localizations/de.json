@@ -490,6 +490,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Handelsvolumen",
+    "24hVolume": "24h Volumen",
     "amountDaysUnbonding": "{numDays} Tag der Aufhebung der Bindung",
     "amountDaysUnbonding_plural": "{numDays} Tage, in denen die Bindung aufgehoben wird",
     "APR": "APR",

@@ -490,6 +490,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
+    "24hVolume": "24시간 거래량",
     "amountDaysUnbonding": "{numDays}일 연결 해제",
     "amountDaysUnbonding_plural": "예치 해제 {numDays}일",
     "APR": "APR",

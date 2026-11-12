@@ -490,6 +490,7 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
+    "24hVolume": "Volume 24h",
     "amountDaysUnbonding": "{numDays} dias destravando",
     "amountDaysUnbonding_plural": "{numDays} dias destravando",
     "APR": "APR",
