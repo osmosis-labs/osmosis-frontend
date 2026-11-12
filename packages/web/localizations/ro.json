@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
+    "24hVolume": "Volum 24h",
     "amountDaysUnbonding": "{numDays} zile de dezlegare",
     "amountDaysUnbonding_plural": "{numDays} zile blocate",
     "APR": "APR",

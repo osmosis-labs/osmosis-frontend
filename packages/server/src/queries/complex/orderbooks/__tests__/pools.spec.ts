@@ -38,10 +38,8 @@ beforeEach(() => {
   jest.useFakeTimers();
   // Isolate the module registry so each test gets its own LRU instance.
   jest.isolateModules(() => {
-    /* eslint-disable @typescript-eslint/no-var-requires */
     poolsModule = require("../pools");
     sidecarModule = require("../../../sidecar/orderbooks");
-    /* eslint-enable @typescript-eslint/no-var-requires */
   });
   sidecarModule.queryCanonicalOrderbooks.mockResolvedValue(preCreationList);
 });

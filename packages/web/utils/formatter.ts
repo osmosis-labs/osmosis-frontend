@@ -441,7 +441,11 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
     ...getPriceExtendedFormatOptions(maxDecimalPrice.toDec()),
   }).split(".");
 
-  return splitPretty[0] + "." + (splitPretty[1] || "0").slice(0, maxDecimals);
+  return (
+    splitPretty[0] +
+    "." +
+    (splitPretty[1] ?? "").padEnd(maxDecimals, "0").slice(0, maxDecimals)
+  );
 }
 
 /**

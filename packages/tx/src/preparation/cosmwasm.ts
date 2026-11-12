@@ -11,42 +11,6 @@ import {
   type TransactionPreparationContext,
 } from "./types";
 
-export async function prepareExecuteContractMsg(
-  context: TransactionPreparationContext,
-  type = "executeWasm",
-  contractAddress: string,
-  obj: object,
-  funds: CoinPrimitive[],
-  backupFee?: Optional<StdFee, "amount">,
-  onTxEvents?:
-    | ((tx: DeliverTxResponse) => void)
-    | {
-        onBroadcasted?: (txHash: Uint8Array) => void;
-        onFulfill?: (tx: DeliverTxResponse) => void;
-      }
-) {
-  const msg = await makeExecuteCosmwasmContractMsg({
-    sender: context.address,
-    contract: contractAddress,
-    msg: obj,
-    funds,
-  });
-
-  return prepareTransaction(
-    type,
-    [msg],
-    "",
-    backupFee
-      ? {
-          amount: backupFee?.amount ?? [],
-          gas: backupFee.gas,
-        }
-      : undefined,
-    undefined,
-    onTxEvents
-  );
-}
-
 export async function prepareMultiExecuteContractMsg(
   context: TransactionPreparationContext,
   type = "executeWasm",

@@ -208,7 +208,7 @@ export class MockKeplrClient implements WalletClient {
   }
 }
 
-export class ChainMockKeplrExtension extends ChainWalletBase {
+class ChainMockKeplrExtension extends ChainWalletBase {
   constructor(walletInfo: Wallet, chainInfo: ChainRecord) {
     super(walletInfo, chainInfo);
   }

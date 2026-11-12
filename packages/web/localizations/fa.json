@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",
+    "24hVolume": "حجم 24 ساعته",
     "amountDaysUnbonding": "{numDays} روز تا باز شدن",
     "amountDaysUnbonding_plural": "{numDays} روز تا باز شدن",
     "APR": "نرخ بازدهی",
