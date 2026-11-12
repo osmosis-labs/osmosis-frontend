@@ -31,9 +31,9 @@ import type { WalletWithRequiredFeatures } from "@mysten/wallet-standard";
 import { getWallets } from "@mysten/wallet-standard";
 
 // Public fullnodes have retired JSON-RPC; this is only reached over gRPC-web.
-export const SUI_RPC = "https://fullnode.mainnet.sui.io:443";
-export const SUI_MAINNET_CHAIN = "sui:mainnet" as const;
-export const SUI_CLOCK_OBJECT_ID = "0x6";
+const SUI_RPC = "https://fullnode.mainnet.sui.io:443";
+const SUI_MAINNET_CHAIN = "sui:mainnet" as const;
+const SUI_CLOCK_OBJECT_ID = "0x6";
 
 /**
  * Wormhole Sui mainnet state object IDs.
@@ -62,7 +62,7 @@ export const WORMHOLE_SUI_TOKEN_BRIDGE_STATE =
  * To add a new token here, look up its `tokenAddress` in the
  * Wormholescan operation payload and the matching Sui CoinType.
  */
-export const KNOWN_SUI_COIN_TYPES: Record<string, string> = {
+const KNOWN_SUI_COIN_TYPES: Record<string, string> = {
   "0x9258181f5ceac8dbffb7030890243caed69a9599d2886d957a9cb7656af3bdb3":
     "0x2::sui::SUI",
 };

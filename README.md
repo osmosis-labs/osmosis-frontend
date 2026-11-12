@@ -33,7 +33,7 @@ yarn start
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
 
-Make sure [node](https://nodejs.org/en/) = 22 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
+Make sure [node](https://nodejs.org/en/) = 24 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
 
 1. Install deps
 
@@ -80,7 +80,6 @@ NEXT_PUBLIC_IS_TESTNET=true
 NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE=http://localhost:26657/
 NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE=http://localhost:1317/
 NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE=localosmosis
-# NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE=https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}
 # NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE=Osmosis (Testnet v13.X latest)
 ```
 

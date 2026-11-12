@@ -21,8 +21,10 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page
+    // By text, not role: after a trade the app root can stay aria-hidden once
+    // the review modal closes, which hides the button from role queries.
     this.connectWalletBtn = page
-      .getByRole('button', { name: 'Connect wallet', exact: true })
+      .locator('button', { hasText: /^Connect wallet$/ })
       .first()
     this.kepltWalletBtn = page.locator('button').filter({ hasText: /^Keplr$/ })
     this.portfolioLink = page.getByText('Portfolio')
@@ -40,7 +42,6 @@ export class BasePage {
     await this.fitWindowToMacRunnerDisplay()
     await this.connectWalletBtn.click()
     await this.kepltWalletBtn.click()
-    await this.page.waitForTimeout(1000)
     await waitForKeplrApproval(this.page.context())
     await this.getWalletBalance()
     await this.dismissVariantsPopupIfPresent()
@@ -86,8 +87,7 @@ export class BasePage {
 
   async gotoPortfolio() {
     await this.portfolioLink.click()
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
+    await this.page.waitForURL(/\/portfolio/, { waitUntil: 'commit' })
     await this.printUrl()
   }
 
@@ -113,7 +113,8 @@ export class BasePage {
   /** Dismisses the "Variants Detected" modal that may appear on staging deploys. */
   async dismissVariantsPopupIfPresent() {
     try {
-      const dismissBtn = this.page.getByRole('button', { name: 'Dismiss' })
+      // By text, not role: see connectWalletBtn.
+      const dismissBtn = this.page.locator('button', { hasText: /^Dismiss$/ })
       await dismissBtn.waitFor({ state: 'visible', timeout: 4000 })
       await dismissBtn.click()
       console.log('Dismissed "Variants Detected" popup.')
@@ -128,11 +129,13 @@ export class BasePage {
       this.connectedWalletBtn,
       'Wallet should be connected.',
     ).toBeVisible({ timeout: 4000 })
-    await this.connectedWalletBtn.click({ timeout: 2000 })
+    // The profile panel can re-render as balances refresh after a trade,
+    // detaching the button mid-click; the click retries within its timeout.
+    await this.connectedWalletBtn.click({ timeout: 10_000 })
     const logoutBtn = this.page.locator('//button[@title="Log Out"]')
-    await logoutBtn.click({ timeout: 2000 })
-    await this.page.waitForTimeout(2000)
-    await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 })
+    await logoutBtn.click({ timeout: 10_000 })
+    // Logging out can take several seconds on a busy preview.
+    await expect(this.connectWalletBtn).toBeVisible({ timeout: 15_000 })
   }
 
   /**

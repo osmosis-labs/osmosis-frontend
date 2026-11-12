@@ -283,17 +283,6 @@ export const bridgeChainSchema = z.discriminatedUnion("chainType", [
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
-export interface BridgeStatus {
-  /**
-   * Indicates whether the bridge is currently in maintenance mode.
-   */
-  isInMaintenanceMode: boolean;
-  /**
-   * Optional: A message providing more information about the maintenance status.
-   */
-  maintenanceMessage?: string;
-}
-
 export const bridgeAssetSchema = z.object({
   /**
    * The displayable denomination of the asset.
@@ -621,12 +610,6 @@ export interface BridgeExternalUrl {
 }
 
 // Transfer status
-
-export interface GetTransferStatusParams {
-  sendTxHash: string;
-  fromChainId: BridgeChain["chainId"];
-  toChainId: BridgeChain["chainId"];
-}
 
 export interface BridgeTransferStatus {
   id: string;

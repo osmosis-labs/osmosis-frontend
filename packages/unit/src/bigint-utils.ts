@@ -1,7 +1,6 @@
 export const BIGINT_ZERO = BigInt(0);
 export const BIGINT_ONE = BigInt(1);
 export const BIGINT_TWO = BigInt(2);
-export const BIGINT_TEN = BigInt(10);
 
 /** `base ** exp` for non-negative `exp`. `**` on bigint needs an ES2016+
  *  target, so this is square-and-multiply. */

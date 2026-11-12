@@ -126,7 +126,8 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
   });
 
-  test("User should be able to limit sell ATOM", async () => {
+  // Same place-and-cancel path as the OSMO test below; runs in the full suite.
+  test("User should be able to limit sell ATOM @full", async () => {
     await tradePage.goto();
     const amount = "1.01";
     await tradePage.openSellTab();
