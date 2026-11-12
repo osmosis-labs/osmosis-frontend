@@ -108,17 +108,6 @@ function readSwap(msg: AminoMsg): Swap {
 const CL_POOL_ID = "1135";
 
 /**
- * Price at a concentrated liquidity tick (exponent at price one is -6): each
- * 9,000,000 ticks the price moves a power of ten, in equal steps between.
- */
-function tickToPrice(tick: number): number {
-  const ticksPerPower = 9_000_000;
-  const powers = Math.trunc(tick / ticksPerPower);
-  const step = 10 ** (-6 + powers - (tick < 0 ? 1 : 0));
-  return 10 ** powers + (tick - powers * ticksPerPower) * step;
-}
-
-/**
  * A public address that holds a position in `poolId`, found from recent
  * position creations. Positions belong to whoever opened them, so the address
  * is read live rather than pinned. An LCD error fails the test (lcdGet
