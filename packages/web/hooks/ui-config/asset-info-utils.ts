@@ -15,11 +15,11 @@ export const AvailablePriceRanges = {
 export type PriceRange =
   (typeof AvailablePriceRanges)[keyof typeof AvailablePriceRanges];
 
-export const AssetChartAvailableDataTypes = ["price", "volume"] as const;
+const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 
 export type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
 
-export const AssetChartModes = {
+const AssetChartModes = {
   advanced: "advanced",
   simple: "simple",
 } as const;

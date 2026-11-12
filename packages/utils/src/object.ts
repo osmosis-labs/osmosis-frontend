@@ -1,24 +1,3 @@
-export function getKeyByValue<Dict extends Record<string, string | undefined>>(
-  object: Dict,
-  value: keyof Dict
-): string | undefined {
-  return Object.keys(object).find((key) => object[key] === value);
-}
-
-export function parseObjectValues<T extends Record<any, any>>(
-  obj: Record<string, any>
-): T {
-  const parsedObj = {} as T;
-  for (const key in obj) {
-    try {
-      parsedObj[key as keyof T] = JSON.parse(obj[key]);
-    } catch (e) {
-      parsedObj[key as keyof T] = obj[key];
-    }
-  }
-  return parsedObj;
-}
-
 /** Function to get nested property value from an object using a string "."-delimited (default) keyPath */
 export function getDeepValue<ReturnValue = any>(
   obj: any,

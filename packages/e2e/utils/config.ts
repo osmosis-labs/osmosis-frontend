@@ -32,3 +32,11 @@ export const SQS_BASE_URL = (
 export const REST_ENDPOINT =
   process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone";
 
+/** GETs a path on REST_ENDPOINT as JSON, throwing on a non-OK response. */
+export async function lcdGet<T>(path: string, timeoutMs = 15_000): Promise<T> {
+  const url = `${REST_ENDPOINT.replace(/\/+$/, "")}${path}`;
+  const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+  if (!res.ok) throw new Error(`LCD ${res.status} for ${url}`);
+  return (await res.json()) as T;
+}
+

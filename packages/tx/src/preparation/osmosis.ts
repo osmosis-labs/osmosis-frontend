@@ -1,4 +1,3 @@
-import type { StdFee } from "@cosmjs/amino";
 import type { EncodeObject } from "@cosmjs/proto-signing";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { BigDec, maxTick, minTick } from "@osmosis-labs/math";
@@ -22,11 +21,10 @@ import {
   getJoinSwapShareOutMinAmount,
   type JoinPoolData,
 } from "../account/osmosis/join-pool";
-import type { DeliverTxResponse, SignOptions } from "../account/types";
+import type { DeliverTxResponse } from "../account/types";
 import { getLastPositionEventAmounts } from "../events";
 import {
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
-  makeAddToGaugeMsg,
   makeAddToPositionMsg,
   makeBeginRedelegateMsg,
   makeBeginUnlockingMsg,
@@ -45,15 +43,11 @@ import {
   makeLockAndSuperfluidDelegateMsg,
   makeLockTokensMsg,
   makeSetValidatorSetPreferenceMsg,
-  makeSplitRoutesSwapExactAmountInMsg,
-  makeSplitRoutesSwapExactAmountOutMsg,
   makeSuperfluidDelegateMsg,
   makeSuperfluidUnbondLockMsg,
   makeSuperfluidUndelegateMsg,
   makeSwapExactAmountInMsg,
-  makeSwapExactAmountOutMsg,
   makeUndelegateFromRebalancedValidatorSetMsg,
-  makeUndelegateFromValidatorSetMsg,
   makeWithdrawDelegationRewardsMsg,
   makeWithdrawPositionMsg,
 } from "../message-composers";
@@ -1062,129 +1056,6 @@ export async function prepareCollectAllPositionsRewardsMsgs(
   );
 }
 
-export async function prepareSplitRouteSwapExactAmountInMsg(
-  context: TransactionPreparationContext,
-  routes: {
-    pools: {
-      id: string;
-      tokenOutDenom: string;
-    }[];
-    tokenInAmount: string;
-  }[],
-  tokenIn: { coinMinimalDenom: string },
-  tokenOutMinAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions & { fee?: StdFee },
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const msg = await makeSplitRoutesSwapExactAmountInMsg({
-    routes,
-    tokenIn,
-    tokenOutMinAmount,
-    userOsmoAddress: context.address,
-  });
-
-  return prepareTransaction(
-    "splitRouteSwapExactAmountIn",
-    [msg],
-    memo,
-    signOptions?.fee,
-    signOptions,
-    onFulfill
-  );
-}
-
-export async function prepareSplitRouteSwapExactAmountOutMsg(
-  context: TransactionPreparationContext,
-  routes: {
-    pools: {
-      id: string;
-      tokenInDenom: string;
-    }[];
-    tokenOutAmount: string;
-  }[],
-  tokenOut: { coinMinimalDenom: string },
-  tokenInMaxAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions & { fee?: StdFee },
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const msg = await makeSplitRoutesSwapExactAmountOutMsg({
-    routes,
-    tokenOut,
-    tokenInMaxAmount,
-    userOsmoAddress: context.address,
-  });
-
-  return prepareTransaction(
-    "splitRouteSwapExactAmountOut",
-    [msg],
-    memo,
-    signOptions?.fee,
-    signOptions,
-    onFulfill
-  );
-}
-
-export async function prepareSwapExactAmountInMsg(
-  context: TransactionPreparationContext,
-  pools: {
-    id: string;
-    tokenOutDenom: string;
-  }[],
-  tokenIn: { coinMinimalDenom: string; amount: string },
-  tokenOutMinAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions & { fee?: StdFee },
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const msg = await makeSwapExactAmountInMsg({
-    pools,
-    tokenIn,
-    tokenOutMinAmount,
-    userOsmoAddress: context.address,
-  });
-
-  return prepareTransaction(
-    "swapExactAmountIn",
-    [msg],
-    memo,
-    signOptions?.fee,
-    signOptions,
-    onFulfill
-  );
-}
-
-export async function prepareSwapExactAmountOutMsg(
-  context: TransactionPreparationContext,
-  pools: {
-    id: string;
-    tokenInDenom: string;
-  }[],
-  tokenOut: { coinMinimalDenom: string; amount: string },
-  tokenInMaxAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions,
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  return prepareTransaction(
-    "swapExactAmountOut",
-    async () => {
-      const msg = await makeSwapExactAmountOutMsg({
-        userOsmoAddress: context.address,
-        tokenInMaxAmount,
-        tokenOut,
-        pools,
-      });
-      return [msg];
-    },
-    memo,
-    undefined,
-    signOptions,
-    onFulfill
-  );
-}
-
 export async function prepareExitPoolMsg(
   context: TransactionPreparationContext,
   poolId: string,
@@ -1410,34 +1281,6 @@ export async function prepareCreateGaugeMsg(
   );
 }
 
-export async function prepareAddToGaugeMsg(
-  context: TransactionPreparationContext,
-  gaugeId: string,
-  rewards: { currency: Currency; amount: string }[],
-  memo: string = "",
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const primitiveRewards = rewards.map((coin) => ({
-    amount: coin.amount,
-    denom: coin.currency.coinMinimalDenom,
-  }));
-
-  const msg = await makeAddToGaugeMsg({
-    owner: context.address,
-    gaugeId: BigInt(gaugeId),
-    rewards: primitiveRewards,
-  });
-
-  return prepareTransaction(
-    "addToGauge",
-    [msg],
-    memo,
-    undefined,
-    undefined,
-    onFulfill
-  );
-}
-
 export async function prepareLockTokensMsg(
   context: TransactionPreparationContext,
   duration: number,
@@ -1633,30 +1476,6 @@ export async function prepareUndelegateFromRebalancedValidatorSet(
     "undelegateFromValidatorSet",
     [
       await makeUndelegateFromRebalancedValidatorSetMsg({
-        delegator: context.address,
-        coin: {
-          denom: coin.denom.coinMinimalDenom,
-          amount: coin.amount,
-        },
-      }),
-    ],
-    memo,
-    undefined,
-    undefined,
-    onFulfill
-  );
-}
-
-export async function prepareUndelegateFromValidatorSetMsg(
-  context: TransactionPreparationContext,
-  coin: { amount: string; denom: Currency },
-  memo: string = "",
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  return prepareTransaction(
-    "undelegateFromValidatorSet",
-    [
-      await makeUndelegateFromValidatorSetMsg({
         delegator: context.address,
         coin: {
           denom: coin.denom.coinMinimalDenom,

@@ -1,7 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 export const INITIAL_ZOOM = 1.05;
-export const ZOOM_STEP = 0.05;
+const ZOOM_STEP = 0.05;
 
 export const zoomedIn = (zoom: number) => Math.max(1, zoom - ZOOM_STEP);
 export const zoomedOut = (zoom: number) => zoom + ZOOM_STEP;

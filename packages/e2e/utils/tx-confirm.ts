@@ -13,6 +13,8 @@
  * browser WebSocket.
  */
 
+import BigNumber from "bignumber.js";
+
 import { REST_ENDPOINT } from "./config";
 
 /** Mintscan tx URL, matching the app's Osmosis `explorerUrlToTx` format. */
@@ -23,17 +25,24 @@ export function buildExplorerTxUrl(hash: string): string {
 export interface PollTxOptions {
   /** Overall budget in ms before giving up. */
   timeout?: number;
-  /** Delay between polls in ms. */
+  /** Delay between polls in ms. Blocks are under a second apart. */
   intervalMs?: number;
   /** Abort early (e.g. when the WebSocket toast already confirmed success). */
   signal?: AbortSignal;
+}
+
+/** An event of a confirmed tx, as the LCD returns it. */
+interface TxEvent {
+  type: string;
+  attributes: { key: string; value: string }[];
 }
 
 /**
  * Poll `GET {REST_ENDPOINT}/cosmos/tx/v1beta1/txs/{hash}` until the tx is
  * indexed on-chain.
  *
- * Resolves with the `tx_response` when the tx is included with `code === 0`.
+ * Resolves with the `tx_response` (including its events) when the tx is
+ * included with `code === 0`.
  * Rejects if the tx is included but failed (`code !== 0`), if the abort signal
  * fires, or if the timeout elapses before the tx is indexed.
  *
@@ -42,12 +51,23 @@ export interface PollTxOptions {
  */
 export async function pollTxOnChain(
   hash: string,
-  { timeout = 40_000, intervalMs = 2_000, signal }: PollTxOptions = {}
-): Promise<{ code: number; height?: string; raw_log?: string }> {
+  { timeout = 40_000, intervalMs = 300, signal }: PollTxOptions = {}
+): Promise<{
+  code: number;
+  height?: string;
+  raw_log?: string;
+  events?: TxEvent[];
+}> {
   const url = `${REST_ENDPOINT.replace(/\/+$/, "")}/cosmos/tx/v1beta1/txs/${hash}`;
   const deadline = Date.now() + timeout;
 
+  // A 404 (not indexed yet) polls again quickly; a rate limit, server error or
+  // network error backs off so parallel jobs don't hammer the public LCD.
+  const backoffMs = 2_000;
+  let delayMs = intervalMs;
+
   while (Date.now() < deadline) {
+    delayMs = intervalMs;
     if (signal?.aborted) {
       throw new Error("pollTxOnChain aborted");
     }
@@ -65,9 +85,15 @@ export async function pollTxOnChain(
 
     try {
       const res = await fetch(url, { signal: attemptController.signal });
+      if (res.status === 429 || res.status >= 500) delayMs = backoffMs;
       if (res.ok) {
         const json = (await res.json()) as {
-          tx_response?: { code?: number; height?: string; raw_log?: string };
+          tx_response?: {
+            code?: number;
+            height?: string;
+            raw_log?: string;
+            events?: TxEvent[];
+          };
         };
         const txResponse = json?.tx_response;
         if (txResponse && typeof txResponse.code === "number") {
@@ -76,6 +102,7 @@ export async function pollTxOnChain(
               code: 0,
               height: txResponse.height,
               raw_log: txResponse.raw_log,
+              events: txResponse.events,
             };
           }
           throw new Error(
@@ -94,6 +121,7 @@ export async function pollTxOnChain(
         throw err;
       }
       // transient fetch error / per-attempt timeout — keep polling
+      delayMs = backoffMs;
     } finally {
       clearTimeout(attemptTimer);
       signal?.removeEventListener("abort", onCallerAbort);
@@ -104,7 +132,7 @@ export async function pollTxOnChain(
     const remaining = deadline - Date.now();
     if (remaining <= 0) break;
     await new Promise((resolve) =>
-      setTimeout(resolve, Math.min(intervalMs, remaining))
+      setTimeout(resolve, Math.min(delayMs, remaining))
     );
   }
 
@@ -125,4 +153,49 @@ export const SEQUENCE_RETRY_DELAY_MS = 6_000;
 export function isSequenceMismatch(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error);
   return message.includes("account sequence mismatch");
+}
+
+/**
+ * How much of `denom` a confirmed tx paid to `address`, as a display amount at
+ * the asset's full decimals.
+ *
+ * Swap tests send back exactly what the outbound leg received, so the shared
+ * wallet's balances don't drift run after run (the trade input takes amounts
+ * up to the asset's own decimals). Reading the amount from the tx's own
+ * `coin_received` and `coin_spent` events, rather than from a balance delta,
+ * keeps it exact while other runs trade from the same wallet.
+ */
+export async function getTxReceivedAmount(
+  txUrlOrHash: string | null,
+  address: string,
+  denom: string,
+  decimals: number,
+  timeout = 20_000
+): Promise<string> {
+  // Accepts the explorer link from the success toast, which ends in the hash.
+  const hash = /[0-9a-f]{64}/i.exec(txUrlOrHash ?? "")?.[0]?.toLowerCase();
+  if (!hash) throw new Error(`No tx hash in "${txUrlOrHash}"`);
+  const { events } = await pollTxOnChain(hash, { timeout, intervalMs: 1_000 });
+  // Net of what the wallet spent of the same denom, so a route that passes
+  // the token through the wallet mid-route isn't counted twice.
+  let received = BigInt(0);
+  for (const event of events ?? []) {
+    const attr = (key: string) =>
+      event.attributes.find((a) => a.key === key)?.value ?? "";
+    const sign =
+      event.type === "coin_received" && attr("receiver") === address
+        ? BigInt(1)
+        : event.type === "coin_spent" && attr("spender") === address
+          ? BigInt(-1)
+          : BigInt(0);
+    if (sign === BigInt(0)) continue;
+    for (const coin of attr("amount").split(",")) {
+      const match = /^(\d+)(.+)$/.exec(coin.trim());
+      if (match?.[2] === denom) received += sign * BigInt(match[1]);
+    }
+  }
+  if (received <= BigInt(0)) {
+    throw new Error(`tx ${hash} paid no ${denom} to ${address}`);
+  }
+  return new BigNumber(received.toString()).shiftedBy(-decimals).toFixed();
 }

@@ -46,6 +46,7 @@ import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrat
 import { MigrateConcentratedPositionModal } from "~/modals/migrate-concentrated-position";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import {
+  formatFiatPrice,
   formatPretty,
   formatPriceWithUserPrecision,
   getFullPrecisionPrice,
@@ -598,7 +599,11 @@ export const AssetsInfo: FunctionComponent<
           </div>
           <div className="sm:col-start-2 sm:row-start-1">
             <div className="text-white-full">
-              (<PrivateText text={totalValue?.toString() ?? "–"} />)
+              (
+              <PrivateText
+                text={totalValue ? formatFiatPrice(totalValue) : "–"}
+              />
+              )
             </div>
           </div>
         </div>
