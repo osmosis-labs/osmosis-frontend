@@ -311,7 +311,11 @@ describe("orderbookRouter.getAllOrdersSQS", () => {
 
   it("doesn't serve one filter's list to another", async () => {
     const filledOrder = { status: "filled" } as typeof openOrder;
-    mockedActiveOrdersSQS.mockResolvedValue([filledOrder, openOrder, openOrder]);
+    mockedActiveOrdersSQS.mockResolvedValue([
+      filledOrder,
+      openOrder,
+      openOrder,
+    ]);
     mockedHistoricalOrders.mockResolvedValue([]);
     const userOsmoAddress = "osmo1filters";
 

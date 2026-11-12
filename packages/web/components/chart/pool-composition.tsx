@@ -1,6 +1,7 @@
 import { CoinPretty } from "@osmosis-labs/unit";
 import { FunctionComponent } from "react";
 
+import { PrivateText } from "~/components/privacy";
 import { EntityImage } from "~/components/ui/entity-image";
 import { getLogoURIs } from "~/utils/logo-uri";
 
@@ -24,7 +25,9 @@ export const PoolComposition: FunctionComponent<{
           )}
           <span className="mr-1 text-osmoverse-300">{asset.denom}</span>
           <span className="text-osmoverse-100">
-            {asset.trim(true).hideDenom(true).maxDecimals(4).toString()}
+            <PrivateText
+              text={asset.trim(true).hideDenom(true).maxDecimals(4).toString()}
+            />
           </span>
         </li>
       ))}

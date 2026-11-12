@@ -90,7 +90,9 @@ jobs:
             "math",
             "bridge",
             "tx",
+            "trpc",
             "types",
+            "unit",
             "proto-codecs",
           ]
 

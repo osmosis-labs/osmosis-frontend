@@ -10,25 +10,6 @@ import { Logger } from "@cosmos-kit/core";
 
 import type { StdSignDoc } from "./types";
 
-interface AccountMsgOpt {
-  shareCoinDecimals?: number;
-  /**
-   * In cases where fee estimation isn't supported, gas can be included as a fallback option.
-   * This proves particularly beneficial for accounts like CosmosAccount that depend on external chains.
-   */
-  gas?: number;
-  messageComposer?: any;
-}
-
-export const createMsgOpts = <
-  Dict extends Record<
-    string,
-    AccountMsgOpt | ((param: number) => AccountMsgOpt)
-  >,
->(
-  dict: Dict
-) => dict;
-
 export const logger = new Logger("WARN");
 
 export function getWalletEndpoints(chains: Chain[]) {
@@ -53,22 +34,6 @@ export function removeLastSlash(str: string) {
 
 export function getEndpointString(endpoint: string | ExtendedHttpEndpoint) {
   return typeof endpoint === "string" ? endpoint : endpoint.url;
-}
-
-/**
- * Change decimal string to proto bytes. This is necessary to handle decimals
- * in the proto messages.
- *
- * @param decStr string
- * @returns string
- */
-export function changeDecStringToProtoBz(decStr: string): string {
-  let r = decStr;
-  while (r.length >= 2 && (r.startsWith(".") || r.startsWith("0"))) {
-    r = r.slice(1);
-  }
-
-  return r;
 }
 
 // Creates the document to be signed from given parameters.
