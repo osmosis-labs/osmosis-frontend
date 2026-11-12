@@ -47,22 +47,26 @@ export interface AccountBalanceRequirement {
 export const ACCOUNT_REQUIREMENTS: Record<string, AccountBalanceRequirement[]> =
   {
     "E2E Test Account": [
-      // minAmount = actual consumed + 5% buffer (only fail when tests would genuinely fail)
-      // warnAmount = ~2x consumed (top-up reminder before it becomes critical)
-      // trade.wallet.spec.ts: buy 1.12 USDC, sell 1.11+1.01 ATOM, limit 1.01 OSMO
-      // swap.usdc.wallet.spec.ts: 0.5 USDC, 0.015 ATOM, 0.02 TIA, 0.01 INJ, 0.025 AKT
-      // swap.osmo.wallet.spec.ts: 0.2 OSMO, 0.01 ATOM
+      // minAmount gates the PR smoke job (check-balances skips it below this),
+      // so it covers only what that job spends: the swap.usdc.wallet round
+      // trip (0.1-0.2 USDC out and back) and the trade.wallet OSMO limit order
+      // (~$1.01, placed and cancelled), plus gas.
+      // warnAmount sizes auto-topup for the full suite on stage, which has no
+      // balance gate of its own: trade.wallet buy 1.12 USDC, sell 1.11+1.01
+      // ATOM, limit 1.01 OSMO; swap.osmo.wallet 0.2 OSMO out and back.
+      // The swap tests are round trips that start from USDC or OSMO, so they
+      // need no TIA, INJ or AKT on hand.
       {
         token: "USDC",
-        minAmount: 1.7,
+        minAmount: 0.3,
         warnAmount: 3.5,
-        note: "~1.62 consumed (trade buy + swaps). USDC is the alloy since the assetlist identity handover; the topup account must hold allUSDC (convert Noble 1:1 via the transmuter) for auto-topup to fund it.",
+        note: "PR smoke: ~0.2 (swap round trip). Full suite: ~1.62 (trade buy + swaps). USDC is the alloy since the assetlist identity handover; the topup account must hold allUSDC (convert Noble 1:1 via the transmuter) for auto-topup to fund it.",
       },
       {
         token: "ATOM",
-        minAmount: 2.27,
+        minAmount: 0,
         warnAmount: 4.5,
-        note: "~2.16 consumed (trade sell + limit + swaps)",
+        note: "PR smoke: none. Full suite: ~2.16 (trade sell + limit + swaps)",
       },
       {
         token: "OSMO",
@@ -70,24 +74,6 @@ export const ACCOUNT_REQUIREMENTS: Record<string, AccountBalanceRequirement[]> =
         warnAmount: 2.5,
         unit: "usd",
         note: "USD-denominated (MTN-157): the limit sell is fiat-mode (~$1.01), so required OSMO scales inversely with price. Fixed token thresholds went stale as OSMO fell and created a topup dead-zone (3.4 OSMO cleared the old 2.5-token gate yet starved the sells). min covers the fiat sell (~$1.01) PLUS the swap.osmo 0.2 OSMO swap (token-denominated), with deliberate price headroom: at $1.3 the USD floor still funds the fixed 0.2 OSMO swap until OSMO reaches ~$1.45 (1.01 + 0.2*1.45 = 1.30), well above the current ~$0.04; warn≈2x. NB: the 0.2 OSMO swap is a fixed token need, so this USD floor under-provisions only once OSMO climbs past ~$1.45; revisit then. NB: the check-balances auto-topup dispatches --ref stage, so the scaled target only applies once this is merged to stage.",
-      },
-      {
-        token: "TIA",
-        minAmount: 0.022,
-        warnAmount: 0.05,
-        note: "~0.02 consumed (swap TIA)",
-      },
-      {
-        token: "INJ",
-        minAmount: 0.011,
-        warnAmount: 0.025,
-        note: "~0.01 consumed (swap INJ)",
-      },
-      {
-        token: "AKT",
-        minAmount: 0.027,
-        warnAmount: 0.06,
-        note: "~0.025 consumed (swap AKT)",
       },
     ],
   };

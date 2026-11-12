@@ -1,12 +1,26 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": [
-    ".next/**/*",
-    "**/tradingview/**",
-    "**/light-weight-charts/**",
-    "**/generated/**",
-    "*.spec.*",
-    "config/wagmi-connectors.server.ts"
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "api-worker/worker.ts",
+    "router/worker.ts",
+    "config/*.server.ts",
+    "localizations/dayjs-locale-*.js",
+    "localizations/scripts/*.{js,mjs}",
+    "__tests_wallet_local__/**/*.spec.tsx",
+    "jest.wallet-local-chain.config.js",
+    "etc/*/index.js",
+    "next-sitemap.config.js",
+    ".lintstagedrc.js"
   ],
-  "ignoreDependencies": ["chokidar-cli", "concurrently", "dotenv-cli"]
+  "ignore": ["**/tradingview/**", "**/light-weight-charts/**"],
+  "ignoreDependencies": [
+    "bip39-light",
+    "sharp",
+    "use-debugger-hooks",
+    "msw",
+    "jsdom",
+    "jest-watch-typeahead",
+    "@chain-registry/client"
+  ],
+  "ignoreBinaries": ["turbo"]
 }

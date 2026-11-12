@@ -55,7 +55,7 @@ function tokenChartTtl(url: URL): number {
   return url.searchParams.get("realtime") === "true" ? 3 : 30;
 }
 
-export const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
+const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
   {
     id: "sqs-pools",
     hosts: SIDECAR_HOSTS,

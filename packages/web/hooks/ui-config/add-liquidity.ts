@@ -46,7 +46,7 @@ export const emptyAddLiquidityInputs: AddLiquidityInputs = {
 };
 
 /** Identifies the pool's asset currencies by denom and decimals, in order. */
-export function getAssetsKey(pool: AddLiquidityPoolData): string {
+function getAssetsKey(pool: AddLiquidityPoolData): string {
   return pool.assets
     .map(
       ({ amount: { currency } }) =>

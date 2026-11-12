@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
+    "24hVolume": "24s hacim",
     "amountDaysUnbonding": "{numDays} gün ayrılma",
     "amountDaysUnbonding_plural": "{numDays} gün sonra çözülecek",
     "APR": "APR",

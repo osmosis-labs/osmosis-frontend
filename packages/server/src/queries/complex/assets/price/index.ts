@@ -103,23 +103,6 @@ export async function getAssetPrice({
   });
 }
 
-/** Calculates the fiat value of a given coin.
- *  @throws If there's an issue calculating the price for the given coin (missing in asset list or can't get price). */
-export function calcCoinValue({
-  coin,
-  ...params
-}: {
-  assetLists: AssetList[];
-  chainList: Chain[];
-  coin: CoinPretty;
-}) {
-  return calcAssetValue({
-    ...params,
-    anyDenom: coin.currency.coinMinimalDenom,
-    amount: coin.toCoin().amount,
-  });
-}
-
 /** Calculates the fiat value of an asset given any denom and base amount.
  *  @throws If there's an issue calculating the price for the given denom (missing in asset list or can't get price). */
 export async function calcAssetValue({

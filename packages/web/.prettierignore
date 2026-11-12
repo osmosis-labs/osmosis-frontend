@@ -2,7 +2,6 @@
 .gitignore
 
 /.next
-/e2e/keplr-extension
 coverage
 
 *.ico
@@ -30,7 +29,6 @@ public/datafeeds/**/*
 
 *.zip
 
-tsconfig.script.tsbuildinfo
 config/generated/asset-lock.json
 public
 tsconfig.tsbuildinfo
