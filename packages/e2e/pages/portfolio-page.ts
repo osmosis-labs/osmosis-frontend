@@ -26,8 +26,7 @@ export class PortfolioPage extends BasePage {
   async goto() {
     await this.page.goto('/')
     await this.portfolioLink.click()
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
+    await this.page.waitForURL(/\/portfolio/, { waitUntil: 'commit' })
     const currentUrl = this.page.url()
     console.log(`FE opened at: ${currentUrl}`)
     await this.dismissVariantsPopupIfPresent()
@@ -55,7 +54,7 @@ export class PortfolioPage extends BasePage {
 
   async viewTransactionsPage() {
     await this.viewTransactions.click()
-    await this.page.waitForTimeout(1000)
+    await this.page.waitForURL(/\/transactions/, { waitUntil: 'commit' })
     return new TransactionsPage(this.page)
   }
 
@@ -63,7 +62,6 @@ export class PortfolioPage extends BasePage {
     const isVisible = await this.hideZeros.isVisible({ timeout: 2000 })
     if (isVisible) {
       await this.hideZeros.click()
-      await this.page.waitForTimeout(1000)
     }
   }
 
@@ -71,14 +69,11 @@ export class PortfolioPage extends BasePage {
     const isVisible = await this.viewMore.isVisible({ timeout: 2000 })
     if (isVisible) {
       await this.viewMore.click()
-      await this.page.waitForTimeout(1000)
     }
   }
 
+  /** getBalanceFor waits for the token's row, so no settle time is needed. */
   async searchForToken(tokenName: string) {
-    await this.searchInput.clear()
-    await this.page.waitForTimeout(1000)
     await this.searchInput.fill(tokenName)
-    await this.page.waitForTimeout(2000)
   }
 }
