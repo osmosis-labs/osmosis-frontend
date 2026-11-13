@@ -802,9 +802,51 @@ export const useBridgeQuotes = ({
     [optedInFastProvider]
   );
 
+  const numSucceeded = successfulQuotes.length;
+  const isOneSuccessful = Boolean(numSucceeded);
+  const isAllSuccessful = numSucceeded === bridges.length;
+  const isOneErrored = Boolean(erroredQuotes.length);
+
+  // Hold the first quote until the fast-capable bridges' standard and fast
+  // quotes have both settled, up to SPEED_QUOTE_HOLD_MS, so the screen changes
+  // once. Only first loads count: a refetch keeps its data, so it isn't
+  // loading. With the flag off there are no fast requests, so nothing waits.
+  const isSpeedQuotePending =
+    fastTransferBridges.length > 0 &&
+    isOneSuccessful &&
+    quoteResults.some(
+      (quoteResult, index) =>
+        fastTransferBridges.some(
+          (bridge) => bridge === quoteRequests[index].bridge
+        ) &&
+        quoteResult.isLoading &&
+        quoteResult.fetchStatus !== "idle"
+    );
+  // Reset during render whenever pending flips, so each pending spell gets a
+  // fresh hold; the timeout ends it.
+  const [speedQuoteHold, setSpeedQuoteHold] = useState({
+    isPending: false,
+    isOver: false,
+  });
+  if (speedQuoteHold.isPending !== isSpeedQuotePending) {
+    setSpeedQuoteHold({ isPending: isSpeedQuotePending, isOver: false });
+  }
+  useEffect(() => {
+    if (!isSpeedQuotePending) return;
+    const timeoutId = setTimeout(
+      () => setSpeedQuoteHold({ isPending: true, isOver: true }),
+      SPEED_QUOTE_HOLD_MS
+    );
+    return () => clearTimeout(timeoutId);
+  }, [isSpeedQuotePending]);
+  const isSpeedQuoteHeld = isSpeedQuotePending && !speedQuoteHold.isOver;
+
+  // Nothing is selected during the hold. A fast quote that lands first is the
+  // default only until the standard quote arrives, and its warnings (e.g. high
+  // slippage from the fast fee) would flash on screen in the meantime.
   const selectedQuote = useMemo(() => {
-    return selectedQuoteQuery?.data;
-  }, [selectedQuoteQuery]);
+    return isSpeedQuoteHeld ? undefined : selectedQuoteQuery?.data;
+  }, [isSpeedQuoteHeld, selectedQuoteQuery]);
 
   /**
    * Live loss figures for the selected quote — the input to the frozen-basis
@@ -850,11 +892,6 @@ export const useBridgeQuotes = ({
     setLossAcknowledged,
     warningNeedsAcknowledgement,
   } = useLossAcknowledgement(currentLossFigures);
-
-  const numSucceeded = successfulQuotes.length;
-  const isOneSuccessful = Boolean(numSucceeded);
-  const isAllSuccessful = numSucceeded === bridges.length;
-  const isOneErrored = Boolean(erroredQuotes.length);
 
   // if none have returned a resulting quote, find some error
   const someError = useMemo(
@@ -2054,45 +2091,12 @@ export const useBridgeQuotes = ({
     };
   }
 
-  // Hold the first quote until the fast-capable bridges' standard and fast
-  // quotes have both settled, up to SPEED_QUOTE_HOLD_MS, so the screen changes
-  // once. Only first loads count: a refetch keeps its data, so it isn't
-  // loading. With the flag off there are no fast requests, so nothing waits.
-  const isSpeedQuotePending =
-    fastTransferBridges.length > 0 &&
-    isOneSuccessful &&
-    quoteResults.some(
-      (quoteResult, index) =>
-        fastTransferBridges.some(
-          (bridge) => bridge === quoteRequests[index].bridge
-        ) &&
-        quoteResult.isLoading &&
-        quoteResult.fetchStatus !== "idle"
-    );
-  // Reset during render whenever pending flips, so each pending spell gets a
-  // fresh hold; the timeout ends it.
-  const [speedQuoteHold, setSpeedQuoteHold] = useState({
-    isPending: false,
-    isOver: false,
-  });
-  if (speedQuoteHold.isPending !== isSpeedQuotePending) {
-    setSpeedQuoteHold({ isPending: isSpeedQuotePending, isOver: false });
-  }
-  useEffect(() => {
-    if (!isSpeedQuotePending) return;
-    const timeoutId = setTimeout(
-      () => setSpeedQuoteHold({ isPending: true, isOver: true }),
-      SPEED_QUOTE_HOLD_MS
-    );
-    return () => clearTimeout(timeoutId);
-  }, [isSpeedQuotePending]);
-
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
     ((!isOneSuccessful ||
       quoteResults.every((quoteResult) => quoteResult.isLoading)) &&
       quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle")) ||
-    (isSpeedQuotePending && !speedQuoteHold.isOver);
+    isSpeedQuoteHeld;
   const isLoadingAnyBridgeQuote = quoteResults.some(
     (quoteResult) => quoteResult.isLoading && quoteResult.fetchStatus !== "idle"
   );
