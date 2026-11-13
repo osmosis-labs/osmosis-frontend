@@ -138,6 +138,8 @@ class OsmosisSidecarRemoteRouter {
         route: routes,
         effective_fee,
         price_impact,
+        liquidity_cap,
+        liquidity_cap_overflow,
         price_impact_unknown,
         tokens,
       } = await apiClient<SidecarInGivenOutQuoteResponse>(queryUrl.toString());
@@ -168,6 +170,8 @@ class OsmosisSidecarRemoteRouter {
           tokenInDenoms: pools.map((p) => p.token_in_denom).reverse(),
           tokenOutDenom: tokenOut.denom,
         })),
+        liquidityCap: liquidity_cap,
+        liquidityCapOverflow: liquidity_cap_overflow,
         tokens,
       };
     } catch (e) {
