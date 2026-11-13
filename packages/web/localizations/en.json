@@ -903,6 +903,9 @@
     "free": "Free",
     "cheapest": "Cheapest",
     "fastest": "Fastest",
+    "transferSpeed": "Transfer speed",
+    "standardSpeed": "Standard",
+    "fastSpeed": "Fast",
     "stepLabels": {
       "asset": "Asset",
       "amount": "Amount",

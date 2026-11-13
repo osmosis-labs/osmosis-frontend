@@ -903,6 +903,9 @@
     "free": "無料",
     "cheapest": "最も安い",
     "fastest": "最速",
+    "transferSpeed": "転送速度",
+    "standardSpeed": "標準",
+    "fastSpeed": "高速",
     "stepLabels": {
       "asset": "資産",
       "amount": "額",

@@ -1,5 +1,6 @@
 import { DecUtils } from "@osmosis-labs/unit";
 import { isNil, shorten } from "@osmosis-labs/utils";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import classNames from "classnames";
 import { FunctionComponent, PropsWithChildren } from "react";
 
@@ -31,6 +32,65 @@ export const BridgeProviderDropdownRow: FunctionComponent<{
     />
   </QuoteDetailRow>
 );
+
+/**
+ * The standard vs fast transfer choice. Render it only when the quote hook
+ * sets `fastTransfer`, which it does only for a real trade-off: a fast quote
+ * that is faster than the selected one and is not already the default. Each
+ * choice shows its own quote's time and total fees, never hard-coded
+ * figures, so the comparison stays true as quotes refresh.
+ */
+export const TransferSpeedToggle: FunctionComponent<{
+  fastTransfer: NonNullable<BridgeQuote["fastTransfer"]>;
+  disabled?: boolean;
+  className?: string;
+}> = ({
+  fastTransfer: { standardQuote, fastQuote, isFastSelected, setFastSelected },
+  disabled,
+  className,
+}) => {
+  const choices = [
+    {
+      value: "standard",
+      label: t("transfer.standardSpeed"),
+      quote: standardQuote,
+    },
+    { value: "fast", label: t("transfer.fastSpeed"), quote: fastQuote },
+  ];
+
+  return (
+    <RadioGroupPrimitive.Root
+      aria-label={t("transfer.transferSpeed")}
+      value={isFastSelected ? "fast" : "standard"}
+      onValueChange={(value) => setFastSelected(value === "fast")}
+      disabled={disabled}
+      className={classNames(
+        "flex w-full gap-1 rounded-2xl border border-osmoverse-700 p-1",
+        className
+      )}
+    >
+      {choices.map(({ value, label, quote }) => {
+        const totalFees = quote.quote.totalFeeFiatValue;
+        return (
+          <RadioGroupPrimitive.Item
+            key={value}
+            value={value}
+            className="flex flex-1 flex-col items-center gap-0.5 rounded-xl px-3 py-2 text-wosmongton-100 hover:text-wosmongton-200 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-osmoverse-700 data-[state=checked]:text-white-full"
+          >
+            <span className="subtitle2 md:caption">{label}</span>
+            <span className="caption text-osmoverse-300 first-letter:capitalize">
+              {quote.estimatedTime.humanize()}
+              {/* An unknown fee has no fiat total, so only the time shows. */}
+              {totalFees
+                ? ` · ~${totalFees.toString()} ${t("transfer.fee")}`
+                : ""}
+            </span>
+          </RadioGroupPrimitive.Item>
+        );
+      })}
+    </RadioGroupPrimitive.Root>
+  );
+};
 
 export const EstimatedTimeRow: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;

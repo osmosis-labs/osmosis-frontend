@@ -903,6 +903,9 @@
     "free": "Gratuit",
     "cheapest": "Cele mai ieftine",
     "fastest": "Cel mai rapid",
+    "transferSpeed": "Viteza transferului",
+    "standardSpeed": "Standard",
+    "fastSpeed": "Rapid",
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",

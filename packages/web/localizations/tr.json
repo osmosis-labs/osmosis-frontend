@@ -903,6 +903,9 @@
     "free": "Özgür",
     "cheapest": "En ucuz",
     "fastest": "En hızlı",
+    "transferSpeed": "Transfer hızı",
+    "standardSpeed": "Standart",
+    "fastSpeed": "Hızlı",
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
