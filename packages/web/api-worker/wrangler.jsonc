@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
-  // API routes only, behind the osmosis-frontend-stage pages Worker's `API` binding. master-cf
-  // names this osmosis-frontend-api-production, bound from osmosis-frontend-production.
+  // API routes only, behind the osmosis-frontend-stage pages Worker's `API` binding. The
+  // `production` env below is osmosis-frontend-api-production, bound from osmosis-frontend-production.
   "name": "osmosis-frontend-api-stage",
   "main": "worker.ts",
   // Wrangler makes this path cwd-relative, then esbuild resolves it from this config's
@@ -37,5 +37,14 @@
     "libsodium-wrappers-sumo": "../etc/noop/index.js",
     "bip39": "bip39-light",
     "./libsodium": "../etc/noop/index.js",
+  },
+  "env": {
+    "production": {
+      "name": "osmosis-frontend-api-production",
+      // vars are not inherited from the top level.
+      "vars": {
+        "NODE_ENV": "production",
+      },
+    },
   },
 }

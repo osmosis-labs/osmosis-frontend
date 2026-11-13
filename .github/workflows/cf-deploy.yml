@@ -1,0 +1,220 @@
+name: Cloudflare deploy
+
+# Builds and deploys the Cloudflare Worker pair: the API Worker first
+# (`cf:api:deploy`), then the pages Worker that binds to it (`cf:build`, then
+# `opennextjs-cloudflare deploy`).
+#
+#   push to stage  -> osmosis-frontend-stage + osmosis-frontend-api-stage
+#                     (configs as committed), environment `cloudflare-stage`
+#   push to master -> osmosis-frontend-production + osmosis-frontend-api-production
+#                     (`--env production` in both wrangler configs), environment
+#                     `cloudflare-production`
+#
+# Everything comes from that GitHub environment. Unset
+# or empty values are left out, so `packages/web/.env` defaults and code
+# fallbacks still apply (an empty string would override them).
+#
+# Required:
+#   secrets.CLOUDFLARE_API_TOKEN   Workers Scripts:Edit, Workers R2 Storage:Edit
+#   vars.CLOUDFLARE_ACCOUNT_ID     the Osmosis Labs account
+#
+# Build-time values, inlined by `next build` and the API Worker's esbuild
+# defines (vars, since they ship in the client bundle): every environment var
+# named NEXT_PUBLIC_* plus ASSET_LIST_COMMIT_HASH is exported, so a new one
+# needs no workflow change. Unset, ASSET_LIST_COMMIT_HASH is pinned to the
+# assetlists main head once, so both Workers build from the same lists.
+# NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS is merged with the ids of the
+# EVM_RPC_URL_<chainId> secrets below; set it only for RPC URLs that exist as
+# dashboard secrets alone.
+#
+# Build-time secrets (the /assets prerender runs server queries), passed to the
+# build step only: COINGECKO_API_KEY, NUMIA_API_KEY
+#
+# Worker runtime secrets, uploaded with `--secrets-file` when set. Deploys only
+# add secrets, so values set in the Cloudflare dashboard stay when these are
+# unset. Set them here or on the Worker with `wrangler secret put`:
+#   pages Worker: COINGECKO_API_KEY, NUMIA_API_KEY
+#   API Worker:   COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
+#                 SWAPPED_COM_SK, CF_GITHUB_API_TOKEN (uploaded as GITHUB_API_TOKEN),
+#                 every EVM_RPC_URL_<chainId> (packages/utils/src/ethereum.ts
+#                 reads chains 1, 10, 56, 137, 250, 314, 1284, 8453, 42161,
+#                 43114, 81457)
+#
+# The production R2 cache bucket is created on the first master deploy.
+
+on:
+  push:
+    branches: [stage, master]
+  workflow_dispatch:
+
+# One deploy per branch at a time. Queue instead of cancelling one midway;
+# the newest push still lands last.
+concurrency:
+  group: cf-deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # workflow_dispatch can pick any branch; only these two have Workers.
+    if: github.ref_name == 'stage' || github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: ${{ github.ref_name == 'master' && 'cloudflare-production' || 'cloudflare-stage' }}
+      url: ${{ steps.pages.outputs.url }}
+    defaults:
+      run:
+        working-directory: packages/web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-24.x
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      # Public values only. Secrets never go to $GITHUB_ENV.
+      - name: Export build values
+        env:
+          VARS_JSON: ${{ toJSON(vars) }}
+          WRANGLER_ENV: ${{ github.ref_name == 'master' && 'production' || '' }}
+        run: |
+          set -euo pipefail
+          jq -nr 'env.VARS_JSON | fromjson | to_entries[]
+            | select(.key | test("^NEXT_PUBLIC_") or . == "ASSET_LIST_COMMIT_HASH")
+            | select(.value != "") | .key' |
+          while read -r key; do
+            value=$(jq -nr --arg k "$key" 'env.VARS_JSON | fromjson | .[$k]')
+            delimiter="EOF_$(openssl rand -hex 12)"
+            printf '%s<<%s\n%s\n%s\n' "$key" "$delimiter" "$value" "$delimiter" >> "$GITHUB_ENV"
+            echo "set $key"
+          done
+          echo "WRANGLER_ENV=$WRANGLER_ENV" >> "$GITHUB_ENV"
+
+      # generate:lists falls back to the latest commit on every run; pin it once
+      # so the API and pages Workers ship the same asset and chain lists.
+      - name: Pin asset list commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ASSET_LIST_COMMIT_HASH:-}" ]; then
+            hash=$(gh api repos/osmosis-labs/assetlists/commits/main --jq .sha)
+            echo "ASSET_LIST_COMMIT_HASH=$hash" >> "$GITHUB_ENV"
+          fi
+          echo "asset lists at ${ASSET_LIST_COMMIT_HASH:-$hash}"
+
+      # Secret values stay in this step's env and the 0600 files it writes;
+      # only the EVM chain ids (public) are exported.
+      - name: Write Worker secrets files
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+        run: |
+          set -euo pipefail
+          umask 077
+          pages="$RUNNER_TEMP/cf-pages-secrets.json"
+          api="$RUNNER_TEMP/cf-api-secrets.json"
+          jq -n 'env.SECRETS_JSON | fromjson
+            | {COINGECKO_API_KEY, NUMIA_API_KEY}
+            | with_entries(select((.value // "") != ""))' > "$pages"
+          # Secret names can't start with GITHUB_. CF_GITHUB_API_TOKEN is a PAT,
+          # not the job token, which expires when this job ends.
+          jq -n 'env.SECRETS_JSON | fromjson
+            | ({COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
+                SWAPPED_COM_SK, GITHUB_API_TOKEN: .CF_GITHUB_API_TOKEN}
+               + with_entries(select(.key | test("^EVM_RPC_URL_[0-9]+$"))))
+            | with_entries(select((.value // "") != ""))' > "$api"
+          for file in "$pages" "$api"; do
+            echo "$file: $(jq -r 'keys | join(", ") | if . == "" then "none" else . end' "$file")"
+          done
+
+          # The browser proxies a chain through /api/evm-rpc only when its id is
+          # in this list, so add every chain that has a keyed URL here.
+          secret_ids=$(jq -r 'keys[] | capture("^EVM_RPC_URL_(?<id>[0-9]+)$").id' "$api")
+          listed=$(tr ',' '\n' <<< "${NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS:-}" | tr -d ' ' | grep -E '^[0-9]+$' || true)
+          for id in $listed; do
+            grep -qx "$id" <<< "$secret_ids" ||
+              echo "::warning::NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS lists $id but EVM_RPC_URL_$id is not a secret here; it must be set in the Cloudflare dashboard"
+          done
+          ids=$(printf '%s\n%s\n' "$listed" "$secret_ids" | grep -E '^[0-9]+$' | sort -nu | paste -sd, - || true)
+          echo "NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS=$ids" >> "$GITHUB_ENV"
+          echo "EVM proxy chains: ${ids:-none}"
+
+      - name: Create production cache bucket if missing
+        if: github.ref_name == 'master'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if corepack yarn wrangler r2 bucket info osmosis-frontend-production-cache >/dev/null 2>&1; then
+            echo "bucket exists"
+          else
+            corepack yarn cf:cache:create:production
+          fi
+
+      # Builds the workspace packages, the generated lists and the OpenNext
+      # bundle once. The API Worker bundles the same package output and lists.
+      - name: Build pages Worker
+        env:
+          # generate:lists reads the asset list files from the GitHub API.
+          GITHUB_API_TOKEN: ${{ github.token }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+        run: corepack yarn cf:build
+
+      # Wrangler lets process env override the secrets file, and `dotenv -c
+      # production` only fills keys that are unset, so the file values win.
+      - name: Deploy API Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          args=()
+          [ -z "$WRANGLER_ENV" ] || args+=(--env "$WRANGLER_ENV")
+          file="$RUNNER_TEMP/cf-api-secrets.json"
+          [ "$(jq length "$file")" = "0" ] || args+=(--secrets-file "$file")
+          corepack yarn cf:api:deploy "${args[@]}"
+
+      - name: Deploy pages Worker
+        id: pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          # --env goes to OpenNext (cache population) and is passed on to wrangler.
+          opennext_args=()
+          [ -z "$WRANGLER_ENV" ] || opennext_args+=(--env "$WRANGLER_ENV")
+          wrangler_args=(--keep-vars)
+          file="$RUNNER_TEMP/cf-pages-secrets.json"
+          [ "$(jq length "$file")" = "0" ] || wrangler_args+=(--secrets-file "$file")
+          log="$RUNNER_TEMP/cf-pages-deploy.log"
+          corepack yarn opennextjs-cloudflare deploy "${opennext_args[@]}" -- "${wrangler_args[@]}" 2>&1 | tee "$log"
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' "$log" | tail -n 1 || true)
+          if [ -n "$url" ]; then
+            echo "url=$url" >> "$GITHUB_OUTPUT"
+            echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Remove secrets files
+        if: always()
+        working-directory: .
+        run: rm -f "$RUNNER_TEMP"/cf-*-secrets.json

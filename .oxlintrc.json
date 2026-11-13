@@ -168,7 +168,8 @@
               "**/*.spec.js",
               "**/setup-tests.js",
               "**/web/config/generate-*.ts",
-              "**/web/open-next.config.ts"
+              "**/web/open-next.config.ts",
+              "**/web/scripts/*.mjs"
             ]
           }
         ],
