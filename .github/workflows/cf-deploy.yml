@@ -1,12 +1,14 @@
 name: Cloudflare deploy
 
 # Builds and deploys the Cloudflare Worker pair: the API Worker first
-# (`cf:api:deploy`), then the pages Worker that binds to it (`cf:deploy`).
+# (`cf:api:deploy`), then the pages Worker that binds to it (`cf:build`, then
+# `opennextjs-cloudflare deploy`).
 #
 #   push to stage  -> osmosis-frontend-stage + osmosis-frontend-api-stage
 #                     (configs as committed), environment `cloudflare-stage`
 #   push to master -> osmosis-frontend-production + osmosis-frontend-api-production
-#                     (scripts/cf-production-config.mjs), environment `cloudflare-production`
+#                     (`--env production` in both wrangler configs), environment
+#                     `cloudflare-production`
 #
 # Everything comes from that GitHub environment. Unset
 # or empty values are left out, so `packages/web/.env` defaults and code
@@ -17,19 +19,16 @@ name: Cloudflare deploy
 #   vars.CLOUDFLARE_ACCOUNT_ID     the Osmosis Labs account
 #
 # Build-time values, inlined by `next build` and the API Worker's esbuild
-# defines (vars, since they ship in the client bundle):
-#   NEXT_PUBLIC_SIDECAR_BASE_URL, NEXT_PUBLIC_HISTORICAL_DATA_URL,
-#   NEXT_PUBLIC_IS_TESTNET, NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE,
-#   NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE, NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE,
-#   NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE, NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY,
-#   NEXT_PUBLIC_WALLETCONNECT_RELAY_URL, NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
-#   NEXT_PUBLIC_SQUID_INTEGRATOR_ID, NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS,
-#   NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH, NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS,
-#   NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT, NEXT_PUBLIC_TRPC_LOGS,
-#   NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS, ASSET_LIST_COMMIT_HASH
+# defines (vars, since they ship in the client bundle): every environment var
+# named NEXT_PUBLIC_* plus ASSET_LIST_COMMIT_HASH is exported, so a new one
+# needs no workflow change. Unset, ASSET_LIST_COMMIT_HASH is pinned to the
+# assetlists main head once, so both Workers build from the same lists.
+# NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS is merged with the ids of the
+# EVM_RPC_URL_<chainId> secrets below; set it only for RPC URLs that exist as
+# dashboard secrets alone.
 #
-# Build-time secrets (the /assets prerender runs server queries):
-#   COINGECKO_API_KEY, NUMIA_API_KEY
+# Build-time secrets (the /assets prerender runs server queries), passed to the
+# build step only: COINGECKO_API_KEY, NUMIA_API_KEY
 #
 # Worker runtime secrets, uploaded with `--secrets-file` when set. Deploys only
 # add secrets, so values set in the Cloudflare dashboard stay when these are
@@ -38,8 +37,11 @@ name: Cloudflare deploy
 #   pages Worker: COINGECKO_API_KEY, NUMIA_API_KEY
 #   API Worker:   COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
 #                 SWAPPED_COM_SK, CF_GITHUB_API_TOKEN (uploaded as GITHUB_API_TOKEN),
-#                 EVM_RPC_URL_<chainId> for the chains in
-#                 NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS
+#                 every EVM_RPC_URL_<chainId> (packages/utils/src/ethereum.ts
+#                 reads chains 1, 10, 56, 137, 250, 314, 1284, 8453, 42161,
+#                 43114, 81457)
+#
+# The production R2 cache bucket is created on the first master deploy.
 
 on:
   push:
@@ -88,129 +90,125 @@ jobs:
       - name: Install dependencies
         run: corepack yarn install --immutable
 
-      - name: Point the configs at the production Workers
-        if: github.ref_name == 'master'
-        run: node scripts/cf-production-config.mjs
-
+      # Public values only. Secrets never go to $GITHUB_ENV.
       - name: Export build values
         env:
-          BUILD_KEYS: >-
-            NEXT_PUBLIC_SIDECAR_BASE_URL NEXT_PUBLIC_HISTORICAL_DATA_URL
-            NEXT_PUBLIC_IS_TESTNET NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE
-            NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE
-            NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY
-            NEXT_PUBLIC_WALLETCONNECT_RELAY_URL NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID
-            NEXT_PUBLIC_SQUID_INTEGRATOR_ID NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS
-            NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS
-            NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT NEXT_PUBLIC_TRPC_LOGS
-            NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS ASSET_LIST_COMMIT_HASH
-            COINGECKO_API_KEY NUMIA_API_KEY
-          NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ vars.NEXT_PUBLIC_SIDECAR_BASE_URL }}
-          NEXT_PUBLIC_HISTORICAL_DATA_URL: ${{ vars.NEXT_PUBLIC_HISTORICAL_DATA_URL }}
-          NEXT_PUBLIC_IS_TESTNET: ${{ vars.NEXT_PUBLIC_IS_TESTNET }}
-          NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE }}
-          NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE }}
-          NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE }}
-          NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE: ${{ vars.NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE }}
-          NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY: ${{ vars.NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY }}
-          NEXT_PUBLIC_WALLETCONNECT_RELAY_URL: ${{ vars.NEXT_PUBLIC_WALLETCONNECT_RELAY_URL }}
-          NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID: ${{ vars.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID }}
-          NEXT_PUBLIC_SQUID_INTEGRATOR_ID: ${{ vars.NEXT_PUBLIC_SQUID_INTEGRATOR_ID }}
-          NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS: ${{ vars.NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS }}
-          NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH: ${{ vars.NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH }}
-          NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS: ${{ vars.NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS }}
-          NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT: ${{ vars.NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT }}
-          NEXT_PUBLIC_TRPC_LOGS: ${{ vars.NEXT_PUBLIC_TRPC_LOGS }}
-          NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: ${{ vars.NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS }}
-          ASSET_LIST_COMMIT_HASH: ${{ vars.ASSET_LIST_COMMIT_HASH }}
-          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
-          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+          VARS_JSON: ${{ toJSON(vars) }}
+          WRANGLER_ENV: ${{ github.ref_name == 'master' && 'production' || '' }}
         run: |
           set -euo pipefail
-          for key in $BUILD_KEYS; do
-            value="${!key-}"
-            [ -n "$value" ] || continue
+          jq -nr 'env.VARS_JSON | fromjson | to_entries[]
+            | select(.key | test("^NEXT_PUBLIC_") or . == "ASSET_LIST_COMMIT_HASH")
+            | select(.value != "") | .key' |
+          while read -r key; do
+            value=$(jq -nr --arg k "$key" 'env.VARS_JSON | fromjson | .[$k]')
             delimiter="EOF_$(openssl rand -hex 12)"
             printf '%s<<%s\n%s\n%s\n' "$key" "$delimiter" "$value" "$delimiter" >> "$GITHUB_ENV"
             echo "set $key"
           done
+          echo "WRANGLER_ENV=$WRANGLER_ENV" >> "$GITHUB_ENV"
 
-      # The API bundle imports the workspace packages' build output and
-      # config/generated (api-worker/README.md). cf:deploy rebuilds both later;
-      # turbo's local cache makes the second build:packages cheap.
-      - name: Build workspace packages and lists
+      # generate:lists falls back to the latest commit on every run; pin it once
+      # so the API and pages Workers ship the same asset and chain lists.
+      - name: Pin asset list commit
         env:
-          # generate:lists reads the asset list commit from the GitHub API.
-          GITHUB_API_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          corepack yarn build:packages
-          corepack yarn generate:lists
+          if [ -z "${ASSET_LIST_COMMIT_HASH:-}" ]; then
+            hash=$(gh api repos/osmosis-labs/assetlists/commits/main --jq .sha)
+            echo "ASSET_LIST_COMMIT_HASH=$hash" >> "$GITHUB_ENV"
+          fi
+          echo "asset lists at ${ASSET_LIST_COMMIT_HASH:-$hash}"
 
-      # Secret values live only in this step's env and the 0600 files it writes.
-      # Wrangler lets process env override the file, and `dotenv -c production`
-      # only fills keys that are unset, so every key here is set from GitHub.
+      # Secret values stay in this step's env and the 0600 files it writes;
+      # only the EVM chain ids (public) are exported.
+      - name: Write Worker secrets files
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+        run: |
+          set -euo pipefail
+          umask 077
+          pages="$RUNNER_TEMP/cf-pages-secrets.json"
+          api="$RUNNER_TEMP/cf-api-secrets.json"
+          jq -n 'env.SECRETS_JSON | fromjson
+            | {COINGECKO_API_KEY, NUMIA_API_KEY}
+            | with_entries(select((.value // "") != ""))' > "$pages"
+          # Secret names can't start with GITHUB_. CF_GITHUB_API_TOKEN is a PAT,
+          # not the job token, which expires when this job ends.
+          jq -n 'env.SECRETS_JSON | fromjson
+            | ({COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
+                SWAPPED_COM_SK, GITHUB_API_TOKEN: .CF_GITHUB_API_TOKEN}
+               + with_entries(select(.key | test("^EVM_RPC_URL_[0-9]+$"))))
+            | with_entries(select((.value // "") != ""))' > "$api"
+          for file in "$pages" "$api"; do
+            echo "$file: $(jq -r 'keys | join(", ") | if . == "" then "none" else . end' "$file")"
+          done
+
+          # The browser proxies a chain through /api/evm-rpc only when its id is
+          # in this list, so add every chain that has a keyed URL here.
+          secret_ids=$(jq -r 'keys[] | capture("^EVM_RPC_URL_(?<id>[0-9]+)$").id' "$api")
+          listed=$(tr ',' '\n' <<< "${NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS:-}" | tr -d ' ' | grep -E '^[0-9]+$' || true)
+          for id in $listed; do
+            grep -qx "$id" <<< "$secret_ids" ||
+              echo "::warning::NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS lists $id but EVM_RPC_URL_$id is not a secret here; it must be set in the Cloudflare dashboard"
+          done
+          ids=$(printf '%s\n%s\n' "$listed" "$secret_ids" | grep -E '^[0-9]+$' | sort -nu | paste -sd, - || true)
+          echo "NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS=$ids" >> "$GITHUB_ENV"
+          echo "EVM proxy chains: ${ids:-none}"
+
+      - name: Create production cache bucket if missing
+        if: github.ref_name == 'master'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if corepack yarn wrangler r2 bucket info osmosis-frontend-production-cache >/dev/null 2>&1; then
+            echo "bucket exists"
+          else
+            corepack yarn cf:cache:create:production
+          fi
+
+      # Builds the workspace packages, the generated lists and the OpenNext
+      # bundle once. The API Worker bundles the same package output and lists.
+      - name: Build pages Worker
+        env:
+          # generate:lists reads the asset list files from the GitHub API.
+          GITHUB_API_TOKEN: ${{ github.token }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+        run: corepack yarn cf:build
+
+      # Wrangler lets process env override the secrets file, and `dotenv -c
+      # production` only fills keys that are unset, so the file values win.
       - name: Deploy API Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          PAGES_SECRET_KEYS: COINGECKO_API_KEY NUMIA_API_KEY
-          API_SECRET_KEYS: >-
-            COINGECKO_API_KEY NUMIA_API_KEY SKIP_API_KEY SOLANA_RPC_URL SWAPPED_COM_SK
-            GITHUB_API_TOKEN EVM_RPC_URL_1 EVM_RPC_URL_10 EVM_RPC_URL_56 EVM_RPC_URL_137
-            EVM_RPC_URL_250 EVM_RPC_URL_314 EVM_RPC_URL_1284 EVM_RPC_URL_8453
-            EVM_RPC_URL_42161 EVM_RPC_URL_43114 EVM_RPC_URL_81457
-          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
-          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
-          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
-          # Secret names can't start with GITHUB_. A PAT, not the job token,
-          # which expires when this job ends.
-          GITHUB_API_TOKEN: ${{ secrets.CF_GITHUB_API_TOKEN }}
-          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
-          SWAPPED_COM_SK: ${{ secrets.SWAPPED_COM_SK }}
-          EVM_RPC_URL_1: ${{ secrets.EVM_RPC_URL_1 }}
-          EVM_RPC_URL_10: ${{ secrets.EVM_RPC_URL_10 }}
-          EVM_RPC_URL_56: ${{ secrets.EVM_RPC_URL_56 }}
-          EVM_RPC_URL_137: ${{ secrets.EVM_RPC_URL_137 }}
-          EVM_RPC_URL_250: ${{ secrets.EVM_RPC_URL_250 }}
-          EVM_RPC_URL_314: ${{ secrets.EVM_RPC_URL_314 }}
-          EVM_RPC_URL_1284: ${{ secrets.EVM_RPC_URL_1284 }}
-          EVM_RPC_URL_8453: ${{ secrets.EVM_RPC_URL_8453 }}
-          EVM_RPC_URL_42161: ${{ secrets.EVM_RPC_URL_42161 }}
-          EVM_RPC_URL_43114: ${{ secrets.EVM_RPC_URL_43114 }}
-          EVM_RPC_URL_81457: ${{ secrets.EVM_RPC_URL_81457 }}
         run: |
           set -euo pipefail
-          umask 077
-          # Values are read from the environment, never passed on a command line.
-          write_secrets() {
-            local file="$1"; shift
-            jq -n '[$ARGS.positional[] | select((env[.] // "") != "") | {(.): env[.]}] | add // {}' \
-              --args "$@" > "$file"
-            echo "$file: $(jq -r 'keys | join(", ") | if . == "" then "none" else . end' "$file")"
-          }
-          write_secrets "$RUNNER_TEMP/cf-pages-secrets.json" $PAGES_SECRET_KEYS
-          write_secrets "$RUNNER_TEMP/cf-api-secrets.json" $API_SECRET_KEYS
-
           args=()
+          [ -z "$WRANGLER_ENV" ] || args+=(--env "$WRANGLER_ENV")
           file="$RUNNER_TEMP/cf-api-secrets.json"
           [ "$(jq length "$file")" = "0" ] || args+=(--secrets-file "$file")
           corepack yarn cf:api:deploy "${args[@]}"
 
-      - name: Build and deploy pages Worker
+      - name: Deploy pages Worker
         id: pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          # generate:lists reads the asset list commit from the GitHub API.
-          GITHUB_API_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          args=()
+          # --env goes to OpenNext (cache population) and is passed on to wrangler.
+          opennext_args=()
+          [ -z "$WRANGLER_ENV" ] || opennext_args+=(--env "$WRANGLER_ENV")
+          wrangler_args=(--keep-vars)
           file="$RUNNER_TEMP/cf-pages-secrets.json"
-          [ "$(jq length "$file")" = "0" ] || args+=(--secrets-file "$file")
+          [ "$(jq length "$file")" = "0" ] || wrangler_args+=(--secrets-file "$file")
           log="$RUNNER_TEMP/cf-pages-deploy.log"
-          corepack yarn cf:deploy "${args[@]}" 2>&1 | tee "$log"
+          corepack yarn opennextjs-cloudflare deploy "${opennext_args[@]}" -- "${wrangler_args[@]}" 2>&1 | tee "$log"
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' "$log" | tail -n 1 || true)
           if [ -n "$url" ]; then
             echo "url=$url" >> "$GITHUB_OUTPUT"
@@ -219,4 +217,5 @@ jobs:
 
       - name: Remove secrets files
         if: always()
+        working-directory: .
         run: rm -f "$RUNNER_TEMP"/cf-*-secrets.json
