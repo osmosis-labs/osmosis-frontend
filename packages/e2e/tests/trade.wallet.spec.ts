@@ -88,7 +88,8 @@ test.describe("Test Trade feature", () => {
     return tradePage.getLimitPrice();
   };
 
-  test("User should be able to Buy ATOM", async () => {
+  // Buy and sell are checked on PRs with the fake wallet (wallet.fake.spec.ts).
+  test("User should be able to Buy ATOM @full", async () => {
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.selectAsset("ATOM");
@@ -107,7 +108,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
   });
 
-  test("User should be able to Sell ATOM", async () => {
+  test("User should be able to Sell ATOM @full", async () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("ATOM");
@@ -126,7 +127,8 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
   });
 
-  test("User should be able to limit sell ATOM", async () => {
+  // Same place-and-cancel path as the OSMO test below; runs in the full suite.
+  test("User should be able to limit sell ATOM @full", async () => {
     await tradePage.goto();
     const amount = "1.01";
     await tradePage.openSellTab();

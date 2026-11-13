@@ -27,7 +27,9 @@ test.describe("Test Select Pool feature", () => {
     await context.close();
   });
 
-  test("User should be able to see at least 10 pools", async () => {
+  // Checks live market data (liquidity, volume, APR) rather than the app, so
+  // it runs in the full suite.
+  test("User should be able to see at least 10 pools @full", async () => {
     await poolsPage.goto();
     expect(await poolsPage.getPoolsNumber()).toBeGreaterThan(10);
     const topLiquidity = await poolsPage.getTopTenPoolsByLiquidity();

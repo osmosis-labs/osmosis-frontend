@@ -2,6 +2,17 @@ name: Jest Tests Workflow
 
 on: [push]
 
+# A newer push to the same branch supersedes this run. Stage and master runs are
+# keyed on their commit, so they never cancel or queue behind each other.
+concurrency:
+  group: ${{ github.workflow }}-${{ (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master') && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/master' }}
+
+# Read-only by default: checkout, the assetlist lookup and the osmosisd
+# release download only read.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -49,3 +60,58 @@ jobs:
         # latest assetlists commit; the token avoids the shared unauthenticated rate limit.
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Signs real transactions in amino and direct mode against a throwaway
+  # single-validator chain started on the runner (swaps, pool joins and exits,
+  # concentrated liquidity, 1-click trading authenticators, endpoint failover).
+  # No real funds; see packages/web/__tests_wallet_local__.
+  wallet-local-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Must match expectedVersion in scripts/run-wallet-local-chain.mjs.
+      OSMOSISD_VERSION: 32.0.0
+      # sha256 of the release's osmosisd-<version>-linux-amd64, pinned so a
+      # replaced release asset fails the job instead of running.
+      OSMOSISD_SHA256: 32ccbba9b04b4704dfb195eea77ad7e3db5e31f4edbc45a58850d25342e18b22
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-24.x-
+
+      - name: Install Dependencies
+        run: corepack yarn install --immutable
+
+      - name: Download osmosisd
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "v$OSMOSISD_VERSION" -R osmosis-labs/osmosis \
+            --pattern "osmosisd-$OSMOSISD_VERSION-linux-amd64" --output "$RUNNER_TEMP/osmosisd"
+          echo "$OSMOSISD_SHA256  $RUNNER_TEMP/osmosisd" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/osmosisd"
+          echo "OSMOSISD_BINARY=$RUNNER_TEMP/osmosisd" >> "$GITHUB_ENV"
+
+      - name: Build workspace packages
+        run: corepack yarn turbo run build --filter=@osmosis-labs/web^...
+
+      - name: Generate web config
+        run: corepack yarn workspace @osmosis-labs/web generate
+        env:
+          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run local-chain wallet tests
+        run: corepack yarn workspace @osmosis-labs/web test:wallet-local-chain

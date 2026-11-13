@@ -1,5 +1,4 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { prepareCollectAllPositionsRewardsMsgs } from "@osmosis-labs/tx";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -13,6 +12,7 @@ import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/price-historical";
+import { CollectAllRewardsButton } from "~/components/complex/collect-all-rewards-button";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Spinner } from "~/components/loaders/spinner";
@@ -57,7 +57,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { t } = useTranslation();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
-    const { address, signAndBroadcast, transactionContext } = useWallet();
+    const { address } = useWallet();
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
@@ -84,24 +84,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const userHasPositionInPool = userPositions && userPositions.length > 0;
 
-    const claimableSpreadRewardPositions = useMemo(
-      () =>
-        userPositions?.filter(
-          ({ position }) => position.claimable_spread_rewards.length > 0
-        ) ?? [],
-      [userPositions]
-    );
-    const claimableIncentivePositions = useMemo(
-      () =>
-        userPositions?.filter(
-          ({ position }) => position.claimable_incentives.length > 0
-        ) ?? [],
-      [userPositions]
-    );
-    const hasClaimableRewards =
-      claimableSpreadRewardPositions.length > 0 ||
-      claimableIncentivePositions.length > 0;
-
     const {
       pool,
       currentPrice,
@@ -113,17 +95,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       zoomIn,
       zoomOut,
     } = chartConfig;
-
-    const onClickCollectAllRewards = () => {
-      prepareCollectAllPositionsRewardsMsgs(
-        transactionContext,
-        claimableSpreadRewardPositions.map(({ id }) => id),
-        claimableIncentivePositions.map(({ id }) => id),
-        undefined
-      )
-        .then((prepared) => signAndBroadcast(...prepared))
-        .catch(console.error);
-    };
 
     useEffect(() => {
       if (openCreatePosition === "true") {
@@ -393,13 +364,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </div>
                 </div>
                 <div className="flex gap-2 sm:w-full sm:flex-wrap">
-                  <Button
+                  <CollectAllRewardsButton
                     className="subtitle1 w-fit sm:flex-1 sm:whitespace-nowrap"
-                    onClick={onClickCollectAllRewards}
-                    disabled={!hasClaimableRewards}
-                  >
-                    {t("clPositions.collectAllRewards")}
-                  </Button>
+                    forPoolId={poolId}
+                  />
 
                   <Button
                     variant="outline"

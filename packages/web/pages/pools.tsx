@@ -8,6 +8,7 @@ import { NextSeo } from "next-seo";
 import { memo, useCallback, useState } from "react";
 
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
+import { CollectAllRewardsButton } from "~/components/complex/collect-all-rewards-button";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { PoolType } from "~/components/complex/pools-table";
@@ -175,7 +176,10 @@ const Pools: NextPage = memo(function () {
       {address && (
         <>
           <section className="pb-[3.75rem]" ref={myPositionsRef}>
-            <h5>{t("clPositions.yourPositions")}</h5>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h5>{t("clPositions.yourPositions")}</h5>
+              <CollectAllRewardsButton className="subtitle1 w-fit" size="md" />
+            </div>
             <MyPositionsSection />
           </section>
           <section className="pb-[3.75rem]" ref={myPoolsRef}>

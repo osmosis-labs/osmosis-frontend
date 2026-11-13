@@ -50,6 +50,40 @@ npx playwright test swap.osmo.wallet          # Swap OSMO tests
 npx playwright test trade                      # Trade / limit order tests
 ```
 
+PR runs check one representative case per path. Tests tagged `@full` (the
+other swap pairs, tokens and order types) are left out unless `E2E_FULL=true`,
+which the full suite (`full-e2e-tests.yml`) sets to run the whole matrix
+against stage, with the claim tests, on every release PR and on demand:
+
+```bash
+E2E_FULL=true npx playwright test swap.usdc.wallet  # include @full tests
+```
+
+The swap tests are round trips: the return leg sends back the amount the
+outbound leg received, read exactly from the tx's events, so the wallet pays
+only fees and spread instead of drifting into other tokens.
+
+### Fake wallet tests
+
+`tests/wallet.fake.spec.ts` runs the wallet flows (exact-in and exact-out
+swaps, buy, sell, a limit order, staking with a new validator squad,
+concentrated liquidity add and remove, the portfolio, the insufficient-balance
+state and a phone-width layout) without a key or funds, on any runner and in parallel.
+`utils/fake-wallet.ts` stands in for the Keplr extension: it impersonates a
+funded address read-only (the topup account by default, or
+`FAKE_WALLET_ADDRESS`), records every sign request, and intercepts the
+broadcast, so nothing reaches the chain. The app still reads that address's
+real balances, quotes and gas. Each test checks the message the app asked the
+wallet to sign against the quote it received.
+
+```bash
+BASE_URL=https://stage.osmosis.zone npx playwright test wallet.fake --workers 3
+```
+
+On PRs these run alongside a smoke test with real Keplr and real funds (one
+USDC to TIA round trip, one limit order placed and cancelled, and the
+transaction history).
+
 Set `headless: false` in the Playwright config to run in a visible browser.
 
 ## Balance Checking
@@ -148,13 +182,13 @@ job before any Playwright tests. All wallet-dependent test jobs depend on the
 balance-gate via `needs`, so a single check gates every test — one Slack
 alert at most per workflow run.
 
-| Workflow                 | Check job(s)     | Gates test jobs                                                                                    | Account                                      |
-| ------------------------ | ---------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `frontend-e2e-tests.yml` | `check-balances` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
+| Workflow                 | Check job(s)     | Gates test jobs       | Account                                      |
+| ------------------------ | ---------------- | --------------------- | -------------------------------------------- |
+| `frontend-e2e-tests.yml` | `check-balances` | `preview-smoke-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
 
 `check-balances` runs the balance pipeline (check → alert if low) once per
-workflow run. Wallet test jobs `needs` it and are skipped when the check
-fails critically.
+workflow run. The smoke job `needs` it and is skipped when the check fails
+critically; `e2e-gate` then fails the run.
 
 ### Topup dispatch model (dedup)
 
@@ -230,10 +264,7 @@ stalled initial page load surfaces as a recoverable retry rather than a hard
 | ----- | ----- | ----- | ----- | ------------------------------------------- |
 | USDC  | 1.7   | 3.5   | token | ~1.62 consumed (trade buy + swaps)          |
 | ATOM  | 2.27  | 4.5   | token | ~2.16 consumed (trade sell + limit + swaps) |
-| OSMO  | 1.27  | 2.5   | token | ~1.21 consumed (limit sell + swap)          |
-| TIA   | 0.022 | 0.05  | token | ~0.02 consumed (swap TIA)                   |
-| INJ   | 0.011 | 0.025 | token | ~0.01 consumed (swap INJ)                   |
-| AKT   | 0.027 | 0.06  | token | ~0.025 consumed (swap AKT)                  |
+| OSMO  | $1.30 | $2.50 | usd   | ~$1.01 limit sell, plus the 0.2 OSMO swap   |
 
 ---
 
@@ -330,7 +361,7 @@ The following CI workflows run `cancel-all-orders.ts` as a **prerequisite step**
 
 | Workflow                 | Job(s)                | Account cleaned                              |
 | ------------------------ | --------------------- | -------------------------------------------- |
-| `frontend-e2e-tests.yml` | `preview-trade-tests` | `E2E_PRIVATE_KEY_PREVIEW` (E2E Test Account) |
+| `frontend-e2e-tests.yml` | `preview-smoke-tests` | `E2E_PRIVATE_KEY_PREVIEW` (E2E Test Account) |
 
 The cleanup step uses `continue-on-error: true` so that a transient RPC failure does not block the test run.
 
