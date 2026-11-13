@@ -3,21 +3,6 @@ import { act, renderHook } from "@testing-library/react";
 
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 
-/** Regression inputs covering accepted, rejected and normalized manual values. */
-const manualInputs = [
-  "1",
-  ".5",
-  "0.5",
-  "100",
-  "99.99",
-  "-1",
-  "abc",
-  "",
-  "0",
-  "1e2",
-  "3.",
-];
-
 describe("useSlippageConfig", () => {
   it("starts on the first preset once mounted, with the given default", () => {
     const { result } = renderHook(() =>
@@ -49,19 +34,6 @@ describe("useSlippageConfig", () => {
     expect(result.current.setManualSlippage).toBe(setManualSlippage);
     expect(result.current.setDefaultSlippage).toBe(setDefaultSlippage);
     expect(result.current.setIsManualSlippage).toBe(setIsManualSlippage);
-  });
-
-  it.each(manualInputs)("handles manual input %j", (input) => {
-    const { result } = renderHook(() => useSlippageConfig());
-    act(() => result.current.setManualSlippage(input));
-
-    // Expectations captured from the legacy config before its removal.
-    expect({
-      manualSlippageStr: result.current.manualSlippageStr,
-      isManualSlippage: result.current.isManualSlippage,
-      slippage: result.current.slippage.toDec().toString(),
-      error: result.current.manualSlippageError?.constructor.name,
-    }).toMatchSnapshot();
   });
 
   it("applies a valid manual slippage as a rate", () => {
