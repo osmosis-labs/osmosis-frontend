@@ -147,7 +147,6 @@ test.describe("Test Trade feature", () => {
     });
     // Only validate message content if Keplr popup appeared (not 1-click trading)
     if (msgContentAmount) {
-      //expect(msgContentAmount).toContain(amount + " ATOM (Cosmos Hub/channel-0)");
       expect(msgContentAmount).toContain("place_limit");
       expect(msgContentAmount).toContain('"order_direction": "ask"');
     }
@@ -187,7 +186,6 @@ test.describe("Test Trade feature", () => {
     });
     // Only validate message content if Keplr popup appeared (not 1-click trading)
     if (msgContentAmount) {
-      //expect(msgContentAmount).toContain(`${amount} OSMO`);
       expect(msgContentAmount).toContain("place_limit");
       expect(msgContentAmount).toContain('"order_direction": "ask"');
     }

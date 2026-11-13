@@ -48,7 +48,6 @@ Run specific test suites from the `packages/e2e` directory:
 ```bash
 npx playwright test swap.osmo.wallet          # Swap OSMO tests
 npx playwright test trade                      # Trade / limit order tests
-npx playwright test monitoring --timeout 180000 # Monitoring tests
 ```
 
 Set `headless: false` in the Playwright config to run in a visible browser.

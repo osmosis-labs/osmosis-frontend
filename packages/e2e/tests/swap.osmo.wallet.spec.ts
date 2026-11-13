@@ -46,16 +46,6 @@ test.describe("Test Swap to/from OSMO feature", () => {
     }
   });
 
-  test.skip("User should be able to swap OSMO to WBTC", async () => {
-    await tradePage.selectPair("OSMO", "WBTC");
-    await tradePage.enterAmount("0.9");
-    await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain("denom: uosmo");
-    await tradePage.getTransactionUrl();
-  });
-
   test("User should be able to swap OSMO to ATOM", async () => {
     await tradePage.selectPair("OSMO", "ATOM");
     await tradePage.enterAmount("0.2");
@@ -63,9 +53,6 @@ test.describe("Test Swap to/from OSMO feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    //expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain("denom: uosmo");
     await tradePage.getTransactionUrl();
   });
 
@@ -77,9 +64,6 @@ test.describe("Test Swap to/from OSMO feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    //expect(msgContent).toContain(`denom: ${ATOM}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain("token_out_denom: uosmo");
     await tradePage.getTransactionUrl();
   });
 });
