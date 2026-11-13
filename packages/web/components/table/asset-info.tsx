@@ -4,8 +4,10 @@ import { keepPreviousData } from "@tanstack/react-query";
 import {
   CellContext,
   createColumnHelper,
+  ExpandedState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
@@ -21,6 +23,7 @@ import {
 } from "react";
 import { useMount } from "react-use";
 
+import { Icon } from "~/components/assets";
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
 import {
@@ -211,6 +214,8 @@ export const AssetsInfoTable: FunctionComponent<{
       watchListDenoms,
       categories,
       ...categoryFilters,
+      // variants fold under their canonical asset; search results stay flat
+      groupVariants: !searchQuery,
       minLiquidity:
         categoryFilters.minLiquidity ?? (searchQuery ? 0 : undefined),
     },
@@ -272,14 +277,45 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         id: "asset",
         header: t("assets.table.asset"),
-        cell: ({ row: { original } }) => (
-          <AssetCell
-            {...original}
-            warnUnverified={showUnverifiedAssets && !original.isVerified}
-            isInUserWatchlist={watchListDenoms.includes(original.coinDenom)}
-            onClickWatchlist={() => toggleWatchAssetDenom(original.coinDenom)}
-          />
-        ),
+        cell: ({ row }) => {
+          const { original } = row;
+          return (
+            <div className={classNames(row.depth > 0 && "pl-10 md:pl-4")}>
+              <AssetCell
+                {...original}
+                warnUnverified={showUnverifiedAssets && !original.isVerified}
+                isInUserWatchlist={watchListDenoms.includes(original.coinDenom)}
+                onClickWatchlist={() =>
+                  toggleWatchAssetDenom(original.coinDenom)
+                }
+                denomAccessory={
+                  row.getCanExpand() && (
+                    <button
+                      type="button"
+                      aria-expanded={row.getIsExpanded()}
+                      aria-label={t("assets.table.showVariants")}
+                      className="-m-1 flex flex-shrink-0 items-center rounded-full p-1 text-osmoverse-400 transition-colors hover:text-osmoverse-100"
+                      onClick={(e) => {
+                        // the row is a link to the asset page
+                        e.preventDefault();
+                        e.stopPropagation();
+                        row.toggleExpanded();
+                      }}
+                    >
+                      <Icon
+                        id="chevron-down"
+                        className={classNames(
+                          "h-4 w-4 transition-transform",
+                          row.getIsExpanded() && "rotate-180"
+                        )}
+                      />
+                    </button>
+                  )
+                }
+              />
+            </div>
+          );
+        },
       }),
       columnHelper.accessor((row) => row, {
         id: "price",
@@ -444,6 +480,10 @@ export const AssetsInfoTable: FunctionComponent<{
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
+  // Variant groups start collapsed. Rows are keyed by denom so an expanded group
+  // stays expanded when pages load or the sort changes.
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+
   // eslint-disable-next-line hooks-compat/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: assetsData,
@@ -452,7 +492,12 @@ export const AssetsInfoTable: FunctionComponent<{
     manualFiltering: true,
     manualPagination: true,
     enableFilters: false,
+    getRowId: (row) => row.coinMinimalDenom,
+    getSubRows: (row) => row.variants as AssetRow[],
+    state: { expanded },
+    onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
   });
 
   // Virtualization is used to render only the visible rows
@@ -493,18 +538,20 @@ export const AssetsInfoTable: FunctionComponent<{
       : 0;
 
   // pagination
-  const lastRow = rows[rows.length - 1];
+  // Compare against the flattened row count: with variant groups expanded,
+  // `row.index` is a row's position among its siblings, not in `rows`.
+  const lastRowIndex = rows.length - 1;
   const lastVirtualRow = virtualRows[virtualRows.length - 1];
   const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
   useEffect(() => {
     if (
-      lastRow &&
+      lastRowIndex >= 0 &&
       lastVirtualRow &&
-      lastRow.index === lastVirtualRow.index &&
+      lastVirtualRow.index === lastRowIndex &&
       canLoadMore
     )
       fetchNextPage();
-  }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
+  }, [lastRowIndex, lastVirtualRow, canLoadMore, fetchNextPage]);
 
   return (
     <div className="w-full">
@@ -580,8 +627,16 @@ export const AssetsInfoTable: FunctionComponent<{
         </thead>
         <tbody>
           {paddingTop > 0 && paddingTop - topOffset > 0 && (
+            // Once scrolled, this spacer is the table's first row, so it carries
+            // the same column widths as the body rows.
             <tr>
-              <td style={{ height: paddingTop - topOffset }} />
+              {collapsedColumns.map((_, index) => (
+                <td
+                  key={index}
+                  className={classNames(index !== 0 && "w-28")}
+                  style={{ height: paddingTop - topOffset }}
+                />
+              ))}
             </tr>
           )}
           {isLoading && (
@@ -609,6 +664,11 @@ export const AssetsInfoTable: FunctionComponent<{
                     className={classNames(
                       "transition-colors duration-200 ease-in-out",
                       {
+                        // Same widths as the header cells. The header is hidden on
+                        // small screens, and the fixed table layout then takes column
+                        // widths from this row, so without them the columns split
+                        // evenly and the asset name is cut short.
+                        "w-28": index !== 0,
                         // unverified assets: opaque except for last cell with asset actions
                         "opacity-40": unverified && index !== cells.length - 1,
                       }

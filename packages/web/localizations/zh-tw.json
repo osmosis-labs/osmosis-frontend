@@ -130,6 +130,7 @@
       }
     },
     "table": {
+      "showVariants": "顯示變體",
       "marketDataUnavailable": "市場數據暫時無法使用。請稍後再試。",
       "depositButton": "存入",
       "search": "搜索",

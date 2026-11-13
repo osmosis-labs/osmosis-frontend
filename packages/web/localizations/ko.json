@@ -130,6 +130,7 @@
       }
     },
     "table": {
+      "showVariants": "변형 보기",
       "marketDataUnavailable": "현재 시장 데이터를 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
       "depositButton": "입금",
       "search": "검색",
