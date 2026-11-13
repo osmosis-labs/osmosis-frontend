@@ -383,7 +383,7 @@ describe("SkipTransferStatusProvider", () => {
     expect(url).toBe("https://www.mintscan.io/cosmos/txs/cosmosTxHash");
   });
 
-  it("links a route without an Axelar leg to the signed tx, not Axelarscan", () => {
+  it("links a route without an Axelar leg to Skip's explorer, with the hash's chain id", () => {
     const withdraw: TxSnapshot = {
       ...baseTxSnapshot,
       viaAxelar: false,
@@ -396,17 +396,27 @@ describe("SkipTransferStatusProvider", () => {
       toChain: { chainId: 1, prettyName: "Ethereum", chainType: "evm" },
     };
     expect(provider.makeExplorerUrl(withdraw)).toBe(
-      "https://www.mintscan.io/cosmos/txs/cosmosTxHash"
+      "https://explorer.skip.build/?tx_hash=cosmosTxHash&chain_id=cosmoshub-4"
     );
 
     const deposit: TxSnapshot = {
       ...baseTxSnapshot,
       viaAxelar: false,
       sendTxHash: "0xabc",
-      fromChain: { chainId: 1, prettyName: "Ethereum", chainType: "evm" },
+      fromChain: { chainId: 8453, prettyName: "Base", chainType: "evm" },
     };
     expect(provider.makeExplorerUrl(deposit)).toBe(
-      "https://etherscan.io/tx/0xabc"
+      "https://explorer.skip.build/?tx_hash=0xabc&chain_id=8453"
+    );
+
+    // a multi-tx route that advanced onto Noble pairs the Noble tx with Noble
+    const advanced: TxSnapshot = {
+      ...deposit,
+      sendTxHash: "NOBLETX",
+      trackingChainId: "noble-1",
+    };
+    expect(provider.makeExplorerUrl(advanced)).toBe(
+      "https://explorer.skip.build/?tx_hash=NOBLETX&chain_id=noble-1"
     );
   });
 

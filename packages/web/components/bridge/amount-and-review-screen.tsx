@@ -1,7 +1,7 @@
 import type { Bridge, BridgeSupportedAsset } from "@osmosis-labs/bridge";
 import { CoinPretty } from "@osmosis-labs/unit";
 import { isNil, noop } from "@osmosis-labs/utils";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen, useScreenManager } from "~/components/screen-manager";
@@ -47,6 +47,11 @@ export const AmountAndReviewScreen = memo(
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
+    // True once the user deliberately picks a variant from the receive
+    // dropdown, which stops the amount screen re-pointing `toAsset` to the
+    // recommended variant. It lives here because the amount screen unmounts
+    // while the review screen shows, and the pick must survive going back.
+    const userHasPickedToAssetRef = useRef(false);
     const [fromChain, setFromChain] = useState<BridgeChainWithDisplayInfo>();
     const [toChain, setToChain] = useState<BridgeChainWithDisplayInfo>();
 
@@ -187,8 +192,12 @@ export const AmountAndReviewScreen = memo(
       };
 
       if (direction === "deposit") {
-        Object.entries(fromAsset.supportedVariants[toAsset.address]).forEach(
-          ([bridge, variants]) => addToBridgeInfo(bridge as Bridge, variants)
+        // A refreshed source asset can drop the selected variant for one
+        // render, until the amount screen's deposit effect realigns `toAsset`.
+        Object.entries(
+          fromAsset.supportedVariants[toAsset.address] ?? {}
+        ).forEach(([bridge, variants]) =>
+          addToBridgeInfo(bridge as Bridge, variants)
         );
       } else if (direction === "withdraw") {
         const counterpartyAssets =
@@ -308,6 +317,7 @@ export const AmountAndReviewScreen = memo(
               setFromAsset={setFromAsset}
               toAsset={toAsset}
               setToAsset={setToAsset}
+              userHasPickedToAssetRef={userHasPickedToAssetRef}
               cryptoAmount={cryptoAmount}
               setCryptoAmount={setCryptoAmount}
               fiatAmount={fiatAmount}
