@@ -43,6 +43,7 @@ import {
   makeLockAndSuperfluidDelegateMsg,
   makeLockTokensMsg,
   makeSetValidatorSetPreferenceMsg,
+  makeSplitRoutesSwapExactAmountInMsg,
   makeSuperfluidDelegateMsg,
   makeSuperfluidUnbondLockMsg,
   makeSuperfluidUndelegateMsg,
