@@ -238,4 +238,42 @@ describe("useCreatePoolConfig", () => {
     expect(result.current.setSwapFee).toBe(setSwapFee);
     expect(result.current.setDuplicateBlocking).toBe(setDuplicateBlocking);
   });
+
+  it("removes assets by index and re-checks weights after pool type switches", () => {
+    const { result } = renderConfig();
+    act(() => result.current.setPoolType("weighted"));
+    act(() => result.current.addAsset(osmo));
+    act(() => result.current.addAsset(atom));
+    act(() => result.current.addAsset(usdc));
+    act(() => result.current.setAssetPercentageAt(5, "10"));
+    expect(result.current.assets.map((a) => a.percentage)).toEqual([
+      "0",
+      "0",
+      "0",
+    ]);
+    act(() => result.current.setBalancedPercentages());
+
+    act(() => result.current.removeAssetAt(2));
+    expect(
+      result.current.assets.map(
+        (a) => a.amountConfig.sendCurrency.coinMinimalDenom
+      )
+    ).toEqual(["uosmo", "uatom"]);
+    expect(result.current.canAddAsset).toBe(true);
+    expect(result.current.percentageError?.message).toBe(
+      "Sum of percentages is not 100"
+    );
+
+    act(() => result.current.setPoolType("stable"));
+    expect(result.current.percentageError).toBeUndefined();
+    act(() => result.current.setPoolType("weighted"));
+    expect(result.current.percentageError?.message).toBe(
+      "Sum of percentages is not 100"
+    );
+
+    act(() => result.current.removeAssetAt(0));
+    expect(result.current.assetCountError?.message).toBe(
+      "Minimum of 2 assets required"
+    );
+  });
 });

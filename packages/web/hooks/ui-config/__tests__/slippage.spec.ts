@@ -102,4 +102,29 @@ describe("useSlippageConfig", () => {
     expect(i).toBe(index);
     expect(d.toString()).toBe(rate);
   });
+
+  it.each([
+    ["0", "0.000000000000000000"],
+    ["3.", "0.030000000000000000"],
+    ["99.99", "0.999900000000000000"],
+  ])("accepts manual input %j as is", (input, rate) => {
+    const { result } = renderHook(() => useSlippageConfig());
+    act(() => result.current.setManualSlippage(input));
+    expect(result.current.isManualSlippage).toBe(true);
+    expect(result.current.manualSlippageStr).toBe(input);
+    expect(result.current.slippage.toDec().toString()).toBe(rate);
+  });
+
+  it.each(["1e2", "100", "-1", "abc", ""])(
+    "rejects manual input %j without entering manual mode",
+    (input) => {
+      const { result } = renderHook(() => useSlippageConfig());
+      act(() => result.current.setManualSlippage(input));
+      expect(result.current.isManualSlippage).toBe(false);
+      expect(result.current.manualSlippageStr).toBe("0.5");
+      expect(result.current.slippage.toDec().toString()).toBe(
+        "0.005000000000000000"
+      );
+    }
+  );
 });
