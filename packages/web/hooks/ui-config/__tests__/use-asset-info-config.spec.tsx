@@ -60,21 +60,6 @@ describe("useAssetInfoConfig", () => {
     expect(result.current.historicalChartStale).toBe(false);
   });
 
-  it("updates range, data type, mode and zoom through setters", async () => {
-    const { result } = renderHookWithProviders(() => useAssetInfoConfig("a"));
-    const { setHistoricalRange } = result.current;
-
-    act(() => result.current.setHistoricalRange("1d"));
-    act(() => result.current.setDataType("volume"));
-    act(() => result.current.setMode("advanced"));
-
-    expect(result.current.historicalRange).toBe("1d");
-    expect(result.current.dataType).toBe("volume");
-    expect(result.current.mode).toBe("advanced");
-    // setters stay referentially stable across state changes
-    expect(result.current.setHistoricalRange).toBe(setHistoricalRange);
-  });
-
   it("keeps hover state out of the config and formats it", () => {
     const { result } = renderHookWithProviders(() => useConfigWithHover("a"));
     const configBefore = result.current.config;

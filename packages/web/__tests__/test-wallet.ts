@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-compat/no-extraneous-dependencies */
 import { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
 import { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
@@ -208,7 +208,7 @@ export class MockKeplrClient implements WalletClient {
   }
 }
 
-export class ChainMockKeplrExtension extends ChainWalletBase {
+class ChainMockKeplrExtension extends ChainWalletBase {
   constructor(walletInfo: Wallet, chainInfo: ChainRecord) {
     super(walletInfo, chainInfo);
   }

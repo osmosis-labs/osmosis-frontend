@@ -26,15 +26,16 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   alloyedAssets: true,
   assetAlerts: true,
   incentivizePool: true,
-  bridgeDepositAddress: true,
-  nomicWithdrawAmount: true,
   swapToolTopGainers: true,
   swapped: true,
   onrampmoney: true,
   multiTxBridgeRoutes: true,
   positionMigration: true,
   solanaSkipRoutes: false,
+  fastBridgeTransfers: false,
+  fastBridgeTransfersNonEvmSources: false,
   inactiveValidatorAlerts: false,
+  forcedMigrations: true,
 };
 
 export function useFeatureFlags() {

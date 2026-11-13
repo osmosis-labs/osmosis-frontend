@@ -14,7 +14,6 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
-  calcCoinValue,
   calcSumCoinsValueOrUnknown,
   getAsset,
   mapRawCoinToPretty,
@@ -39,7 +38,6 @@ import {
   queryAccountUndelegatingPositions,
 } from "../../../queries/osmosis/superfluid";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { captureErrorAndReturn } from "../../../utils/error";
 import { queryPositionPerformance } from "../../data-services";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getSuperfluidPoolIds } from "../pools/superfluid";
@@ -620,6 +618,21 @@ export async function mapGetUserPositions({
       }).then((value) =>
         value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
       );
+      const rawRewards = [
+        ...position_.claimable_spread_rewards,
+        ...position_.claimable_incentives,
+      ];
+      const rewardCoins = mapRawCoinToPretty(params.assetLists, rawRewards);
+      // undefined (unknown) when any claimable reward is unlisted or can't be priced
+      const claimableRewardsValue =
+        rewardCoins.length < rawRewards.length
+          ? undefined
+          : await calcSumCoinsValueOrUnknown({
+              ...params,
+              coins: aggregateCoinsByDenom(rewardCoins),
+            }).then((value) =>
+              value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
+            );
 
       const lowerTick = new Int(position.lower_tick);
       const upperTick = new Int(position.upper_tick);
@@ -670,6 +683,7 @@ export async function mapGetUserPositions({
         position: position_,
         currentCoins: [baseCoin, quoteCoin],
         currentValue,
+        claimableRewardsValue,
         isFullRange,
         priceRange,
         liquidity: new Dec(position.liquidity),
@@ -767,19 +781,11 @@ export async function getPositionHistoricalPerformance({
 
   const [
     currentValue,
-    currentCoinsValues,
     principalValue,
     claimableRewardsValue,
     totalEarnedValue,
   ] = await Promise.all([
     sumValue(currentCoins),
-    Promise.all(
-      currentCoins
-        .map((coin) => calcCoinValue({ ...params, coin }))
-        .map((p) => p.catch((e) => captureErrorAndReturn(e, 0)))
-    ).then((values) =>
-      values.map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p))
-    ),
     sumValue(principalCoins),
     sumValue(claimableRewardCoins),
     sumValue(totalRewardCoins),
@@ -804,7 +810,6 @@ export async function getPositionHistoricalPerformance({
 
   return {
     currentCoins,
-    currentCoinsValues,
     currentValue,
     principalCoins,
     principalValue,

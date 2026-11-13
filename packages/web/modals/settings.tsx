@@ -7,7 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { Icon } from "~/components/assets";
 import { LanguageSelect } from "~/components/control";
 import { Switch } from "~/components/ui/switch";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import {
   SUPPORTED_LANGUAGES,
@@ -40,7 +40,6 @@ const SettingsContent: FunctionComponent<{
   onLanguageSelectOpenChange: (isOpen: boolean) => void;
 }> = ({ onLanguageSelectOpenChange }) => {
   const { t } = useTranslation();
-  const { isMobile } = useWindowSize();
 
   const {
     hideDust,
@@ -107,32 +106,30 @@ const SettingsContent: FunctionComponent<{
         </div>
       </div>
 
-      {/* Hide Balances Setting (Desktop only) */}
-      {!isMobile && (
-        <div className="mt-4 flex flex-col gap-[46px] rounded-2xl border-2 border-osmoverse-700 bg-osmoverse-800 p-6">
-          <div className="flex items-center justify-between">
-            <Icon id="zoom-out" className="text-osmoverse-200" />
-            <Switch
-              aria-labelledby="settings-hide-balances-label"
-              checked={hideBalances}
-              onCheckedChange={() => setHideBalances(!hideBalances)}
-            />
-          </div>
-          <div className="group flex justify-between text-white-full">
-            <div className="flex flex-col gap-1">
-              <span
-                id="settings-hide-balances-label"
-                className="subtitle1 text-left tracking-wide"
-              >
-                {t("settings.hideBalances")}
-              </span>
-              <span className="caption tracking-wider text-osmoverse-200">
-                {t("settings.titleHideBalances")}
-              </span>
-            </div>
+      {/* Hide Balances Setting */}
+      <div className="mt-4 flex flex-col gap-[46px] rounded-2xl border-2 border-osmoverse-700 bg-osmoverse-800 p-6">
+        <div className="flex items-center justify-between">
+          <Icon id="zoom-out" className="text-osmoverse-200" />
+          <Switch
+            aria-labelledby="settings-hide-balances-label"
+            checked={hideBalances}
+            onCheckedChange={() => setHideBalances(!hideBalances)}
+          />
+        </div>
+        <div className="group flex justify-between text-white-full">
+          <div className="flex flex-col gap-1">
+            <span
+              id="settings-hide-balances-label"
+              className="subtitle1 text-left tracking-wide"
+            >
+              {t("settings.hideBalances")}
+            </span>
+            <span className="caption tracking-wider text-osmoverse-200">
+              {t("settings.titleHideBalances")}
+            </span>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Unverified Assets Setting */}
       <div className="mt-4 flex flex-col gap-[46px] rounded-2xl border-2 border-osmoverse-700 bg-osmoverse-800 p-6">

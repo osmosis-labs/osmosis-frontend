@@ -14,7 +14,6 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
 - [Next.js](https://nextjs.org/): scaffolding/SSR/CDN/SEO
   - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimizations out of the box, behind [CloudFlare](https://www.cloudflare.com/)
 - [Turbo Repo](https://turbo.build/repo): mono repo management with package script execution, with heavy emphasis on build caching (including shared remote caching in Vercel)
-- [Lerna](https://lerna.js.org/): libs release
 
 ## Deployment 🚀
 
@@ -34,13 +33,15 @@ yarn start
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
 
-Make sure [node](https://nodejs.org/en/) = 22 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
+Make sure [node](https://nodejs.org/en/) = 24 and [yarn](https://yarnpkg.com/getting-started/install) is installed.
 
 1. Install deps
 
 ```bash
 yarn
 ```
+
+Installing also points git at the tracked `.githooks/` directory (`core.hooksPath`), whose pre-commit hook runs `lint-staged` on staged files. Run `yarn hooks:install` if you installed with scripts disabled.
 
 **First time setup** If you're on the Osmosis foundation team and have a Vercel account set up, optionally sign into turbo repo using your Vercel account, and link the repo. This could give you instant builds by sharing the remote cache on our Vercel project:
 
@@ -79,7 +80,6 @@ NEXT_PUBLIC_IS_TESTNET=true
 NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE=http://localhost:26657/
 NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE=http://localhost:1317/
 NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE=localosmosis
-# NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE=https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}
 # NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE=Osmosis (Testnet v13.X latest)
 ```
 
@@ -109,17 +109,20 @@ Note: our currency registrar checks IBC hashes to see if they can be found via t
 
 Release tags are for the published [npm packages](https://www.npmjs.com/org/osmosis-labs), which are every package except for the web package. Updates to the app are released incrementally way via deployments from master branch.
 
-To start the release process:
-
-```bash
-yarn build:libs && npx lerna publish
-```
+Lerna was removed along with the suspended release flow; reintroduce a publishing tool (e.g. Changesets) if releases resume.
 
 ## Translations 🌎🗺
 
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
 
-To add translations, you can manually edit the JSON translation files in `packages/web/translations`, use the [inlang](https://inlang.com/) online editor, or run `yarn machine-translate` to add missing translations using AI from Inlang.
+To add translations, you can manually edit the JSON translation files in `packages/web/localizations`, use the [inlang](https://inlang.com/) online editor, or run `yarn machine-translate` to fill missing translations with the [inlang CLI](https://inlang.com/m/2qj2w8pu/app-inlang-cli). It needs your own Google Translate or DeepL key:
+
+```bash
+INLANG_MACHINE_TRANSLATE_PROVIDER=deepl INLANG_DEEPL_API_KEY=... yarn machine-translate
+INLANG_MACHINE_TRANSLATE_PROVIDER=google INLANG_GOOGLE_TRANSLATE_API_KEY=... yarn machine-translate
+```
+
+Review the generated copy before committing, especially swap, bridge and withdraw strings.
 
 Note: we have tests in web package that ensure all localization files contain the same keys and that they're (best effort) all found within the TSX source files. These help keep our localizations up to date. To clean up localizations, check out the scripts in the web/localizations folder. They must be run using `node` within the localization folder.
 

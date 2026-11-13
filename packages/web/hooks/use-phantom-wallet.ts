@@ -1,7 +1,7 @@
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
-export const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
+const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
 
 /** Minimal surface of the injected Phantom (window.phantom.solana)
  *  provider that this app uses. */

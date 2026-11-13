@@ -7,15 +7,16 @@ build
 yarn-error.log
 .yarn
 
-src/styles/index.scss
 .vercel
 .turbo
 
-lerna-debug.log
 coverage
 
+# inlang writes its own project.inlang/.gitignore on first run; this covers
+# checkouts that already have a cache from CLI v2 or the editor extension.
+project.inlang/cache
+
 tsconfig.tsbuildinfo
-packages/web/e2e/keplr-extension-manifest
 
 # Vim backup, undo files
 *.orig
@@ -25,10 +26,11 @@ packages/web/e2e/keplr-extension-manifest
 .*.swp
 .*.swo
 
-packages/web/e2e/metamask-extension-manifest/
 packages/e2e/keplr-extension-manifest/
 packages/e2e/playwright-report/
 packages/e2e/test-results/
+packages/e2e/balance-report.json
+packages/e2e/fleet-state.json
 packages/e2e/.env
 
 # Local agent config: skills and settings are personal and may carry credentials

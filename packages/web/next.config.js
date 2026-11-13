@@ -1,6 +1,8 @@
 // @ts-check
 const path = require("path");
 
+const { securityHeaders } = require("./config/security-headers");
+
 /**
  * @type {import('next').NextConfig}
  **/
@@ -39,8 +41,34 @@ const config = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/apps",
+        destination: "/",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
+      // Each response must match exactly one of these two rules: a second CSP
+      // header would be enforced alongside the first, not instead of it.
+      {
+        source: "/:path((?!wormhole$).*)",
+        headers: securityHeaders({
+          mode: process.env.CSP_MODE || undefined,
+          isDev: process.env.NODE_ENV === "development",
+        }),
+      },
+      {
+        source: "/wormhole",
+        headers: securityHeaders({
+          mode: process.env.CSP_MODE || undefined,
+          isDev: process.env.NODE_ENV === "development",
+          wormholeConnect: true,
+        }),
+      },
       {
         source: "/favicon.ico",
         headers: [
@@ -79,7 +107,7 @@ const config = {
     // argon2i and ed25519, both functionalities which in the context of Cosmos would only get used within
     // an extension wallet. Libsodium is ~190kb gzipped, 500kb parsed, so this meaningfully reduces client load.
     // Our CosmJS (>=0.36) no longer uses libsodium, but the CosmJS 0.31 copies pulled in by
-    // @0xsquid/sdk and nomic-bitcoin still do.
+    // @0xsquid/sdk still does.
     //
     // It should never be getting used. This is copied from what Keplr does:
     // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104

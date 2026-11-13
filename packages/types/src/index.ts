@@ -1,3 +1,4 @@
+export * from "./asset-categories";
 export * from "./asset-types";
 export * from "./authenticator-types";
 export * from "./chain-types";
@@ -11,6 +12,5 @@ export * from "./one-click-trading-types";
 export * from "./pool-query-types";
 export * from "./pool-types";
 export * from "./position-types";
-export * from "./price-types";
 export * from "./staking-types";
 export * from "./superfluid-position-types";

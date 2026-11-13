@@ -10,7 +10,7 @@ import {
 } from "@osmosis-labs/bridge";
 import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
+import { getEvmExplorerUrl, isNil } from "@osmosis-labs/utils";
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -35,7 +35,6 @@ import {
   priceImpactLoss,
 } from "~/components/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
-import { IS_TESTNET } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
@@ -62,12 +61,52 @@ import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
 
+/**
+ * Bridges that can quote a fast transfer route (`fastTransfer` on a quote
+ * request): Skip, through Go Fast today and CCTP v2 Fast Transfer later. Any
+ * other provider would ignore the param and return its standard route again.
+ */
+const FAST_TRANSFER_BRIDGES: Bridge[] = ["Skip"];
+
+/**
+ * How long the quote keeps loading, after the first quote arrives, while a
+ * fast-capable bridge's standard or fast quote is still pending. Showing the
+ * first quote straight away made the screen change when the other one landed
+ * (the toggle appearing, or the default switching). Measured on 2026-11-10 for
+ * Ethereum ETH into allETH, the second Skip quote landed within 0.9 s in 9 of
+ * 10 runs and 2.2 s after a cold cache.
+ */
+const SPEED_QUOTE_HOLD_MS = 2_500;
+
 /** An EVM transaction that was mined but reverted: it definitively failed
  *  on-chain, unlike a receipt timeout, where the tx may still land. */
 class EvmTxRevertedError extends Error {
   constructor(readonly txHash: Address) {
     super(`Transaction ${txHash} reverted on-chain`);
   }
+}
+
+/** An EVM transaction the wallet broadcast whose receipt couldn't be
+ *  fetched (an RPC error while polling, or viem's receipt timeout). It may
+ *  still land, so this is not a failure. */
+class EvmTxStatusUnknownError extends Error {
+  constructor(
+    readonly txHash: Address,
+    readonly chainId: number
+  ) {
+    super(`Status of transaction ${txHash} is unknown`);
+  }
+}
+
+/** Points to the explorer rather than reporting a failure: the user should
+ *  check there before sending again. */
+function getEvmTxStatusUnknownToastContent(e: EvmTxStatusUnknownError) {
+  return {
+    titleTranslationKey: "transactionStatusUnknown",
+    captionTranslationKey: "transactionStatusUnknownCaption",
+    learnMoreUrl: getEvmExplorerUrl({ hash: e.txHash, chainId: e.chainId }),
+    learnMoreUrlCaption: "viewExplorer",
+  } as const;
 }
 
 /** A Solana transaction that definitively moved nothing: it executed with
@@ -303,10 +342,12 @@ export const useBridgeQuotes = ({
   const [isBridgeProviderControlledMode, setBridgeProviderControlledMode] =
     useState(false);
 
-  const onChangeBridgeProvider = useCallback((bridge: Bridge) => {
-    setSelectedBridgeProvider(bridge);
-    setBridgeProviderControlledMode(true);
-  }, []);
+  /**
+   * The speed toggle's opt-in: the key of the transfer (see `transferKey`)
+   * the user turned it on for. Off by default, and it selects nothing unless
+   * a fast option exists (`fastTransfer` below).
+   */
+  const [fastTransferOptInKey, setFastTransferOptInKey] = useState<string>();
 
   // Input
   const [debouncedInputValue, setDebouncedInputValue] =
@@ -317,6 +358,11 @@ export const useBridgeQuotes = ({
       // Every time the input amount changes, deactivate the controlled mode.
       // Best quotes will be selected automatically.
       setBridgeProviderControlledMode(false);
+      // The speed toggle resets the same way: a new amount gets new quotes,
+      // and the fast option may cost a different share of it or not exist at
+      // all (Go Fast caps order size). Typing the old amount back does not
+      // bring the opt-in back.
+      setFastTransferOptInKey(undefined);
     },
     300,
     [inputAmountRaw]
@@ -332,6 +378,28 @@ export const useBridgeQuotes = ({
         .truncate(),
     [debouncedInputValue, fromAsset?.decimals]
   );
+
+  /**
+   * Identifies the pair and addresses of one transfer. A different pair or
+   * address is a different transfer, so the speed toggle's opt-in only holds
+   * for the one it was made for, and every other transfer starts on standard
+   * again. Amount changes clear the opt-in outright (see the debounce above).
+   */
+  const transferKey = [
+    fromChain?.chainId,
+    toChain?.chainId,
+    fromAsset?.address,
+    toAsset?.address,
+    fromAddress,
+    toAddress,
+  ].join("|");
+  const isFastTransferSelected = fastTransferOptInKey === transferKey;
+  const setFastTransferSelected = useCallback(
+    (selected: boolean) =>
+      setFastTransferOptInKey(selected ? transferKey : undefined),
+    [transferKey]
+  );
+
   const availableBalance = fromAsset?.amount;
   const inputCoin = useMemo(
     () =>
@@ -358,13 +426,44 @@ export const useBridgeQuotes = ({
     return false;
   })();
 
+  /**
+   * Kill switch for fast transfers (MTN-435). With the flag off, no fast quote
+   * is requested and every request is identical to before fast transfers
+   * existed. With it on, each bridge that offers fast transfers gets a second
+   * quote request with `fastTransfer: true`, and the selection rule below
+   * decides whether the user ever sees it.
+   *
+   * Go Fast only routes from EVM chains today, so deposits from other chains
+   * and withdrawals (which start on Osmosis) also need
+   * `fastBridgeTransfersNonEvmSources`. Until it is on, those pairs send no
+   * fast request on each refresh and their first quote is not held for one.
+   * Turn it on once Skip offers fast routes from Cosmos chains or out of
+   * Osmosis.
+   */
+  const isEvmSourceDeposit = !isWithdraw && fromChain?.chainType === "evm";
+  const fastTransferBridges =
+    featureFlags.fastBridgeTransfers === true &&
+    (isEvmSourceDeposit ||
+      featureFlags.fastBridgeTransfersNonEvmSources === true)
+      ? bridges.filter((bridge) => FAST_TRANSFER_BRIDGES.includes(bridge))
+      : [];
+  const quoteRequests = [
+    ...bridges.map((bridge) => ({ bridge, fastTransfer: false })),
+    // After the standard requests, so the error shown when nothing quotes is
+    // always a standard quote's, never "no fast route".
+    ...fastTransferBridges.map((bridge) => ({ bridge, fastTransfer: true })),
+  ];
+
   const quoteResults = api.useQueries((t) =>
-    bridges.map((bridge) =>
+    quoteRequests.map(({ bridge, fastTransfer }) =>
       t.bridgeTransfer.getQuoteByBridge(
         {
           ...(quoteParams as Required<typeof quoteParams>),
           bridge,
           fromAmount: inputAmount.toString(),
+          // Left out of standard requests, so they stay identical to the
+          // requests sent before fast transfers existed.
+          ...(fastTransfer ? { fastTransfer: true } : {}),
         },
         {
           enabled:
@@ -495,6 +594,9 @@ export const useBridgeQuotes = ({
               // the quote bundles an Osmosis swap whose price impact could not
               // be determined — the loss is unknown, which must warn, not pass
               isSwapImpactUnknown: expectedOutput.priceImpactUnknown === true,
+              // the provider's fast transfer route (e.g. Skip Go Fast), from
+              // the extra fast quote request
+              isFastTransfer: fastTransfer,
             };
           },
 
@@ -510,7 +612,8 @@ export const useBridgeQuotes = ({
     )
   );
 
-  const successfulQuotes = useMemo(() => {
+  /** Standard and fast quotes alike. */
+  const successfulQuoteResults = useMemo(() => {
     return quoteResults.filter(
       (
         quote
@@ -523,80 +626,16 @@ export const useBridgeQuotes = ({
     return quoteResults.filter(({ isError }) => isError);
   }, [quoteResults]);
 
-  const selectedQuoteQuery = useMemo(() => {
-    return successfulQuotes.find(
-      ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
-    );
-  }, [selectedBridgeProvider, successfulQuotes]);
-
-  const selectedQuote = useMemo(() => {
-    return selectedQuoteQuery?.data;
-  }, [selectedQuoteQuery]);
-
-  /**
-   * Live loss figures for the selected quote — the input to the frozen-basis
-   * acknowledgement model. See `~/components/loss-acknowledgement`.
-   *
-   * The identity key is every field that makes this a different transfer rather
-   * than a re-quote of the same one: change the provider, either chain, either
-   * asset or the amount and the acknowledgement re-arms with no tolerance.
-   */
-  const currentLossFigures: LossFigures | undefined = useMemo(() => {
-    if (!selectedQuote) return undefined;
-    return {
-      identityKey: [
-        selectedQuote.provider.id,
-        fromChain?.chainId,
-        toChain?.chainId,
-        fromAsset?.address,
-        toAsset?.address,
-        inputAmount.toString(),
-      ].join("|"),
-      slippage: selectedQuote.transferSlippage,
-      priceImpact: selectedQuote.priceImpact.toDec(),
-      warnSlippage: selectedQuote.isSlippageTooHigh,
-      warnPriceImpact: selectedQuote.isPriceImpactTooHigh,
-      swapImpactUnknown: selectedQuote.isSwapImpactUnknown,
-    };
-  }, [
-    selectedQuote,
-    fromChain?.chainId,
-    toChain?.chainId,
-    fromAsset?.address,
-    toAsset?.address,
-    inputAmount,
-  ]);
-
-  const {
-    acknowledgedBasis,
-    hasAcknowledgedLoss,
-    setLossAcknowledged,
-    warningNeedsAcknowledgement,
-  } = useLossAcknowledgement(currentLossFigures);
-
-  const numSucceeded = successfulQuotes.length;
-  const isOneSuccessful = Boolean(numSucceeded);
-  const isAllSuccessful = numSucceeded === bridges.length;
-  const isOneErrored = Boolean(erroredQuotes.length);
-
-  // if none have returned a resulting quote, find some error
-  const someError = useMemo(
-    () =>
-      !isOneSuccessful &&
-      isOneErrored &&
-      quoteResults.every(({ isLoading }) => !isLoading)
-        ? quoteResults.find((quoteResult) => Boolean(quoteResult.error))?.error
-        : undefined,
-    [isOneSuccessful, isOneErrored, quoteResults]
-  );
-
-  const bestQuote = useMemo(
+  const bestStandardQuote = useMemo(
     () =>
       [...quoteResults]
         // only those that have fetched
         .filter(
           (quoteResult) =>
-            Boolean(quoteResult.isFetched) && !quoteResult.isError
+            Boolean(quoteResult.isFetched) &&
+            !quoteResult.isError &&
+            // fast quotes are weighed separately, by the rule below
+            !quoteResult.data?.isFastTransfer
         )
         // Sort by response time. The fastest and highest quality quote will be first.
         .sort((a, b) => {
@@ -630,6 +669,241 @@ export const useBridgeQuotes = ({
     [quoteResults]
   );
 
+  /** The fast quote paying out the most (only Skip quotes fast routes today). */
+  const fastQuoteQuery = useMemo(
+    () =>
+      successfulQuoteResults
+        .filter(({ data }) => data.isFastTransfer)
+        .reduce<(typeof successfulQuoteResults)[number] | undefined>(
+          (best, cur) =>
+            !best ||
+            best.data.expectedOutput.toDec().lt(cur.data.expectedOutput.toDec())
+              ? cur
+              : best,
+          undefined
+        ),
+    [successfulQuoteResults]
+  );
+
+  /**
+   * Fast vs standard (MTN-435): the quote that pays out more wins, and the
+   * speed toggle appears only when there is a real trade-off. The default is
+   * decided against the best standard quote from any provider:
+   *
+   * | Fast quote vs best standard quote | Result                                 |
+   * | --------------------------------- | -------------------------------------- |
+   * | No standard quote at all          | Fast is the default, no toggle         |
+   * | Pays out more (faster or slower)  | Fast is the default, no toggle         |
+   * | Faster, pays out the same or less | Standard stays default, toggle offered |
+   * | Slower, pays out the same or less | Ignored, as if no fast quote existed   |
+   *
+   * - No standard quote: e.g. Base ETH into allETH, which only Go Fast routes.
+   *   The fast quote is the only way to make the transfer.
+   * - Pays out more: the standard quote is strictly worse on what the user
+   *   receives, so making them opt in to the better route helps no one.
+   * - Faster but pays out less: the trade-off the toggle exists for (e.g.
+   *   Ethereum ETH into allETH: Axelar in ~16 min against Go Fast in ~10 s for
+   *   a higher fee). Standard stays the default; the user opts in.
+   * - Slower and pays out no more: no reason to pick it, so it is never shown.
+   *
+   * A fast quote always has a real fast leg: when Skip answers a go_fast
+   * request with a standard route, the provider refuses it, so it never
+   * reaches this rule.
+   */
+  const isFastQuoteDefault =
+    fastQuoteQuery !== undefined &&
+    (!bestStandardQuote ||
+      fastQuoteQuery.data.expectedOutput
+        .toDec()
+        .gt(bestStandardQuote.expectedOutput.toDec()));
+  const bestQuote = isFastQuoteDefault
+    ? fastQuoteQuery.data
+    : bestStandardQuote;
+
+  /**
+   * One quote per provider, for the provider dropdown and selection by
+   * provider ID. A default fast quote takes its provider's place, so Skip is
+   * never listed twice. A trade-off fast quote is not listed; it is reached
+   * through the speed toggle only.
+   */
+  const successfulQuotes = useMemo(() => {
+    const standardQuotes = successfulQuoteResults.filter(
+      ({ data }) => !data.isFastTransfer
+    );
+    if (!isFastQuoteDefault || !fastQuoteQuery) return standardQuotes;
+    return [
+      ...standardQuotes.filter(
+        ({ data }) => data.provider.id !== fastQuoteQuery.data.provider.id
+      ),
+      fastQuoteQuery,
+    ];
+  }, [successfulQuoteResults, isFastQuoteDefault, fastQuoteQuery]);
+
+  /** The selected provider's quote: what is selected with the toggle off. */
+  const selectedProviderQuoteQuery = useMemo(() => {
+    return successfulQuotes.find(
+      ({ data: quote }) => quote?.provider.id === selectedBridgeProvider
+    );
+  }, [selectedBridgeProvider, successfulQuotes]);
+
+  /**
+   * The fast quote the speed toggle offers. It is compared with the selected
+   * quote rather than the best one, so the choice is still offered when the
+   * user picked another provider. Turning the toggle on selects the fast quote
+   * without changing `selectedBridgeProvider`, so turning it off returns to
+   * that provider's quote. A default fast quote is never offered here: it is
+   * already selected, with no opt-in needed.
+   */
+  const fastTransferOption =
+    !isFastQuoteDefault &&
+    fastQuoteQuery &&
+    selectedProviderQuoteQuery &&
+    fastQuoteQuery.data.estimatedTime.asMilliseconds() <
+      selectedProviderQuoteQuery.data.estimatedTime.asMilliseconds()
+      ? fastQuoteQuery
+      : undefined;
+
+  // The toggle's opt-in only counts while there is a fast option to opt in
+  // to. If a refresh removes it (e.g. the amount went over Go Fast's cap),
+  // the selection falls back to the standard quote, with no stale fast quote
+  // left to sign.
+  const optedInFastQuoteQuery = isFastTransferSelected
+    ? fastTransferOption
+    : undefined;
+  const selectedQuoteQuery =
+    optedInFastQuoteQuery ?? selectedProviderQuoteQuery;
+
+  /**
+   * `successfulQuotes` as the provider dropdown lists them: an opted-in fast
+   * quote takes its provider's place, so the highlighted row shows the time,
+   * output and fee of the quote that will be signed.
+   */
+  const dropdownQuotes = optedInFastQuoteQuery
+    ? [
+        ...successfulQuotes.filter(
+          ({ data }) =>
+            data.provider.id !== optedInFastQuoteQuery.data.provider.id
+        ),
+        optedInFastQuoteQuery,
+      ]
+    : successfulQuotes;
+
+  const optedInFastProvider = optedInFastQuoteQuery?.data.provider.id;
+  const onChangeBridgeProvider = useCallback(
+    (bridge: Bridge) => {
+      // That row is the selected quote already. Picking it must not drop the
+      // opt-in and fall back to the provider's standard quote.
+      if (bridge === optedInFastProvider) return;
+      setSelectedBridgeProvider(bridge);
+      setBridgeProviderControlledMode(true);
+      // Picking a provider picks its standard quote.
+      setFastTransferOptInKey(undefined);
+    },
+    [optedInFastProvider]
+  );
+
+  const numSucceeded = successfulQuotes.length;
+  const isOneSuccessful = Boolean(numSucceeded);
+  const isAllSuccessful = numSucceeded === bridges.length;
+  const isOneErrored = Boolean(erroredQuotes.length);
+
+  // Hold the first quote until the fast-capable bridges' standard and fast
+  // quotes have both settled, up to SPEED_QUOTE_HOLD_MS, so the screen changes
+  // once. Only first loads count: a refetch keeps its data, so it isn't
+  // loading. With the flag off there are no fast requests, so nothing waits.
+  const isSpeedQuotePending =
+    fastTransferBridges.length > 0 &&
+    isOneSuccessful &&
+    quoteResults.some(
+      (quoteResult, index) =>
+        fastTransferBridges.some(
+          (bridge) => bridge === quoteRequests[index].bridge
+        ) &&
+        quoteResult.isLoading &&
+        quoteResult.fetchStatus !== "idle"
+    );
+  // Reset during render whenever pending flips, so each pending spell gets a
+  // fresh hold; the timeout ends it.
+  const [speedQuoteHold, setSpeedQuoteHold] = useState({
+    isPending: false,
+    isOver: false,
+  });
+  if (speedQuoteHold.isPending !== isSpeedQuotePending) {
+    setSpeedQuoteHold({ isPending: isSpeedQuotePending, isOver: false });
+  }
+  useEffect(() => {
+    if (!isSpeedQuotePending) return;
+    const timeoutId = setTimeout(
+      () => setSpeedQuoteHold({ isPending: true, isOver: true }),
+      SPEED_QUOTE_HOLD_MS
+    );
+    return () => clearTimeout(timeoutId);
+  }, [isSpeedQuotePending]);
+  const isSpeedQuoteHeld = isSpeedQuotePending && !speedQuoteHold.isOver;
+
+  // Nothing is selected during the hold. A fast quote that lands first is the
+  // default only until the standard quote arrives, and its warnings (e.g. high
+  // slippage from the fast fee) would flash on screen in the meantime.
+  const selectedQuote = useMemo(() => {
+    return isSpeedQuoteHeld ? undefined : selectedQuoteQuery?.data;
+  }, [isSpeedQuoteHeld, selectedQuoteQuery]);
+
+  /**
+   * Live loss figures for the selected quote — the input to the frozen-basis
+   * acknowledgement model. See `~/components/loss-acknowledgement`.
+   *
+   * The identity key is every field that makes this a different transfer rather
+   * than a re-quote of the same one: change the provider, either chain, either
+   * asset or the amount and the acknowledgement re-arms with no tolerance.
+   * Speed counts too: a provider's fast and standard quotes are different
+   * routes, and the fast one can pay out meaningfully less (about 1.8% less
+   * for Ethereum ETH into allETH), so accepting one must not accept the other.
+   */
+  const currentLossFigures: LossFigures | undefined = useMemo(() => {
+    if (!selectedQuote) return undefined;
+    return {
+      identityKey: [
+        selectedQuote.provider.id,
+        selectedQuote.isFastTransfer ? "fast" : "standard",
+        fromChain?.chainId,
+        toChain?.chainId,
+        fromAsset?.address,
+        toAsset?.address,
+        inputAmount.toString(),
+      ].join("|"),
+      slippage: selectedQuote.transferSlippage,
+      priceImpact: selectedQuote.priceImpact.toDec(),
+      warnSlippage: selectedQuote.isSlippageTooHigh,
+      warnPriceImpact: selectedQuote.isPriceImpactTooHigh,
+      swapImpactUnknown: selectedQuote.isSwapImpactUnknown,
+    };
+  }, [
+    selectedQuote,
+    fromChain?.chainId,
+    toChain?.chainId,
+    fromAsset?.address,
+    toAsset?.address,
+    inputAmount,
+  ]);
+
+  const {
+    acknowledgedBasis,
+    hasAcknowledgedLoss,
+    setLossAcknowledged,
+    warningNeedsAcknowledgement,
+  } = useLossAcknowledgement(currentLossFigures);
+
+  // if none have returned a resulting quote, find some error
+  const someError = useMemo(
+    () =>
+      !isOneSuccessful &&
+      isOneErrored &&
+      quoteResults.every(({ isLoading }) => !isLoading)
+        ? quoteResults.find((quoteResult) => Boolean(quoteResult.error))?.error
+        : undefined,
+    [isOneSuccessful, isOneErrored, quoteResults]
+  );
+
   // If the selected bridge provider is not found in the results, select the best quote provider
   const isBridgeProviderNotFound = !quoteResults.some(
     ({ data }) => data?.provider.id === selectedBridgeProvider
@@ -648,16 +922,14 @@ export const useBridgeQuotes = ({
   }
 
   // Check if value loss during transfer is too high (Skip bridge specific)
-  // Skip returns InsufficientAmountError when USD value difference is too large
+  // Skip returns InsufficientLiquidityError when the route's USD value
+  // difference is too large (thin liquidity) or it cannot price the route
   const isValueLossTooHigh = useMemo(() => {
     if (!someError?.message) return false;
 
-    const errorMsg = someError.message.toLowerCase();
-    return (
-      errorMsg.includes("insufficientamounterror") &&
-      errorMsg.includes("difference in usd value") &&
-      errorMsg.includes("too large")
-    );
+    return someError.message
+      .toLowerCase()
+      .includes("insufficientliquidityerror");
   }, [someError]);
 
   // Check if transfer amount is insufficient to cover bridge/network fees
@@ -665,14 +937,7 @@ export const useBridgeQuotes = ({
   // 1. Bridge provider errors (server-side) - when bridge returns InsufficientAmountError
   // 2. Client-side calculation - when input amount minus fees is <= 0
   const isInsufficientFee = useMemo(() => {
-    // First check it's not the value loss error (handled separately)
     const errorMsg = someError?.message.toLowerCase() ?? "";
-    if (
-      errorMsg.includes("insufficientamounterror") &&
-      errorMsg.includes("difference in usd value")
-    ) {
-      return false; // This is value loss, not insufficient fee
-    }
 
     // Check for bridge provider error responses
     // These errors come from the getQuoteByBridge edge function
@@ -792,24 +1057,16 @@ export const useBridgeQuotes = ({
     ({
       sendTxHash,
       quote,
-      nomicCheckpointIndex,
       pendingStep,
       solanaRecentBlockhash,
     }: {
       sendTxHash: string;
       quote: NonNullable<typeof selectedQuote>["quote"];
-      nomicCheckpointIndex?: number;
       /** Set for multi-tx transfers still awaiting a later user-signed step. */
       pendingStep?: TxSnapshot["pendingStep"];
       /** Set when `sendTxHash` is a Solana signature. */
       solanaRecentBlockhash?: string;
     }): boolean => {
-      if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
-        throw new Error(
-          "Nomic checkpoint index is required. Skipping tracking."
-        );
-      }
-
       if (
         inputAmountRaw !== "" &&
         availableBalance &&
@@ -839,6 +1096,7 @@ export const useBridgeQuotes = ({
           status: "pending",
           type: "bridge-transfer",
           estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+          ...(quote.viaAxelar === false ? { viaAxelar: false } : {}),
           networkFee: quote.estimatedGasFee
             ? {
                 address: quote.estimatedGasFee.amount.currency.coinMinimalDenom,
@@ -856,7 +1114,6 @@ export const useBridgeQuotes = ({
                 ...(quote.transferFee.isUnknown ? { isUnknown: true } : {}),
               }
             : undefined,
-          nomicCheckpointIndex,
           quoteId: quote.quoteId,
           pendingStep,
           solanaRecentBlockhash,
@@ -911,6 +1168,22 @@ export const useBridgeQuotes = ({
       transport: getClientEvmRpcTransport(currentEvmChain),
       chain: currentEvmChain,
     });
+    const chainId = currentEvmChain.id;
+
+    // viem RETURNS (not throws) for a tx that reverted onchain, and rejects
+    // the whole wait on a single RPC error or its 3 minute timeout. Only the
+    // revert proves a failure; a rejected wait means the tx's status is
+    // unknown.
+    const waitForEvmReceipt = async (hash: Address) => {
+      const receipt = await waitForTransactionReceipt(publicClient, {
+        hash,
+      }).catch(() => {
+        throw new EvmTxStatusUnknownError(hash, chainId);
+      });
+      if (receipt.status === "reverted") {
+        throw new EvmTxRevertedError(hash);
+      }
+    };
 
     /**
      * This occurs when users haven't given permission to the bridge smart contract to use their tokens.
@@ -931,12 +1204,14 @@ export const useBridgeQuotes = ({
         }
       );
 
-      const approvalReceipt = await waitForTransactionReceipt(publicClient, {
-        hash: approveTxHash,
+      await waitForEvmReceipt(approveTxHash).catch((e) => {
+        // the approval may still land: refresh the quotes so a second
+        // Confirm doesn't ask for another approval once it has
+        if (e instanceof EvmTxStatusUnknownError) {
+          void Promise.all(quoteResults.map((q) => q.refetch()));
+        }
+        throw e;
       });
-      if (approvalReceipt.status === "reverted") {
-        throw new EvmTxRevertedError(approveTxHash);
-      }
 
       for (const quoteResult of quoteResults) {
         await quoteResult.refetch();
@@ -970,16 +1245,11 @@ export const useBridgeQuotes = ({
 
     setIsBroadcastingTx(true);
 
-    // viem RETURNS (not throws) for a tx that reverted on-chain. A reverted
-    // first step must surface as a failure — for multi-tx transfers the
-    // entry was already persisted at broadcast, and without this it would
-    // sit "pending" forever with a Continue that can never work.
-    const receipt = await waitForTransactionReceipt(publicClient, {
-      hash: sendTxHash,
-    });
-    if (receipt.status === "reverted") {
-      throw new EvmTxRevertedError(sendTxHash);
-    }
+    // A reverted first step must surface as a failure: for multi-tx
+    // transfers the entry was already persisted at broadcast, and without
+    // this it would sit "pending" forever with a Continue that can never
+    // work.
+    await waitForEvmReceipt(sendTxHash);
 
     return sendTxHash;
   };
@@ -995,8 +1265,12 @@ export const useBridgeQuotes = ({
   ) => {
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
+    let broadcastHash: Address | undefined;
     try {
-      const sendTxHash = await sendEvmBridgeTx(transactionRequest);
+      const sendTxHash = await sendEvmBridgeTx(
+        transactionRequest,
+        (txHash) => (broadcastHash = txHash)
+      );
 
       trackTransferStatus({
         quote,
@@ -1009,6 +1283,19 @@ export const useBridgeQuotes = ({
       onTransferProp?.();
       setTransferInitiated(true);
     } catch (e) {
+      if (e instanceof EvmTxStatusUnknownError) {
+        // The transfer was broadcast but its receipt couldn't be fetched: it
+        // may still land, so record it and let the provider's status
+        // tracking settle it instead of reporting a failure the user might
+        // answer by sending again.
+        if (e.txHash === broadcastHash) {
+          trackTransferStatus({ quote, sendTxHash: e.txHash });
+          onTransferProp?.();
+          setTransferInitiated(true);
+        }
+        displayToast(getEvmTxStatusUnknownToastContent(e), ToastType.ERROR);
+        return;
+      }
       const error = e as BaseError;
       const toastContent = getWagmiToastErrorMessage({
         error,
@@ -1068,6 +1355,7 @@ export const useBridgeQuotes = ({
     // set the moment the first tx leaves the wallet: the error handling
     // below must know whether an entry keyed on it was already persisted
     let firstStepBroadcastHash: string | undefined;
+    let entryRecorded = false;
 
     try {
       // ---- Preflight the intermediate signer; nothing irreversible yet ----
@@ -1158,7 +1446,6 @@ export const useBridgeQuotes = ({
       // hash: the funds are en route from broadcast, so waiting for the
       // receipt to record it would lose the resume record if the app
       // closes during confirmation.
-      let entryRecorded = false;
       const onFirstStepBroadcast = (
         broadcastHash: string,
         solanaRecentBlockhash?: string
@@ -1276,6 +1563,35 @@ export const useBridgeQuotes = ({
         setTransferInitiated(true);
         return;
       }
+      // The first step was broadcast but its receipt couldn't be fetched.
+      // Close the flow so Confirm can't sign a second burn while this one
+      // may still land; the entry recorded at broadcast stays resumable
+      // from history. If it wasn't recorded, there is no Continue to offer:
+      // say so, as the confirmed path does.
+      if (
+        e instanceof EvmTxStatusUnknownError &&
+        e.txHash === firstStepBroadcastHash
+      ) {
+        displayToast(getEvmTxStatusUnknownToastContent(e), ToastType.ERROR);
+        if (!entryRecorded) {
+          console.error(
+            "Multi-tx transfer entry was not recorded at broadcast"
+          );
+          displayToast(
+            {
+              titleTranslationKey: "transfer.somethingIsntWorking",
+              captionTranslationKey: [
+                "transfer.multiTxRecordFailed",
+                { chain: finalStepPrettyName },
+              ],
+            },
+            ToastType.ERROR
+          );
+        }
+        onTransferProp?.();
+        setTransferInitiated(true);
+        return;
+      }
       // A first tx that definitively failed (an EVM revert, or a Solana tx
       // that errored or expired before landing) moved nothing: the entry
       // persisted at broadcast must not stay "pending" with a Continue that
@@ -1289,18 +1605,22 @@ export const useBridgeQuotes = ({
       // Named multi-tx failures (route expired, fee shortfall) carry
       // specific recovery copy shared with the resume flow; the funds are
       // on the intermediate chain and the entry stays resumable from
-      // history. Everything else gets the wallet-error mapping for the wallet
-      // that was signing (Phantom errors are not wagmi errors).
+      // history. An approval whose receipt couldn't be fetched is not a
+      // failure either: nothing was recorded, so point to the explorer.
+      // Everything else gets the wallet-error mapping for the wallet that
+      // was signing (Phantom errors are not wagmi errors).
       const multiTxToast = getMultiTxErrorToastContent(e, finalStepPrettyName);
       displayToast(
         multiTxToast ??
-          (firstStep.type === "solana"
-            ? getSolanaErrorToastContent(e)
-            : getWagmiToastErrorMessage({
-                error: e as BaseError,
-                t,
-                walletName: evmConnector?.name ?? "",
-              })),
+          (e instanceof EvmTxStatusUnknownError
+            ? getEvmTxStatusUnknownToastContent(e)
+            : firstStep.type === "solana"
+              ? getSolanaErrorToastContent(e)
+              : getWagmiToastErrorMessage({
+                  error: e as BaseError,
+                  t,
+                  walletName: evmConnector?.name ?? "",
+                })),
         ToastType.ERROR
       );
       if (e instanceof SolanaPreflightError && e.reason === "expired") {
@@ -1481,7 +1801,6 @@ export const useBridgeQuotes = ({
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
     const gasFee = transactionRequest.gasFee;
-    let nomicCheckpointIndex: number | undefined;
 
     // Warn-accept flags for the tx auth memo (MTN-137), stamped from the
     // frozen acknowledged basis — the sign-time guard in `onTransfer` has
@@ -1513,22 +1832,6 @@ export const useBridgeQuotes = ({
         ...(memoFlags && { preferNoSetMemo: true }),
       },
       {
-        /**
-         * This is a special case for Nomic withdrawals
-         * We need to get the checkpoint index in order to track the transaction
-         */
-        onSign: async () => {
-          if (quote.provider.id !== "Nomic") return;
-
-          const { getCheckpoint } = await import("nomic-bitcoin");
-          const { index } = await getCheckpoint({
-            relayers: getNomicRelayerUrl({
-              env: IS_TESTNET ? "testnet" : "mainnet",
-            }),
-          });
-          /** Add one since the current transfer is not included in the current index */
-          nomicCheckpointIndex = index + 1;
-        },
         onBroadcastFailed: (e?: Error) => {
           // Accepted, but its result couldn't be confirmed: the funds may be
           // en route, so record the transfer as onFulfill would and let its
@@ -1538,7 +1841,6 @@ export const useBridgeQuotes = ({
               // onFulfill's hashes are lowercase too.
               sendTxHash: e.txHash.toLowerCase(),
               quote,
-              nomicCheckpointIndex,
             });
             onTransferProp?.();
             setTransferInitiated(true);
@@ -1553,7 +1855,6 @@ export const useBridgeQuotes = ({
             trackTransferStatus({
               sendTxHash: tx.transactionHash,
               quote,
-              nomicCheckpointIndex,
             });
 
             onTransferProp?.();
@@ -1705,8 +2006,8 @@ export const useBridgeQuotes = ({
     };
   } else if (isValueLossTooHigh) {
     errorBoxMessage = {
-      heading: t("transfer.transferAmountTooLowValueLoss"),
-      description: t("transfer.valueLossTooHighToBridge"),
+      heading: t("transfer.routeLiquidityTooLow"),
+      description: t("transfer.routeLiquidityTooLowBody"),
     };
   } else if (isInsufficientFee) {
     errorBoxMessage = {
@@ -1726,8 +2027,9 @@ export const useBridgeQuotes = ({
   } else if (hasNoQuotes) {
     errorBoxMessage = {
       heading: isWithdraw
-        ? t("transfer.assetWithdrawalsUnavailable", {
-            asset: toAsset?.denom ?? "",
+        ? t("transfer.assetWithdrawalsToChainUnavailable", {
+            asset: fromAsset?.denom ?? "",
+            chain: toChain?.prettyName ?? "",
           })
         : t("transfer.assetsDepositsUnavailable", {
             asset: toAsset?.denom ?? "",
@@ -1791,9 +2093,10 @@ export const useBridgeQuotes = ({
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
-    (!isOneSuccessful ||
+    ((!isOneSuccessful ||
       quoteResults.every((quoteResult) => quoteResult.isLoading)) &&
-    quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle");
+      quoteResults.some((quoteResult) => quoteResult.fetchStatus !== "idle")) ||
+    isSpeedQuoteHeld;
   const isLoadingAnyBridgeQuote = quoteResults.some(
     (quoteResult) => quoteResult.isLoading && quoteResult.fetchStatus !== "idle"
   );
@@ -1880,10 +2183,27 @@ export const useBridgeQuotes = ({
     setLossAcknowledged,
     warningNeedsAcknowledgement,
 
-    successfulQuotes,
+    /** Per-provider quotes for the dropdown (see `dropdownQuotes`). */
+    successfulQuotes: dropdownQuotes,
     isAllQuotesSuccessful: isAllSuccessful,
     selectedBridgeProvider,
     setSelectedBridgeProvider: onChangeBridgeProvider,
+
+    /**
+     * Set only when the user has a real speed choice: a fast quote that is
+     * faster than the selected provider's quote and is not already the
+     * default (see the selection rule). Drives the speed toggle.
+     * `standardQuote` is what the toggle switches back to.
+     */
+    fastTransfer:
+      fastTransferOption && selectedProviderQuoteQuery
+        ? {
+            standardQuote: selectedProviderQuoteQuery.data,
+            fastQuote: fastTransferOption.data,
+            isFastSelected: isFastTransferSelected,
+            setFastSelected: setFastTransferSelected,
+          }
+        : undefined,
 
     selectedQuote,
     selectedQuoteUpdatedAt: selectedQuoteQuery?.dataUpdatedAt,

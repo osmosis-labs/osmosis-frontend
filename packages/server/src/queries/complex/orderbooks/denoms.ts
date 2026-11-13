@@ -22,14 +22,17 @@ export function getOrderbookDenoms({
     cache: orderbookDenomsCache,
     key: `orderbookDenoms-${orderbookAddress}`,
     ttl: 1000 * 60 * 60 * 24 * 30, // 30 days (unlikely to change)
-    getFreshValue: () =>
+    getFreshValue: ({ metadata }) =>
       getOrderbookPools().then((pools) => {
         const pool = pools.find((p) => p.contractAddress === orderbookAddress);
-        if (!pool)
+        if (!pool) {
+          // A new orderbook may not be ingested yet: retry soon instead of caching the miss
+          metadata.ttl = 1000 * 60; // 1 minute
           return {
             quoteAsset: undefined,
             baseAsset: undefined,
           };
+        }
         const quoteAsset = getAssetFromAssetList({
           coinMinimalDenom: pool.quoteDenom,
           assetLists,

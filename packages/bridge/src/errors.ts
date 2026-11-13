@@ -42,4 +42,5 @@ export type BridgeError =
   | "NoQuotesError"
   | "UnsupportedQuoteError"
   | "InsufficientAmountError"
+  | "InsufficientLiquidityError"
   | "AccountNotFoundError";

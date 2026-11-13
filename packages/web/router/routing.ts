@@ -2,13 +2,13 @@ export type Backend = "cf" | "vercel";
 
 /** Response header naming the platform that served a request. */
 export const BACKEND_HEADER = "x-osmosis-backend";
-/** Set when Vercel served a page load the production Worker failed: `cf-<status>` or `cf-error`. */
+/** Original backend and failure on retry: `cf-<status>`, `cf-error`, or `vercel-404`. */
 export const FALLBACK_HEADER = "x-osmosis-fallback";
 /** Pins a browser's traffic bucket (0-9999) across IP and user-agent changes. */
 export const BUCKET_COOKIE = "osmo_bucket";
 /** Session pin to one platform for QA, set through `?osmo_backend=cf|vercel|auto`. */
 export const OVERRIDE_COOKIE = "osmo_backend";
-export const OVERRIDE_PARAM = "osmo_backend";
+const OVERRIDE_PARAM = "osmo_backend";
 
 const BUCKETS = 10_000;
 const BUCKET_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
@@ -17,6 +17,7 @@ const CRAWLER_USER_AGENT =
 
 export type RouteDecision = {
   backend: Backend;
+  reason: "override" | "crawler" | "bucket";
   /** `Set-Cookie` values to add to the response. */
   setCookies: string[];
 };
@@ -56,12 +57,12 @@ export function decideBackend(
     setCookies.push(serializeCookie(OVERRIDE_COOKIE, "", 0));
   }
   if (override === "cf" || override === "vercel") {
-    return { backend: override, setCookies };
+    return { backend: override, reason: "override", setCookies };
   }
 
   const userAgent = request.headers.get("user-agent") ?? "";
   if (CRAWLER_USER_AGENT.test(userAgent)) {
-    return { backend: "vercel", setCookies };
+    return { backend: "vercel", reason: "crawler", setCookies };
   }
 
   let bucket = parseBucket(cookies.get(BUCKET_COOKIE));
@@ -77,7 +78,7 @@ export function decideBackend(
   }
 
   const backend = bucket < (cfPercent / 100) * BUCKETS ? "cf" : "vercel";
-  return { backend, setCookies };
+  return { backend, reason: "bucket", setCookies };
 }
 
 /**

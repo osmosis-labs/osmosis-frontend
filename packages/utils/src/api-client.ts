@@ -6,11 +6,6 @@ export enum HTTPMethod {
   DELETE = "DELETE",
 }
 
-export interface ClientErrorResponse {
-  message: string;
-  error: Error;
-}
-
 export class ApiClientError<Data = unknown> extends Error {
   status: number;
   data: Data;

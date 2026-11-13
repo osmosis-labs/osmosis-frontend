@@ -17,8 +17,11 @@ const ATOM_CURRENCY = {
   coinMinimalDenom: "uatom",
 };
 
-function makeBalance(amount: string) {
-  return new CoinPretty(ATOM_CURRENCY, amount);
+const IBC_ATOM_DENOM =
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
+
+function makeBalance(amount: string, coinMinimalDenom = "uatom") {
+  return new CoinPretty({ ...ATOM_CURRENCY, coinMinimalDenom }, amount);
 }
 
 function makeGasCost(amount: string) {
@@ -39,6 +42,7 @@ interface Props {
   cryptoInput: string;
   transferGasCost: CoinPretty | undefined;
   balanceRaw: string;
+  balanceMinimalDenom?: string;
   onChangeCryptoInput: jest.Mock;
   canSetMax?: boolean;
   address?: string;
@@ -52,6 +56,7 @@ function renderInput({
   cryptoInput,
   transferGasCost,
   balanceRaw,
+  balanceMinimalDenom,
   onChangeCryptoInput,
   canSetMax = true,
   address = "uatom",
@@ -59,7 +64,7 @@ function renderInput({
   isInsufficientBal = false,
   isInsufficientFee = false,
 }: Props) {
-  const balance = makeBalance(balanceRaw);
+  const balance = makeBalance(balanceRaw, balanceMinimalDenom);
   return render(
     <CryptoFiatInput
       currentUnit="crypto"
@@ -756,6 +761,28 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     const expected2 = expectedMaxAfterGas(balanceRaw, gasRaw2);
     await waitFor(() => {
       expect(onChangeCryptoInput).toHaveBeenCalledWith(expected2);
+    });
+  });
+
+  it("subtracts gas when the balance is the IBC denom and gas is the source denom", async () => {
+    const balanceRaw = "2171765";
+    const gasRaw = "5650";
+    const onChangeCryptoInput = jest.fn();
+
+    renderInput({
+      isMax: true,
+      cryptoInput: makeBalance(balanceRaw).toDec().toString(),
+      transferGasCost: makeGasCost(gasRaw),
+      balanceRaw,
+      balanceMinimalDenom: IBC_ATOM_DENOM,
+      address: IBC_ATOM_DENOM,
+      onChangeCryptoInput,
+    });
+
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(
+        expectedMaxAfterGas(balanceRaw, gasRaw)
+      );
     });
   });
 });

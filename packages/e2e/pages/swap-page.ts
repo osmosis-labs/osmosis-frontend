@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-compat/no-extraneous-dependencies */
 import {
   type BrowserContext,
   type Locator,
@@ -58,7 +58,6 @@ export class SwapPage extends BasePage {
   async enterAmount(amount: string) {
     // Just enter an amount for the swap and wait for a quote
     await this.swapInput.fill(amount, { timeout: 2000 })
-    await this.page.waitForTimeout(2000)
     await expect(this.swapInput).toHaveValue(amount, { timeout: 3000 })
     const exchangeRate = await this.getExchangeRate()
     console.log(`Swap ${amount} with rate: ${exchangeRate}`)

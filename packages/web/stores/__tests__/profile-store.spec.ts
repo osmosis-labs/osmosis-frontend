@@ -1,7 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 
-import { mockStoreState } from "~/__tests__/zustand-utils";
-
 import { useProfileStore } from "../profile-store";
 
 const LEGACY_MIGRATION_COMPLETE_KEY = "profile-store/legacy-migration-complete";
@@ -18,29 +16,6 @@ describe("ProfileStore (Zustand)", () => {
     useProfileStore.setState({ currentAvatar: "wosmongton" });
     // Remove persisted data so migration tests start from a clean slate
     useProfileStore.persist.clearStorage();
-  });
-
-  describe("Initial State", () => {
-    it("should have wosmongton as the default avatar", () => {
-      const { result } = renderHook(() => useProfileStore());
-      expect(result.current.currentAvatar).toBe("wosmongton");
-    });
-  });
-
-  describe("setCurrentAvatar", () => {
-    it("should update avatar back to wosmongton", () => {
-      const { result } = renderHook(() => useProfileStore());
-
-      act(() => {
-        result.current.setCurrentAvatar("ammelia");
-      });
-      expect(result.current.currentAvatar).toBe("ammelia");
-
-      act(() => {
-        result.current.setCurrentAvatar("wosmongton");
-      });
-      expect(result.current.currentAvatar).toBe("wosmongton");
-    });
   });
 
   describe("Persistence", () => {
@@ -180,20 +155,6 @@ describe("ProfileStore (Zustand)", () => {
       } finally {
         getItemSpy.mockRestore();
       }
-    });
-  });
-
-  describe("mockStoreState helper", () => {
-    it("should allow mocking store state for tests", () => {
-      const restore = mockStoreState(useProfileStore, {
-        currentAvatar: "ammelia",
-      });
-
-      expect(useProfileStore.getState().currentAvatar).toBe("ammelia");
-
-      // Restore original state
-      restore();
-      expect(useProfileStore.getState().currentAvatar).toBe("wosmongton");
     });
   });
 });

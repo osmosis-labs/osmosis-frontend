@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 
 import { MockChains } from "../../__tests__/mock-chains";
@@ -251,6 +251,55 @@ describe("SkipTransferStatusProvider", () => {
     });
   });
 
+  describe("EVM transfers awaiting their receipt", () => {
+    const evmSnapshot = baseTxSnapshot;
+
+    const withReceipt = (outcome: "success" | "reverted" | undefined) => {
+      const check = jest.fn(async () => outcome);
+      const evmProvider = new SkipTransferStatusProvider(
+        "mainnet" as BridgeEnvironment,
+        MockChains,
+        SkipStatusProvider,
+        undefined,
+        check
+      );
+      evmProvider.statusReceiverDelegate = mockReceiver;
+      return { check, evmProvider };
+    };
+
+    it("resolves as failed when the receipt shows a revert", async () => {
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ state: "STATE_PENDING" })
+        )
+      );
+      const { check, evmProvider } = withReceipt("reverted");
+
+      await evmProvider.trackTxStatus(evmSnapshot);
+
+      expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
+      expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+        "testTxHash",
+        "failed",
+        undefined
+      );
+    });
+
+    it("keeps polling when Skip errors and no receipt has turned up", async () => {
+      server.use(
+        http.get("https://api.skip.money/v2/tx/status", () =>
+          HttpResponse.json({ message: "tx not found" }, { status: 404 })
+        )
+      );
+      const { evmProvider } = withReceipt(undefined);
+
+      await expect(
+        evmProvider.trackTxStatus(evmSnapshot)
+      ).resolves.toBeUndefined();
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    });
+  });
+
   describe("toTransferStatus", () => {
     it("maps completed states", () => {
       expect(toTransferStatus("STATE_COMPLETED_SUCCESS")).toBe("success");
@@ -332,6 +381,43 @@ describe("SkipTransferStatusProvider", () => {
     };
     const url = cosmosProvider.makeExplorerUrl(snapshot);
     expect(url).toBe("https://www.mintscan.io/cosmos/txs/cosmosTxHash");
+  });
+
+  it("links a route without an Axelar leg to Skip's explorer, with the hash's chain id", () => {
+    const withdraw: TxSnapshot = {
+      ...baseTxSnapshot,
+      viaAxelar: false,
+      sendTxHash: "cosmosTxHash",
+      fromChain: {
+        chainId: "cosmoshub-4",
+        prettyName: "Cosmos Hub",
+        chainType: "cosmos",
+      },
+      toChain: { chainId: 1, prettyName: "Ethereum", chainType: "evm" },
+    };
+    expect(provider.makeExplorerUrl(withdraw)).toBe(
+      "https://explorer.skip.build/?tx_hash=cosmosTxHash&chain_id=cosmoshub-4"
+    );
+
+    const deposit: TxSnapshot = {
+      ...baseTxSnapshot,
+      viaAxelar: false,
+      sendTxHash: "0xabc",
+      fromChain: { chainId: 8453, prettyName: "Base", chainType: "evm" },
+    };
+    expect(provider.makeExplorerUrl(deposit)).toBe(
+      "https://explorer.skip.build/?tx_hash=0xabc&chain_id=8453"
+    );
+
+    // a multi-tx route that advanced onto Noble pairs the Noble tx with Noble
+    const advanced: TxSnapshot = {
+      ...deposit,
+      sendTxHash: "NOBLETX",
+      trackingChainId: "noble-1",
+    };
+    expect(provider.makeExplorerUrl(advanced)).toBe(
+      "https://explorer.skip.build/?tx_hash=NOBLETX&chain_id=noble-1"
+    );
   });
 
   it("links a Solana-origin transfer to Solscan, then to the intermediate chain once advanced", () => {

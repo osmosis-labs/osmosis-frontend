@@ -10,7 +10,6 @@ export class TestConfig {
       headless: false,
       args: args,
       viewport: viewport,
-      slowMo: 300,
     };
   }
 
@@ -19,7 +18,6 @@ export class TestConfig {
     return {
       headless: headless,
       viewport: viewport,
-      slowMo: 300,
     };
   }
 

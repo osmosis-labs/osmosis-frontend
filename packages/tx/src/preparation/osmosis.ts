@@ -1,4 +1,3 @@
-import type { StdFee } from "@cosmjs/amino";
 import type { EncodeObject } from "@cosmjs/proto-signing";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { BigDec, maxTick, minTick } from "@osmosis-labs/math";
@@ -22,11 +21,10 @@ import {
   getJoinSwapShareOutMinAmount,
   type JoinPoolData,
 } from "../account/osmosis/join-pool";
-import type { DeliverTxResponse, SignOptions } from "../account/types";
+import type { DeliverTxResponse } from "../account/types";
 import { getLastPositionEventAmounts } from "../events";
 import {
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
-  makeAddToGaugeMsg,
   makeAddToPositionMsg,
   makeBeginRedelegateMsg,
   makeBeginUnlockingMsg,
@@ -45,15 +43,11 @@ import {
   makeLockAndSuperfluidDelegateMsg,
   makeLockTokensMsg,
   makeSetValidatorSetPreferenceMsg,
-  makeSplitRoutesSwapExactAmountInMsg,
-  makeSplitRoutesSwapExactAmountOutMsg,
   makeSuperfluidDelegateMsg,
   makeSuperfluidUnbondLockMsg,
   makeSuperfluidUndelegateMsg,
   makeSwapExactAmountInMsg,
-  makeSwapExactAmountOutMsg,
   makeUndelegateFromRebalancedValidatorSetMsg,
-  makeUndelegateFromValidatorSetMsg,
   makeWithdrawDelegationRewardsMsg,
   makeWithdrawPositionMsg,
 } from "../message-composers";
@@ -64,6 +58,26 @@ import {
 
 const DEFAULT_SLIPPAGE = "2.5";
 const HIGH_DEFAULT_SLIPPAGE = "15";
+
+/**
+ * Percentage below the entered amount that a concentrated liquidity deposit
+ * may use per token before the tx fails. A CL deposit consumes tokens at the
+ * pool price at inclusion, so one leg is legitimately used less than entered
+ * when the price moves after the quote. This is also the bound a sandwich can
+ * exploit, so keep it as tight as legitimate price movement allows.
+ */
+export const CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT = "5";
+
+/** `amount` reduced by `tolerancePercent`, truncated to an integer string. */
+export function applyClMinAmountTolerance(
+  amount: string,
+  tolerancePercent: string = CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT
+): string {
+  return new Dec(amount)
+    .mul(new Dec(1).sub(new Dec(tolerancePercent).quo(new Dec(100))))
+    .truncate()
+    .toString();
+}
 
 /** The slice of a concentrated pool's state needed to build a create-position tx. */
 export interface ConcentratedPoolInfo {
@@ -385,7 +399,7 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
   superfluidValidatorAddress?: string,
   baseDeposit?: { currency: Currency; amount: string },
   quoteDeposit?: { currency: Currency; amount: string },
-  maxSlippage = "15",
+  maxSlippage = CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT,
   memo: string = "",
   onFulfill?: (tx: DeliverTxResponse) => void
 ) {
@@ -445,40 +459,24 @@ export async function prepareCreateConcentratedLiquidityPositionMsg(
         currentSqrtPrice.mul(currentSqrtPrice).toDec()
       );
 
-      const slippageMultiplier = new Dec(1).sub(
-        new Dec(maxSlippage).quo(new Dec(100))
-      );
-
-      if (currentTick >= lowerTick && currentTick < upperTick) {
+      if (currentTick.gte(lowerTick) && currentTick.lt(upperTick)) {
         // Position consists of both tokens
         token_min_amount0 = baseCoin
-          ? new Dec(baseCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(baseCoin.amount.toString(), maxSlippage)
           : token_min_amount0;
 
         token_min_amount1 = quoteCoin
-          ? new Dec(quoteCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(quoteCoin.amount.toString(), maxSlippage)
           : token_min_amount1;
-      } else if (currentTick < lowerTick) {
+      } else if (currentTick.lt(lowerTick)) {
         // Position consists of 1 token only.
         token_min_amount0 = baseCoin
-          ? new Dec(baseCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(baseCoin.amount.toString(), maxSlippage)
           : token_min_amount0;
-      } else if (currentTick >= upperTick) {
+      } else if (currentTick.gte(upperTick)) {
         // Position consists of 1 token only.
         token_min_amount1 = quoteCoin
-          ? new Dec(quoteCoin.amount)
-              .mul(slippageMultiplier)
-              .truncate()
-              .toString()
+          ? applyClMinAmountTolerance(quoteCoin.amount.toString(), maxSlippage)
           : token_min_amount1;
       }
     }
@@ -514,29 +512,30 @@ export async function prepareCreateConcentratedLiquidityInitialFullRangePosition
   quote: { token: AppCurrency; amount: string },
   onFulfill?: (tx: DeliverTxResponse) => void
 ) {
-  let token_min_amount0 = "0";
-  let token_min_amount1 = "0";
+  const toBaseUnits = ({
+    token,
+    amount,
+  }: {
+    token: AppCurrency;
+    amount: string;
+  }) =>
+    new Dec(amount)
+      .mul(DecUtils.getTenExponentNInPrecisionRange(token.coinDecimals))
+      .truncate()
+      .toString();
 
-  const slippageMultiplier = new Dec(1).sub(new Dec(15).quo(new Dec(100)));
-
-  token_min_amount0 = base
-    ? new Dec(base.amount).mul(slippageMultiplier).truncate().toString()
-    : token_min_amount0;
-
-  token_min_amount1 = quote
-    ? new Dec(quote.amount).mul(slippageMultiplier).truncate().toString()
-    : token_min_amount1;
+  // min0/min1 bind to the pool's token0/token1, which this UI creates as
+  // base/quote, so they follow that order and not the denom sort below.
+  const token_min_amount0 = applyClMinAmountTolerance(toBaseUnits(base));
+  const token_min_amount1 = applyClMinAmountTolerance(toBaseUnits(quote));
 
   const sortedCoins = [base, quote]
     .sort((a, b) =>
       a?.token.coinMinimalDenom.localeCompare(b?.token.coinMinimalDenom)
     )
-    .map(({ token, amount }) => ({
-      denom: token.coinMinimalDenom,
-      amount: new Dec(amount)
-        .mul(DecUtils.getTenExponentNInPrecisionRange(token.coinDecimals))
-        .truncate()
-        .toString(),
+    .map((coin) => ({
+      denom: coin.token.coinMinimalDenom,
+      amount: toBaseUnits(coin),
     }));
 
   const msg = await makeCreatePositionMsg({
@@ -834,19 +833,19 @@ export async function prepareAddToConcentratedLiquidityPositionMsg(
     denom: string;
     amount: string;
   },
-  maxSlippage = "20",
+  maxSlippage = CL_DEPOSIT_MIN_AMOUNT_TOLERANCE_PERCENT,
   memo: string = "",
   onFulfill?: (tx: DeliverTxResponse) => void
 ) {
   // calculate desired amounts with slippage
-  const amount0WithSlippage = new Dec(coin0.amount)
-    .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-    .truncate()
-    .toString();
-  const amount1WithSlippage = new Dec(coin1.amount)
-    .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-    .truncate()
-    .toString();
+  const amount0WithSlippage = applyClMinAmountTolerance(
+    coin0.amount,
+    maxSlippage
+  );
+  const amount1WithSlippage = applyClMinAmountTolerance(
+    coin1.amount,
+    maxSlippage
+  );
 
   // Fresh read from chain REST; a failed request throws before anything is
   // signed rather than being treated as "not staked".
@@ -961,129 +960,6 @@ export async function prepareCollectAllPositionsRewardsMsgs(
   );
 }
 
-export async function prepareSplitRouteSwapExactAmountInMsg(
-  context: TransactionPreparationContext,
-  routes: {
-    pools: {
-      id: string;
-      tokenOutDenom: string;
-    }[];
-    tokenInAmount: string;
-  }[],
-  tokenIn: { coinMinimalDenom: string },
-  tokenOutMinAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions & { fee?: StdFee },
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const msg = await makeSplitRoutesSwapExactAmountInMsg({
-    routes,
-    tokenIn,
-    tokenOutMinAmount,
-    userOsmoAddress: context.address,
-  });
-
-  return prepareTransaction(
-    "splitRouteSwapExactAmountIn",
-    [msg],
-    memo,
-    signOptions?.fee,
-    signOptions,
-    onFulfill
-  );
-}
-
-export async function prepareSplitRouteSwapExactAmountOutMsg(
-  context: TransactionPreparationContext,
-  routes: {
-    pools: {
-      id: string;
-      tokenInDenom: string;
-    }[];
-    tokenOutAmount: string;
-  }[],
-  tokenOut: { coinMinimalDenom: string },
-  tokenInMaxAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions & { fee?: StdFee },
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const msg = await makeSplitRoutesSwapExactAmountOutMsg({
-    routes,
-    tokenOut,
-    tokenInMaxAmount,
-    userOsmoAddress: context.address,
-  });
-
-  return prepareTransaction(
-    "splitRouteSwapExactAmountOut",
-    [msg],
-    memo,
-    signOptions?.fee,
-    signOptions,
-    onFulfill
-  );
-}
-
-export async function prepareSwapExactAmountInMsg(
-  context: TransactionPreparationContext,
-  pools: {
-    id: string;
-    tokenOutDenom: string;
-  }[],
-  tokenIn: { coinMinimalDenom: string; amount: string },
-  tokenOutMinAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions & { fee?: StdFee },
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const msg = await makeSwapExactAmountInMsg({
-    pools,
-    tokenIn,
-    tokenOutMinAmount,
-    userOsmoAddress: context.address,
-  });
-
-  return prepareTransaction(
-    "swapExactAmountIn",
-    [msg],
-    memo,
-    signOptions?.fee,
-    signOptions,
-    onFulfill
-  );
-}
-
-export async function prepareSwapExactAmountOutMsg(
-  context: TransactionPreparationContext,
-  pools: {
-    id: string;
-    tokenInDenom: string;
-  }[],
-  tokenOut: { coinMinimalDenom: string; amount: string },
-  tokenInMaxAmount: string,
-  memo: string = "",
-  signOptions?: SignOptions,
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  return prepareTransaction(
-    "swapExactAmountOut",
-    async () => {
-      const msg = await makeSwapExactAmountOutMsg({
-        userOsmoAddress: context.address,
-        tokenInMaxAmount,
-        tokenOut,
-        pools,
-      });
-      return [msg];
-    },
-    memo,
-    undefined,
-    signOptions,
-    onFulfill
-  );
-}
-
 export async function prepareExitPoolMsg(
   context: TransactionPreparationContext,
   poolId: string,
@@ -1163,6 +1039,80 @@ export async function prepareExitPoolMsg(
   );
 }
 
+/**
+ * Exits a classic pool with caller-computed minimums, for flows that set
+ * their own tolerance. Unlike `prepareExitPoolMsg`, the minimums are used as
+ * given: never dropped, never loosened.
+ *
+ * @param shareInAmount Raw `gamm/pool/{poolId}` amount.
+ * @param tokenOutMins Raw minimums; must be non-empty and all positive.
+ */
+export async function prepareExitPoolWithMinimumsMsg(
+  context: TransactionPreparationContext,
+  poolId: string,
+  shareInAmount: string,
+  tokenOutMins: { denom: string; amount: string }[],
+  memo: string = "",
+  onFulfill?: (tx: DeliverTxResponse) => void
+) {
+  if (
+    tokenOutMins.length === 0 ||
+    tokenOutMins.some(({ amount }) => !new Int(amount).isPositive())
+  ) {
+    throw new Error("Exit minimums must be non-empty and positive");
+  }
+
+  const msg = await makeExitPoolMsg({
+    poolId: BigInt(poolId),
+    sender: context.address,
+    shareInAmount,
+    tokenOutMins,
+  });
+
+  return prepareTransaction(
+    "exitPool",
+    [msg],
+    memo,
+    undefined,
+    undefined,
+    onFulfill
+  );
+}
+
+/**
+ * Withdraws a whole CL position with a caller-supplied check run before the
+ * wallet prompt and again after signing. `MsgWithdrawPosition` has no
+ * minimum out, so the check (e.g. re-reading the position against its
+ * preview) is the only bound; the signed transaction also expires.
+ */
+export async function prepareGuardedWithdrawPositionMsg(
+  context: TransactionPreparationContext,
+  positionId: string,
+  liquidityAmount: string,
+  preBroadcastCheck: () => Promise<void>,
+  memo: string = "",
+  onFulfill?: (tx: DeliverTxResponse) => void
+) {
+  const msg = await makeWithdrawPositionMsg({
+    liquidityAmount,
+    positionId: BigInt(positionId),
+    sender: context.address,
+  });
+
+  await preBroadcastCheck();
+
+  return prepareTransaction(
+    "clWithdrawPosition",
+    [msg],
+    memo,
+    undefined,
+    undefined,
+    { onSign: preBroadcastCheck, onFulfill },
+    undefined,
+    true
+  );
+}
+
 export async function prepareCreateGaugeMsg(
   context: TransactionPreparationContext,
   distributeTo:
@@ -1227,34 +1177,6 @@ export async function prepareCreateGaugeMsg(
 
   return prepareTransaction(
     "createGauge",
-    [msg],
-    memo,
-    undefined,
-    undefined,
-    onFulfill
-  );
-}
-
-export async function prepareAddToGaugeMsg(
-  context: TransactionPreparationContext,
-  gaugeId: string,
-  rewards: { currency: Currency; amount: string }[],
-  memo: string = "",
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  const primitiveRewards = rewards.map((coin) => ({
-    amount: coin.amount,
-    denom: coin.currency.coinMinimalDenom,
-  }));
-
-  const msg = await makeAddToGaugeMsg({
-    owner: context.address,
-    gaugeId: BigInt(gaugeId),
-    rewards: primitiveRewards,
-  });
-
-  return prepareTransaction(
-    "addToGauge",
     [msg],
     memo,
     undefined,
@@ -1395,6 +1317,8 @@ export async function prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSynthet
   locks: {
     lockId: string;
     isSynthetic: boolean;
+    /** Already superfluid undelegated: only the unbond is left to send. */
+    isUndelegating?: boolean;
   }[],
   memo: string = "",
   onFulfill?: (tx: DeliverTxResponse) => void
@@ -1402,7 +1326,14 @@ export async function prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSynthet
   const msgs = await locks.reduce(
     async (msgsPromise, lock) => {
       const msgs = await msgsPromise;
-      if (!lock.isSynthetic) {
+      if (lock.isUndelegating) {
+        msgs.push(
+          await makeSuperfluidUnbondLockMsg({
+            sender: context.address,
+            lockId: BigInt(lock.lockId),
+          })
+        );
+      } else if (!lock.isSynthetic) {
         // normal unlock
         msgs.push(
           await makeBeginUnlockingMsg({
@@ -1449,30 +1380,6 @@ export async function prepareUndelegateFromRebalancedValidatorSet(
     "undelegateFromValidatorSet",
     [
       await makeUndelegateFromRebalancedValidatorSetMsg({
-        delegator: context.address,
-        coin: {
-          denom: coin.denom.coinMinimalDenom,
-          amount: coin.amount,
-        },
-      }),
-    ],
-    memo,
-    undefined,
-    undefined,
-    onFulfill
-  );
-}
-
-export async function prepareUndelegateFromValidatorSetMsg(
-  context: TransactionPreparationContext,
-  coin: { amount: string; denom: Currency },
-  memo: string = "",
-  onFulfill?: (tx: DeliverTxResponse) => void
-) {
-  return prepareTransaction(
-    "undelegateFromValidatorSet",
-    [
-      await makeUndelegateFromValidatorSetMsg({
         delegator: context.address,
         coin: {
           denom: coin.denom.coinMinimalDenom,
