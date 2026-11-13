@@ -34,7 +34,16 @@
     "low": "Niski",
     "buttonCreateAndStake": "Utwórz pozycję i stawkę",
     "estimated": "Szacowany",
-    "estimatedInfo": "Jest to szacunek oparty na aktualnie wybranych cenach. Rzeczywista RRSO może się różnić. Jeśli pozycja wyjdzie poza zakres, RRSO wyniesie 0%."
+    "estimatedInfo": "Jest to szacunek oparty na aktualnie wybranych cenach. Rzeczywista RRSO może się różnić. Jeśli pozycja wyjdzie poza zakres, RRSO wyniesie 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Z Twojej kwoty {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) zostanie zamienione na {outDenom}, aby dopasować stosunek pozycji.",
+      "noSwapNeeded": "Wybrany zakres wymaga tylko {inputDenom}, zatem swap nie jest konieczny.",
+      "valueIn": "Wartość wejściowa",
+      "valueOut": "Wartość wyjściowa",
+      "totalCost": "Koszt całkowity",
+      "totalCostWarning": "Całkowity koszt tej wpłaty wynosi {totalCost}, wliczając wpływ na cenę i opłaty za wymianę, co zmniejsza wartość trafiającą do Twojej pozycji.",
+      "quoteLoading": "Szukanie najlepszej zamiany…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Co to jest doładowana płynność?",

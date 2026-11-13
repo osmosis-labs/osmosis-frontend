@@ -34,7 +34,16 @@
     "low": "کم",
     "buttonCreateAndStake": "ایجاد موقعیت و سهام",
     "estimated": "تخمین زده",
-    "estimatedInfo": "این یک تخمین بر اساس قیمت های انتخابی فعلی است. APR واقعی ممکن است متفاوت باشد. اگر موقعیت از محدوده خارج شود، APR 0٪ خواهد بود."
+    "estimatedInfo": "این یک تخمین بر اساس قیمت های انتخابی فعلی است. APR واقعی ممکن است متفاوت باشد. اگر موقعیت از محدوده خارج شود، APR 0٪ خواهد بود.",
+    "singleAsset": {
+      "splitBreakdown": "از {inputAmount} {inputDenom} شما، {swapAmount} {inputDenom} ({swapPercent}) برای تطابق با نسبت موقعیت به {outDenom} تبدیل خواهد شد.",
+      "noSwapNeeded": "محدوده انتخاب شده شما تنها به {inputDenom} نیاز دارد، بنابراین تبدیل لازم نیست.",
+      "valueIn": "مقدار ورودی",
+      "valueOut": "مقدار خروجی",
+      "totalCost": "هزینه کل",
+      "totalCostWarning": "هزینه کل این سپرده {totalCost} است، شامل تأثیر قیمت و کارمزدهای مبادله، که ارزش رسیده به موقعیت شما را کاهش می‌دهد.",
+      "quoteLoading": "در حال یافتن بهترین تبدیل…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "نقدینگی سوپرشارژ چیست؟",

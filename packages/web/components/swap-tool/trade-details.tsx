@@ -507,10 +507,14 @@ type Split =
 type Route = Split[number];
 type RouteWithPercentage = Route & { percentage?: RatePretty };
 
-function RoutesTaken({
+/** The route lanes with each split's share, holding the last split while the
+ *  next quote loads so the lanes don't flicker. */
+export function RoutesTaken({
   split,
   isLoading,
-}: { split: Split } & Pick<UseDisclosureReturn, "isOpen" | "onToggle"> & {
+}: { split: Split } & Partial<
+  Pick<UseDisclosureReturn, "isOpen" | "onToggle">
+> & {
     isLoading?: boolean;
   }) {
   // hold on to a ref of the last split to use while we're loading the next one
