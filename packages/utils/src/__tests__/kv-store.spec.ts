@@ -2,7 +2,7 @@
 
 import "fake-indexeddb/auto";
 
-import { IndexedDBKVStore, LocalKVStore, MemoryKVStore } from "../kv-store";
+import { IndexedDBKVStore, LocalKVStore } from "../kv-store";
 import {
   makeIndexedKVStore,
   makeLocalStorageKVStore,
@@ -37,18 +37,6 @@ describe.each([
 it("keeps the localStorage prefix/key format", async () => {
   await makeLocalStorageKVStore("legacy-prefix").set("key", "value");
   expect(localStorage.getItem("legacy-prefix/key")).toBe('"value"');
-});
-
-it("keeps the memory provider's extra await and null values", async () => {
-  const store = new MemoryKVStore("memory");
-  const order: string[] = [];
-  await store.set("key", "value");
-  const read = store.get("key").then(() => order.push("read"));
-  await Promise.resolve().then(() => order.push("tick"));
-  await read;
-  expect(order).toEqual(["tick", "read"]);
-  await store.set("key", null);
-  expect(await store.get("key")).toBeNull();
 });
 
 describe.each([

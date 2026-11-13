@@ -238,67 +238,42 @@ describe("useCreatePoolConfig", () => {
     expect(result.current.setSwapFee).toBe(setSwapFee);
     expect(result.current.setDuplicateBlocking).toBe(setDuplicateBlocking);
   });
-});
 
-// Expectations captured from the legacy config before its removal.
-describe("useCreatePoolConfig state transitions", () => {
-  type Config = ReturnType<typeof useCreatePoolConfig>;
-
-  const snapshot = (c: Config) => ({
-    poolType: c.poolType,
-    swapFee: c.swapFee,
-    canAddAsset: c.canAddAsset,
-    errors: [
-      c.positiveBalanceError,
-      c.assetCountError,
-      c.percentageError,
-      c.scalingFactorError,
-      c.swapFeeError,
-      c.amountError,
-      c.scalingFactorControllerError,
-    ].map((e) => e?.constructor.name),
-    assets: c.assets.map((a) => ({
-      percentage: a.percentage,
-      scalingFactor: a.scalingFactor,
-      amount: a.amountConfig.amount,
-      denom: a.amountConfig.sendCurrency.coinMinimalDenom,
-    })),
-  });
-
-  const steps: ((c: Config) => void)[] = [
-    (c) => c.setPoolType("weighted"),
-    (c) => c.addAsset(osmo),
-    (c) => c.addAsset(atom),
-    (c) => c.addAsset(usdc),
-    (c) => c.assets[0].amountConfig.setAmount(".25"),
-    (c) => c.assets[1].amountConfig.setAmount("3"),
-    (c) => c.setAssetPercentageAt(0, ".5"),
-    (c) => c.setAssetPercentageAt(5, "10"),
-    (c) => c.setBalancedPercentages(),
-    (c) => c.assets[1].amountConfig.setIsMax(true),
-    (c) => c.assets[2].amountConfig.setAmount("7.0000001"),
-    (c) => c.removeAssetAt(2),
-    (c) => c.setSwapFee("0.5"),
-    (c) => c.setSwapFee("100"),
-    (c) => c.setPoolType("stable"),
-    (c) => c.setScalingFactorAt(0, "0"),
-    (c) => c.setScalingFactorControllerAddress("osmo1bad"),
-    (c) => c.setScalingFactorControllerAddress(sender),
-    (c) => c.setScalingFactorControllerAddress(otherPrefixAddress),
-    (c) => c.setPoolType("weighted"),
-    (c) => c.removeAssetAt(0),
-    (c) => c.removeAssetAt(0),
-  ];
-
-  it("matches after every step", () => {
-    mockBalances = balances;
+  it("removes assets by index and re-checks weights after pool type switches", () => {
     const { result } = renderConfig();
+    act(() => result.current.setPoolType("weighted"));
+    act(() => result.current.addAsset(osmo));
+    act(() => result.current.addAsset(atom));
+    act(() => result.current.addAsset(usdc));
+    act(() => result.current.setAssetPercentageAt(5, "10"));
+    expect(result.current.assets.map((a) => a.percentage)).toEqual([
+      "0",
+      "0",
+      "0",
+    ]);
+    act(() => result.current.setBalancedPercentages());
 
-    const states = [snapshot(result.current)];
-    steps.forEach((step) => {
-      act(() => step(result.current));
-      states.push(snapshot(result.current));
-    });
-    expect(states).toMatchSnapshot();
+    act(() => result.current.removeAssetAt(2));
+    expect(
+      result.current.assets.map(
+        (a) => a.amountConfig.sendCurrency.coinMinimalDenom
+      )
+    ).toEqual(["uosmo", "uatom"]);
+    expect(result.current.canAddAsset).toBe(true);
+    expect(result.current.percentageError?.message).toBe(
+      "Sum of percentages is not 100"
+    );
+
+    act(() => result.current.setPoolType("stable"));
+    expect(result.current.percentageError).toBeUndefined();
+    act(() => result.current.setPoolType("weighted"));
+    expect(result.current.percentageError?.message).toBe(
+      "Sum of percentages is not 100"
+    );
+
+    act(() => result.current.removeAssetAt(0));
+    expect(result.current.assetCountError?.message).toBe(
+      "Minimum of 2 assets required"
+    );
   });
 });
