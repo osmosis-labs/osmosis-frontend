@@ -32,8 +32,7 @@ name: Cloudflare deploy
 #
 # Worker runtime secrets, uploaded with `--secrets-file` when set. Deploys only
 # add secrets, so values set in the Cloudflare dashboard stay when these are
-# unset. osmosis-frontend-api-production does not exist yet, so the first
-# master deploy needs the API secrets in cloudflare-production:
+# unset. Set them here or on the Worker with `wrangler secret put`:
 #   pages Worker: COINGECKO_API_KEY, NUMIA_API_KEY
 #   API Worker:   COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
 #                 SWAPPED_COM_SK, CF_GITHUB_API_TOKEN (uploaded as GITHUB_API_TOKEN),
