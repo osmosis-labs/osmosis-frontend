@@ -124,15 +124,21 @@ const OrderDetails = ({
     ? `${formattedMonth} ${formattedDateDayYearHourMinute}`
     : undefined;
 
-  // Cancelling sends a claim for any unpaid fill in the same transaction, so that payout and the cancel share a link.
+  // Cancelling sends a claim for any unpaid fill in the same transaction, so that payout and the cancel share one row.
+  const paidOutOnCancel = order?.claims?.some(
+    ({ tx }) => tx === order.cancel_tx
+  );
   const transactions = [
     ...(order?.claims ?? []).map(({ tx, claimed_at, amount }) => ({
-      label: t("limitOrders.paidOut"),
+      label:
+        tx === order?.cancel_tx
+          ? `${t("limitOrders.paidOut")} · ${t("limitOrders.cancelled")}`
+          : t("limitOrders.paidOut"),
       tx,
       at: claimed_at,
       amount,
     })),
-    ...(order?.cancel_tx && order.cancelled_at
+    ...(order?.cancel_tx && order.cancelled_at && !paidOutOnCancel
       ? [
           {
             label: t("limitOrders.cancelled"),
