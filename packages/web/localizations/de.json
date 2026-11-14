@@ -1292,6 +1292,7 @@
         "amount": "Menge",
         "price": "Preis",
         "orderPlaced": "Platziert am",
+        "lastActivity": "Letzte Aktivität",
         "status": "Status"
       },
       "emptyState": {
@@ -1333,8 +1334,6 @@
     "accept": "Akzeptieren",
     "cancelled": "Storniert",
     "cancel": "Stornieren",
-    "daysAgo": "vor {days} Tagen",
-    "hoursAgo": "vor {hours} Stunden",
     "buyWith": "Kaufen mit {coinA} oder {coinB}",
     "orderHistory": "Orderverlauf",
     "tradeAnotherAssetOr": "Tauschen Sie einen anderen Vermögenswert gegen {coinA} oder {coinB}",
@@ -1421,6 +1420,7 @@
     "returnedUnfilled": "Zurückerstattet (nicht ausgeführt)",
     "alreadyReceived": "Bereits erhalten",
     "paidOut": "Ausgezahlt",
+    "placed": "Platziert",
     "howPayoutsWork": "Wie funktionieren Auszahlungen?",
     "payoutNote": "Ausgeführte Beträge werden in der Regel automatisch an Ihre Wallet ausgezahlt, oft in mehreren Auszahlungen, während die Order ausgeführt wird, und können Stunden oder Tage vor einer Stornierung eingehen. Wenn bei einer Order „Beanspruchen“ angezeigt wird, wurde ein Teil des ausgeführten Betrags noch nicht ausgezahlt. Eine Stornierung erstattet nur den nicht ausgeführten Betrag.",
     "limitOrder": "Limit-Order"

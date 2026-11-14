@@ -4,6 +4,7 @@ import {
   getOrderbookPools,
   queryTx,
 } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 
 import {
   createCallerFactory,
@@ -333,5 +334,58 @@ describe("orderbookRouter.getAllOrdersSQS", () => {
 
     expect(unfiltered.items).toEqual([openOrder]);
     expect(unfiltered.nextCursor).toBe(2);
+  });
+
+  it("sorts within each status group by last activity, using the placed time where it's unknown", async () => {
+    const order = (o: Partial<typeof openOrder>) => o as typeof openOrder;
+    const filled = order({ status: "filled", placed_at: 50 });
+    const open = order({
+      status: "open",
+      placed_at: 100,
+      percentFilled: new Dec(0),
+    });
+    const cancelled = order({
+      status: "cancelled",
+      placed_at: 10,
+      cancelled_at: 400,
+    });
+    const paidOut = order({
+      status: "fullyClaimed",
+      placed_at: 20,
+      claims: [{ tx: "A", claimed_at: 300, amount: new Dec(1) }],
+    });
+    // placed before Numia's payout data starts, so only its placed time is known
+    const noPayoutData = order({ status: "fullyClaimed", placed_at: 350 });
+    mockedActiveOrdersSQS.mockResolvedValue([open, filled]);
+    mockedHistoricalOrders.mockResolvedValue([
+      paidOut,
+      cancelled,
+      noPayoutData,
+    ]);
+    const input = { userOsmoAddress: "osmo1sorted", limit: 20, cursor: 0 };
+
+    const newest = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      sort: { keyPath: "lastActivity", direction: "desc" },
+    });
+    const oldest = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      sort: { keyPath: "lastActivity", direction: "asc" },
+    });
+
+    expect(newest.items).toEqual([
+      filled,
+      open,
+      cancelled,
+      noPayoutData,
+      paidOut,
+    ]);
+    expect(oldest.items).toEqual([
+      filled,
+      open,
+      paidOut,
+      noPayoutData,
+      cancelled,
+    ]);
   });
 });

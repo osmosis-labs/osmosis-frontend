@@ -1292,6 +1292,7 @@
         "amount": "Montant",
         "price": "Prix",
         "orderPlaced": "Passé le",
+        "lastActivity": "Dernière activité",
         "status": "Statut"
       },
       "emptyState": {
@@ -1333,8 +1334,6 @@
     "accept": "Accepter",
     "cancelled": "Annulé",
     "cancel": "Annuler",
-    "daysAgo": "il y a {days} j",
-    "hoursAgo": "il y a {hours} h",
     "buyWith": "Achetez avec {coinA} ou {coinB}",
     "orderHistory": "Historique des ordres",
     "tradeAnotherAssetOr": "Échangez un autre actif contre {coinA} ou {coinB}",
@@ -1421,6 +1420,7 @@
     "returnedUnfilled": "Restitué (non exécuté)",
     "alreadyReceived": "Déjà reçu",
     "paidOut": "Payé",
+    "placed": "Passé",
     "howPayoutsWork": "Comment fonctionnent les paiements ?",
     "payoutNote": "Les montants exécutés sont généralement versés automatiquement sur votre portefeuille, souvent en plusieurs versements au fur et à mesure que l'ordre est exécuté, et peuvent arriver des heures ou des jours avant que vous n'annuliez. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée. L'annulation ne restitue que le montant non exécuté.",
     "limitOrder": "Ordre à cours limité"

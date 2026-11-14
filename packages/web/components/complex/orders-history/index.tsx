@@ -1,5 +1,10 @@
-import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
+import {
+  DEFAULT_VS_CURRENCY,
+  getOrderLastActivity,
+  MappedLimitOrder,
+} from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
+import type { SortDirection } from "@osmosis-labs/utils";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -13,6 +18,7 @@ import { OrderProgressBar } from "~/components/complex/orders-history/cells/fill
 import { OrderModal } from "~/components/complex/orders-history/order-modal";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
+import { SortHeader } from "~/components/table/headers/sort";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -25,6 +31,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
+  OrderSortKey,
   useOrderbookClaimableOrders,
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
@@ -51,12 +58,27 @@ function groupOrdersByStatus(orders: MappedLimitOrder[]) {
   };
 }
 
-const headers = ["order", "amount", "price", "orderPlaced", "status"];
+const headers = [
+  "order",
+  "amount",
+  "price",
+  "orderPlaced",
+  "lastActivity",
+  "status",
+];
 const mdHeaders = ["order", "status"];
-const lgHeaders = ["order", "orderPlaced", "status"];
+const lgHeaders = ["order", "orderPlaced", "lastActivity", "status"];
+const sortKeys: Record<string, OrderSortKey> = {
+  orderPlaced: "placedAt",
+  lastActivity: "lastActivity",
+};
 
 const gridClasses =
-  "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
+  "grid grid-cols-[80px_4fr_2fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr_1fr]";
+
+/** Adds the year only when it isn't this year, so older orders can be told apart. */
+const formatDate = (date: dayjs.Dayjs) =>
+  date.format(date.year() === dayjs().year() ? "MMM D" : "MMM D, YYYY");
 
 export const OrderHistory = () => {
   // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
@@ -83,6 +105,8 @@ export const OrderHistory = () => {
   const { isMobile } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
   const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
+  const [sortKey, setSortKey] = useState<OrderSortKey>();
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const {
     orders,
@@ -98,6 +122,7 @@ export const OrderHistory = () => {
     userAddress: address ?? "",
     pageSize: 20,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+    sort: sortKey ? { keyPath: sortKey, direction: sortDirection } : undefined,
   });
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
@@ -241,10 +266,22 @@ export const OrderHistory = () => {
                     "xl:justify-end": isLargeScreen && header === "status",
                   })}
                 >
-                  {header !== "amount" && (
-                    <small className="body2 sm:caption">
-                      {t(`limitOrders.historyTable.columns.${header}`)}
-                    </small>
+                  {sortKeys[header] ? (
+                    <SortHeader<OrderSortKey | undefined>
+                      className="body2 sm:caption mr-auto ml-0"
+                      label={t(`limitOrders.historyTable.columns.${header}`)}
+                      sortKey={sortKeys[header]}
+                      currentSortKey={sortKey}
+                      currentDirection={sortDirection}
+                      setSortKey={setSortKey}
+                      setSortDirection={setSortDirection}
+                    />
+                  ) : (
+                    header !== "amount" && (
+                      <small className="body2 sm:caption">
+                        {t(`limitOrders.historyTable.columns.${header}`)}
+                      </small>
+                    )
                   )}
                 </th>
               ))}
@@ -450,7 +487,6 @@ const TableOrderRow = memo(
       output,
       price,
       placed_at,
-      cancelled_at,
       status,
       percentFilled,
       totalFilled,
@@ -472,7 +508,17 @@ const TableOrderRow = memo(
     // The mapper stores 0 when Numia has no place time, so leave it blank rather than show 1 Jan 1970.
     const placedAt = placed_at ? dayjs.unix(placed_at) : undefined;
     const formattedTime = placedAt?.format("h:mm A");
-    const formattedDate = placedAt?.format("MMM D");
+    const formattedDate = placedAt && formatDate(placedAt);
+
+    const lastActivity = getOrderLastActivity(order);
+    const lastActivityAt = lastActivity && dayjs.unix(lastActivity.at);
+    const lastActivityLabel = lastActivity
+      ? {
+          placed: t("limitOrders.placed"),
+          paidOut: t("limitOrders.paidOut"),
+          cancelled: t("limitOrders.cancelled"),
+        }[lastActivity.action]
+      : undefined;
 
     const statusString = (() => {
       switch (status) {
@@ -495,26 +541,6 @@ const TableOrderRow = memo(
         case "open":
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
-        case "cancelled":
-          // Count from the cancel, not the placement, so the age says when the order ended.
-          if (!cancelled_at) return;
-          const cancelledAt = dayjs.unix(cancelled_at);
-          const dayDiff = dayjs(new Date()).diff(cancelledAt, "d");
-          const hourDiff = dayjs(new Date()).diff(cancelledAt, "h");
-
-          return (
-            <span className="body2 md:caption text-osmoverse-300">
-              {dayDiff > 0
-                ? t("limitOrders.daysAgo", {
-                    days: dayDiff.toString(),
-                  })
-                : hourDiff > 0
-                  ? t("limitOrders.hoursAgo", {
-                      hours: hourDiff.toString(),
-                    })
-                  : "<1 hour ago"}
-            </span>
-          );
         default:
           return;
       }
@@ -669,6 +695,18 @@ const TableOrderRow = memo(
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
           </div>
+        </td>
+        <td className="!px-0 !text-left xl:!py-0 md:hidden">
+          {lastActivityAt ? (
+            <div className="flex flex-col gap-1">
+              <p className="body2 text-osmoverse-300">
+                {lastActivityLabel} · {lastActivityAt.format("h:mm A")}
+              </p>
+              <p>{formatDate(lastActivityAt)}</p>
+            </div>
+          ) : (
+            <p className="text-osmoverse-300">–</p>
+          )}
         </td>
         <td
           className={classNames("!px-0 !text-left xl:!py-0", {

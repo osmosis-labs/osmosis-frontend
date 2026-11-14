@@ -1292,6 +1292,7 @@
         "amount": "Cantidad",
         "price": "Precio",
         "orderPlaced": "Orden colocada",
+        "lastActivity": "Última actividad",
         "status": "Estado"
       },
       "emptyState": {
@@ -1333,8 +1334,6 @@
     "accept": "Aceptar",
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
-    "daysAgo": "hace {days} d",
-    "hoursAgo": "hace {hours} h",
     "buyWith": "Compre con {coinA} o {coinB}",
     "orderHistory": "Historial de órdenes",
     "tradeAnotherAssetOr": "Cambie otro activo por {coinA} o {coinB}",
@@ -1421,6 +1420,7 @@
     "returnedUnfilled": "Devuelto (no ejecutado)",
     "alreadyReceived": "Ya recibido",
     "paidOut": "Pagado",
+    "placed": "Colocada",
     "howPayoutsWork": "¿Cómo funcionan los pagos?",
     "payoutNote": "Los importes ejecutados normalmente se pagan en su billetera de forma automática, a menudo en varios pagos a medida que se ejecuta la orden, y pueden llegar horas o días antes de que la cancele. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado. Cancelar solo devuelve el importe no ejecutado.",
     "limitOrder": "Orden límite"

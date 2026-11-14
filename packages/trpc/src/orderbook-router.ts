@@ -1,6 +1,7 @@
 import { tickToPrice } from "@osmosis-labs/math";
 import {
   captureErrorAndReturn,
+  createSortSchema,
   CursorPaginationSchema,
   getOrderbookActiveOrders,
   getOrderbookActiveOrdersSQS,
@@ -9,6 +10,7 @@ import {
   getOrderbookPools,
   getOrderbookPoolsFresh,
   getOrderbookState,
+  getOrderLastActivity,
   IS_TESTNET,
   MappedLimitOrder,
   maybeCachePaginatedItems,
@@ -27,8 +29,11 @@ const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
 ).merge(
   z.object({
     filter: z.enum(["open", "filled", "historical", "active"]).optional(),
+    sort: createSortSchema(["placedAt", "lastActivity"] as const).optional(),
   })
 );
+
+type OrdersSort = z.infer<typeof GetInfiniteLimitOrdersInputSchema>["sort"];
 
 const orderStatusOrder: Record<OrderStatus, number> = {
   filled: 0,
@@ -38,20 +43,22 @@ const orderStatusOrder: Record<OrderStatus, number> = {
   cancelled: 2,
 };
 
-function defaultSortOrders(
-  orderA: MappedLimitOrder,
-  orderB: MappedLimitOrder
-): number {
-  if (orderA.status === orderB.status) {
-    return orderB.placed_at - orderA.placed_at;
-  }
-  if (orderStatusOrder[orderA.status] < orderStatusOrder[orderB.status])
-    return -1;
-  if (orderStatusOrder[orderA.status] > orderStatusOrder[orderB.status])
-    return 1;
+/** Keeps the status groups in order and sorts within each, newest placed first by default. */
+function sortOrders(sort: OrdersSort) {
+  // An order's last activity can't be before its placement, so placement stands in for an unknown one.
+  const time = (order: MappedLimitOrder) =>
+    sort?.keyPath === "lastActivity"
+      ? (getOrderLastActivity(order)?.at ?? order.placed_at)
+      : order.placed_at;
+  const direction = sort?.direction === "asc" ? 1 : -1;
 
-  return orderB.placed_at - orderA.placed_at;
+  return (orderA: MappedLimitOrder, orderB: MappedLimitOrder) =>
+    orderStatusOrder[orderA.status] - orderStatusOrder[orderB.status] ||
+    direction * (time(orderA) - time(orderB));
 }
+
+const sortCacheKey = (sort: OrdersSort) =>
+  `${sort?.keyPath ?? "placedAt"}-${sort?.direction ?? "desc"}`;
 
 export const orderbookRouter = createTRPCRouter({
   getMakerFee: publicProcedure
@@ -127,9 +134,9 @@ export const orderbookRouter = createTRPCRouter({
             markIncomplete();
           }
 
-          return allOrders.sort(defaultSortOrders);
+          return allOrders.sort(sortOrders(input.sort));
         },
-        cacheKey: `all-active-orders-${input.userOsmoAddress}`,
+        cacheKey: `all-active-orders-${input.userOsmoAddress}-${sortCacheKey(input.sort)}`,
         ttl: 15000,
         cursor: input.cursor,
         limit: input.limit,
@@ -173,7 +180,7 @@ export const orderbookRouter = createTRPCRouter({
             );
           }
           const orders = await Promise.all(promises);
-          const allOrders = orders.flat().sort(defaultSortOrders);
+          const allOrders = orders.flat().sort(sortOrders(input.sort));
 
           // With no open orders to show, an empty list would read as "no orders".
           if (historicalOrdersError && allOrders.length === 0) {
@@ -189,7 +196,7 @@ export const orderbookRouter = createTRPCRouter({
           return allOrders;
         },
         // the filter changes the list, so each filter is cached on its own
-        cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}-${input.filter ?? "all"}`,
+        cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}-${input.filter ?? "all"}-${sortCacheKey(input.sort)}`,
         ttl: 10000,
         cursor: input.cursor,
         limit: input.limit,
