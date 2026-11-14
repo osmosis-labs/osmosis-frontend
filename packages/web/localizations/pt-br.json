@@ -1336,8 +1336,6 @@
     "accept": "Aceitar",
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
-    "daysAgo": "há {days} d",
-    "hoursAgo": "há {hours} h",
     "buyWith": "Compre com {coinA} ou {coinB}",
     "orderHistory": "Histórico de ordens",
     "tradeAnotherAssetOr": "Negocie outro ativo por {coinA} ou {coinB}",
@@ -1423,6 +1421,7 @@
     "partlyFilled": "Parcialmente executado",
     "returnedUnfilled": "Devolvido (não executado)",
     "alreadyReceived": "Já recebido",
+    "paidOut": "Pago",
     "howPayoutsWork": "Como funcionam os pagamentos?",
     "payoutNote": "Os valores executados normalmente são pagos automaticamente na sua carteira, muitas vezes em vários pagamentos à medida que a ordem é executada, e podem chegar horas ou dias antes de você cancelar. Se uma ordem mostrar “Resgatar”, parte do valor executado ainda não foi paga. Cancelar devolve apenas o valor não executado.",
     "limitOrder": "Ordem limitada"

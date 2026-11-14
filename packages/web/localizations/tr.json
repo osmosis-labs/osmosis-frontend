@@ -1336,8 +1336,6 @@
     "accept": "Kabul et",
     "cancelled": "İptal edildi",
     "cancel": "İptal et",
-    "daysAgo": "{days} gün önce",
-    "hoursAgo": "{hours} saat önce",
     "buyWith": "{coinA} veya {coinB} ile satın alın",
     "orderHistory": "Emir geçmişi",
     "tradeAnotherAssetOr": "Başka bir varlığı {coinA} veya {coinB} karşılığında takas edin",
@@ -1423,6 +1421,7 @@
     "partlyFilled": "Kısmen gerçekleşti",
     "returnedUnfilled": "İade edildi (gerçekleşmeyen)",
     "alreadyReceived": "Zaten alındı",
+    "paidOut": "Ödendi",
     "howPayoutsWork": "Ödemeler nasıl çalışır?",
     "payoutNote": "Gerçekleşen tutarlar genellikle cüzdanınıza otomatik olarak, çoğu zaman emir gerçekleştikçe birkaç ödeme halinde aktarılır ve iptal etmenizden saatler ya da günler önce gelebilir. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir. İptal etmek yalnızca gerçekleşmeyen tutarı iade eder.",
     "limitOrder": "Limit emir"

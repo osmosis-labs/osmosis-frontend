@@ -1336,8 +1336,6 @@
     "accept": "承認",
     "cancelled": "キャンセル済み",
     "cancel": "キャンセル",
-    "daysAgo": "{days}日前",
-    "hoursAgo": "{hours}時間前",
     "buyWith": "{coinA}または{coinB}で購入",
     "orderHistory": "注文履歴",
     "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
@@ -1423,6 +1421,7 @@
     "partlyFilled": "一部約定",
     "returnedUnfilled": "返却済み（未約定）",
     "alreadyReceived": "受取済み",
+    "paidOut": "支払済み",
     "howPayoutsWork": "支払いの仕組み",
     "payoutNote": "約定した分は通常、注文の約定に合わせて複数回に分けてウォレットへ自動的に支払われ、キャンセルする数時間から数日前に届くこともあります。注文に「受け取る」と表示されている場合、約定した分の一部はまだ支払われていません。キャンセルで返却されるのは未約定の分だけです。",
     "limitOrder": "指値注文"

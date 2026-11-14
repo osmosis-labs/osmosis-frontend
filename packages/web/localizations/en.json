@@ -1336,8 +1336,6 @@
     "accept": "Accept",
     "cancelled": "Cancelled",
     "cancel": "Cancel",
-    "daysAgo": "{days}d ago",
-    "hoursAgo": "{hours}h ago",
     "buyWith": "Buy with {coinA} or {coinB}",
     "orderHistory": "Order history",
     "tradeAnotherAssetOr": "Trade another asset for {coinA} or {coinB}",
@@ -1423,6 +1421,7 @@
     "partlyFilled": "Partly filled",
     "returnedUnfilled": "Returned (unfilled)",
     "alreadyReceived": "Already received",
+    "paidOut": "Paid out",
     "howPayoutsWork": "How do payouts work?",
     "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount.",
     "limitOrder": "Limit Order"

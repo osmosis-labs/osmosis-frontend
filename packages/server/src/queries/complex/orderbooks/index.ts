@@ -1,6 +1,7 @@
 export * from "./active-orders";
 export * from "./denoms";
 export * from "./historical-orders";
+export * from "./last-activity";
 export * from "./maker-fee";
 export * from "./orderbook-state";
 export * from "./pools";

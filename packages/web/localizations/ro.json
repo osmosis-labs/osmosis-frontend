@@ -1336,8 +1336,6 @@
     "accept": "Acceptați",
     "cancelled": "Anulat",
     "cancel": "Anulați",
-    "daysAgo": "acum {days} z",
-    "hoursAgo": "acum {hours} h",
     "buyWith": "Cumpărați cu {coinA} sau {coinB}",
     "orderHistory": "Istoric ordine",
     "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
@@ -1423,6 +1421,7 @@
     "partlyFilled": "Executat parțial",
     "returnedUnfilled": "Returnat (neexecutat)",
     "alreadyReceived": "Deja primit",
+    "paidOut": "Plătit",
     "howPayoutsWork": "Cum funcționează plățile?",
     "payoutNote": "Sumele executate sunt de obicei plătite automat în portofelul dumneavoastră, adesea în mai multe plăți pe măsură ce ordinul se execută, și pot ajunge cu ore sau zile înainte să anulați. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită. Anularea returnează doar suma neexecutată.",
     "limitOrder": "Ordin limită"

@@ -1336,8 +1336,6 @@
     "accept": "Akceptuj",
     "cancelled": "Anulowane",
     "cancel": "Anuluj",
-    "daysAgo": "{days} d temu",
-    "hoursAgo": "{hours} godz. temu",
     "buyWith": "Kupuj za pomocą {coinA} lub {coinB}",
     "orderHistory": "Historia zleceń",
     "tradeAnotherAssetOr": "Zamień inny zasób na {coinA} lub {coinB}",
@@ -1423,6 +1421,7 @@
     "partlyFilled": "Częściowo zrealizowane",
     "returnedUnfilled": "Zwrócono (niezrealizowane)",
     "alreadyReceived": "Już otrzymano",
+    "paidOut": "Wypłacono",
     "howPayoutsWork": "Jak działają wypłaty?",
     "payoutNote": "Zrealizowane kwoty są zwykle wypłacane automatycznie na Twój portfel, często w kilku wypłatach w miarę realizacji zlecenia, i mogą dotrzeć kilka godzin lub dni przed anulowaniem. Jeśli przy zleceniu widać „Odbierz”, część zrealizowanej kwoty nie została jeszcze wypłacona. Anulowanie zwraca tylko niezrealizowaną kwotę.",
     "limitOrder": "Zlecenie z limitem"

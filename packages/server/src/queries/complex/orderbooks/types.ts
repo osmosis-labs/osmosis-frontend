@@ -23,4 +23,8 @@ export type MappedLimitOrder = Omit<
   baseAsset: ReturnType<typeof getAssetFromAssetList>;
   placed_at: number;
   placed_tx?: string;
+  cancel_tx?: string;
+  cancelled_at?: number;
+  /** Payouts, oldest first, in the output asset after the claim bot's fee. */
+  claims?: { tx: string; claimed_at: number; amount: Dec }[];
 };

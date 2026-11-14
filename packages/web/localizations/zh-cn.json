@@ -1336,8 +1336,6 @@
     "accept": "接受",
     "cancelled": "已取消",
     "cancel": "取消",
-    "daysAgo": "{days}天前",
-    "hoursAgo": "{hours}小时前",
     "buyWith": "使用{coinA}或{coinB}购买",
     "orderHistory": "订单历史",
     "tradeAnotherAssetOr": "用其他资产换取{coinA}或{coinB}",
@@ -1423,6 +1421,7 @@
     "partlyFilled": "部分成交",
     "returnedUnfilled": "已退回（未成交）",
     "alreadyReceived": "已收到",
+    "paidOut": "已付款",
     "howPayoutsWork": "付款如何进行？",
     "payoutNote": "已成交的金额通常会自动支付到您的钱包，往往随着订单成交分多次支付，并且可能在您取消前数小时或数天就已到账。如果订单显示“领取”，说明部分已成交金额尚未支付。取消只会退回未成交的金额。",
     "limitOrder": "限价单"
