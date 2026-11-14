@@ -117,7 +117,7 @@ const OrderDetails = ({
 
   const formattedDateDayYearHourMinute = dayjs
     .unix(order?.placed_at ?? 0)
-    .format("DD, YYYY, HH:mm");
+    .format("DD, YYYY, h:mm A");
 
   // The mapper stores 0 when Numia has no place time, so leave it blank rather than show 1 Jan 1970.
   const formattedDate = order?.placed_at
@@ -557,7 +557,7 @@ const OrderDetails = ({
                         amount
                       )
                     )} · `}
-                  {dayjs.unix(at).format("MMM D, HH:mm")} &#x2197;
+                  {dayjs.unix(at).format("MMM D, h:mm A")} &#x2197;
                 </a>
               }
             />
