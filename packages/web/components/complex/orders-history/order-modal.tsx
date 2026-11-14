@@ -21,6 +21,7 @@ import { t } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
 import { theme } from "~/tailwind.config";
+import { formatDateTime } from "~/utils/date";
 import {
   formatFiatPrice,
   formatPretty,
@@ -110,18 +111,9 @@ const OrderDetails = ({
     return order.order_direction === "ask" ? order.quoteAsset : order.baseAsset;
   }, [order]);
 
-  const formattedMonth = dayjs
-    .unix(order?.placed_at ?? 0)
-    .format("MMMM")
-    .slice(0, 3);
-
-  const formattedDateDayYearHourMinute = dayjs
-    .unix(order?.placed_at ?? 0)
-    .format("DD, YYYY, h:mm A");
-
   // The mapper stores 0 when Numia has no place time, so leave it blank rather than show 1 Jan 1970.
   const formattedDate = order?.placed_at
-    ? `${formattedMonth} ${formattedDateDayYearHourMinute}`
+    ? formatDateTime(dayjs.unix(order.placed_at))
     : undefined;
 
   // Cancelling sends a claim for any unpaid fill in the same transaction, so that payout's row stands in for the cancel's.
@@ -560,7 +552,7 @@ const OrderDetails = ({
                         amount
                       )
                     )} · `}
-                  {dayjs.unix(at).format("MMM D, h:mm A")} &#x2197;
+                  {formatDateTime(dayjs.unix(at))} &#x2197;
                 </a>
               }
             />

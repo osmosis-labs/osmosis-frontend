@@ -19,6 +19,7 @@ import { OrderModal } from "~/components/complex/orders-history/order-modal";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { SortHeader } from "~/components/table/headers/sort";
+import { Tooltip } from "~/components/tooltip";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -36,6 +37,7 @@ import {
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
 import { useWallet } from "~/hooks/use-wallet";
+import { formatDate, formatDateTime } from "~/utils/date";
 import {
   formatFiatPrice,
   formatPretty,
@@ -69,10 +71,6 @@ const sortKeys: Record<string, OrderSortKey> = {
 
 const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
-
-/** Adds the year only when it isn't this year, so older orders can be told apart. */
-const formatDate = (date: dayjs.Dayjs) =>
-  date.format(date.year() === dayjs().year() ? "MMM D" : "MMM D, YYYY");
 
 export const OrderHistory = () => {
   // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
@@ -534,14 +532,31 @@ const TableOrderRow = memo(
         case "open":
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
-        default:
+        default: {
+          if (!lastActivityAt) return;
+          const now = dayjs(new Date());
+          const dayDiff = now.diff(lastActivityAt, "d");
+          const hourDiff = now.diff(lastActivityAt, "h");
+          const minuteDiff = Math.max(now.diff(lastActivityAt, "m"), 1);
+
           return (
-            lastActivityAt && (
+            <Tooltip
+              content={formatDateTime(lastActivityAt)}
+              className="w-fit"
+              enablePropagation
+            >
               <span className="body2 md:caption text-osmoverse-300">
-                {formatDate(lastActivityAt)}, {lastActivityAt.format("h:mm A")}
+                {dayDiff > 0
+                  ? t("limitOrders.daysAgo", { days: dayDiff.toString() })
+                  : hourDiff > 0
+                    ? t("limitOrders.hoursAgo", { hours: hourDiff.toString() })
+                    : t("limitOrders.minutesAgo", {
+                        minutes: minuteDiff.toString(),
+                      })}
               </span>
-            )
+            </Tooltip>
           );
+        }
       }
     })();
     return (
