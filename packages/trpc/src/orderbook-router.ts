@@ -10,7 +10,7 @@ import {
   getOrderbookPools,
   getOrderbookPoolsFresh,
   getOrderbookState,
-  getOrderLastActivity,
+  getOrderLastActivityAt,
   IS_TESTNET,
   MappedLimitOrder,
   maybeCachePaginatedItems,
@@ -48,7 +48,7 @@ function sortOrders(sort: OrdersSort) {
   // An order's last activity can't be before its placement, so placement stands in for an unknown one.
   const time = (order: MappedLimitOrder) =>
     sort?.keyPath === "lastActivity"
-      ? (getOrderLastActivity(order)?.at ?? order.placed_at)
+      ? (getOrderLastActivityAt(order) ?? order.placed_at)
       : order.placed_at;
   const direction = sort?.direction === "asc" ? 1 : -1;
 

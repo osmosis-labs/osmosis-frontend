@@ -1,6 +1,6 @@
 import {
   DEFAULT_VS_CURRENCY,
-  getOrderLastActivity,
+  getOrderLastActivityAt,
   MappedLimitOrder,
 } from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
@@ -105,7 +105,11 @@ export const OrderHistory = () => {
   const { isMobile } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
   const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
-  const [sortKey, setSortKey] = useState<OrderSortKey>();
+  const [sortKey, setSortKey_] = useState<OrderSortKey>("placedAt");
+  // Always sorted, so a click on the sorted column flips its direction instead of clearing it.
+  const setSortKey = useCallback((key: OrderSortKey | undefined) => {
+    if (key) setSortKey_(key);
+  }, []);
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const {
@@ -122,7 +126,7 @@ export const OrderHistory = () => {
     userAddress: address ?? "",
     pageSize: 20,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
-    sort: sortKey ? { keyPath: sortKey, direction: sortDirection } : undefined,
+    sort: { keyPath: sortKey, direction: sortDirection },
   });
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
@@ -267,7 +271,7 @@ export const OrderHistory = () => {
                   })}
                 >
                   {sortKeys[header] ? (
-                    <SortHeader<OrderSortKey | undefined>
+                    <SortHeader<OrderSortKey>
                       className="body2 sm:caption mr-auto ml-0"
                       label={t(`limitOrders.historyTable.columns.${header}`)}
                       sortKey={sortKeys[header]}
@@ -510,15 +514,8 @@ const TableOrderRow = memo(
     const formattedTime = placedAt?.format("h:mm A");
     const formattedDate = placedAt && formatDate(placedAt);
 
-    const lastActivity = getOrderLastActivity(order);
-    const lastActivityAt = lastActivity && dayjs.unix(lastActivity.at);
-    const lastActivityLabel = lastActivity
-      ? {
-          placed: t("limitOrders.placed"),
-          paidOut: t("limitOrders.paidOut"),
-          cancelled: t("limitOrders.cancelled"),
-        }[lastActivity.action]
-      : undefined;
+    const lastActivityUnix = getOrderLastActivityAt(order);
+    const lastActivityAt = lastActivityUnix && dayjs.unix(lastActivityUnix);
 
     const statusString = (() => {
       switch (status) {
@@ -700,7 +697,7 @@ const TableOrderRow = memo(
           {lastActivityAt ? (
             <div className="flex flex-col gap-1">
               <p className="body2 text-osmoverse-300">
-                {lastActivityLabel} · {lastActivityAt.format("h:mm A")}
+                {lastActivityAt.format("h:mm A")}
               </p>
               <p>{formatDate(lastActivityAt)}</p>
             </div>

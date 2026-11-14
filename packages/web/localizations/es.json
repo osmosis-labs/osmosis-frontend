@@ -1420,7 +1420,6 @@
     "returnedUnfilled": "Devuelto (no ejecutado)",
     "alreadyReceived": "Ya recibido",
     "paidOut": "Pagado",
-    "placed": "Colocada",
     "howPayoutsWork": "¿Cómo funcionan los pagos?",
     "payoutNote": "Los importes ejecutados normalmente se pagan en su billetera de forma automática, a menudo en varios pagos a medida que se ejecuta la orden, y pueden llegar horas o días antes de que la cancele. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado. Cancelar solo devuelve el importe no ejecutado.",
     "limitOrder": "Orden límite"

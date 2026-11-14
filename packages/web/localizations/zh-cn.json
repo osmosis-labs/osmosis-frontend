@@ -1420,7 +1420,6 @@
     "returnedUnfilled": "已退回（未成交）",
     "alreadyReceived": "已收到",
     "paidOut": "已付款",
-    "placed": "已下单",
     "howPayoutsWork": "付款如何进行？",
     "payoutNote": "已成交的金额通常会自动支付到您的钱包，往往随着订单成交分多次支付，并且可能在您取消前数小时或数天就已到账。如果订单显示“领取”，说明部分已成交金额尚未支付。取消只会退回未成交的金额。",
     "limitOrder": "限价单"
