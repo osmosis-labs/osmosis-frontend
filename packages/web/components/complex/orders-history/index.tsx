@@ -521,10 +521,34 @@ const TableOrderRow = memo(
         case "fullyClaimed":
           return t("limitOrders.filled");
         case "cancelled":
-          return isPartlyFilledCancel
-            ? t("limitOrders.partlyFilled")
-            : t("limitOrders.cancelled");
+          return t("limitOrders.cancelled");
       }
+    })();
+
+    const lastActivity = (() => {
+      if (!lastActivityAt) return;
+      const now = dayjs(new Date());
+      const dayDiff = now.diff(lastActivityAt, "d");
+      const hourDiff = now.diff(lastActivityAt, "h");
+      const minuteDiff = Math.max(now.diff(lastActivityAt, "m"), 1);
+
+      return (
+        <Tooltip
+          content={formatDateTime(lastActivityAt)}
+          className="w-fit"
+          enablePropagation
+        >
+          <span className="body2 md:caption text-osmoverse-300">
+            {dayDiff > 0
+              ? t("limitOrders.daysAgo", { days: dayDiff.toString() })
+              : hourDiff > 0
+                ? t("limitOrders.hoursAgo", { hours: hourDiff.toString() })
+                : t("limitOrders.minutesAgo", {
+                    minutes: minuteDiff.toString(),
+                  })}
+          </span>
+        </Tooltip>
+      );
     })();
 
     const statusComponent = (() => {
@@ -532,31 +556,16 @@ const TableOrderRow = memo(
         case "open":
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
-        default: {
-          if (!lastActivityAt) return;
-          const now = dayjs(new Date());
-          const dayDiff = now.diff(lastActivityAt, "d");
-          const hourDiff = now.diff(lastActivityAt, "h");
-          const minuteDiff = Math.max(now.diff(lastActivityAt, "m"), 1);
-
-          return (
-            <Tooltip
-              content={formatDateTime(lastActivityAt)}
-              className="w-fit"
-              enablePropagation
-            >
-              <span className="body2 md:caption text-osmoverse-300">
-                {dayDiff > 0
-                  ? t("limitOrders.daysAgo", { days: dayDiff.toString() })
-                  : hourDiff > 0
-                    ? t("limitOrders.hoursAgo", { hours: hourDiff.toString() })
-                    : t("limitOrders.minutesAgo", {
-                        minutes: minuteDiff.toString(),
-                      })}
-              </span>
-            </Tooltip>
+        default:
+          // A partly filled cancel keeps its bar at what filled; the "Cancelled" label says it closed.
+          return isPartlyFilledCancel ? (
+            <div className="flex items-center gap-3">
+              <OrderProgressBar order={order} />
+              {lastActivity}
+            </div>
+          ) : (
+            lastActivity
           );
-        }
       }
     })();
     return (
@@ -721,12 +730,10 @@ const TableOrderRow = memo(
               className={classNames(
                 {
                   "text-bullish-400":
-                    status === "filled" ||
-                    status === "fullyClaimed" ||
-                    isPartlyFilledCancel,
+                    status === "filled" || status === "fullyClaimed",
                   "text-osmoverse-300":
                     status === "open" || status === "partiallyFilled",
-                  "text-osmoverse-500": isUnfilledCancel,
+                  "text-osmoverse-500": status === "cancelled",
                 },
                 "md:body2"
               )}
