@@ -1292,7 +1292,6 @@
         "amount": "数量",
         "price": "价格",
         "orderPlaced": "下单时间",
-        "lastActivity": "最近活动",
         "status": "状态"
       },
       "emptyState": {

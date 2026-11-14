@@ -58,23 +58,17 @@ function groupOrdersByStatus(orders: MappedLimitOrder[]) {
   };
 }
 
-const headers = [
-  "order",
-  "amount",
-  "price",
-  "orderPlaced",
-  "lastActivity",
-  "status",
-];
+const headers = ["order", "amount", "price", "orderPlaced", "status"];
 const mdHeaders = ["order", "status"];
-const lgHeaders = ["order", "orderPlaced", "lastActivity", "status"];
+const lgHeaders = ["order", "orderPlaced", "status"];
+// The status cell shows each closed order's last activity, so its column sorts by that.
 const sortKeys: Record<string, OrderSortKey> = {
   orderPlaced: "placedAt",
-  lastActivity: "lastActivity",
+  status: "lastActivity",
 };
 
 const gridClasses =
-  "grid grid-cols-[80px_4fr_2fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr_1fr]";
+  "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 
 /** Adds the year only when it isn't this year, so older orders can be told apart. */
 const formatDate = (date: dayjs.Dayjs) =>
@@ -272,7 +266,9 @@ export const OrderHistory = () => {
                 >
                   {sortKeys[header] ? (
                     <SortHeader<OrderSortKey>
-                      className="body2 sm:caption mr-auto ml-0"
+                      className={classNames("body2 sm:caption mr-auto ml-0", {
+                        "xl:ml-auto xl:mr-0": header === "status",
+                      })}
                       label={t(`limitOrders.historyTable.columns.${header}`)}
                       sortKey={sortKeys[header]}
                       currentSortKey={sortKey}
@@ -539,7 +535,13 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
         default:
-          return;
+          return (
+            lastActivityAt && (
+              <span className="body2 md:caption text-osmoverse-300">
+                {formatDate(lastActivityAt)}, {lastActivityAt.format("h:mm A")}
+              </span>
+            )
+          );
       }
     })();
     return (
@@ -692,18 +694,6 @@ const TableOrderRow = memo(
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
           </div>
-        </td>
-        <td className="!px-0 !text-left xl:!py-0 md:hidden">
-          {lastActivityAt ? (
-            <div className="flex flex-col gap-1">
-              <p className="body2 text-osmoverse-300">
-                {lastActivityAt.format("h:mm A")}
-              </p>
-              <p>{formatDate(lastActivityAt)}</p>
-            </div>
-          ) : (
-            <p className="text-osmoverse-300">–</p>
-          )}
         </td>
         <td
           className={classNames("!px-0 !text-left xl:!py-0", {

@@ -1292,7 +1292,6 @@
         "amount": "Montant",
         "price": "Prix",
         "orderPlaced": "Passé le",
-        "lastActivity": "Dernière activité",
         "status": "Statut"
       },
       "emptyState": {

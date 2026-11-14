@@ -1292,7 +1292,6 @@
         "amount": "Miktar",
         "price": "Fiyat",
         "orderPlaced": "Emir tarihi",
-        "lastActivity": "Son etkinlik",
         "status": "Durum"
       },
       "emptyState": {

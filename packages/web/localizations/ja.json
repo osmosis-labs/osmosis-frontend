@@ -1292,7 +1292,6 @@
         "amount": "数量",
         "price": "価格",
         "orderPlaced": "注文日時",
-        "lastActivity": "最終アクティビティ",
         "status": "状態"
       },
       "emptyState": {

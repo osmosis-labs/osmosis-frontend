@@ -1292,7 +1292,6 @@
         "amount": "Quantidade",
         "price": "Preço",
         "orderPlaced": "Ordem criada",
-        "lastActivity": "Última atividade",
         "status": "Status"
       },
       "emptyState": {

@@ -1292,7 +1292,6 @@
         "amount": "數量",
         "price": "價格",
         "orderPlaced": "下單時間",
-        "lastActivity": "最近活動",
         "status": "狀態"
       },
       "emptyState": {

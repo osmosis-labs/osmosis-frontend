@@ -1292,7 +1292,6 @@
         "amount": "Количество",
         "price": "Цена",
         "orderPlaced": "Размещен",
-        "lastActivity": "Последняя активность",
         "status": "Статус"
       },
       "emptyState": {

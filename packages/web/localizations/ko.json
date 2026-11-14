@@ -1292,7 +1292,6 @@
         "amount": "수량",
         "price": "가격",
         "orderPlaced": "주문 일시",
-        "lastActivity": "최근 활동",
         "status": "상태"
       },
       "emptyState": {
