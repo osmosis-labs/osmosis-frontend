@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis.",
     "returned": "Devuelto",
     "partlyFilled": "Ejecutado parcialmente",
+    "filledPercent": "{percent}% ejecutado",
     "returnedUnfilled": "Devuelto (no ejecutado)",
     "alreadyReceived": "Ya recibido",
     "paidOut": "Pagado",

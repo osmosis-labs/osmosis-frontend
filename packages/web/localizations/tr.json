@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar.",
     "returned": "İade edildi",
     "partlyFilled": "Kısmen gerçekleşti",
+    "filledPercent": "%{percent} gerçekleşti",
     "returnedUnfilled": "İade edildi (gerçekleşmeyen)",
     "alreadyReceived": "Zaten alındı",
     "paidOut": "Ödendi",

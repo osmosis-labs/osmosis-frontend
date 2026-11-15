@@ -520,8 +520,23 @@ const TableOrderRow = memo(
           return t("limitOrders.filled");
         case "fullyClaimed":
           return t("limitOrders.filled");
-        case "cancelled":
-          return t("limitOrders.cancelled");
+        case "cancelled": {
+          if (!isPartlyFilledCancel) return t("limitOrders.cancelled");
+          // Like OrderProgressBar, show a fill under 1% as 1% so it never reads "0% filled".
+          const percent = percentFilled.lt(new Dec(0.01))
+            ? new Int(1)
+            : percentFilled.mul(new Dec(100)).truncate();
+          return (
+            <>
+              {t("limitOrders.cancelled")} ·{" "}
+              <span className="text-bullish-400">
+                {t("limitOrders.filledPercent", {
+                  percent: percent.toString(),
+                })}
+              </span>
+            </>
+          );
+        }
       }
     })();
 
@@ -557,15 +572,7 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
         default:
-          // A partly filled cancel keeps its bar at what filled; the "Cancelled" label says it closed.
-          return isPartlyFilledCancel ? (
-            <div className="flex items-center gap-3">
-              <OrderProgressBar order={order} />
-              {lastActivity}
-            </div>
-          ) : (
-            lastActivity
-          );
+          return lastActivity;
       }
     })();
     return (

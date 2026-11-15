@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "Orderbook pool बनाने से Osmosis पर इस ट्रेडिंग जोड़ी के लिए limit orders रखे जा सकते हैं।",
     "returned": "वापस किया गया",
     "partlyFilled": "आंशिक रूप से भरा गया",
+    "filledPercent": "{percent}% भरा गया",
     "returnedUnfilled": "वापस किया गया (नहीं भरा गया)",
     "alreadyReceived": "पहले ही प्राप्त",
     "paidOut": "भुगतान किया गया",

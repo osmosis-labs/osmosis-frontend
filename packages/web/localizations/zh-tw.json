@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "建立 orderbook pool 可在 Osmosis 上為此交易對下 limit orders。",
     "returned": "已退回",
     "partlyFilled": "部分成交",
+    "filledPercent": "已成交 {percent}%",
     "returnedUnfilled": "已退回（未成交）",
     "alreadyReceived": "已收到",
     "paidOut": "已付款",

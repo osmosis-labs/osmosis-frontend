@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis.",
     "returned": "Returnat",
     "partlyFilled": "Executat parțial",
+    "filledPercent": "{percent}% executat",
     "returnedUnfilled": "Returnat (neexecutat)",
     "alreadyReceived": "Deja primit",
     "paidOut": "Plătit",

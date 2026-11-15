@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "Orderbook pool을 만들면 Osmosis에서 이 거래 쌍에 대한 limit orders를 낼 수 있습니다.",
     "returned": "반환됨",
     "partlyFilled": "부분 체결",
+    "filledPercent": "{percent}% 체결",
     "returnedUnfilled": "반환됨 (미체결)",
     "alreadyReceived": "이미 받음",
     "paidOut": "지급됨",

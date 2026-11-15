@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "Das Erstellen eines Orderbuch-Pools ermöglicht es, Limit-Orders für dieses Handelspaar auf Osmosis zu platzieren.",
     "returned": "Zurückerstattet",
     "partlyFilled": "Teilweise ausgeführt",
+    "filledPercent": "{percent}% ausgeführt",
     "returnedUnfilled": "Zurückerstattet (nicht ausgeführt)",
     "alreadyReceived": "Bereits erhalten",
     "paidOut": "Ausgezahlt",

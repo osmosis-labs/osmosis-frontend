@@ -34,14 +34,7 @@ export const OrderProgressBar: React.FC<OrderProgressBarProps> = ({
     [roundedAmountFilled]
   );
 
-  // A cancelled order that partly filled keeps its bar, frozen at what filled.
-  const isPartlyFilledCancel =
-    status === "cancelled" && percentFilled.isPositive();
-  if (
-    status !== "partiallyFilled" &&
-    status !== "open" &&
-    !isPartlyFilledCancel
-  ) {
+  if (status !== "partiallyFilled" && status !== "open") {
     return;
   }
 

@@ -1419,6 +1419,7 @@
     "createOrderbookDescription": "ایجاد یک orderbook pool امکان ثبت limit orders برای این جفت معاملاتی در Osmosis را فراهم می‌کند.",
     "returned": "بازگردانده‌شده",
     "partlyFilled": "تا حدی اجرا شده",
+    "filledPercent": "{percent}% اجرا شده",
     "returnedUnfilled": "بازگردانده‌شده (اجرانشده)",
     "alreadyReceived": "قبلاً دریافت شده",
     "paidOut": "پرداخت‌شده",
