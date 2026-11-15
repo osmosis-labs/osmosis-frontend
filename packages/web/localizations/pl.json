@@ -1419,7 +1419,7 @@
     "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis.",
     "returned": "Zwrócono",
     "partlyFilled": "Częściowo zrealizowane",
-    "filledPercent": "zrealizowane w {percent}%",
+    "filledPercent": "Zrealizowane w {percent}%",
     "returnedUnfilled": "Zwrócono (niezrealizowane)",
     "alreadyReceived": "Już otrzymano",
     "paidOut": "Wypłacono",

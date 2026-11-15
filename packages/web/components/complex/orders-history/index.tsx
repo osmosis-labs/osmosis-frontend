@@ -528,12 +528,12 @@ const TableOrderRow = memo(
             : percentFilled.mul(new Dec(100)).truncate();
           return (
             <>
-              {t("limitOrders.cancelled")} ·{" "}
               <span className="text-bullish-400">
                 {t("limitOrders.filledPercent", {
                   percent: percent.toString(),
                 })}
-              </span>
+              </span>{" "}
+              · {t("limitOrders.cancelled")}
             </>
           );
         }

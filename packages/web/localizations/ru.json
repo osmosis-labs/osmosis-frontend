@@ -1419,7 +1419,7 @@
     "createOrderbookDescription": "Создание orderbook pool позволяет размещать limit orders для этой торговой пары на Osmosis.",
     "returned": "Возвращено",
     "partlyFilled": "Частично исполнено",
-    "filledPercent": "исполнено на {percent}%",
+    "filledPercent": "Исполнено на {percent}%",
     "returnedUnfilled": "Возвращено (неисполненная часть)",
     "alreadyReceived": "Уже получено",
     "paidOut": "Выплачено",
