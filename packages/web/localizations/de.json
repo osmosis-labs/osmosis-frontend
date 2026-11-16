@@ -1366,7 +1366,7 @@
     "minutesAgo": "vor {minutes} Minuten",
     "buyWith": "Kaufen mit {coinA} oder {coinB}",
     "orderHistory": "Orderverlauf",
-    "openOrderbook": "Orderbuch öffnen",
+    "openOrderbook": "{pair}-Orderbuch öffnen",
     "tradeAnotherAssetOr": "Tauschen Sie einen anderen Vermögenswert gegen {coinA} oder {coinB}",
     "tradeAnotherAsset": "Tauschen Sie einen anderen Vermögenswert gegen {coinDenom}",
     "sellAnAsset": "Einen Vermögenswert verkaufen",

@@ -63,9 +63,11 @@ interface TradeToolProps {
    * Where the pair's order book goes when the pair has a canonical orderbook:
    * "expandable" offers an expand control that puts the book beside the
    * widget and the user's orders below; "below" always shows the book under
-   * the widget. Omit for the widget alone.
+   * the widget; "beside" always puts the book beside the widget, stacking
+   * under it below 1024px, with no chart and no orders (the page shows
+   * those itself). Omit for the widget alone.
    */
-  bookLayout?: "expandable" | "below";
+  bookLayout?: "expandable" | "below" | "beside";
   /**
    * For an orderbook pool's own page: Buy and Sell only, locked to the
    * pool's pair, with that pool's book beside the widget, the user's orders
@@ -181,8 +183,11 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   const { isWalletConnected } = useWallet();
 
   const { expanded, isExpandable, setExpanded } = useTradeViewExpanded();
+  const isBesideLayout = bookLayout === "beside";
   const isBookBeside =
-    Boolean(orderbookPool) || (bookLayout === "expandable" && expanded);
+    Boolean(orderbookPool) ||
+    isBesideLayout ||
+    (bookLayout === "expandable" && expanded);
 
   // The book beside the widget matches the widget card's rendered height,
   // so they stay aligned whatever the widget shows; it scrolls inside.
@@ -415,7 +420,11 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
 
   // Expanded Buy and Sell also show the base asset's price chart, the same
   // chart as the orderbook pool page; Swap shows widget and book only.
-  const showChart = isBookBeside && !orderbookPool && tab !== SwapToolTab.SWAP;
+  const showChart =
+    isBookBeside &&
+    !orderbookPool &&
+    !isBesideLayout &&
+    tab !== SwapToolTab.SWAP;
 
   // Below 1024px the book stacks under the widget at a fixed height. At
   // 1536px and below the chart takes its own row above widget and book.
@@ -439,8 +448,8 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
         "flex flex-col gap-4": isBookBeside,
         // Without the chart the row is only as wide as widget and book.
         "mx-auto w-fit max-w-full":
-          isBookBeside && !orderbookPool && !showChart,
-        "w-full min-w-0": showChart,
+          isBookBeside && !orderbookPool && !isBesideLayout && !showChart,
+        "w-full min-w-0": showChart || isBesideLayout,
       })}
     >
       <div
@@ -460,7 +469,10 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
         )}
         <div
           className={classNames({
-            "w-[512px] shrink-0 lg:w-full": isBookBeside,
+            "w-[512px] shrink-0 lg:w-full": isBookBeside && !isBesideLayout,
+            // Narrower beside a page's own column, so the book has room for
+            // its header.
+            "w-[420px] shrink-0 lg:w-full": isBesideLayout,
           })}
         >
           {widget}
@@ -469,10 +481,16 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
           <TradeViewBook
             {...pair}
             hideOpenOrderbookLink={Boolean(orderbookPool)}
+            // Beside the widget the book is only as tall as the widget's
+            // card, which fits 11 rows a side with Swap and 6 with Buy or
+            // Sell.
+            visibleLevels={
+              isBesideLayout ? (tab === SwapToolTab.SWAP ? 11 : 6) : undefined
+            }
             onPriceSelect={selectBookPrice}
             style={sideHeight}
             className={classNames(
-              orderbookPool || showChart
+              orderbookPool || showChart || isBesideLayout
                 ? "min-w-0 flex-1 lg:w-full"
                 : "w-[420px] shrink-0 lg:w-full",
               { "max-w-[420px] 2xl:max-w-none": showChart },
@@ -481,7 +499,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
           />
         )}
       </div>
-      {isBookBeside && <TradeViewOrders {...pair} />}
+      {isBookBeside && !isBesideLayout && <TradeViewOrders {...pair} />}
     </div>
   );
 };

@@ -1366,7 +1366,7 @@
     "minutesAgo": "{minutes} мин назад",
     "buyWith": "Купите с помощью {coinA} или {coinB}",
     "orderHistory": "История ордеров",
-    "openOrderbook": "Открыть книгу ордеров",
+    "openOrderbook": "Открыть книгу ордеров {pair}",
     "tradeAnotherAssetOr": "Обменяйте другой актив на {coinA} или {coinB}",
     "tradeAnotherAsset": "Обменяйте другой актив на {coinDenom}",
     "sellAnAsset": "Продать актив",

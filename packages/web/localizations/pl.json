@@ -1366,7 +1366,7 @@
     "minutesAgo": "{minutes} min temu",
     "buyWith": "Kupuj za pomocą {coinA} lub {coinB}",
     "orderHistory": "Historia zleceń",
-    "openOrderbook": "Otwórz arkusz zleceń",
+    "openOrderbook": "Otwórz arkusz zleceń {pair}",
     "tradeAnotherAssetOr": "Zamień inny zasób na {coinA} lub {coinB}",
     "tradeAnotherAsset": "Zamień inny zasób na {coinDenom}",
     "sellAnAsset": "Sprzedaj aktywa",

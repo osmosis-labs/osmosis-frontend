@@ -45,10 +45,19 @@ export const TradeViewBook: FunctionComponent<
     className?: string;
     style?: CSSProperties;
     hideOpenOrderbookLink?: boolean;
+    /** Rows per side; omit for the book's default. */
+    visibleLevels?: number;
     /** Called with the clicked price and the book (pair and pool) it is on. */
     onPriceSelect?: (selection: BookPriceSelection) => void;
   }
-> = ({ className, style, hideOpenOrderbookLink, onPriceSelect, ...pair }) => {
+> = ({
+  className,
+  style,
+  hideOpenOrderbookLink,
+  visibleLevels,
+  onPriceSelect,
+  ...pair
+}) => {
   const orderbook = useTradeViewOrderbook(pair);
   // Depth is quoted in the book's own orientation, which may be the reverse
   // of the widget's pair.
@@ -80,6 +89,7 @@ export const TradeViewBook: FunctionComponent<
             }))
         }
         hideOpenOrderbookLink={hideOpenOrderbookLink}
+        visibleLevels={visibleLevels}
       />
     </section>
   );

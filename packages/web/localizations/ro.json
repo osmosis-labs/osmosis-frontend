@@ -1366,7 +1366,7 @@
     "minutesAgo": "acum {minutes} min",
     "buyWith": "Cumpărați cu {coinA} sau {coinB}",
     "orderHistory": "Istoric ordine",
-    "openOrderbook": "Deschide registrul de ordine",
+    "openOrderbook": "Deschide registrul de ordine {pair}",
     "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
     "tradeAnotherAsset": "Schimbă alt activ pentru {coinDenom}",
     "sellAnAsset": "Vinde un activ",

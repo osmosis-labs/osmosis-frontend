@@ -44,7 +44,7 @@ export const AssetPools: FunctionComponent<AssetPoolsProps> = (props) => {
 
   return (
     <section>
-      <header className="mb-6 flex items-center justify-between gap-2">
+      <header className="mb-1 flex items-center justify-between gap-2">
         <h5>{t("menu.pools")}</h5>
 
         <Button

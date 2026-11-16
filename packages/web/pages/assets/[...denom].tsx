@@ -153,6 +153,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
 
   const tradeToolProps = {
     swapToolProps,
+    // The orders card links to the order history itself.
+    showOrderHistoryLink: false,
     setPreviousTrade,
     previousTrade: {
       baseDenom: asset.coinMinimalDenom,
@@ -192,11 +194,31 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
         />
         <div className="grid grid-cols-tokenpage gap-11 xl:flex xl:flex-col sm:gap-10">
           <div className="flex flex-col gap-12 sm:gap-10">
-            <div className="flex flex-col gap-5">
-              <AssetNavigation />
-              <AssetPriceChart />
+            {/* Chart, then (at 1280px and below) the trading cards, at the
+                cards' spacing. */}
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-5">
+                <AssetNavigation />
+                <AssetPriceChart />
+              </div>
+              {/* At 1280px and below the page is one column: the widget with its
+                  book beside it under the chart, then the balance with the
+                  user's orders beside it, spaced as one group. */}
+              <div className="hidden flex-col gap-4 xl:flex">
+                <TradeTool {...tradeToolProps} bookLayout="beside" />
+                {/* Balance under the widget and orders under the book, at
+                    their widths. The balance sets the row's height; the orders
+                    fill it and scroll, until the two stack below 1024px. */}
+                <div className="flex gap-4 lg:flex-col">
+                  <AssetBalance className="w-[420px] shrink-0 lg:w-full" />
+                  <div className="relative min-w-0 flex-1 lg:w-full">
+                    <div className="absolute inset-0 lg:static">
+                      <AssetOrderHistory />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <AssetBalance className="hidden xl:block" />
             {asset.tooltipMessage && (
               <div className="flex items-start gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-4">
                 <Icon
@@ -209,19 +231,14 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
                 />
               </div>
             )}
-            <AssetDetails />
-            <AssetStats className="hidden xl:flex" />
+            <div className="flex flex-col gap-4">
+              <AssetDetails />
+              <AssetStats className="hidden xl:flex" />
+            </div>
             <AssetPools
               coinMinimalDenom={asset.coinMinimalDenom}
               coinDenom={asset.coinDenom}
             />
-            <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
-              <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                <TradeTool {...tradeToolProps} bookLayout="below">
-                  <AssetOrderHistory />
-                </TradeTool>
-              </div>
-            </div>
             {!asset.areTransfersDisabled && asset.contract ? (
               <AlloyedAssetsSection
                 className="hidden xl:block"
@@ -235,11 +252,12 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
 
           <div className="flex flex-col gap-11 sm:gap-10">
             <div className="xl:hidden">
+              {/* The balance sits in the widget's stack, at its spacing. */}
               <TradeTool {...tradeToolProps} bookLayout="below">
                 <AssetOrderHistory />
+                <AssetBalance />
               </TradeTool>
             </div>
-            <AssetBalance className="xl:hidden" />
             <AssetStats className="xl:hidden" />
             {!asset.areTransfersDisabled && asset.contract ? (
               <AlloyedAssetsSection

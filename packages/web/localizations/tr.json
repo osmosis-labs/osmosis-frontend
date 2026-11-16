@@ -1371,7 +1371,7 @@
     "sellAnAsset": "Bir varlık sat",
     "swapAnAsset": "Bir varlığı takas et",
     "of": "değerinde",
-    "openOrderbook": "Emir defterini aç",
+    "openOrderbook": "{pair} emir defterini aç",
     "insufficientFunds": "Yetersiz bakiye",
     "startTrading": "İşlem yapmaya başla",
     "tradeFees": "İşlem ücretleri (emir gerçekleştiğinde)",

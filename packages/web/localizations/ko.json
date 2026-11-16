@@ -1366,7 +1366,7 @@
     "minutesAgo": "{minutes} 분 전",
     "buyWith": "{coinA} 또는 {coinB} 로 구매하세요.",
     "orderHistory": "주문 내역",
-    "openOrderbook": "오더북 열기",
+    "openOrderbook": "{pair} 오더북 열기",
     "tradeAnotherAssetOr": "다른 자산을 {coinA} 또는 {coinB} 로 교환하세요",
     "tradeAnotherAsset": "다른 자산을 {coinDenom} 으로 교환하세요",
     "sellAnAsset": "자산 판매",

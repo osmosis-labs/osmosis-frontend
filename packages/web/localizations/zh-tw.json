@@ -1368,7 +1368,7 @@
     "orderHistory": "訂單歷史",
     "tradeAnotherAssetOr": "用其他資產換取{coinA}或{coinB}",
     "tradeAnotherAsset": "用其他資產換取{coinDenom}",
-    "openOrderbook": "打開訂單簿",
+    "openOrderbook": "打開{pair}訂單簿",
     "sellAnAsset": "出售資產",
     "swapAnAsset": "兌換資產",
     "of": "的",

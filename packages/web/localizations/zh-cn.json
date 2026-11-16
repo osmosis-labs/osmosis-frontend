@@ -1368,7 +1368,7 @@
     "orderHistory": "订单历史",
     "tradeAnotherAssetOr": "用其他资产换取{coinA}或{coinB}",
     "tradeAnotherAsset": "用其他资产换取{coinDenom}",
-    "openOrderbook": "打开订单簿",
+    "openOrderbook": "打开{pair}订单簿",
     "sellAnAsset": "出售资产",
     "swapAnAsset": "兑换资产",
     "of": "的",

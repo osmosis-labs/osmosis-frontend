@@ -1366,7 +1366,7 @@
     "minutesAgo": "{minutes} मिनट पहले",
     "buyWith": "{coinA} या {coinB} के साथ खरीदें",
     "orderHistory": "ऑर्डर इतिहास",
-    "openOrderbook": "ऑर्डरबुक खोलें",
+    "openOrderbook": "{pair} ऑर्डरबुक खोलें",
     "tradeAnotherAssetOr": "{coinA} या {coinB} के लिए किसी अन्य परिसंपत्ति का व्यापार करें",
     "tradeAnotherAsset": "{coinDenom} के लिए किसी अन्य परिसंपत्ति का व्यापार करें",
     "sellAnAsset": "एक परिसंपत्ति बेचें",

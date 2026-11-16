@@ -1366,7 +1366,7 @@
     "minutesAgo": "{minutes} دقیقه قبل",
     "buyWith": "خرید با {coinA} یا {coinB}",
     "orderHistory": "تاریخچه سفارش ها",
-    "openOrderbook": "باز کردن دفتر سفارش",
+    "openOrderbook": "باز کردن دفتر سفارش {pair}",
     "tradeAnotherAssetOr": "دارایی دیگری را برای {coinA} یا {coinB} مبادله کنید.",
     "tradeAnotherAsset": "دارایی دیگری را برای {coinDenom} مبادله کنید",
     "sellAnAsset": "فروش یک دارایی",

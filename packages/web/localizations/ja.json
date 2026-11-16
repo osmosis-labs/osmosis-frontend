@@ -1366,7 +1366,7 @@
     "minutesAgo": "{minutes}分前",
     "buyWith": "{coinA}または{coinB}で購入",
     "orderHistory": "注文履歴",
-    "openOrderbook": "板を開く",
+    "openOrderbook": "{pair}の板を開く",
     "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
     "tradeAnotherAsset": "別の資産を{coinDenom}と交換する",
     "sellAnAsset": "資産を売る",

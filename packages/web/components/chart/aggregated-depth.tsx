@@ -156,6 +156,8 @@ export const OrderbookDepthPanel: FunctionComponent<{
   onClEnabledChange?: (enabled: boolean) => void;
   /** CL pool liquidity could not be loaded; levels are orders only. */
   clUnavailable?: boolean;
+  /** Rows per side. */
+  visibleLevels?: number;
 }> = ({
   bids: bidsProp,
   asks: asksProp,
@@ -176,12 +178,13 @@ export const OrderbookDepthPanel: FunctionComponent<{
   clUnavailable,
   clEnabled = true,
   onClEnabledChange,
+  visibleLevels = 12,
 }) => {
   // With CL off, ignore any CL amounts still on the levels (e.g. depth kept
   // on screen while the orders-only result loads).
   const bids = clEnabled ? bidsProp : bidsProp.map(withoutCl);
   const asks = clEnabled ? asksProp : asksProp.map(withoutCl);
-  const VISIBLE_LEVELS = 12;
+  const VISIBLE_LEVELS = visibleLevels;
   const visibleBids = bids.slice(0, VISIBLE_LEVELS);
   const visibleAsks = asks.slice(0, VISIBLE_LEVELS);
 

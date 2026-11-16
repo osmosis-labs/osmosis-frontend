@@ -25,12 +25,15 @@ export const OrderBook: FunctionComponent<{
   onPriceSelect?: (price: number) => void;
   /** Hide the link to the orderbook pool page (when already on it). */
   hideOpenOrderbookLink?: boolean;
+  /** Rows per side; omit for the panel's default. */
+  visibleLevels?: number;
 }> = ({
   poolId,
   baseSymbol,
   quoteSymbol,
   onPriceSelect,
   hideOpenOrderbookLink = false,
+  visibleLevels,
 }) => {
   const { t } = useTranslation();
 
@@ -73,16 +76,27 @@ export const OrderBook: FunctionComponent<{
     }
   );
 
+  const pair = baseSymbol && quoteSymbol ? `${baseSymbol}/${quoteSymbol}` : "";
   const header = (
-    <div className="flex shrink-0 items-center justify-between px-4 pt-3 pb-2">
-      <h6 className="text-osmoverse-200">{t("tradeView.orderBook")}</h6>
-      {!hideOpenOrderbookLink && poolId && (
+    <div className="flex shrink-0 items-center justify-between gap-2 px-4 pt-3 pb-2">
+      <div className="flex min-w-0 items-baseline gap-2">
+        <h6 className="shrink-0 text-osmoverse-200">
+          {t("tradeView.orderBook")}
+        </h6>
+        {pair && (
+          <span className="body2 truncate text-osmoverse-400" title={pair}>
+            {pair}
+          </span>
+        )}
+      </div>
+      {!hideOpenOrderbookLink && poolId && pair && (
         <Link
           href={`/pool/${poolId}`}
-          className="flex items-center gap-1 text-wosmongton-300 hover:text-wosmongton-200"
+          aria-label={t("limitOrders.openOrderbook", { pair })}
+          title={t("limitOrders.openOrderbook", { pair })}
+          className="-mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-wosmongton-300 transition-colors hover:bg-osmoverse-800 hover:text-wosmongton-200"
         >
-          <span className="body2">{t("limitOrders.openOrderbook")}</span>
-          <Icon id="chevron-right" width={7} height={12} />
+          <Icon id="arrow-up-right" width={18} height={18} aria-hidden />
         </Link>
       )}
     </div>
@@ -128,6 +142,7 @@ export const OrderBook: FunctionComponent<{
           clUnavailable={depthData?.clUnavailable}
           clEnabled={includeCl}
           onClEnabledChange={setIncludeCl}
+          visibleLevels={visibleLevels}
         />
       </div>
     </div>
