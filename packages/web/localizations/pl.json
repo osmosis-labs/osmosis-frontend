@@ -561,6 +561,7 @@
       "depthUnavailableDesc": "Nie można załadować głębokości arkusza zleceń. Ponawiam próbę...",
       "depthClLegend": "W tym pule CL",
       "depthClLegendTooltip": "Kreskowane paski obejmują płynność z pul skoncentrowanej płynności dla tej pary. To płynność krzywej AMM, nie oczekujące zlecenia; pokazane ilości to tylko zlecenia.",
+      "depthEdgesTooltip": "Pokaż płynność poza widocznymi wierszami jako jeden wiersz < i jeden >",
       "depthClUnavailable": "Głębokość CL niedostępna",
       "depthRowWithCl": "Zlecenia: {orders} · Pule CL: {cl}",
       "retiredQuoteDesc": "{quote} nie jest już oferowany jako waluta kwotowania dla nowych zleceń z limitem. Nadal możesz odebrać i anulować swoje zlecenia w tym arkuszu.",

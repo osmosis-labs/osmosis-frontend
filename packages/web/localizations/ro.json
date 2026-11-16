@@ -561,6 +561,7 @@
       "depthUnavailableDesc": "Imposibil de încărcat adâncimea registrului de ordine. Se reîncearcă...",
       "depthClLegend": "Incl. pool-uri CL",
       "depthClLegendTooltip": "Barele hașurate includ lichiditate din pool-urile de lichiditate concentrată pentru această pereche. Este lichiditate de curbă AMM, nu ordine în așteptare; cantitățile afișate sunt doar ordine.",
+      "depthEdgesTooltip": "Afișează lichiditatea dincolo de rândurile afișate într-un rând < și unul >",
       "depthClUnavailable": "Adâncime CL indisponibilă",
       "depthRowWithCl": "Ordine: {orders} · Pool-uri CL: {cl}",
       "retiredQuoteDesc": "{quote} nu mai este oferit ca monedă de cotare pentru ordinele limită noi. Poți în continuare să revendici și să anulezi ordinele din acest registru.",

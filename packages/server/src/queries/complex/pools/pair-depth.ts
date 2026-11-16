@@ -13,7 +13,11 @@ import {
 } from "../../sidecar/orderbooks";
 import { getOrderbookState } from "../orderbooks/orderbook-state";
 import { getOrderbookPools } from "../orderbooks/pools";
-import { ClPoolDepthInput, clQuantitiesOnLevels } from "./cl-depth";
+import {
+  clBeyondEdges,
+  ClPoolDepthInput,
+  clQuantitiesOnLevels,
+} from "./cl-depth";
 import { getPoolsFromSidecar } from "./providers/sidecar";
 
 export type DepthDataPoint = {
@@ -32,6 +36,11 @@ export type OrderbookLevel = {
    * `quantity` or `cumulative`, which are resting orders only.
    */
   clQuantity?: number;
+  /**
+   * A summary level for CL liquidity past the side's outermost order: below
+   * `price` for bids, above it for asks. It has no orders of its own.
+   */
+  beyond?: boolean;
 };
 
 export type GroupingOption = { label: string; value: number };
@@ -365,9 +374,17 @@ async function computePairDepth({
     });
   }
 
-  const bids = bucketSize
-    ? aggregateLevels(rawBids, bucketSize, "bid")
-    : rawBids;
+  let bids = bucketSize ? aggregateLevels(rawBids, bucketSize, "bid") : rawBids;
+
+  // Derive grouping options from the order of magnitude of midPrice.
+  // e.g. mid=$94,000 → magnitude=10,000 → options: 1, 10, 100
+  //      mid=$0.50   → magnitude=0.1    → options: 0.0001, 0.001, 0.01
+  const magnitude = Math.pow(10, Math.floor(Math.log10(midPrice)));
+  const groupingOptions: GroupingOption[] = [
+    { label: formatGroupLabel(magnitude * 0.01), value: magnitude * 0.01 },
+    { label: formatGroupLabel(magnitude * 0.1), value: magnitude * 0.1 },
+    { label: formatGroupLabel(magnitude), value: magnitude },
+  ];
 
   const clPools = await clPoolsPromise;
   if (clPools && clPools.length > 0) {
@@ -381,6 +398,43 @@ async function computePairDepth({
     });
     bids.forEach((l, i) => (l.clQuantity = cl.bids[i]));
     asks.forEach((l, i) => (l.clQuantity = cl.asks[i]));
+
+    // CL past the outermost order (or past the mid price on a side with no
+    // orders) has no order level to sit on, so each side gets one summary
+    // level at its edge holding all of it.
+    const lastBid = bids.at(-1);
+    const lastAsk = asks.at(-1);
+    const bidEdge = lastBid?.price ?? midPrice;
+    const askEdge = lastAsk?.price ?? midPrice;
+    const beyond = clBeyondEdges({
+      pools: clPools.map(({ depth }) => depth),
+      bidEdge,
+      askEdge,
+      baseDecimals,
+      quoteDecimals,
+    });
+    if (beyond.bid > 0)
+      bids = [
+        ...bids,
+        {
+          price: bidEdge,
+          quantity: 0,
+          cumulative: lastBid?.cumulative ?? 0,
+          clQuantity: beyond.bid,
+          beyond: true,
+        },
+      ];
+    if (beyond.ask > 0)
+      asks = [
+        ...asks,
+        {
+          price: askEdge,
+          quantity: 0,
+          cumulative: 0,
+          clQuantity: beyond.ask,
+          beyond: true,
+        },
+      ];
   }
   const clInfo = {
     clPoolIds: clPools?.map(({ poolId }) => poolId) ?? [],
@@ -397,35 +451,23 @@ async function computePairDepth({
   if (bids.length === 0 && asks.length === 0)
     return { ...empty, midPrice, bidPrice, askPrice, ...clInfo };
 
-  // 6. Build depthData for the chart
-  const depthData: DepthDataPoint[] = [
-    ...bids.map(({ price, quantity }) => ({
+  // 6. Build depthData for the chart: resting orders only, so CL-only
+  // levels are left out.
+  const depthData: DepthDataPoint[] = [...bids, ...asks]
+    .filter(({ quantity }) => quantity > 0)
+    .map(({ price, quantity }) => ({
       price,
       depth: quantity,
       source: "orderbook" as const,
-    })),
-    ...asks.map(({ price, quantity }) => ({
-      price,
-      depth: quantity,
-      source: "orderbook" as const,
-    })),
-  ].sort((a, b) => a.price - b.price);
+    }))
+    .sort((a, b) => a.price - b.price);
 
-  const allPrices = depthData.map((d) => d.price);
-  if (allPrices.length === 0) return { ...empty, midPrice, bidPrice, askPrice };
+  const allPrices = depthData.length
+    ? depthData.map((d) => d.price)
+    : [midPrice];
   const minPrice = Math.min(...allPrices);
   const maxPrice = Math.max(...allPrices);
-  const maxDepth = Math.max(...depthData.map((d) => d.depth));
-
-  // Derive grouping options from the order of magnitude of midPrice.
-  // e.g. mid=$94,000 → magnitude=10,000 → options: 1, 10, 100
-  //      mid=$0.50   → magnitude=0.1    → options: 0.0001, 0.001, 0.01
-  const magnitude = Math.pow(10, Math.floor(Math.log10(midPrice)));
-  const groupingOptions: GroupingOption[] = [
-    { label: formatGroupLabel(magnitude * 0.01), value: magnitude * 0.01 },
-    { label: formatGroupLabel(magnitude * 0.1), value: magnitude * 0.1 },
-    { label: formatGroupLabel(magnitude), value: magnitude },
-  ];
+  const maxDepth = Math.max(0, ...depthData.map((d) => d.depth));
 
   return {
     depthData,

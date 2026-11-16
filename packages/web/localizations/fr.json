@@ -561,6 +561,7 @@
       "depthUnavailableDesc": "Impossible de charger la profondeur du carnet d'ordres. Nouvelle tentative...",
       "depthClLegend": "Incl. pools CL",
       "depthClLegendTooltip": "Les barres hachurées incluent la liquidité des pools de liquidité concentrée pour cette paire. Il s'agit de liquidité de courbe AMM, pas d'ordres en attente ; les quantités affichées sont uniquement des ordres.",
+      "depthEdgesTooltip": "Afficher la liquidité au-delà des lignes visibles dans une ligne < et une ligne >",
       "depthClUnavailable": "Profondeur CL indisponible",
       "depthRowWithCl": "Ordres : {orders} · Pools CL : {cl}",
       "retiredQuoteDesc": "{quote} n'est plus proposé comme devise de cotation pour les nouveaux ordres limites. Vous pouvez toujours réclamer et annuler vos ordres sur ce carnet.",

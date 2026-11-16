@@ -43,6 +43,8 @@ export const OrderBook: FunctionComponent<{
   // turned it off never triggers a CL fetch.
   const includeCl = useOrderbookDepthPreferences((s) => s.includeCl);
   const setIncludeCl = useOrderbookDepthPreferences((s) => s.setIncludeCl);
+  const showEdges = useOrderbookDepthPreferences((s) => s.showEdges);
+  const setShowEdges = useOrderbookDepthPreferences((s) => s.setShowEdges);
 
   // Bucket size for depth aggregation; undefined means raw ticks. A size picked
   // for one pool can round another pool's prices to zero, so reset it when the
@@ -143,6 +145,8 @@ export const OrderBook: FunctionComponent<{
           clEnabled={includeCl}
           onClEnabledChange={setIncludeCl}
           visibleLevels={visibleLevels}
+          showEdges={showEdges}
+          onShowEdgesChange={setShowEdges}
         />
       </div>
     </div>

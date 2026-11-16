@@ -561,6 +561,7 @@
       "depthUnavailableDesc": "No se pudo cargar la profundidad del libro de órdenes. Reintentando...",
       "depthClLegend": "Incl. pools CL",
       "depthClLegendTooltip": "Las barras rayadas incluyen liquidez de pools de liquidez concentrada para este par. Es liquidez de curva AMM, no órdenes en espera; las cantidades mostradas son solo órdenes.",
+      "depthEdgesTooltip": "Mostrar la liquidez más allá de las filas visibles en una fila < y otra >",
       "depthClUnavailable": "Profundidad CL no disponible",
       "depthRowWithCl": "Órdenes: {orders} · Pools CL: {cl}",
       "retiredQuoteDesc": "{quote} ya no se ofrece como cotización para nuevas órdenes límite. Aún puedes reclamar y cancelar tus órdenes en este libro.",

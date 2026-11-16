@@ -156,3 +156,56 @@ export function clQuantitiesOnLevels({
 
   return { bids, asks };
 }
+
+/**
+ * CL liquidity past each side's outermost order level, in human base
+ * amounts, for one summary level per side. The ask side is the base held
+ * above `askEdge`. The bid side is the quote held below `bidEdge` divided by
+ * that edge price: buying base across a range that runs towards zero has no
+ * meaningful base total, so this states the quote at the edge price, which
+ * keeps the row's quote value exact.
+ */
+export function clBeyondEdges({
+  pools,
+  bidEdge,
+  askEdge,
+  baseDecimals,
+  quoteDecimals,
+}: {
+  pools: ClPoolDepthInput[];
+  bidEdge: number;
+  askEdge: number;
+  baseDecimals: number;
+  quoteDecimals: number;
+}): { bid: number; ask: number } {
+  const rawFactor = Math.pow(10, quoteDecimals - baseDecimals);
+  const rawBid = bidEdge * rawFactor;
+  const rawAsk = askEdge * rawFactor;
+  let quoteBelow = 0;
+  let baseAbove = 0;
+  for (const { ranges, currentSqrtPrice, token0IsBase } of pools) {
+    // Book interval [0, bidEdge] and [askEdge, ∞), in the pool's orientation.
+    if (rawBid > 0) {
+      const { amount0, amount1 } = clAmountsInPriceInterval({
+        ranges,
+        currentSqrtPrice,
+        loPrice: token0IsBase ? 0 : 1 / rawBid,
+        hiPrice: token0IsBase ? rawBid : Infinity,
+      });
+      quoteBelow += token0IsBase ? amount1 : amount0;
+    }
+    if (rawAsk > 0) {
+      const { amount0, amount1 } = clAmountsInPriceInterval({
+        ranges,
+        currentSqrtPrice,
+        loPrice: token0IsBase ? rawAsk : 0,
+        hiPrice: token0IsBase ? Infinity : 1 / rawAsk,
+      });
+      baseAbove += token0IsBase ? amount0 : amount1;
+    }
+  }
+  return {
+    bid: bidEdge > 0 ? quoteBelow / Math.pow(10, quoteDecimals) / bidEdge : 0,
+    ask: baseAbove / Math.pow(10, baseDecimals),
+  };
+}

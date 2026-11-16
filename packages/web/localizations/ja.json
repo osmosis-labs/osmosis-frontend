@@ -561,6 +561,7 @@
       "depthUnavailableDesc": "板情報の読み込みに失敗しました。再試行中...",
       "depthClLegend": "CLプール含む",
       "depthClLegendTooltip": "斜線のバーには、このペアの集中流動性プールの流動性が含まれます。これはAMMカーブの流動性であり、指値注文ではありません。表示数量は注文のみです。",
+      "depthEdgesTooltip": "表示行より外側の流動性を < と > の1行ずつにまとめて表示",
       "depthClUnavailable": "CLの厚みを取得できません",
       "depthRowWithCl": "注文: {orders} · CLプール: {cl}",
       "retiredQuoteDesc": "{quote} は新しい指値注文の決済通貨として提供されなくなりました。このオーダーブック上の注文は引き続き請求・キャンセルできます。",

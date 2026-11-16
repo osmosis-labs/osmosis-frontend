@@ -484,8 +484,17 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
             // Beside the widget the book is only as tall as the widget's
             // card, which fits 11 rows a side with Swap and 6 with Buy or
             // Sell.
+            // On an orderbook pool's page it is as tall as the limit widget,
+            // which fits 9 a side. Either way the "<" and ">" rows at the
+            // ends stay in view.
             visibleLevels={
-              isBesideLayout ? (tab === SwapToolTab.SWAP ? 11 : 6) : undefined
+              isBesideLayout
+                ? tab === SwapToolTab.SWAP
+                  ? 11
+                  : 6
+                : orderbookPool
+                  ? 9
+                  : undefined
             }
             onPriceSelect={selectBookPrice}
             style={sideHeight}
