@@ -368,12 +368,13 @@ const TableGroupHeader = ({
                 title={t("limitOrders.whatIsOrderClaim.title")}
                 body={t("limitOrders.whatIsOrderClaim.description")}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
                   <Icon
                     id="question"
-                    className="h-6 w-6 text-wosmongton-200"
+                    className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
                     width={24}
                     height={24}
+                    viewBox="0 0 24 24"
                   />
                 </div>
               </GenericDisclaimer>
@@ -410,12 +411,13 @@ const TableGroupHeader = ({
               title={t("limitOrders.howPayoutsWork")}
               body={t("limitOrders.payoutNote")}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
                 <Icon
                   id="question"
-                  className="h-6 w-6 text-wosmongton-200"
+                  className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
                   width={24}
                   height={24}
+                  viewBox="0 0 24 24"
                 />
               </div>
             </GenericDisclaimer>

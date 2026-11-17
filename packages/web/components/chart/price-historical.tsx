@@ -2,7 +2,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { curveNatural } from "@visx/curve";
 import { LinearGradient } from "@visx/gradient";
 import { ParentSize } from "@visx/responsive";
-import { scaleLinear } from "@visx/scale";
+import { scaleLinear, scaleTime } from "@visx/scale";
 import {
   AnimatedAreaSeries,
   AnimatedAxis,
@@ -33,6 +33,40 @@ import {
 import { getDecimalCount } from "~/utils/number";
 
 const NUM_Y_TICKS = 5;
+/** Minimum gap between x-axis date labels, so they don't collide on narrow (phone) charts. */
+const MIN_PX_PER_X_TICK = 80;
+
+/**
+ * d3's time ticks are only a hint on count and restart at month boundaries
+ * (e.g. Oct 31 then Nov 1), so on a narrow plot adjacent labels overlap.
+ * Takes the same ticks the axis would draw and drops any that land closer
+ * than `MIN_PX_PER_X_TICK` to the previously kept one.
+ */
+function getSpacedXTicks(
+  data: { time: number }[],
+  plotWidth: number,
+  numTicks: number
+): Date[] | undefined {
+  if (data.length < 2 || plotWidth <= 0) return undefined;
+  let min = Infinity;
+  let max = -Infinity;
+  for (const { time } of data) {
+    if (time < min) min = time;
+    if (time > max) max = time;
+  }
+  if (!(max > min)) return undefined;
+  const scale = scaleTime({ domain: [min, max], range: [0, plotWidth] });
+  const kept: Date[] = [];
+  let lastX = -Infinity;
+  for (const tick of scale.ticks(numTicks)) {
+    const x = scale(tick);
+    if (x - lastX >= MIN_PX_PER_X_TICK) {
+      kept.push(tick);
+      lastX = x;
+    }
+  }
+  return kept;
+}
 
 /**
  * Derives the y-axis tick formatter and the left margin needed to fit the
@@ -178,7 +212,11 @@ export const HistoricalPriceChart: FunctionComponent<{
               },
             })}
           >
-            <AnimatedAxis orientation="bottom" numTicks={xNumTicks} />
+            <AnimatedAxis
+              orientation="bottom"
+              numTicks={xNumTicks}
+              tickValues={getSpacedXTicks(data, width - leftMargin, xNumTicks)}
+            />
             <AnimatedAxis
               orientation="left"
               numTicks={NUM_Y_TICKS}

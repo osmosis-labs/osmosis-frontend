@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24 घंटे ट्रेडिंग वॉल्यूम",
+    "24hVolume": "24 घंटे वॉल्यूम",
     "amountDaysUnbonding": "{numDays} दिन अनबॉन्डिंग",
     "amountDaysUnbonding_plural": "{numDays} दिन अनबॉन्डिंग",
     "APR": "एपीआर",
@@ -902,6 +903,9 @@
     "free": "मुक्त",
     "cheapest": "सबसे सस्ता",
     "fastest": "सबसे तेजी से",
+    "transferSpeed": "ट्रांसफ़र की गति",
+    "standardSpeed": "मानक",
+    "fastSpeed": "तेज़",
     "stepLabels": {
       "asset": "संपत्ति",
       "amount": "मात्रा",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "अमान्य मूल्य",
     "priceTooLow": "कीमत बहुत कम है",
     "priceTooHigh": "कीमत बहुत अधिक है",
+    "marketPriceUnavailable": "बाज़ार मूल्य उपलब्ध नहीं है",
+    "quoteOffPeg": "कोट एसेट $1 से बहुत दूर है",
+    "quoteOffPegWarning": "{denom} {price} पर ट्रेड हो रहा है। लिमिट कीमतें 1 {denom} = $1 मानती हैं।",
+    "quotePegUnverified": "{denom} को $1 के सापेक्ष जाँचा नहीं जा सका। लिमिट कीमतें 1 {denom} = $1 मानती हैं।",
     "unavailable": "{denom} के लिए अनुपलब्ध",
     "orderHistoryHeaders": {
       "past": "पिछले",

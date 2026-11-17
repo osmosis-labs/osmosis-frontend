@@ -44,11 +44,13 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
   const { t } = useTranslation();
+  const hideBalances = useUserSettingsStore((state) => state.hideBalances);
   const { isMobile } = useWindowSize();
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { incentivizePool } = useFeatureFlags();
@@ -202,6 +204,17 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
     return 1;
   }, [userSharePool?.availableShares, bondDurations]);
   const level2Disabled = !bondDurations.some((duration) => duration.bondable);
+
+  // The bonded/available breakdown reveals values, so it is hidden when masked.
+  const showBreakdown = Boolean(
+    userSharePool && !userSharePool.valueUnknown && !hideBalances
+  );
+  const showNextReward = Boolean(
+    userSharePool &&
+    (userSharePool.valueUnknown
+      ? userSharePool.lockedShares?.toDec().isPositive()
+      : userSharePool.lockedValue.toDec().isPositive())
+  );
 
   const setShowModal = useCallback(
     (setter: Function, show: boolean) => () => setter(show),
@@ -468,29 +481,27 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
                 </div>
               </div>
 
-              <div className="flex flex-1 gap-4 1.5md:flex-col">
-                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
-                  {!userSharePool.valueUnknown && (
-                    <PriceBreakdownChart
-                      prices={[
-                        {
-                          label: t("pool.bonded"),
-                          price: userSharePool.lockedValue,
-                        },
-                        {
-                          label: t("pool.available"),
-                          price: userSharePool.availableValue,
-                        },
-                      ]}
-                    />
-                  )}
-                  {(userSharePool.valueUnknown
-                    ? userSharePool.lockedShares?.toDec().isPositive()
-                    : userSharePool.lockedValue.toDec().isPositive()) && (
-                    <NextRewardLine />
-                  )}
+              {(showBreakdown || showNextReward) && (
+                <div className="flex flex-1 gap-4 1.5md:flex-col">
+                  <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
+                    {showBreakdown && (
+                      <PriceBreakdownChart
+                        prices={[
+                          {
+                            label: t("pool.bonded"),
+                            price: userSharePool.lockedValue,
+                          },
+                          {
+                            label: t("pool.available"),
+                            price: userSharePool.availableValue,
+                          },
+                        ]}
+                      />
+                    )}
+                    {showNextReward && <NextRewardLine />}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
       </section>
@@ -540,18 +551,24 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
                   {userSharePool && (
                     <div className="hidden flex-col items-end lg:flex">
                       <h4 className="text-osmoverse-100">
-                        {userSharePool.valueUnknown
-                          ? "–"
-                          : userSharePool.availableValue.toString()}
+                        <PrivateText
+                          text={
+                            userSharePool.valueUnknown
+                              ? "–"
+                              : userSharePool.availableValue.toString()
+                          }
+                        />
                       </h4>
                       {userSharePool.availableShares && (
                         <h6 className="subtitle1 text-osmoverse-300">
-                          {t("pool.sharesAmount", {
-                            shares: formatPretty(
-                              userSharePool.availableShares.hideDenom(true),
-                              { maxDecimals: 4 }
-                            ),
-                          })}
+                          <PrivateText
+                            text={t("pool.sharesAmount", {
+                              shares: formatPretty(
+                                userSharePool.availableShares.hideDenom(true),
+                                { maxDecimals: 4 }
+                              ),
+                            })}
+                          />
                         </h6>
                       )}
                     </div>
@@ -591,18 +608,24 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = ({ pool }) => {
                 ) : userSharePool ? (
                   <>
                     <h4 className="text-osmoverse-100">
-                      {userSharePool.valueUnknown
-                        ? "–"
-                        : userSharePool.availableValue.toString()}
+                      <PrivateText
+                        text={
+                          userSharePool.valueUnknown
+                            ? "–"
+                            : userSharePool.availableValue.toString()
+                        }
+                      />
                     </h4>
                     <h6 className="subtitle1 text-osmoverse-300">
-                      {t("pool.sharesAmount", {
-                        shares: formatPretty(
-                          userSharePool.availableShares?.hideDenom(true) ??
-                            new Dec(0),
-                          { maxDecimals: 8 }
-                        ),
-                      })}
+                      <PrivateText
+                        text={t("pool.sharesAmount", {
+                          shares: formatPretty(
+                            userSharePool.availableShares?.hideDenom(true) ??
+                              new Dec(0),
+                            { maxDecimals: 8 }
+                          ),
+                        })}
+                      />
                     </h6>
                   </>
                 ) : (

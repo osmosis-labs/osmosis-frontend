@@ -26,6 +26,8 @@ export const ConcentratedLiquidityDepthChart: FunctionComponent<{
   xRange: [number, number];
   data: DepthData[];
   annotationDatum?: DepthData;
+  /** Optional tag drawn on the annotation line, at the chart's right edge. */
+  annotationLabel?: string;
   onMoveMax?: (value: number) => void;
   onMoveMin?: (value: number) => void;
   onSubmitMax?: (value: number) => void;
@@ -46,6 +48,7 @@ export const ConcentratedLiquidityDepthChart: FunctionComponent<{
   yRange,
   xRange,
   annotationDatum,
+  annotationLabel,
   rangeAnnotation = [],
   onMoveMin,
   onMoveMax,
@@ -76,7 +79,7 @@ export const ConcentratedLiquidityDepthChart: FunctionComponent<{
   };
 
   return (
-    <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
+    <ParentSize className="flex-shrink-1 relative flex-1 overflow-hidden">
       {({ height, width }) => {
         const yScale = scaleLinear({
           range: [top, height - bottom],
@@ -85,125 +88,135 @@ export const ConcentratedLiquidityDepthChart: FunctionComponent<{
         });
 
         return (
-          <XYChart
-            key="bar-chart"
-            captureEvents={false}
-            margin={{ top: fullRange ? top - 8.5 : top, right, bottom, left }}
-            height={height}
-            width={width}
-            xScale={{
-              type: "linear",
-              domain: xRange,
-            }}
-            yScale={{
-              type: "linear",
-              domain: yRange,
-              zero: false,
-            }}
-            theme={buildChartTheme({
-              backgroundColor: "transparent",
-              colors: ["white"],
-              gridColor: theme.colors.osmoverse["600"],
-              gridColorDark: theme.colors.osmoverse["300"],
-              svgLabelSmall: {
-                fill: theme.colors.osmoverse["300"],
-                fontSize: 12,
-                fontWeight: 500,
-              },
-              svgLabelBig: {
-                fill: theme.colors.osmoverse["300"],
-                fontSize: 12,
-                fontWeight: 500,
-              },
-              tickLength: 1,
-              xAxisLineStyles: {
-                strokeWidth: 0,
-              },
-              xTickLineStyles: {
-                strokeWidth: 0,
-              },
-              yAxisLineStyles: {
-                strokeWidth: 0,
-              },
-            })}
-            horizontal={horizontal}
-          >
-            <AnimatedGrid columns={false} rows={false} numTicks={5} />
-            <BarSeries
-              dataKey="depth"
-              data={data}
-              xAccessor={(d: DepthData) => d?.depth}
-              yAccessor={(d: DepthData) => d?.price}
-              colorAccessor={() => theme.colors.barFill}
-            />
-            {annotationDatum && (
-              <Annotation
+          <>
+            <XYChart
+              key="bar-chart"
+              captureEvents={false}
+              margin={{ top: fullRange ? top - 8.5 : top, right, bottom, left }}
+              height={height}
+              width={width}
+              xScale={{
+                type: "linear",
+                domain: xRange,
+              }}
+              yScale={{
+                type: "linear",
+                domain: yRange,
+                zero: false,
+              }}
+              theme={buildChartTheme({
+                backgroundColor: "transparent",
+                colors: ["white"],
+                gridColor: theme.colors.osmoverse["600"],
+                gridColorDark: theme.colors.osmoverse["300"],
+                svgLabelSmall: {
+                  fill: theme.colors.osmoverse["300"],
+                  fontSize: 12,
+                  fontWeight: 500,
+                },
+                svgLabelBig: {
+                  fill: theme.colors.osmoverse["300"],
+                  fontSize: 12,
+                  fontWeight: 500,
+                },
+                tickLength: 1,
+                xAxisLineStyles: {
+                  strokeWidth: 0,
+                },
+                xTickLineStyles: {
+                  strokeWidth: 0,
+                },
+                yAxisLineStyles: {
+                  strokeWidth: 0,
+                },
+              })}
+              horizontal={horizontal}
+            >
+              <AnimatedGrid columns={false} rows={false} numTicks={5} />
+              <BarSeries
                 dataKey="depth"
-                xAccessor={(d: DepthData) => d.depth}
-                yAccessor={(d: DepthData) => d.price}
-                datum={annotationDatum}
-              >
-                <AnnotationConnector />
-                <AnnotationCircleSubject
-                  stroke={theme.colors.wosmongton["200"]}
-                  // @ts-ignore
-                  strokeWidth={4}
-                  radius={2}
-                />
-                <AnnotationLineSubject
-                  orientation="horizontal"
-                  stroke={theme.colors.wosmongton["200"]}
-                  strokeWidth={3}
-                />
-              </Annotation>
-            )}
-            {Boolean(rangeAnnotation.length) &&
-              rangeAnnotation.map((datum, i) => (
+                data={data}
+                xAccessor={(d: DepthData) => d?.depth}
+                yAccessor={(d: DepthData) => d?.price}
+                colorAccessor={() => theme.colors.barFill}
+              />
+              {annotationDatum && (
                 <Annotation
-                  key={i}
                   dataKey="depth"
-                  xAccessor={(d) => d.depth}
-                  yAccessor={(d) => d.price}
-                  datum={datum}
+                  xAccessor={(d: DepthData) => d.depth}
+                  yAccessor={(d: DepthData) => d.price}
+                  datum={annotationDatum}
                 >
                   <AnnotationConnector />
+                  <AnnotationCircleSubject
+                    stroke={theme.colors.wosmongton["200"]}
+                    // @ts-ignore
+                    strokeWidth={4}
+                    radius={2}
+                  />
                   <AnnotationLineSubject
                     orientation="horizontal"
                     stroke={theme.colors.wosmongton["200"]}
-                    strokeWidth={2}
-                    strokeDasharray={4}
+                    strokeWidth={3}
                   />
                 </Annotation>
-              ))}
-            {showMaxDragHandler && (
-              <DragContainer
-                key={"max:" + yRange.join("_")}
-                defaultValue={fullRange ? yRange[1] * 0.95 : max}
-                length={xMax}
-                scale={yScale}
-                stroke={theme.colors.wosmongton["500"]}
-                onMove={onMoveMaxBoundary}
-                onSubmit={onSubmitMax}
-              />
-            )}
-            {showMinDragHandler && (
-              <DragContainer
-                key={"min:" + yRange.join("_")}
-                defaultValue={fullRange ? yRange[0] * 1.05 : min}
-                length={xMax}
-                scale={yScale}
-                stroke={theme.colors.bullish["500"]}
-                onMove={onMoveMinBoundary}
-                onSubmit={onSubmitMin}
-              />
-            )}
-            <style>{`
+              )}
+              {Boolean(rangeAnnotation.length) &&
+                rangeAnnotation.map((datum, i) => (
+                  <Annotation
+                    key={i}
+                    dataKey="depth"
+                    xAccessor={(d) => d.depth}
+                    yAccessor={(d) => d.price}
+                    datum={datum}
+                  >
+                    <AnnotationConnector />
+                    <AnnotationLineSubject
+                      orientation="horizontal"
+                      stroke={theme.colors.wosmongton["200"]}
+                      strokeWidth={2}
+                      strokeDasharray={4}
+                    />
+                  </Annotation>
+                ))}
+              {showMaxDragHandler && (
+                <DragContainer
+                  key={"max:" + yRange.join("_")}
+                  defaultValue={fullRange ? yRange[1] * 0.95 : max}
+                  length={xMax}
+                  scale={yScale}
+                  stroke={theme.colors.wosmongton["500"]}
+                  onMove={onMoveMaxBoundary}
+                  onSubmit={onSubmitMax}
+                />
+              )}
+              {showMinDragHandler && (
+                <DragContainer
+                  key={"min:" + yRange.join("_")}
+                  defaultValue={fullRange ? yRange[0] * 1.05 : min}
+                  length={xMax}
+                  scale={yScale}
+                  stroke={theme.colors.bullish["500"]}
+                  onMove={onMoveMinBoundary}
+                  onSubmit={onSubmitMin}
+                />
+              )}
+              <style>{`
               .visx-bar {
                 stroke: ${theme.colors.barFill};
                 stroke-width: 3px;
               }
             `}</style>
-          </XYChart>
+            </XYChart>
+            {annotationDatum && annotationLabel && (
+              <span
+                className="absolute right-0 -translate-y-1/2 rounded bg-osmoverse-900 px-1 text-xs font-medium text-osmoverse-300"
+                style={{ top: yScale(annotationDatum.price) }}
+              >
+                {annotationLabel}
+              </span>
+            )}
+          </>
         );
       }}
     </ParentSize>

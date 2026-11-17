@@ -2,7 +2,8 @@ import { type BrowserContext, type Page, expect, test } from '@playwright/test'
 import { PortfolioPage } from '../pages/portfolio-page'
 import { SetupKeplr } from '../setup-keplr'
 
-test.describe('Test Portfolio feature', () => {
+// PR runs check balances with the fake wallet (wallet.fake.spec.ts).
+test.describe('Test Portfolio feature @full', () => {
   let context: BrowserContext
   const privateKey = process.env.PRIVATE_KEY ?? 'pk'
   let portfolioPage: PortfolioPage
@@ -95,7 +96,8 @@ test.describe('Test Portfolio feature', () => {
         'factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH',
     },
   ].forEach(({ name, minimalDenom }) => {
-    test(`User should be able to see bridged balances for ${name}`, async () => {
+    // Same balance row as the native tokens above; checked in the full suite.
+    test(`User should be able to see bridged balances for ${name} @full`, async () => {
       await portfolioPage.searchForToken(name)
       const osmoBalance = await portfolioPage.getBalanceFor({
         name,

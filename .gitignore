@@ -8,7 +8,6 @@ yarn-error.log
 .yarn/*
 !.yarn/patches
 
-src/styles/index.scss
 .vercel
 .turbo
 
@@ -19,7 +18,6 @@ coverage
 project.inlang/cache
 
 tsconfig.tsbuildinfo
-packages/web/e2e/keplr-extension-manifest
 
 # Vim backup, undo files
 *.orig
@@ -29,10 +27,11 @@ packages/web/e2e/keplr-extension-manifest
 .*.swp
 .*.swo
 
-packages/web/e2e/metamask-extension-manifest/
 packages/e2e/keplr-extension-manifest/
 packages/e2e/playwright-report/
 packages/e2e/test-results/
+packages/e2e/balance-report.json
+packages/e2e/fleet-state.json
 packages/e2e/.env
 
 # Local agent config: skills and settings are personal and may carry credentials

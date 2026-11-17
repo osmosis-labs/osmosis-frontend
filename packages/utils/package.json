@@ -22,12 +22,10 @@
     "bs58check": "^4.0.0",
     "ecashaddrjs": "^2.0.0",
     "ripple-address-codec": "^5.0.0",
-    "sha.js": "^2.4.11",
     "viem": "~2.41.2"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
-    "@types/sha.js": "^2.4.0",
     "fake-indexeddb": "5.0.2",
     "jest": "^30.5.2",
     "jest-in-case": "^1.0.2",

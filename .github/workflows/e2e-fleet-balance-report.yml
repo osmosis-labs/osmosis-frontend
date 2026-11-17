@@ -46,6 +46,8 @@ permissions:
 
 jobs:
   report:
+    # The topup key is a secret of the e2e-funds environment (stage only).
+    environment: e2e-funds
     name: "Fleet balance report"
     timeout-minutes: 10
     runs-on: ubuntu-latest

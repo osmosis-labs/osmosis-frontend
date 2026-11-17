@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
+    "24hVolume": "24시간 거래량",
     "amountDaysUnbonding": "{numDays}일 연결 해제",
     "amountDaysUnbonding_plural": "예치 해제 {numDays}일",
     "APR": "APR",
@@ -902,6 +903,9 @@
     "free": "무료",
     "cheapest": "가장 저렴",
     "fastest": "가장 빠른",
+    "transferSpeed": "전송 속도",
+    "standardSpeed": "표준",
+    "fastSpeed": "빠름",
     "stepLabels": {
       "asset": "유산",
       "amount": "양",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "잘못된 가격",
     "priceTooLow": "가격이 너무 낮음",
     "priceTooHigh": "가격이 너무 높음",
+    "marketPriceUnavailable": "시장 가격을 사용할 수 없습니다",
+    "quoteOffPeg": "견적 자산이 $1에서 너무 멀리 벗어났습니다",
+    "quoteOffPegWarning": "{denom}이(가) {price}에 거래되고 있습니다. 지정가는 1 {denom} = $1을 가정합니다.",
+    "quotePegUnverified": "{denom}을(를) $1과 비교할 수 없습니다. 지정가는 1 {denom} = $1을 가정합니다.",
     "unavailable": "{denom} 에는 사용할 수 없습니다.",
     "orderHistoryHeaders": {
       "past": "지난 주문",

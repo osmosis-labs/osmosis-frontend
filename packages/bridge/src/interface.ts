@@ -283,17 +283,6 @@ export const bridgeChainSchema = z.discriminatedUnion("chainType", [
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
-export interface BridgeStatus {
-  /**
-   * Indicates whether the bridge is currently in maintenance mode.
-   */
-  isInMaintenanceMode: boolean;
-  /**
-   * Optional: A message providing more information about the maintenance status.
-   */
-  maintenanceMessage?: string;
-}
-
 export const bridgeAssetSchema = z.object({
   /**
    * The displayable denomination of the asset.
@@ -353,6 +342,13 @@ export const getBridgeSupportedAssetsParams = z.object({
    * on quote requests.
    */
   allowSolana: z.boolean().optional(),
+  /**
+   * Optional: Whether a source or destination reachable only by a fast
+   * transfer (e.g. Base ETH into allETH, which Skip routes only through Go
+   * Fast) may be offered. The kill switch for fast transfers, matching
+   * `fastTransfer` on quote requests.
+   */
+  allowFastTransfer: z.boolean().optional(),
 });
 
 export type GetBridgeSupportedAssetsParams = z.infer<
@@ -432,6 +428,16 @@ export const getBridgeQuoteSchema = z.object({
    * Solana quote without it.
    */
   allowSolana: z.boolean().optional(),
+  /**
+   * Optional: Quote the provider's fast transfer route instead of its
+   * standard one. A fast route is faster and usually costs more (Skip Go Fast
+   * today, CCTP v2 Fast Transfer later). Callers send it on a second,
+   * separate quote request, and only while fast transfers are enabled. A
+   * provider with no fast route for the pair refuses with `NoQuotesError`.
+   * Send it only to providers that offer fast transfers (Skip): any other
+   * provider ignores it and returns its standard route.
+   */
+  fastTransfer: z.boolean().optional(),
 });
 
 export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
@@ -579,6 +585,12 @@ export interface BridgeQuote {
    */
   quoteId?: string;
 
+  /**
+   * False when the route has no Axelar leg (CCTP, Eureka), so an Axelarscan
+   * link would not find the transfer. Unset where not known.
+   */
+  viaAxelar?: boolean;
+
   /** Sign doc. For multi-tx routes this is the FIRST step's sign doc. */
   transactionRequest?: BridgeTransactionRequest;
 
@@ -615,12 +627,6 @@ export interface BridgeExternalUrl {
 }
 
 // Transfer status
-
-export interface GetTransferStatusParams {
-  sendTxHash: string;
-  fromChainId: BridgeChain["chainId"];
-  toChainId: BridgeChain["chainId"];
-}
 
 export interface BridgeTransferStatus {
   id: string;
@@ -761,6 +767,8 @@ const txSnapshotSchema = z.object({
    * intermediate chain (e.g. noble-1) rather than the route's from chain.
    */
   trackingChainId: z.string().optional(),
+  /** The quote's `viaAxelar`; false makes the explorer link skip Axelarscan. */
+  viaAxelar: z.boolean().optional(),
   /**
    * For a transfer whose tracked tx was signed on Solana: the tx's recent
    * blockhash. A Solana tx that has not landed by the time its blockhash
@@ -820,6 +828,67 @@ const txSnapshotSchema = z.object({
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;
+
+/**
+ * Proves the outcome of an EVM tx from its source chain's receipt,
+ * independent of the bridge's status API: "success" or "reverted" once the
+ * receipt exists. Anything unproven (not mined yet, dropped, or the RPC
+ * didn't answer) must come back undefined, never as a failure.
+ */
+export type EvmReceiptCheck = (params: {
+  txHash: string;
+  chainId: number;
+}) => Promise<"success" | "reverted" | undefined>;
+
+/** How long after an EVM transfer is recorded its receipt is still awaited.
+ *  Past it, a tx with no receipt was most likely dropped or replaced, so
+ *  the providers' usual "not found" rules apply again. */
+// Shorter than the providers' poll lifetime (50 attempts at 30s, about 25
+// minutes), so the rules for after the window still run in an open tab.
+const EVM_RECEIPT_GRACE_SECONDS = 20 * 60;
+
+/**
+ * Per-transfer receipt tracking for a provider's poll loop. Call the result
+ * once per poll while the tx is an EVM source-chain tx within the grace
+ * window (a multi-tx entry that advanced tracks its final step on another
+ * chain, which has no EVM receipt):
+ * - "reverted": the receipt proves the tx failed.
+ * - "awaiting": no receipt yet, so "not found" from the status API may only
+ *   mean the tx isn't mined or indexed yet and is no outcome.
+ * - "landed": the receipt proves the tx succeeded, but the status API may
+ *   not have indexed it yet, so "not found" is still no failure.
+ * - "settled": past the window, or there is nothing to await.
+ */
+export function createEvmReceiptWatch(
+  snapshot: TxSnapshot,
+  checkEvmReceipt?: EvmReceiptCheck
+): () => Promise<"reverted" | "awaiting" | "landed" | "settled"> {
+  let receiptFound = false;
+  return async () => {
+    const { sendTxHash, fromChain } = snapshot;
+    if (
+      !checkEvmReceipt ||
+      fromChain.chainType !== "evm" ||
+      snapshot.trackingChainId !== undefined ||
+      Date.now() / 1000 - snapshot.createdAtUnix >= EVM_RECEIPT_GRACE_SECONDS
+    ) {
+      return "settled";
+    }
+    if (receiptFound) return "landed";
+    if (typeof fromChain.chainId === "number") {
+      const outcome = await checkEvmReceipt({
+        txHash: sendTxHash,
+        chainId: fromChain.chainId,
+      });
+      if (outcome === "reverted") return "reverted";
+      if (outcome === "success") {
+        receiptFound = true;
+        return "landed";
+      }
+    }
+    return "awaiting";
+  };
+}
 
 /** Plugin to fetch status of many transactions from a remote source. */
 export interface TransferStatusProvider {

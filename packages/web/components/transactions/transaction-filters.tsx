@@ -22,7 +22,7 @@ export function isAllKinds(kinds: readonly TransactionKind[]) {
   return TRANSACTION_KINDS.every((kind) => kinds.includes(kind));
 }
 
-export function getTransactionKind(tx: HistoryTransaction): TransactionKind {
+function getTransactionKind(tx: HistoryTransaction): TransactionKind {
   return tx.__type === "transaction" ? "swap" : tx.direction;
 }
 

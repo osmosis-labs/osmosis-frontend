@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24h ટ્રેડિંગ વોલ્યુમ",
+    "24hVolume": "24h વોલ્યુમ",
     "amountDaysUnbonding": "{numDays} દિવસ અનબોન્ડિંગ",
     "amountDaysUnbonding_plural": "{numDays} દિવસ અનબોન્ડિંગ",
     "APR": "APR",
@@ -902,6 +903,9 @@
     "free": "મફત",
     "cheapest": "સૌથી સસ્તું",
     "fastest": "સૌથી ઝડપી",
+    "transferSpeed": "ટ્રાન્સફર ઝડપ",
+    "standardSpeed": "માનક",
+    "fastSpeed": "ઝડપી",
     "stepLabels": {
       "asset": "એસેટ",
       "amount": "રકમ",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "અમાન્ય કિંમત",
     "priceTooLow": "કિંમત ખૂબ ઓછી છે",
     "priceTooHigh": "કિંમત ખૂબ ઊંચી છે",
+    "marketPriceUnavailable": "બજાર કિંમત ઉપલબ્ધ નથી",
+    "quoteOffPeg": "ક્વોટ એસેટ $1 થી ઘણી દૂર છે",
+    "quoteOffPegWarning": "{denom} {price} પર ટ્રેડ થઈ રહ્યું છે. લિમિટ કિંમતો 1 {denom} = $1 માને છે.",
+    "quotePegUnverified": "{denom} ને $1 સામે ચકાસી શકાયું નહીં. લિમિટ કિંમતો 1 {denom} = $1 માને છે.",
     "unavailable": "{denom} માટે અનુપલબ્ધ",
     "orderHistoryHeaders": {
       "past": "અગાઉના",

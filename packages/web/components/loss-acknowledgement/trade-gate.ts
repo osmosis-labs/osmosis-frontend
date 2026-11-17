@@ -11,7 +11,7 @@ import {
 } from "~/config/trade-warnings";
 
 /** A trade's order type, as the review-order modal already models it. */
-export type TradeOrderType = "market" | "limit";
+type TradeOrderType = "market" | "limit";
 
 export interface TradeWarningInput {
   /**

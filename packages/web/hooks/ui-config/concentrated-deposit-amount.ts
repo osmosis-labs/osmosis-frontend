@@ -73,7 +73,7 @@ export function setDepositFraction(
 }
 
 /** User balance of the currency. Zero while balances are loading. */
-export function getDepositBalance(
+function getDepositBalance(
   currency: AppCurrency,
   rawBalance: string | undefined
 ): CoinPretty {
@@ -81,7 +81,7 @@ export function getDepositBalance(
 }
 
 /** Amount with decimals, as displayed to the user. */
-export function getDepositAmount({
+function getDepositAmount({
   state,
   balance,
   fee,
@@ -108,7 +108,7 @@ export function getDepositAmount({
   return state.amount;
 }
 
-export function getDepositAmountPrimitive(
+function getDepositAmountPrimitive(
   currency: AppCurrency,
   amountStr: string
 ): CoinPrimitive {
@@ -129,7 +129,7 @@ export function getDepositAmountPrimitive(
   }
 }
 
-export function getDepositAmountError(
+function getDepositAmountError(
   amount: string,
   balance: CoinPretty
 ): Error | undefined {

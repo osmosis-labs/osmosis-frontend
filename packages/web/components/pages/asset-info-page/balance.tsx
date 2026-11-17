@@ -9,7 +9,7 @@ import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { useFeatureFlags, useTranslation, useWindowSize } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useWallet } from "~/hooks/use-wallet";
@@ -38,7 +38,6 @@ export const AssetBalance = ({ className }: CustomClasses) => {
   const { asset } = useAssetInfo();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
-  const { isMobile } = useWindowSize();
   const hideBalances = useUserSettingsStore((state) => state.hideBalances);
 
   const { address, isWalletConnected } = useWallet();
@@ -110,7 +109,7 @@ export const AssetBalance = ({ className }: CustomClasses) => {
         </p>
       </SkeletonLoader>
 
-      {!(hideBalances && !isMobile) && (
+      {!hideBalances && (
         <SkeletonLoader isLoaded={!isLoading}>
           <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
             {data?.amount ? formatPretty(data.amount) : `0 ${asset.coinDenom}`}{" "}

@@ -10,6 +10,7 @@ import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfo
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { Button, IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 
 interface PortfolioHistoricalChartProps {
   data?: AreaData<Time>[];
@@ -32,6 +33,8 @@ export const PortfolioHistoricalChart = ({
   setShowDate,
   setIsChartMinimized,
 }: PortfolioHistoricalChartProps) => {
+  const hideBalances = useUserSettingsStore((state) => state.hideBalances);
+
   return (
     <section className="relative flex h-[468px] max-h-[468px] flex-col justify-between">
       {!isFetched ? (
@@ -40,6 +43,7 @@ export const PortfolioHistoricalChart = ({
         <>
           <HistoricalChart
             data={data as AreaData<Time>[]}
+            maskPrices={hideBalances}
             onPointerHover={(value, time) => {
               setShowDate(true);
               setDataPoint({ value, time });
@@ -52,7 +56,7 @@ export const PortfolioHistoricalChart = ({
               setPriceRange={setRange}
             />
             <IconButton
-              className="!h-8 !w-8 border border-osmoverse-700 py-0 1.5md:hidden"
+              className="!h-8 !w-8 border border-osmoverse-700 py-0"
               aria-label="Open main menu dropdown"
               icon={
                 <Icon

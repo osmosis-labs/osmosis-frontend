@@ -14,22 +14,27 @@ interface Props extends CustomClasses {
   onSecondaryClick: () => void;
 }
 
+/**
+ * On mobile the text wrappers become `contents`, so the title, animation,
+ * caption and buttons stack as one column with the animation under the title.
+ */
 export const SuperchargePool: FunctionComponent<Props> = (props) => (
   <div
     className={classNames(
-      "flex w-full place-content-between gap-10 rounded-3xl p-7",
+      "flex w-full place-content-between gap-10 rounded-3xl p-7 md:flex-col md:gap-4",
       props.className
     )}
   >
-    <div className="flex flex-1 flex-col place-content-between gap-4">
-      <div className="flex flex-col gap-4">
-        <h6>{props.title}</h6>
+    <div className="flex flex-1 flex-col place-content-between gap-4 md:contents">
+      <div className="flex flex-col gap-4 md:contents">
+        <h6 className="md:order-1">{props.title}</h6>
         <Caption {...props} />
       </div>
       <Buttons {...props} />
     </div>
     <DynamicLottieAnimation
-      className="w-[496px]"
+      // The animation canvas has empty space below the chart; crop it on mobile.
+      className="w-[496px] md:order-2 md:-mb-10 md:w-full"
       globalLottieFileKey="step1"
       importFn={() => import("./step1.json")}
       loop={true}
@@ -43,7 +48,7 @@ const Buttons: FunctionComponent<Props> = ({
   onSecondaryClick,
   onCtaClick,
 }) => (
-  <div className="flex shrink-0 gap-4 md:w-full md:flex-col">
+  <div className="flex shrink-0 gap-4 md:order-4 md:w-full md:flex-col">
     <Button
       variant="outline"
       className="w-fit shrink-0 md:w-full"
@@ -61,4 +66,6 @@ const Buttons: FunctionComponent<Props> = ({
 );
 
 const Caption: FunctionComponent<{ caption?: string }> = ({ caption }) =>
-  caption ? <span className="body2 text-osmoverse-100">{caption}</span> : null;
+  caption ? (
+    <span className="body2 text-osmoverse-100 md:order-3">{caption}</span>
+  ) : null;

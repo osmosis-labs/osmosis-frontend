@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 
+import { CollectAllRewardsButton } from "~/components/complex/collect-all-rewards-button";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { Spinner } from "~/components/loaders";
@@ -33,9 +34,12 @@ export const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
       <>
         {hasPositions && (
           <section className="py-3">
-            <span className="body2 text-osmoverse-200">
-              {t("portfolio.yourSuperchargedPositions")}
-            </span>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="body2 text-osmoverse-200">
+                {t("portfolio.yourSuperchargedPositions")}
+              </span>
+              <CollectAllRewardsButton className="subtitle1 w-fit" size="md" />
+            </div>
             <MyPositionsSection showSelectedRange={false} />
           </section>
         )}

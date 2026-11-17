@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "Объем торгов за 24 часа",
+    "24hVolume": "Объем 24ч",
     "amountDaysUnbonding": "{numDays} день отсоединения",
     "amountDaysUnbonding_plural": "{numDays} дней отсоединения",
     "APR": "АПР",
@@ -902,6 +903,9 @@
     "free": "Бесплатно",
     "cheapest": "Самый дешевый",
     "fastest": "Самый быстрый",
+    "transferSpeed": "Скорость перевода",
+    "standardSpeed": "Стандартный",
+    "fastSpeed": "Быстрый",
     "stepLabels": {
       "asset": "Объект",
       "amount": "Количество",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "Неверная цена",
     "priceTooLow": "Цена слишком низкая",
     "priceTooHigh": "Цена слишком высока",
+    "marketPriceUnavailable": "Рыночная цена недоступна",
+    "quoteOffPeg": "Котируемый актив слишком далёк от $1",
+    "quoteOffPegWarning": "{denom} торгуется по {price}. Лимитные цены предполагают 1 {denom} = $1.",
+    "quotePegUnverified": "Не удалось сверить {denom} с $1. Лимитные цены предполагают 1 {denom} = $1.",
     "unavailable": "Недоступно для {denom}",
     "orderHistoryHeaders": {
       "past": "История",

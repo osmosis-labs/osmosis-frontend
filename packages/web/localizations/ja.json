@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24時間取引高",
+    "24hVolume": "24時間取引高",
     "amountDaysUnbonding": "{numDays}日の結合解除",
     "amountDaysUnbonding_plural": "{numDays}日間の結合解除",
     "APR": "4月",
@@ -902,6 +903,9 @@
     "free": "無料",
     "cheapest": "最も安い",
     "fastest": "最速",
+    "transferSpeed": "転送速度",
+    "standardSpeed": "標準",
+    "fastSpeed": "高速",
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "無効な価格",
     "priceTooLow": "価格が低すぎる",
     "priceTooHigh": "価格が高すぎる",
+    "marketPriceUnavailable": "市場価格を取得できません",
+    "quoteOffPeg": "クォート資産が$1から大きく乖離しています",
+    "quoteOffPegWarning": "{denom}は{price}で取引されています。指値価格は1 {denom} = $1を前提としています。",
+    "quotePegUnverified": "{denom}を$1と照合できませんでした。指値価格は1 {denom} = $1を前提としています。",
     "unavailable": "{denom}では利用できません",
     "orderHistoryHeaders": {
       "past": "過去",

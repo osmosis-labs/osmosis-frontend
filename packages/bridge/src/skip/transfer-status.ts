@@ -4,11 +4,13 @@ import { poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
+  EvmReceiptCheck,
   TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
+import { createEvmReceiptWatch } from "../interface";
 import { SkipProviderId } from "./constants";
 import { SkipTxStatusResponse } from "./types";
 
@@ -71,7 +73,12 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
      * Optional. Resolves Solana-signed transfers Skip can't: a tx that never
      * landed is invisible to Skip, so without this it stays pending.
      */
-    protected readonly checkSolanaSignature?: SolanaSignatureCheck
+    protected readonly checkSolanaSignature?: SolanaSignatureCheck,
+    /**
+     * Optional. Resolves EVM transfers from their source-chain receipt: a
+     * reverted tx never reaches Skip, so without this it stays pending.
+     */
+    protected readonly checkEvmReceipt?: EvmReceiptCheck
   ) {
     this.axelarScanBaseUrl =
       env === "mainnet"
@@ -84,6 +91,7 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
       sendTxHash,
       fromChain: { chainId: fromChainId },
     } = snapshot;
+    const watchReceipt = createEvmReceiptWatch(snapshot, this.checkEvmReceipt);
 
     await poll({
       fn: async () => {
@@ -109,10 +117,19 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
           }
         }
 
+        // A reverted EVM tx never reaches Skip: check the receipt until it
+        // turns up.
+        const receipt = await watchReceipt();
+        if (receipt === "reverted") {
+          return { id: sendTxHash, status: "failed" as const };
+        }
+
         const txStatus = await this.skipStatusProvider
           .transactionStatus(tx)
           .catch(async (error) => {
             if (error instanceof Error && error.message.includes("not found")) {
+              // not mined yet: nothing to track until it is
+              if (receipt === "awaiting") return undefined;
               // if we get an error that it's not found, prompt skip to track it first
               // then try again
               await this.skipStatusProvider.trackTransaction(tx);
@@ -170,12 +187,22 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
       return `https://solscan.io/tx/${sendTxHash}`;
     }
 
-    if (
+    const hasEvmEnd =
+      typeof fromChainId === "number" || typeof toChainId === "number";
+    // Routes without an Axelar leg (Go Fast, CCTP, Eureka) are not on
+    // Axelarscan.
+    const axelarScanned =
       snapshot.trackingChainId === undefined &&
-      (typeof fromChainId === "number" || typeof toChainId === "number")
-    ) {
+      hasEvmEnd &&
+      snapshot.viaAxelar !== false;
+
+    if (axelarScanned) {
       // EVM transfer
       return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
+    } else if (hasEvmEnd) {
+      // Skip's explorer follows the whole transfer, where the signing chain's
+      // explorer only shows the send. It needs the chain id of the hash.
+      return `https://explorer.skip.build/?tx_hash=${sendTxHash}&chain_id=${explorerChainId}`;
     } else {
       const chain = this.chainList.find(
         (chain) => chain.chain_id === explorerChainId
