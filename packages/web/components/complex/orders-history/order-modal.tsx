@@ -1,18 +1,21 @@
+import { Transition } from "@headlessui/react";
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
 import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
-import {
-  CoinPretty,
-  Dec,
-  Int,
-  PricePretty,
-  RatePretty,
-} from "@osmosis-labs/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { Icon } from "~/components/assets";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { IconButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -21,6 +24,7 @@ import { t } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals";
 import { theme } from "~/tailwind.config";
+import { formatDateTime } from "~/utils/date";
 import {
   formatFiatPrice,
   formatPretty,
@@ -41,6 +45,7 @@ export const OrderModal = memo(({ order, onRequestClose }: OrderModalProps) => {
       className="!px-0 !pb-0 !pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
     >
       <OrderDetails
+        key={order && `${order.orderbookAddress}-${order.order_id}`}
         order={order}
         isModal={true}
         onRequestClose={onRequestClose}
@@ -48,6 +53,41 @@ export const OrderModal = memo(({ order, onRequestClose }: OrderModalProps) => {
     </ModalBase>
   );
 });
+
+/** Shows the order's details beside the table on large screens, like the trade history's slideover. */
+export const OrderDetailsSlideover = ({
+  order,
+  open,
+  onRequestClose,
+  afterLeave,
+}: OrderModalProps & {
+  open: boolean;
+  /** Called once the panel has slid out, so the order can be cleared then. */
+  afterLeave: () => void;
+}) => {
+  if (!order) return null;
+  return (
+    <Transition
+      show={open}
+      appear
+      as="div"
+      enter="transition-all ease-out duration-300"
+      enterFrom="w-0 opacity-0"
+      enterTo="w-[512px] opacity-100"
+      leave="transition-all ease-out duration-300"
+      leaveFrom="w-[512px] opacity-100"
+      leaveTo="w-0 opacity-0"
+      afterLeave={afterLeave}
+    >
+      <OrderDetails
+        key={`${order.orderbookAddress}-${order.order_id}`}
+        order={order}
+        isModal={false}
+        onRequestClose={onRequestClose}
+      />
+    </Transition>
+  );
+};
 
 interface OrderDetailsProps {
   order?: MappedLimitOrder;
@@ -62,6 +102,15 @@ const OrderDetails = ({
 }: OrderDetailsProps) => {
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [broadcasting, setBroadcasting] = useState(false);
+  // The details are keyed by order, so they unmount when another order is
+  // selected. An action still signing then mustn't close that order's details.
+  const isShown = useRef(false);
+  useEffect(() => {
+    isShown.current = true;
+    return () => {
+      isShown.current = false;
+    };
+  }, []);
 
   const isPastOrder =
     order?.status === "cancelled" || order?.status === "fullyClaimed";
@@ -75,16 +124,20 @@ const OrderDetails = ({
   const shownQuantity = isPartlyFilledPastOrder
     ? order.totalFilled
     : order?.placed_quantity;
-  const shownOutput = isPartlyFilledPastOrder
-    ? order.output.mul(order.percentFilled)
-    : order?.output;
-  // Like OrderProgressBar, show a fill under 1% as 1% so it never reads "0%" next to "Partly filled".
+  // The payouts are what reached the wallet after the claim bot's fee, so prefer them to quantity × price.
+  const paidOut = order?.claims?.length
+    ? order.claims.reduce((sum, { amount }) => sum.add(amount), new Dec(0))
+    : undefined;
+  const shownOutput =
+    paidOut ??
+    (isPartlyFilledPastOrder
+      ? order.output.mul(order.percentFilled)
+      : order?.output);
+  // Like the table, show a fill under 1% as 1% so it never reads "0% filled".
   const percentFilledOfPastOrder = isPartlyFilledPastOrder
-    ? new RatePretty(
-        order.percentFilled.lt(new Dec(0.01))
-          ? new Dec(0.01)
-          : order.percentFilled
-      )
+    ? order.percentFilled.lt(new Dec(0.01))
+      ? new Int(1)
+      : order.percentFilled.mul(new Dec(100)).truncate()
     : undefined;
 
   const alreadyReceived =
@@ -104,16 +157,46 @@ const OrderDetails = ({
     return order.order_direction === "ask" ? order.quoteAsset : order.baseAsset;
   }, [order]);
 
-  const formattedMonth = dayjs
-    .unix(order?.placed_at ?? 0)
-    .format("MMMM")
-    .slice(0, 3);
+  // The mapper stores 0 when Numia has no place time, so leave it blank rather than show 1 Jan 1970.
+  const formattedDate = order?.placed_at
+    ? formatDateTime(dayjs.unix(order.placed_at))
+    : undefined;
 
-  const formattedDateDayYearHourMinute = dayjs
-    .unix(order?.placed_at ?? 0)
-    .format("DD, YYYY, HH:mm");
-
-  const formattedDate = `${formattedMonth} ${formattedDateDayYearHourMinute}`;
+  const transactions = [
+    ...(order?.placed_tx
+      ? [
+          {
+            label: t("limitOrders.placed"),
+            tx: order.placed_tx,
+            at: order.placed_at || undefined,
+            sign: "−",
+            token: tokenIn,
+            amount: order.placed_quantity,
+          },
+        ]
+      : []),
+    ...(order?.claims ?? []).map(({ tx, claimed_at, amount }) => ({
+      label: t("limitOrders.paidOut"),
+      tx,
+      at: claimed_at,
+      sign: "+",
+      token: tokenOut,
+      amount,
+    })),
+    ...(order?.cancel_tx && order.cancelled_at
+      ? [
+          {
+            label: t("limitOrders.cancelled"),
+            tx: order.cancel_tx,
+            at: order.cancelled_at,
+            sign: "+",
+            token: tokenIn,
+            // The cancel returns what was left unfilled.
+            amount: order.quantity,
+          },
+        ]
+      : []),
+  ];
 
   const statusComponent = (() => {
     if (!order) return;
@@ -121,40 +204,30 @@ const OrderDetails = ({
     switch (order.status) {
       case "open":
       case "partiallyFilled":
-        return (
-          <div className="flex items-center justify-between">
-            <span className="body2 sm:caption text-osmoverse-300">
-              {t("limitOrders.open")}
-            </span>
-          </div>
-        );
+        return t("limitOrders.open");
       case "cancelled":
         return (
-          <div className="flex items-center justify-between">
-            <span className="body2 sm:caption text-osmoverse-300">
-              {t("limitOrders.cancelled")}
-              {isPartlyFilledPastOrder && (
-                <>
-                  {" · "}
-                  <span className="text-bullish-400">
-                    {t("limitOrders.partlyFilled")}
-                  </span>
-                </>
-              )}
-            </span>
-          </div>
+          <>
+            {percentFilledOfPastOrder && (
+              <>
+                <span className="text-bullish-400">
+                  {t("limitOrders.filledPercent", {
+                    percent: percentFilledOfPastOrder.toString(),
+                  })}
+                </span>
+                {" · "}
+              </>
+            )}
+            {t("limitOrders.cancelled")}
+          </>
         );
       case "filled":
         return (
-          <span className="body2 sm:caption text-bullish-300">
-            {t("limitOrders.claimable")}
-          </span>
+          <span className="text-bullish-300">{t("limitOrders.claimable")}</span>
         );
       case "fullyClaimed":
         return (
-          <span className="body2 sm:caption text-bullish-400">
-            {t("limitOrders.filled")}
-          </span>
+          <span className="text-bullish-400">{t("limitOrders.filled")}</span>
         );
       default:
         return;
@@ -203,7 +276,7 @@ const OrderDetails = ({
         undefined
       ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
-      onRequestClose();
+      if (isShown.current) onRequestClose();
     } catch (error) {
       console.error(error);
       setBroadcasting(false);
@@ -267,14 +340,19 @@ const OrderDetails = ({
 
   return (
     <div
-      className={classNames(
-        "flex w-full flex-col overflow-y-auto bg-osmoverse-850 !py-6 !px-8 sm:top-0 sm:rounded-none sm:!px-4"
-      )}
+      className={classNames("flex flex-col overflow-y-auto", {
+        // 4.5rem is the height of the navbar. The padding matches the trade details panel's.
+        "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] pl-8 pr-4 pt-3 pb-8":
+          !isModal,
+        "w-full bg-osmoverse-850 !py-6 !px-8 sm:top-0 sm:rounded-none sm:!px-4":
+          isModal,
+      })}
     >
       {!isModal && (
         <div className="py-4">
           <IconButton
             aria-label="Close"
+            variant="ghost"
             className="h-12 w-12 cursor-pointer rounded-full py-0 text-osmoverse-400 hover:rounded-full hover:bg-osmoverse-850 hover:text-white-full"
             icon={<Icon id="close-small" width={24} height={24} />}
             onClick={onRequestClose}
@@ -296,7 +374,11 @@ const OrderDetails = ({
             />
           </div>
           <div className="flex flex-col items-center justify-center gap-2 text-center">
-            <div className="text-h5">{t("limitOrders.limitOrder")}</div>
+            <div className="text-h5">
+              {order?.order_direction === "bid"
+                ? t("limitOrders.buyLimitOrder")
+                : t("limitOrders.sellLimitOrder")}
+            </div>
             <div className="body1 capitalize text-osmoverse-300">
               {formattedDate}
             </div>
@@ -393,7 +475,7 @@ const OrderDetails = ({
         )}
       </div>
       <div className="flex flex-col py-2 px-4">
-        <div className={classNames("flex flex-col py-3")}>
+        <div className="flex flex-col py-3">
           <RecapRow
             className="sm:py-0"
             left={
@@ -402,7 +484,8 @@ const OrderDetails = ({
               </span>
             }
             right={
-              <div className="sm:caption body2 flex items-center justify-center">
+              <span className="body2 sm:caption">
+                1 {order?.baseAsset?.symbol} ={" "}
                 {formatPretty(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
@@ -410,7 +493,7 @@ const OrderDetails = ({
                   ),
                   getPriceExtendedFormatOptions(order?.price ?? new Dec(0))
                 )}
-              </div>
+              </span>
             }
           />
           <RecapRow
@@ -420,7 +503,11 @@ const OrderDetails = ({
                 {t("limitOrders.status")}
               </span>
             }
-            right={statusComponent}
+            right={
+              <span className="body2 sm:caption text-osmoverse-300">
+                {statusComponent}
+              </span>
+            }
           />
           {(order?.status === "open" ||
             order?.status === "partiallyFilled") && (
@@ -437,46 +524,6 @@ const OrderDetails = ({
                     order={order!}
                     totalPercentClassNames="xl:body1 sm:caption"
                   />
-                </span>
-              }
-            />
-          )}
-          {isPartlyFilledPastOrder && (
-            <RecapRow
-              className="sm:py-0"
-              left={
-                <span className="subtitle1 sm:caption">
-                  {t("limitOrders.returnedUnfilled")}
-                </span>
-              }
-              right={
-                <span className="body2 sm:caption">
-                  {formatPretty(
-                    new CoinPretty(
-                      {
-                        coinDecimals: tokenIn?.decimals ?? 0,
-                        coinDenom: tokenIn?.symbol ?? "",
-                        coinMinimalDenom: tokenIn?.coinMinimalDenom ?? "",
-                      },
-                      // What a cancelled order left unfilled was returned to the wallet.
-                      order.quantity
-                    )
-                  )}
-                </span>
-              }
-            />
-          )}
-          {percentFilledOfPastOrder && (
-            <RecapRow
-              className="sm:py-0"
-              left={
-                <span className="subtitle1 sm:caption">
-                  {t("limitOrders.percentFilled")}
-                </span>
-              }
-              right={
-                <span className="body2 sm:caption">
-                  {formatPretty(percentFilledOfPastOrder, { maxDecimals: 0 })}
                 </span>
               }
             />
@@ -506,10 +553,73 @@ const OrderDetails = ({
             />
           )}
         </div>
-        {!!order && order.status !== "open" && (
-          <p className="caption text-osmoverse-300">
-            {t("limitOrders.payoutNote")}
-          </p>
+        {transactions.length > 0 && (
+          <div className="flex flex-col py-3">
+            <div className="mb-2 flex items-center gap-1 border-b border-osmoverse-700">
+              <span className="body2 sm:caption text-osmoverse-300">
+                {t("limitOrders.activity")}
+              </span>
+              <GenericDisclaimer
+                title={t("limitOrders.howPayoutsWork")}
+                body={t("limitOrders.payoutNote")}
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
+                  <Icon
+                    id="question"
+                    className="h-4 w-4 text-wosmongton-200"
+                    width={24}
+                    height={24}
+                    viewBox="0 0 24 24"
+                  />
+                </div>
+              </GenericDisclaimer>
+            </div>
+            {transactions.map(({ label, tx, at, sign, token, amount }) => (
+              <a
+                key={`${label}-${tx}`}
+                className="-mx-2 flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-osmoverse-800"
+                rel="noopener noreferrer"
+                target="_blank"
+                href={`https://www.mintscan.io/osmosis/txs/${tx}`}
+              >
+                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    logoURIs={getLogoURIs(token?.currency.coinImageUrl)}
+                    name={token?.sourceDenom ?? ""}
+                    symbol={token?.sourceDenom ?? ""}
+                    height={32}
+                    width={32}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="body2">{label}</span>
+                  <span className="caption text-osmoverse-300">
+                    {at
+                      ? formatDateTime(dayjs.unix(at))
+                      : t("transactions.viewOnExplorer")}{" "}
+                    &#x2197;
+                  </span>
+                </div>
+                <span
+                  className={classNames("body2 ml-auto text-right", {
+                    "text-bullish-400": sign === "+",
+                  })}
+                >
+                  {sign}
+                  {formatPretty(
+                    new CoinPretty(
+                      {
+                        coinDecimals: token?.decimals ?? 0,
+                        coinDenom: token?.symbol ?? "",
+                        coinMinimalDenom: token?.coinMinimalDenom ?? "",
+                      },
+                      amount
+                    )
+                  )}
+                </span>
+              </a>
+            ))}
+          </div>
         )}
       </div>
       {!!order && !!buttonText && (
@@ -521,19 +631,6 @@ const OrderDetails = ({
             className="body2 sm:caption !rounded-2xl"
           >
             <span className="text-h6 font-h6">{t(buttonText)}</span>
-          </Button>
-        </div>
-      )}
-      {!!order && !!order.placed_tx && (
-        <div className="flex items-center justify-center gap-3 pt-3">
-          <Button mode="secondary" className="body2 sm:caption !rounded-2xl">
-            <a
-              rel="noopener noreferrer"
-              target="_blank"
-              href={`https://www.mintscan.io/osmosis/txs/${order.placed_tx}`}
-            >
-              <span>{t("transactions.viewOnExplorer")} &#x2197;</span>
-            </a>
           </Button>
         </div>
       )}
