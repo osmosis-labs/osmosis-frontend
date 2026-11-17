@@ -13,7 +13,19 @@ name: Preview frontend E2E tests
 # Vercel API. Stage can't: the monitoring workflows delete every GitHub
 # deployment on the stage head, so stage waits on Vercel's commit status for
 # its own SHA instead.
+#
+# cf-deploy.yml also calls this workflow with `base_url`, the Cloudflare Worker
+# Preview of a PR. Those runs skip deployment lookup and run only the no-funds
+# suites: check-balances and the real-funds smoke test are skipped, and the
+# gate accepts that. Their checks are named "preview-e2e / ...", so they are
+# not the required e2e-gate check.
 on:
+  workflow_call:
+    inputs:
+      base_url:
+        description: Deployment to test (https://...). Runs the no-funds suites only.
+        type: string
+        required: true
   deployment_status:
   pull_request:
     types: [ready_for_review]
@@ -40,7 +52,8 @@ permissions:
 jobs:
   resolve-deployment:
     if: >-
-      github.event_name == 'push'
+      inputs.base_url
+      || github.event_name == 'push'
       || (github.event_name == 'deployment_status'
         && github.event.deployment_status.state == 'success'
         && github.event.deployment.environment == 'Preview – osmosis-frontend')
@@ -60,9 +73,11 @@ jobs:
       draft: ${{ steps.resolve.outputs.draft }}
       branch: ${{ steps.resolve.outputs.branch }}
       environment_url: ${{ steps.resolve.outputs.environment_url }}
+      real_funds: ${{ steps.resolve.outputs.real_funds }}
     steps:
       - id: resolve
         env:
+          BASE_URL: ${{ inputs.base_url }}
           GH_TOKEN: ${{ github.token }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           REPO: ${{ github.repository }}
@@ -78,6 +93,20 @@ jobs:
             echo "run=false" >> "$GITHUB_OUTPUT"
             exit 0
           }
+
+          # Called with a deployment (cf-deploy.yml): test it as given. The
+          # caller already skips drafts and forks. The cf- prefix keeps the
+          # job-level concurrency groups apart from the Vercel run's.
+          if [ -n "${BASE_URL:-}" ]; then
+            echo "Deployment under test: $BASE_URL (no-funds suites only)" | tee -a "$GITHUB_STEP_SUMMARY"
+            {
+              echo "run=true"
+              echo "real_funds=false"
+              echo "branch=cf-${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+              echo "environment_url=${BASE_URL#https://}"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           if [ "$EVENT" = "push" ]; then
             # Wait up to 20 min for Vercel's commit status on this exact SHA.
@@ -157,13 +186,17 @@ jobs:
           echo "Vercel deployment: $DEPLOYMENT_URL ($BRANCH)" | tee -a "$GITHUB_STEP_SUMMARY"
           {
             echo "run=true"
+            echo "real_funds=true"
             echo "branch=$BRANCH"
             echo "environment_url=${DEPLOYMENT_URL#https://}"
           } >> "$GITHUB_OUTPUT"
 
+  # The real-funds smoke test needs this job, so skipping it skips that too.
   check-balances:
     needs: resolve-deployment
-    if: needs.resolve-deployment.outputs.run == 'true'
+    if: >-
+      needs.resolve-deployment.outputs.run == 'true'
+      && needs.resolve-deployment.outputs.real_funds == 'true'
     concurrency:
       group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-check-balances
       cancel-in-progress: true
@@ -182,6 +215,7 @@ jobs:
             /.yarnrc.yml
             /.yarn-4.18.1.cjs
             /packages/*/package.json
+            /packages/web/etc/
             /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -340,6 +374,7 @@ jobs:
             /.yarnrc.yml
             /.yarn-4.18.1.cjs
             /packages/*/package.json
+            /packages/web/etc/
             /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -384,6 +419,7 @@ jobs:
             /.yarnrc.yml
             /.yarn-4.18.1.cjs
             /packages/*/package.json
+            /packages/web/etc/
             /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -443,6 +479,7 @@ jobs:
             /.yarnrc.yml
             /.yarn-4.18.1.cjs
             /packages/*/package.json
+            /packages/web/etc/
             /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -500,6 +537,7 @@ jobs:
       - name: Check every suite passed
         env:
           RUN: ${{ needs.resolve-deployment.outputs.run }}
+          REAL_FUNDS: ${{ needs.resolve-deployment.outputs.real_funds }}
           DRAFT: ${{ needs.resolve-deployment.outputs.draft }}
           NEEDS: ${{ toJSON(needs) }}
           DEPLOYMENT_STATE: ${{ github.event.deployment_status.state }}
@@ -516,7 +554,12 @@ jobs:
             echo "Nothing to test for this commit."
             exit 0
           fi
-          FAILED=$(jq -r 'to_entries[] | select(.value.result != "success") | "\(.key): \(.value.result)"' <<< "$NEEDS")
+          # No-funds runs skip the real-funds jobs on purpose.
+          FAILED=$(jq -r --arg real_funds "$REAL_FUNDS" 'to_entries[]
+            | select(.value.result != "success")
+            | select(($real_funds == "false" and .value.result == "skipped"
+                and (.key == "check-balances" or .key == "preview-smoke-tests")) | not)
+            | "\(.key): \(.value.result)"' <<< "$NEEDS")
           if [ -n "$FAILED" ]; then
             echo "These E2E jobs did not pass:"
             echo "$FAILED"
