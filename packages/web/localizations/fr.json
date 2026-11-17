@@ -1338,6 +1338,7 @@
     "cancel": "Annuler",
     "daysAgo": "il y a {days} j",
     "hoursAgo": "il y a {hours} h",
+    "minutesAgo": "il y a {minutes} min",
     "buyWith": "Achetez avec {coinA} ou {coinB}",
     "orderHistory": "Historique des ordres",
     "tradeAnotherAssetOr": "Échangez un autre actif contre {coinA} ou {coinB}",
@@ -1420,12 +1421,16 @@
     "creationAwaitingConfirmation": "Une création précédente de carnet d'ordres pour cette paire attend toujours sa confirmation onchain. Réessayez dans quelques minutes.",
     "createOrderbookDescription": "La création d'un orderbook pool permet de passer des ordres limites pour cette paire de trading sur Osmosis.",
     "returned": "Restitué",
-    "partlyFilled": "Partiellement exécuté",
+    "filledPercent": "{percent}% exécuté",
     "returnedUnfilled": "Restitué (non exécuté)",
     "alreadyReceived": "Déjà reçu",
+    "paidOut": "Payé",
+    "placed": "Ordre passé",
+    "activity": "Activité",
     "howPayoutsWork": "Comment fonctionnent les paiements ?",
-    "payoutNote": "Les montants exécutés sont généralement versés automatiquement sur votre portefeuille, souvent en plusieurs versements au fur et à mesure que l'ordre est exécuté, et peuvent arriver des heures ou des jours avant que vous n'annuliez. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée. L'annulation ne restitue que le montant non exécuté.",
-    "limitOrder": "Ordre à cours limité"
+    "payoutNote": "Lorsqu'un ordre est presque entièrement exécuté, le montant exécuté est généralement versé automatiquement sur votre portefeuille, parfois en plusieurs versements. D'ici là, il reste dans l'ordre. L'annulation verse tout montant exécuté qui n'a pas encore été versé et restitue le montant non exécuté. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée.",
+    "buyLimitOrder": "Ordre d'achat à cours limité",
+    "sellLimitOrder": "Ordre de vente à cours limité"
   },
   "tradeDetails": {
     "priceImpact": {

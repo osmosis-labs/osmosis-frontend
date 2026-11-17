@@ -1338,6 +1338,7 @@
     "cancel": "キャンセル",
     "daysAgo": "{days}日前",
     "hoursAgo": "{hours}時間前",
+    "minutesAgo": "{minutes}分前",
     "buyWith": "{coinA}または{coinB}で購入",
     "orderHistory": "注文履歴",
     "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
@@ -1420,12 +1421,16 @@
     "creationAwaitingConfirmation": "このペアの以前のオーダーブック作成は、まだオンチェーンでの確認待ちです。数分後にもう一度お試しください。",
     "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。",
     "returned": "返却済み",
-    "partlyFilled": "一部約定",
+    "filledPercent": "{percent}%約定",
     "returnedUnfilled": "返却済み（未約定）",
     "alreadyReceived": "受取済み",
+    "paidOut": "支払済み",
+    "placed": "注文済み",
+    "activity": "履歴",
     "howPayoutsWork": "支払いの仕組み",
-    "payoutNote": "約定した分は通常、注文の約定に合わせて複数回に分けてウォレットへ自動的に支払われ、キャンセルする数時間から数日前に届くこともあります。注文に「受け取る」と表示されている場合、約定した分の一部はまだ支払われていません。キャンセルで返却されるのは未約定の分だけです。",
-    "limitOrder": "指値注文"
+    "payoutNote": "注文がほぼすべて約定すると、約定した分は通常ウォレットへ自動的に支払われ、複数回に分かれることもあります。それまでは注文内に残ります。キャンセルすると、まだ支払われていない約定分が支払われ、未約定の分が返却されます。注文に「受け取る」と表示されている場合、約定した分の一部はまだ支払われていません。",
+    "buyLimitOrder": "指値買い注文",
+    "sellLimitOrder": "指値売り注文"
   },
   "tradeDetails": {
     "priceImpact": {
