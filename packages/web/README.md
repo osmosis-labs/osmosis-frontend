@@ -96,9 +96,9 @@ For Solana testing, configure `NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID` at buil
 time and enable `solana-skip-routes` in that LaunchDarkly environment. Deployed
 builds intentionally return 404 from `/api/solana-rpc` without the flag enabled.
 
-Deploy the API Worker first (`yarn cf:api:deploy` from a `stage` checkout, see
-`api-worker/README.md`): until it exists, the binding fails `/api/*`. Then deploy to the
-dedicated staging Worker, not a production route:
+Deploy the API Worker first (`yarn cf:api:deploy`, see `api-worker/README.md`): until
+it exists, the binding fails `/api/*`. Then deploy to the dedicated staging Worker, not a
+production route:
 
 ```bash
 yarn cf:deploy

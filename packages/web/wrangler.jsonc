@@ -94,6 +94,9 @@
   "env": {
     "production": {
       "name": "osmosis-frontend-production",
+      // Reached only through the traffic router's service binding. A public workers.dev URL
+      // would forward /api/* to the production API Worker around the zone's ingress rules.
+      "workers_dev": false,
       "services": [
         {
           "binding": "WORKER_SELF_REFERENCE",
