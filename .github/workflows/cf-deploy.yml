@@ -145,25 +145,47 @@ jobs:
           echo "asset lists at ${ASSET_LIST_COMMIT_HASH:-$hash}"
 
       # Secret values stay in this step's env and the 0600 files it writes;
-      # only the EVM chain ids (public) are exported.
+      # only the EVM chain ids (public) are exported. Each secret is named:
+      # `toJSON(secrets)` would hand this step every repo secret (E2E wallet
+      # keys included), and GitHub holds such PR runs for approval as possibly
+      # malicious. A new EVM chain needs a line here and in packages/utils.
       - name: Write Worker secrets files
         env:
-          SECRETS_JSON: ${{ toJSON(secrets) }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+          SWAPPED_COM_SK: ${{ secrets.SWAPPED_COM_SK }}
+          # Secret names can't start with GITHUB_. CF_GITHUB_API_TOKEN is a PAT,
+          # not the job token, which expires when this job ends.
+          GITHUB_API_TOKEN: ${{ secrets.CF_GITHUB_API_TOKEN }}
+          EVM_RPC_URL_1: ${{ secrets.EVM_RPC_URL_1 }}
+          EVM_RPC_URL_10: ${{ secrets.EVM_RPC_URL_10 }}
+          EVM_RPC_URL_56: ${{ secrets.EVM_RPC_URL_56 }}
+          EVM_RPC_URL_137: ${{ secrets.EVM_RPC_URL_137 }}
+          EVM_RPC_URL_250: ${{ secrets.EVM_RPC_URL_250 }}
+          EVM_RPC_URL_314: ${{ secrets.EVM_RPC_URL_314 }}
+          EVM_RPC_URL_1284: ${{ secrets.EVM_RPC_URL_1284 }}
+          EVM_RPC_URL_8453: ${{ secrets.EVM_RPC_URL_8453 }}
+          EVM_RPC_URL_42161: ${{ secrets.EVM_RPC_URL_42161 }}
+          EVM_RPC_URL_43114: ${{ secrets.EVM_RPC_URL_43114 }}
+          EVM_RPC_URL_81457: ${{ secrets.EVM_RPC_URL_81457 }}
         run: |
           set -euo pipefail
           umask 077
           pages="$RUNNER_TEMP/cf-pages-secrets.json"
           api="$RUNNER_TEMP/cf-api-secrets.json"
-          jq -n 'env.SECRETS_JSON | fromjson
-            | {COINGECKO_API_KEY, NUMIA_API_KEY}
-            | with_entries(select((.value // "") != ""))' > "$pages"
-          # Secret names can't start with GITHUB_. CF_GITHUB_API_TOKEN is a PAT,
-          # not the job token, which expires when this job ends.
-          jq -n 'env.SECRETS_JSON | fromjson
-            | ({COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
-                SWAPPED_COM_SK, GITHUB_API_TOKEN: .CF_GITHUB_API_TOKEN}
-               + with_entries(select(.key | test("^EVM_RPC_URL_[0-9]+$"))))
-            | with_entries(select((.value // "") != ""))' > "$api"
+          # Named env vars -> JSON object, leaving out unset and empty ones.
+          to_json() {
+            jq -n '$ARGS.positional | map({key: ., value: (env[.] // "")})
+              | from_entries | with_entries(select(.value != ""))' --args "$@"
+          }
+          to_json COINGECKO_API_KEY NUMIA_API_KEY > "$pages"
+          to_json COINGECKO_API_KEY NUMIA_API_KEY SKIP_API_KEY SOLANA_RPC_URL \
+            SWAPPED_COM_SK GITHUB_API_TOKEN \
+            EVM_RPC_URL_1 EVM_RPC_URL_10 EVM_RPC_URL_56 EVM_RPC_URL_137 \
+            EVM_RPC_URL_250 EVM_RPC_URL_314 EVM_RPC_URL_1284 EVM_RPC_URL_8453 \
+            EVM_RPC_URL_42161 EVM_RPC_URL_43114 EVM_RPC_URL_81457 > "$api"
           for file in "$pages" "$api"; do
             echo "$file: $(jq -r 'keys | join(", ") | if . == "" then "none" else . end' "$file")"
           done
@@ -296,7 +318,8 @@ jobs:
     uses: ./.github/workflows/frontend-e2e-tests.yml
     with:
       base_url: ${{ needs.deploy.outputs.preview_url }}
-    secrets: inherit
+    # No secrets: the no-funds suites use none, so the E2E wallet keys stay
+    # out of PR runs.
 
   # Repo-level secrets: no environment, so closing a PR creates no deployment.
   delete-preview:
