@@ -10,16 +10,33 @@ const config = {
   reactStrictMode: true,
   experimental: {
     reactCompiler: true,
+    // `yarn cf:build:profile` keeps Next's server chunks unminified so Cloudflare CPU/heap
+    // profiles show their function names (Wrangler's source map stops at OpenNext's handler.mjs).
+    // Regular builds minify: it saves ~260KB gzip of the Worker.
+    serverMinification: process.env.CF_PROFILE !== "true",
   },
   env: {
+    // Vercel sets VERCEL=1 at build time. Speed Insights loads
+    // /_vercel/speed-insights/script.js, which only Vercel serves, so the
+    // Cloudflare build leaves it out.
+    NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS: process.env.VERCEL ? "true" : "",
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
-    // exposed; the URLs carry API keys and stay server-side.
-    NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: Object.keys(process.env)
-      .map((name) => /^EVM_RPC_URL_(\d+)$/.exec(name))
-      .filter((match) => match && process.env[match[0]]?.trim())
-      .map((match) => match?.[1])
-      .join(","),
+    // exposed; the URLs carry API keys and stay server-side. An explicit list
+    // is merged in, for builds (Cloudflare CI) whose RPC URLs are Worker
+    // secrets only; a set EVM_RPC_URL_<id> is never dropped by a stale list.
+    NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: [
+      ...new Set([
+        ...(process.env.NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS ?? "")
+          .split(",")
+          .map((id) => id.trim())
+          .filter((id) => /^\d+$/.test(id)),
+        ...Object.keys(process.env)
+          .map((name) => /^EVM_RPC_URL_(\d+)$/.exec(name))
+          .filter((match) => match && process.env[match[0]]?.trim())
+          .map((match) => match?.[1] ?? ""),
+      ]),
+    ].join(","),
   },
   // CI lints (lint-and-check-format.yml) and type-checks (`yarn typecheck`) every push,
   // so skip both here to save ~40s on each Vercel build.
@@ -29,6 +46,10 @@ const config = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // isows and uncrypto resolve to a different entry under the Cloudflare `workerd` export condition
+  // than under Node, so Next's file tracing only copies their Node entrypoints. Keeping them external
+  // lets OpenNext copy the whole package and rewrite the exports for `workerd`.
+  serverExternalPackages: ["isows", "uncrypto"],
   images: {
     remotePatterns: [
       {
@@ -80,7 +101,32 @@ const config = {
       },
     ];
   },
-  webpack(config, { webpack, isServer }) {
+  webpack(config, { isServer, webpack }) {
+    /**
+     * Split the generated asset and chain lists (~3MB raw) out of the _app chunk into their own
+     * chunks. Their content hash then only changes when the lists are regenerated with new data,
+     * so returning visitors keep them cached across deploys that only touch app code.
+     */
+    if (!isServer && config.optimization.splitChunks) {
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        assetLists: {
+          test: /[\\/]config[\\/]generated[\\/]asset-lists\.ts$/,
+          name: "asset-lists",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+        chainList: {
+          test: /[\\/]config[\\/]generated[\\/]chain-list\.ts$/,
+          name: "chain-list",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+      };
+    }
+
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */

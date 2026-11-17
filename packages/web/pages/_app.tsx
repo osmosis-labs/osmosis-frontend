@@ -61,7 +61,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             <WalletSelectProvider>
               <ErrorBoundary fallback={<ErrorFallback />}>
                 <SEO />
-                <SpeedInsights />
+                {process.env.NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS === "true" && (
+                  <SpeedInsights />
+                )}
                 <ToastContainer
                   toastStyle={{
                     backgroundColor: "#2d2755",

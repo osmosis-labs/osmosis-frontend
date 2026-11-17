@@ -1,0 +1,342 @@
+name: Cloudflare deploy
+
+# Builds and deploys the Cloudflare Worker pair: the API Worker first
+# (`cf:api:deploy`), then the pages Worker that binds to it (`cf:build`, then
+# `opennextjs-cloudflare deploy`).
+#
+#   push to stage  -> osmosis-frontend-stage + osmosis-frontend-api-stage
+#                     (configs as committed), environment `cloudflare-stage`
+#   push to master -> osmosis-frontend-production + osmosis-frontend-api-production
+#                     (`--env production` in both wrangler configs), environment
+#                     `cloudflare-production`
+#   pull request   -> Worker Preview `pr-<number>` of osmosis-frontend-stage
+#   into stage or     (`wrangler preview`, the `previews` block in wrangler.jsonc),
+#   stage-cf          environment `cloudflare-preview`, then the no-funds E2E
+#                     suites against it (frontend-e2e-tests.yml). Closing the PR
+#                     deletes the Preview.
+#
+# Previews: the API Worker is not previewed. A Preview's `/api/*` goes to the
+# deployed osmosis-frontend-api-stage, so a PR's API changes are not in it.
+# Version URLs (`versions upload --preview-alias`) can't replace Previews: they
+# are not generated for Workers that export a Durable Object (DOQueueHandler).
+# Previews inherit no secrets from the Worker; the pages secrets below are
+# uploaded with every Preview. Fork PRs get no Preview (no secrets). Drafts get
+# a Preview but no E2E run; marking one ready for review runs it.
+#
+# Everything comes from that GitHub environment. Unset
+# or empty values are left out, so `packages/web/.env` defaults and code
+# fallbacks still apply (an empty string would override them).
+#
+# Required:
+#   secrets.CLOUDFLARE_API_TOKEN   Workers Scripts:Edit, Workers R2 Storage:Edit
+#   vars.CLOUDFLARE_ACCOUNT_ID     the Osmosis Labs account
+#
+# Build-time values, inlined by `next build` and the API Worker's esbuild
+# defines (vars, since they ship in the client bundle): every environment var
+# named NEXT_PUBLIC_* plus ASSET_LIST_COMMIT_HASH is exported, so a new one
+# needs no workflow change. Unset, ASSET_LIST_COMMIT_HASH is pinned to the
+# assetlists main head once, so both Workers build from the same lists.
+# NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS is merged with the ids of the
+# EVM_RPC_URL_<chainId> secrets below; set it only for RPC URLs that exist as
+# dashboard secrets alone.
+#
+# Build-time secrets (the /assets prerender runs server queries), passed to the
+# build step only: COINGECKO_API_KEY, NUMIA_API_KEY
+#
+# Worker runtime secrets, uploaded with `--secrets-file` when set. Deploys only
+# add secrets, so values set in the Cloudflare dashboard stay when these are
+# unset. Set them here or on the Worker with `wrangler secret put`:
+#   pages Worker: COINGECKO_API_KEY, NUMIA_API_KEY
+#   API Worker:   COINGECKO_API_KEY, NUMIA_API_KEY, SKIP_API_KEY, SOLANA_RPC_URL,
+#                 SWAPPED_COM_SK, CF_GITHUB_API_TOKEN (uploaded as GITHUB_API_TOKEN),
+#                 every EVM_RPC_URL_<chainId> (packages/utils/src/ethereum.ts
+#                 reads chains 1, 10, 56, 137, 250, 314, 1284, 8453, 42161,
+#                 43114, 81457)
+#
+# The production R2 cache bucket is created on the first master deploy.
+
+on:
+  push:
+    branches: [stage, master]
+  pull_request:
+    branches: [stage, stage-cf]
+    types: [opened, synchronize, reopened, ready_for_review, closed]
+  workflow_dispatch:
+
+# One deploy per branch at a time. Queue instead of cancelling one midway;
+# the newest push still lands last. A PR's newer push (or closing it) cancels
+# its in-flight Preview build instead.
+concurrency:
+  group: cf-deploy-${{ github.event.pull_request.number && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # workflow_dispatch can pick any branch; only these two have Workers.
+    if: >-
+      (github.event_name != 'pull_request'
+        && (github.ref_name == 'stage' || github.ref_name == 'master'))
+      || (github.event_name == 'pull_request'
+        && github.event.action != 'closed'
+        && github.event.pull_request.head.repo.fork == false)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'cloudflare-preview' || github.ref_name == 'master' && 'cloudflare-production' || 'cloudflare-stage' }}
+      url: ${{ steps.pages.outputs.url || steps.preview.outputs.url }}
+    outputs:
+      preview_url: ${{ steps.preview.outputs.url }}
+    defaults:
+      run:
+        working-directory: packages/web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          package-manager-cache: false
+          node-version: 24.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-24.x
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      # Public values only. Secrets never go to $GITHUB_ENV.
+      - name: Export build values
+        env:
+          VARS_JSON: ${{ toJSON(vars) }}
+          WRANGLER_ENV: ${{ github.ref_name == 'master' && 'production' || '' }}
+        run: |
+          set -euo pipefail
+          jq -nr 'env.VARS_JSON | fromjson | to_entries[]
+            | select(.key | test("^NEXT_PUBLIC_") or . == "ASSET_LIST_COMMIT_HASH")
+            | select(.value != "") | .key' |
+          while read -r key; do
+            value=$(jq -nr --arg k "$key" 'env.VARS_JSON | fromjson | .[$k]')
+            delimiter="EOF_$(openssl rand -hex 12)"
+            printf '%s<<%s\n%s\n%s\n' "$key" "$delimiter" "$value" "$delimiter" >> "$GITHUB_ENV"
+            echo "set $key"
+          done
+          echo "WRANGLER_ENV=$WRANGLER_ENV" >> "$GITHUB_ENV"
+
+      # generate:lists falls back to the latest commit on every run; pin it once
+      # so the API and pages Workers ship the same asset and chain lists.
+      - name: Pin asset list commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ASSET_LIST_COMMIT_HASH:-}" ]; then
+            hash=$(gh api repos/osmosis-labs/assetlists/commits/main --jq .sha)
+            echo "ASSET_LIST_COMMIT_HASH=$hash" >> "$GITHUB_ENV"
+          fi
+          echo "asset lists at ${ASSET_LIST_COMMIT_HASH:-$hash}"
+
+      # Secret values stay in this step's env and the 0600 files it writes;
+      # only the EVM chain ids (public) are exported. Each secret is named:
+      # `toJSON(secrets)` would hand this step every repo secret (E2E wallet
+      # keys included), and GitHub holds such PR runs for approval as possibly
+      # malicious. A new EVM chain needs a line here and in packages/utils.
+      - name: Write Worker secrets files
+        env:
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+          SKIP_API_KEY: ${{ secrets.SKIP_API_KEY }}
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+          SWAPPED_COM_SK: ${{ secrets.SWAPPED_COM_SK }}
+          # Secret names can't start with GITHUB_. CF_GITHUB_API_TOKEN is a PAT,
+          # not the job token, which expires when this job ends.
+          GITHUB_API_TOKEN: ${{ secrets.CF_GITHUB_API_TOKEN }}
+          EVM_RPC_URL_1: ${{ secrets.EVM_RPC_URL_1 }}
+          EVM_RPC_URL_10: ${{ secrets.EVM_RPC_URL_10 }}
+          EVM_RPC_URL_56: ${{ secrets.EVM_RPC_URL_56 }}
+          EVM_RPC_URL_137: ${{ secrets.EVM_RPC_URL_137 }}
+          EVM_RPC_URL_250: ${{ secrets.EVM_RPC_URL_250 }}
+          EVM_RPC_URL_314: ${{ secrets.EVM_RPC_URL_314 }}
+          EVM_RPC_URL_1284: ${{ secrets.EVM_RPC_URL_1284 }}
+          EVM_RPC_URL_8453: ${{ secrets.EVM_RPC_URL_8453 }}
+          EVM_RPC_URL_42161: ${{ secrets.EVM_RPC_URL_42161 }}
+          EVM_RPC_URL_43114: ${{ secrets.EVM_RPC_URL_43114 }}
+          EVM_RPC_URL_81457: ${{ secrets.EVM_RPC_URL_81457 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          pages="$RUNNER_TEMP/cf-pages-secrets.json"
+          api="$RUNNER_TEMP/cf-api-secrets.json"
+          # Named env vars -> JSON object, leaving out unset and empty ones.
+          to_json() {
+            jq -n '$ARGS.positional | map({key: ., value: (env[.] // "")})
+              | from_entries | with_entries(select(.value != ""))' --args "$@"
+          }
+          to_json COINGECKO_API_KEY NUMIA_API_KEY > "$pages"
+          to_json COINGECKO_API_KEY NUMIA_API_KEY SKIP_API_KEY SOLANA_RPC_URL \
+            SWAPPED_COM_SK GITHUB_API_TOKEN \
+            EVM_RPC_URL_1 EVM_RPC_URL_10 EVM_RPC_URL_56 EVM_RPC_URL_137 \
+            EVM_RPC_URL_250 EVM_RPC_URL_314 EVM_RPC_URL_1284 EVM_RPC_URL_8453 \
+            EVM_RPC_URL_42161 EVM_RPC_URL_43114 EVM_RPC_URL_81457 > "$api"
+          for file in "$pages" "$api"; do
+            echo "$file: $(jq -r 'keys | join(", ") | if . == "" then "none" else . end' "$file")"
+          done
+
+          # The browser proxies a chain through /api/evm-rpc only when its id is
+          # in this list, so add every chain that has a keyed URL here.
+          secret_ids=$(jq -r 'keys[] | capture("^EVM_RPC_URL_(?<id>[0-9]+)$").id' "$api")
+          listed=$(tr ',' '\n' <<< "${NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS:-}" | tr -d ' ' | grep -E '^[0-9]+$' || true)
+          for id in $listed; do
+            grep -qx "$id" <<< "$secret_ids" ||
+              echo "::warning::NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS lists $id but EVM_RPC_URL_$id is not a secret here; it must be set in the Cloudflare dashboard"
+          done
+          ids=$(printf '%s\n%s\n' "$listed" "$secret_ids" | grep -E '^[0-9]+$' | sort -nu | paste -sd, - || true)
+          echo "NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS=$ids" >> "$GITHUB_ENV"
+          echo "EVM proxy chains: ${ids:-none}"
+
+      - name: Create production cache bucket if missing
+        if: github.ref_name == 'master'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if corepack yarn wrangler r2 bucket info osmosis-frontend-production-cache >/dev/null 2>&1; then
+            echo "bucket exists"
+          else
+            corepack yarn cf:cache:create:production
+          fi
+
+      # Builds the workspace packages, the generated lists and the OpenNext
+      # bundle once. The API Worker bundles the same package output and lists.
+      - name: Build pages Worker
+        env:
+          # generate:lists reads the asset list files from the GitHub API.
+          GITHUB_API_TOKEN: ${{ github.token }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
+        run: corepack yarn cf:build
+
+      # Wrangler lets process env override the secrets file, and `dotenv -c
+      # production` only fills keys that are unset, so the file values win.
+      - name: Deploy API Worker
+        if: github.event_name != 'pull_request'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          args=()
+          [ -z "$WRANGLER_ENV" ] || args+=(--env "$WRANGLER_ENV")
+          file="$RUNNER_TEMP/cf-api-secrets.json"
+          [ "$(jq length "$file")" = "0" ] || args+=(--secrets-file "$file")
+          corepack yarn cf:api:deploy "${args[@]}"
+
+      - name: Deploy pages Worker
+        id: pages
+        if: github.event_name != 'pull_request'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          # --env goes to OpenNext (cache population) and is passed on to wrangler.
+          opennext_args=()
+          [ -z "$WRANGLER_ENV" ] || opennext_args+=(--env "$WRANGLER_ENV")
+          wrangler_args=(--keep-vars)
+          file="$RUNNER_TEMP/cf-pages-secrets.json"
+          [ "$(jq length "$file")" = "0" ] || wrangler_args+=(--secrets-file "$file")
+          log="$RUNNER_TEMP/cf-pages-deploy.log"
+          corepack yarn opennextjs-cloudflare deploy "${opennext_args[@]}" -- "${wrangler_args[@]}" 2>&1 | tee "$log"
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' "$log" | tail -n 1 || true)
+          if [ -n "$url" ]; then
+            echo "url=$url" >> "$GITHUB_OUTPUT"
+            echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # OpenNext has no Preview command, so populate the R2 cache, then call
+      # wrangler. Cache keys carry the build id, so a PR's entries sit beside
+      # stage's in the shared bucket without replacing them. The output is the
+      # unique deployment URL, pinned to this commit; the `pr-<n>` Preview URL
+      # always serves the PR's latest deployment.
+      - name: Upload pages Preview
+        id: preview
+        if: github.event_name == 'pull_request'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PREVIEW_NAME: pr-${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          corepack yarn opennextjs-cloudflare populateCache remote
+          args=(--name "$PREVIEW_NAME" --tag "${HEAD_SHA:0:12}" --message "PR #${PREVIEW_NAME#pr-} at ${HEAD_SHA:0:12}")
+          file="$RUNNER_TEMP/cf-pages-secrets.json"
+          [ "$(jq length "$file")" = "0" ] || args+=(--secrets-file "$file")
+          out="$RUNNER_TEMP/cf-preview-output.ndjson"
+          WRANGLER_OUTPUT_FILE_PATH="$out" corepack yarn wrangler preview "${args[@]}"
+          url=$(jq -r 'select(.type == "preview") | .deployment_urls[0] // empty' "$out" | tail -n 1)
+          alias=$(jq -r 'select(.type == "preview") | .preview_urls[0] // empty' "$out" | tail -n 1)
+          [ -n "$url" ] || { echo "wrangler preview printed no deployment URL"; exit 1; }
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          {
+            echo "Preview for this commit: $url"
+            echo
+            echo "Latest for this PR: ${alias:-n/a}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove secrets files
+        if: always()
+        working-directory: .
+        run: rm -f "$RUNNER_TEMP"/cf-*-secrets.json
+
+  # The no-funds E2E suites (fake wallet, pools, pair selection) against this
+  # commit's Preview. The real-funds smoke test stays on the Vercel preview: it
+  # shares one wallet with every other run.
+  preview-e2e:
+    needs: deploy
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.pull_request.draft == false
+      && needs.deploy.outputs.preview_url != ''
+    # What frontend-e2e-tests.yml's jobs ask for; a called workflow gets no
+    # more than this.
+    permissions:
+      actions: write
+      contents: read
+      deployments: read
+      pull-requests: read
+      statuses: read
+    uses: ./.github/workflows/frontend-e2e-tests.yml
+    with:
+      base_url: ${{ needs.deploy.outputs.preview_url }}
+    # No secrets: the no-funds suites use none, so the E2E wallet keys stay
+    # out of PR runs.
+
+  # Repo-level secrets: no environment, so closing a PR creates no deployment.
+  delete-preview:
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.action == 'closed'
+      && github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Delete pages Preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PREVIEW_NAME: pr-${{ github.event.pull_request.number }}
+        # A PR closed before its first Preview finished has nothing to delete.
+        run: |
+          npx --yes wrangler@4.156.1 preview delete --name "$PREVIEW_NAME" \
+            --worker-name osmosis-frontend-stage --skip-confirmation ||
+            echo "::notice::No Preview $PREVIEW_NAME to delete."
