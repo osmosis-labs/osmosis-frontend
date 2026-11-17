@@ -16,6 +16,10 @@ const config = {
     serverMinification: process.env.CF_PROFILE !== "true",
   },
   env: {
+    // Vercel sets VERCEL=1 at build time. Speed Insights loads
+    // /_vercel/speed-insights/script.js, which only Vercel serves, so the
+    // Cloudflare build leaves it out.
+    NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS: process.env.VERCEL ? "true" : "",
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
     // exposed; the URLs carry API keys and stay server-side. An explicit list

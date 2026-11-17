@@ -81,6 +81,7 @@
     "@trpc/next": "^11.19.0",
     "@trpc/react-query": "^11.19.0",
     "@trpc/server": "^11.19.0",
+    "@vercel/speed-insights": "^1.0.12",
     "@visx/curve": "^4.0.0",
     "@visx/gradient": "^4.0.0",
     "@visx/responsive": "^4.0.0",
