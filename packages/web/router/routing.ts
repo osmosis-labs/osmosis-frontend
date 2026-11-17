@@ -8,7 +8,7 @@ export const FALLBACK_HEADER = "x-osmosis-fallback";
 export const BUCKET_COOKIE = "osmo_bucket";
 /** Session pin to one platform for QA, set through `?osmo_backend=cf|vercel|auto`. */
 export const OVERRIDE_COOKIE = "osmo_backend";
-export const OVERRIDE_PARAM = "osmo_backend";
+const OVERRIDE_PARAM = "osmo_backend";
 
 const BUCKETS = 10_000;
 const BUCKET_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;

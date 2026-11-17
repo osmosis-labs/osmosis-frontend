@@ -2,11 +2,11 @@ import { Dec, DecUtils } from "@osmosis-labs/unit";
 
 /** Highest slippage tolerance, in percent, the review input accepts. A 100%
  *  tolerance serializes to a zero minimum output, which the chain rejects. */
-export const MaxSlippageInputPercent = 99.9;
+const MaxSlippageInputPercent = 99.9;
 
 /** The review demands an explicit acknowledgement when the minimum value
  *  received falls below this fraction of the value sent. */
-export const ValueDisparityThreshold = 0.75;
+const ValueDisparityThreshold = 0.75;
 
 /** Formats a slippage fraction as a percentage without trailing zeros,
  *  e.g. 0.005 -> "0.5", 0.01 -> "1". */

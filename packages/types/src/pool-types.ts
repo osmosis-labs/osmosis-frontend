@@ -113,12 +113,6 @@ export type PoolResponse = {
   pool: PoolRawResponse;
 };
 
-export interface PoolGetter<PoolType> {
-  getPool(id: string): PoolType | undefined;
-  poolExists(id: string): boolean | undefined;
-  getAllPools(): PoolType[];
-}
-
 export type Pools = {
   pools: PoolRaw[];
   totalNumberOfPools: string;
@@ -147,5 +141,3 @@ export type PoolRaw =
   | (CosmwasmPoolRawResponse & {
       tokens?: { denom: string; amount: string }[];
     });
-
-export const ALLOYED_POOL_CODE_IDS_MAINNET = ["814", "867", "996"];

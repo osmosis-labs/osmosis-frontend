@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",
+    "24hVolume": "حجم 24 ساعته",
     "amountDaysUnbonding": "{numDays} روز تا باز شدن",
     "amountDaysUnbonding_plural": "{numDays} روز تا باز شدن",
     "APR": "نرخ بازدهی",
@@ -902,6 +903,9 @@
     "free": "رایگان",
     "cheapest": "ارزان ترین",
     "fastest": "سریع ترین",
+    "transferSpeed": "سرعت انتقال",
+    "standardSpeed": "استاندارد",
+    "fastSpeed": "سریع",
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "قیمت نامعتبر",
     "priceTooLow": "قیمت خیلی پایین",
     "priceTooHigh": "قیمت خیلی بالاست",
+    "marketPriceUnavailable": "قیمت بازار در دسترس نیست",
+    "quoteOffPeg": "دارایی مظنه بیش از حد از ۱ دلار فاصله دارد",
+    "quoteOffPegWarning": "{denom} با قیمت {price} معامله می‌شود. قیمت‌های محدود فرض می‌کنند 1 {denom} = $1.",
+    "quotePegUnverified": "بررسی {denom} در برابر ۱ دلار ممکن نشد. قیمت‌های محدود فرض می‌کنند 1 {denom} = $1.",
     "unavailable": "برای {denom} در دسترس نیست",
     "orderHistoryHeaders": {
       "past": "گذشته",

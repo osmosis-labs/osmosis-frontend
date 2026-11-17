@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
+    "24hVolume": "Volume 24h",
     "amountDaysUnbonding": "{numDays} dias destravando",
     "amountDaysUnbonding_plural": "{numDays} dias destravando",
     "APR": "APR",
@@ -902,6 +903,9 @@
     "free": "Livre",
     "cheapest": "Mais barato",
     "fastest": "O mais rápido",
+    "transferSpeed": "Velocidade da transferência",
+    "standardSpeed": "Padrão",
+    "fastSpeed": "Rápida",
     "stepLabels": {
       "asset": "Ativo",
       "amount": "Quantia",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "Preço inválido",
     "priceTooLow": "Preço muito baixo",
     "priceTooHigh": "Preço muito alto",
+    "marketPriceUnavailable": "Preço de mercado indisponível",
+    "quoteOffPeg": "O ativo de cotação está muito longe de $1",
+    "quoteOffPegWarning": "{denom} está sendo negociado a {price}. Os preços limite assumem 1 {denom} = $1.",
+    "quotePegUnverified": "Não foi possível verificar {denom} em relação a $1. Os preços limite assumem 1 {denom} = $1.",
     "unavailable": "Indisponível para {denom}",
     "orderHistoryHeaders": {
       "past": "Histórico",

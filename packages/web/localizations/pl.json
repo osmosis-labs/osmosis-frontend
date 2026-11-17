@@ -489,6 +489,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
+    "24hVolume": "Wolumen 24h",
     "amountDaysUnbonding": "{numDays} dzień rozłączenia",
     "amountDaysUnbonding_plural": "{numDays} dni rozwiązywania",
     "APR": "APR",
@@ -902,6 +903,9 @@
     "free": "Bezpłatny",
     "cheapest": "Najtańszy",
     "fastest": "Najszybszy",
+    "transferSpeed": "Szybkość transferu",
+    "standardSpeed": "Standardowy",
+    "fastSpeed": "Szybki",
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",
@@ -1396,6 +1400,10 @@
     "invalidPrice": "Nieprawidłowa cena",
     "priceTooLow": "Cena za niska",
     "priceTooHigh": "Cena za wysoka",
+    "marketPriceUnavailable": "Cena rynkowa niedostępna",
+    "quoteOffPeg": "Aktywo kwotowane jest zbyt daleko od 1 $",
+    "quoteOffPegWarning": "{denom} jest notowany po {price}. Ceny limitowe zakładają 1 {denom} = 1 $.",
+    "quotePegUnverified": "Nie udało się porównać {denom} z 1 $. Ceny limitowe zakładają 1 {denom} = 1 $.",
     "unavailable": "Niedostępne dla {denom}",
     "orderHistoryHeaders": {
       "past": "Historia",

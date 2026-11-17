@@ -62,6 +62,8 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
 
   // Adjust order price as spot price changes until user inputs a price
   useEffect(() => {
+    if (!priceState.spotPrice) return;
+
     if (inputMode === InputMode.Price && !priceState.priceLocked) {
       const formattedPrice = formatPretty(
         priceState.spotPrice,

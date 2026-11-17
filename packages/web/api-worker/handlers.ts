@@ -1,5 +1,6 @@
 import { activeGaugesHandler } from "~/server/api-handlers/active-gauges";
 import { broadcastTransactionHandler } from "~/server/api-handlers/broadcast-transaction";
+import { cspReportHandler } from "~/server/api-handlers/csp-report";
 import { edgeTrpcAssetsHandler } from "~/server/api-handlers/edge-trpc-assets";
 import { edgeTrpcMainHandler } from "~/server/api-handlers/edge-trpc-main";
 import { edgeTrpcPoolsHandler } from "~/server/api-handlers/edge-trpc-pools";
@@ -35,4 +36,5 @@ export const apiHandlers: Record<ApiHandlerId, ApiHandler> = {
   swappedSignature: swappedSignatureHandler,
   skipTrackTx: skipTrackTxHandler,
   skipTxStatus: skipTxStatusHandler,
+  cspReport: cspReportHandler,
 };

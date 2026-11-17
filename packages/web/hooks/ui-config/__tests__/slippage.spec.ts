@@ -3,21 +3,6 @@ import { act, renderHook } from "@testing-library/react";
 
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 
-/** Regression inputs covering accepted, rejected and normalized manual values. */
-const manualInputs = [
-  "1",
-  ".5",
-  "0.5",
-  "100",
-  "99.99",
-  "-1",
-  "abc",
-  "",
-  "0",
-  "1e2",
-  "3.",
-];
-
 describe("useSlippageConfig", () => {
   it("starts on the first preset once mounted, with the given default", () => {
     const { result } = renderHook(() =>
@@ -49,19 +34,6 @@ describe("useSlippageConfig", () => {
     expect(result.current.setManualSlippage).toBe(setManualSlippage);
     expect(result.current.setDefaultSlippage).toBe(setDefaultSlippage);
     expect(result.current.setIsManualSlippage).toBe(setIsManualSlippage);
-  });
-
-  it.each(manualInputs)("handles manual input %j", (input) => {
-    const { result } = renderHook(() => useSlippageConfig());
-    act(() => result.current.setManualSlippage(input));
-
-    // Expectations captured from the legacy config before its removal.
-    expect({
-      manualSlippageStr: result.current.manualSlippageStr,
-      isManualSlippage: result.current.isManualSlippage,
-      slippage: result.current.slippage.toDec().toString(),
-      error: result.current.manualSlippageError?.constructor.name,
-    }).toMatchSnapshot();
   });
 
   it("applies a valid manual slippage as a rate", () => {
@@ -130,4 +102,29 @@ describe("useSlippageConfig", () => {
     expect(i).toBe(index);
     expect(d.toString()).toBe(rate);
   });
+
+  it.each([
+    ["0", "0.000000000000000000"],
+    ["3.", "0.030000000000000000"],
+    ["99.99", "0.999900000000000000"],
+  ])("accepts manual input %j as is", (input, rate) => {
+    const { result } = renderHook(() => useSlippageConfig());
+    act(() => result.current.setManualSlippage(input));
+    expect(result.current.isManualSlippage).toBe(true);
+    expect(result.current.manualSlippageStr).toBe(input);
+    expect(result.current.slippage.toDec().toString()).toBe(rate);
+  });
+
+  it.each(["1e2", "100", "-1", "abc", ""])(
+    "rejects manual input %j without entering manual mode",
+    (input) => {
+      const { result } = renderHook(() => useSlippageConfig());
+      act(() => result.current.setManualSlippage(input));
+      expect(result.current.isManualSlippage).toBe(false);
+      expect(result.current.manualSlippageStr).toBe("0.5");
+      expect(result.current.slippage.toDec().toString()).toBe(
+        "0.005000000000000000"
+      );
+    }
+  );
 });

@@ -2,25 +2,30 @@ import { type BrowserContext, expect, test } from "@playwright/test";
 
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
-import { ensureBalances } from "../utils/balance-checker";
+import { TOKEN_DENOMS, ensureBalances } from "../utils/balance-checker";
 import { notice } from "../utils/github-notice";
+import { getTxReceivedAmount } from "../utils/tx-confirm";
 import { deriveAddress } from "../utils/wallet-utils";
 
-test.describe("Test Swap to/from OSMO feature", () => {
+// A round trip: the return leg sends back exactly what the outbound leg
+// received, so the wallet only pays fees and spread instead of drifting
+// further from OSMO into ATOM on every run.
+// PR runs check this swap with the fake wallet (wallet.fake.spec.ts); the
+// real round trip runs in the full suite.
+test.describe("Test Swap to/from OSMO feature @full", () => {
+  test.describe.configure({ mode: "serial" });
+
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  const _ATOM =
-    "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
+  let address: string;
+  let atomReceived = "";
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
 
-    const { address } = await deriveAddress(privateKey);
-    await ensureBalances(address, [
-      { token: "OSMO", amount: 0.2 }, // Max needed in single test
-      { token: "ATOM", amount: 0.01 }, // Max needed in single test
-    ]);
+    ({ address } = await deriveAddress(privateKey));
+    await ensureBalances(address, [{ token: "OSMO", amount: 0.2 }]);
 
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();
@@ -46,16 +51,6 @@ test.describe("Test Swap to/from OSMO feature", () => {
     }
   });
 
-  test.skip("User should be able to swap OSMO to WBTC", async () => {
-    await tradePage.selectPair("OSMO", "WBTC");
-    await tradePage.enterAmount("0.9");
-    await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain("denom: uosmo");
-    await tradePage.getTransactionUrl();
-  });
-
   test("User should be able to swap OSMO to ATOM", async () => {
     await tradePage.selectPair("OSMO", "ATOM");
     await tradePage.enterAmount("0.2");
@@ -63,23 +58,25 @@ test.describe("Test Swap to/from OSMO feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    //expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain("denom: uosmo");
-    await tradePage.getTransactionUrl();
+    const txUrl = await tradePage.getTransactionUrl();
+    atomReceived = await getTxReceivedAmount(
+      txUrl,
+      address,
+      TOKEN_DENOMS.ATOM.denom,
+      TOKEN_DENOMS.ATOM.decimals
+    );
+    console.log(`Received ${atomReceived} ATOM.`);
   });
 
   test("User should be able to swap ATOM to OSMO", async () => {
+    expect(atomReceived, "The OSMO to ATOM leg did not run.").not.toBe("");
     await tradePage.selectPair("ATOM", "OSMO");
-    await tradePage.enterAmount("0.01");
+    await tradePage.enterAmount(atomReceived);
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context, {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    //expect(msgContent).toContain(`denom: ${ATOM}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain("token_out_denom: uosmo");
     await tradePage.getTransactionUrl();
   });
 });

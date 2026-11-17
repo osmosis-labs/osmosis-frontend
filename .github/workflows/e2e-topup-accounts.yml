@@ -44,6 +44,8 @@ permissions:
 
 jobs:
   topup:
+    # The topup key is a secret of the e2e-funds environment (stage only).
+    environment: e2e-funds
     name: "${{ (inputs.dry_run == true || inputs.dry_run == 'true') && 'Dry run' || 'Topup' }} — All accounts"
     timeout-minutes: 10
     runs-on: ubuntu-latest

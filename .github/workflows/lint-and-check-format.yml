@@ -2,6 +2,12 @@ name: Lint and Check Format Workflow
 
 on: [push]
 
+# A newer push to the same branch supersedes this run. Stage and master runs are
+# keyed on their commit, so they never cancel or queue behind each other.
+concurrency:
+  group: ${{ github.workflow }}-${{ (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master') && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/master' }}
+
 permissions:
   contents: read
 
@@ -84,7 +90,9 @@ jobs:
             "math",
             "bridge",
             "tx",
+            "trpc",
             "types",
+            "unit",
             "proto-codecs",
           ]
 

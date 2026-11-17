@@ -21,8 +21,10 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page
+    // By text, not role: after a trade the app root can stay aria-hidden once
+    // the review modal closes, which hides the button from role queries.
     this.connectWalletBtn = page
-      .getByRole('button', { name: 'Connect wallet', exact: true })
+      .locator('button', { hasText: /^Connect wallet$/ })
       .first()
     this.kepltWalletBtn = page.locator('button').filter({ hasText: /^Keplr$/ })
     this.portfolioLink = page.getByText('Portfolio')
@@ -37,12 +39,53 @@ export class BasePage {
    * or 1CT enabled), we continue without error.
    */
   async connectWallet() {
+    await this.fitWindowToMacRunnerDisplay()
     await this.connectWalletBtn.click()
     await this.kepltWalletBtn.click()
-    await this.page.waitForTimeout(1000)
     await waitForKeplrApproval(this.page.context())
     await this.getWalletBalance()
     await this.dismissVariantsPopupIfPresent()
+  }
+
+  /**
+   * Connects the fake wallet (utils/fake-wallet.ts), which approves without
+   * a popup.
+   */
+  async connectFakeWallet() {
+    // The visible one: on a phone the header's button is inside the menu.
+    const connect = this.page
+      .locator('button', { hasText: /^Connect wallet$/ })
+      .filter({ visible: true })
+    await connect.first().click()
+    await this.kepltWalletBtn.click()
+    await expect(connect, 'Wallet should be connected.').toHaveCount(0, {
+      timeout: 15_000,
+    })
+    await this.dismissVariantsPopupIfPresent()
+  }
+
+  /**
+   * macOS CI runners have a 1024x768 display, but Playwright sizes the headed
+   * window to fit the 1440px viewport. Keplr opens its approval popup beside
+   * the window's right edge, which is then off screen, and Chrome refuses to
+   * create a mostly off-screen window, so the popup never appears. Shrink the
+   * window to fit the display; the emulated viewport (and so the page layout)
+   * is unaffected.
+   */
+  private async fitWindowToMacRunnerDisplay() {
+    if (process.platform !== 'darwin' || process.env.HEADLESS === 'true') return
+    const cdp = await this.page.context().newCDPSession(this.page)
+    try {
+      const { windowId } = await cdp.send('Browser.getWindowForTarget')
+      await cdp.send('Browser.setWindowBounds', {
+        windowId,
+        bounds: { left: 0, top: 0, width: 1000, height: 740 },
+      })
+      const { bounds } = await cdp.send('Browser.getWindowBounds', { windowId })
+      console.log(`Browser window bounds: ${JSON.stringify(bounds)}`)
+    } finally {
+      await cdp.detach().catch(() => {})
+    }
   }
 
   /**
@@ -61,8 +104,7 @@ export class BasePage {
 
   async gotoPortfolio() {
     await this.portfolioLink.click()
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000)
+    await this.page.waitForURL(/\/portfolio/, { waitUntil: 'commit' })
     await this.printUrl()
   }
 
@@ -88,7 +130,8 @@ export class BasePage {
   /** Dismisses the "Variants Detected" modal that may appear on staging deploys. */
   async dismissVariantsPopupIfPresent() {
     try {
-      const dismissBtn = this.page.getByRole('button', { name: 'Dismiss' })
+      // By text, not role: see connectWalletBtn.
+      const dismissBtn = this.page.locator('button', { hasText: /^Dismiss$/ })
       await dismissBtn.waitFor({ state: 'visible', timeout: 4000 })
       await dismissBtn.click()
       console.log('Dismissed "Variants Detected" popup.')
@@ -103,11 +146,13 @@ export class BasePage {
       this.connectedWalletBtn,
       'Wallet should be connected.',
     ).toBeVisible({ timeout: 4000 })
-    await this.connectedWalletBtn.click({ timeout: 2000 })
+    // The profile panel can re-render as balances refresh after a trade,
+    // detaching the button mid-click; the click retries within its timeout.
+    await this.connectedWalletBtn.click({ timeout: 10_000 })
     const logoutBtn = this.page.locator('//button[@title="Log Out"]')
-    await logoutBtn.click({ timeout: 2000 })
-    await this.page.waitForTimeout(2000)
-    await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 })
+    await logoutBtn.click({ timeout: 10_000 })
+    // Logging out can take several seconds on a busy preview.
+    await expect(this.connectWalletBtn).toBeVisible({ timeout: 15_000 })
   }
 
   /**

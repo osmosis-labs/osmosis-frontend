@@ -1,4 +1,3 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import { defineConfig, devices } from "@playwright/test";
 
 import "dotenv/config";
@@ -15,6 +14,10 @@ export default defineConfig({
   ],
   timeout: 90000, // Increased from default 60s to 90s for slippage tolerance + balance checks + network latency
   testDir: "./tests",
+  /* PR runs check one representative case per path. Tests tagged @full
+     (the other pairs, tokens and order types) run in the full suite (release PRs and manual runs),
+     which sets E2E_FULL=true. */
+  grepInvert: process.env.E2E_FULL === "true" ? undefined : /@full/,
   /* Run tests in files in parallel. */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

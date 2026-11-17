@@ -3,7 +3,7 @@ import { defaultShouldDehydrateQuery, Query } from "@tanstack/react-query";
 /**
  * tRPC procedures whose results must never be persisted across sessions.
  */
-export const PERSIST_EXCLUDED_KEYS = [
+const PERSIST_EXCLUDED_KEYS = [
   "local.bridgeTransfer.getSupportedAssetsBalances",
 ];
 

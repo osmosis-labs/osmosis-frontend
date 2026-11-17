@@ -37,8 +37,8 @@ import {
   typeDepositAmount,
 } from "./concentrated-deposit-amount";
 
-export const MODERATE_STRATEGY_MULTIPLIER = 0.25;
-export const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
+const MODERATE_STRATEGY_MULTIPLIER = 0.25;
+const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 
 export type DepositSide = "base" | "quote";
 
@@ -90,7 +90,7 @@ export function priceInputToDec(raw: string, quoteOverBase: Dec): Dec {
 }
 
 /** Raw input as a Dec, including currency decimals. For display. */
-export function priceInputToDecWithCurrencyDecimals(raw: string): Dec {
+function priceInputToDecWithCurrencyDecimals(raw: string): Dec {
   return new Dec(safeInputToDecString(stripTrailingDot(raw)));
 }
 
@@ -126,7 +126,7 @@ export function isInactiveConcentratedPool(pool: Pool | undefined): boolean {
 // Range
 // ---------------------------------------------------------------------------
 
-export type Strategy = "passive" | "aggressive" | "moderate" | null;
+type Strategy = "passive" | "aggressive" | "moderate" | null;
 
 export interface RangeInputs {
   fullRange: boolean;

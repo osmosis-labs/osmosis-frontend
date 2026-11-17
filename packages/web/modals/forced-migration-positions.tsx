@@ -48,7 +48,7 @@ const getListedAsset = (denom: string) =>
 
 /** Display amount for a raw coin, formatted like the portfolio balances;
  *  unlisted denoms show the raw amount. */
-export function formatHoldingCoin(denom: string, amount: string): string {
+function formatHoldingCoin(denom: string, amount: string): string {
   const asset = getListedAsset(denom);
   if (!asset) return `${amount} ${shorten(denom)}`;
   return formatPretty(new CoinPretty(asset.currency, amount), {

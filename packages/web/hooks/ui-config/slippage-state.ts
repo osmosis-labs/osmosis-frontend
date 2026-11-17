@@ -42,7 +42,7 @@ export type SlippageAction =
   | { type: "setUserOverride"; value: boolean };
 
 /** Selects a preset by index; out of range indexes are ignored. */
-export function selectSlippage(
+function selectSlippage(
   state: SlippageState,
   index: number,
   selectable: ReadonlyArray<Dec> = DefaultSelectableSlippages
@@ -53,7 +53,7 @@ export function selectSlippage(
 
 /** Sets the manual slippage (a percentage string, e.g. "0.5").
  *  Non numeric input, values outside [0, 100) and unparsable input are ignored. */
-export function setManualSlippageStr(
+function setManualSlippageStr(
   state: SlippageState,
   str: string
 ): SlippageState {

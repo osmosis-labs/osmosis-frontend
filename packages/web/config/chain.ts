@@ -10,7 +10,7 @@ import { getKeplrCompatibleChain } from "~/config/keplr-chain";
 /**
  * Static chain config, built once from the generated lists and shared by the web runtime.
  */
-export const ChainInfos: ChainInfoWithExplorer[] = ChainList.map((chain) =>
+const ChainInfos: ChainInfoWithExplorer[] = ChainList.map((chain) =>
   getKeplrCompatibleChain({ chain, assetLists: AssetLists })
 );
 
