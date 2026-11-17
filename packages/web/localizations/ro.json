@@ -1418,14 +1418,16 @@
     "creationAwaitingConfirmation": "O creare anterioară a registrului de ordine pentru această pereche încă așteaptă confirmarea onchain. Încearcă din nou în câteva minute.",
     "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis.",
     "returned": "Returnat",
-    "partlyFilled": "Executat parțial",
     "filledPercent": "{percent}% executat",
     "returnedUnfilled": "Returnat (neexecutat)",
     "alreadyReceived": "Deja primit",
     "paidOut": "Plătit",
+    "placed": "Plasat",
+    "activity": "Activitate",
     "howPayoutsWork": "Cum funcționează plățile?",
-    "payoutNote": "Sumele executate sunt de obicei plătite automat în portofelul dumneavoastră, adesea în mai multe plăți pe măsură ce ordinul se execută, și pot ajunge cu ore sau zile înainte să anulați. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită. Anularea returnează doar suma neexecutată.",
-    "limitOrder": "Ordin limită"
+    "payoutNote": "Când un ordin este aproape complet executat, suma executată este de obicei plătită automat în portofelul dumneavoastră, uneori în mai multe plăți. Până atunci, rămâne în ordin. Anularea plătește suma executată care nu a fost încă plătită și returnează suma neexecutată. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită.",
+    "buyLimitOrder": "Ordin limită de cumpărare",
+    "sellLimitOrder": "Ordin limită de vânzare"
   },
   "tradeDetails": {
     "priceImpact": {

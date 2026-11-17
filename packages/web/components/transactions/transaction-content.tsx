@@ -1,4 +1,5 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import type { MappedLimitOrder } from "@osmosis-labs/server";
 import type { AccountStoreWallet } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import { useRouter } from "next/router";
@@ -34,6 +35,8 @@ export const TransactionContent = ({
   page,
   hasNextPage,
   wallet,
+  selectedOrder,
+  onOrderSelect,
 }: {
   setSelectedTransactionHash: (hash: string) => void;
   selectedTransactionHash?: string;
@@ -48,6 +51,8 @@ export const TransactionContent = ({
   page: string;
   hasNextPage: boolean;
   wallet?: AccountStoreWallet;
+  selectedOrder?: MappedLimitOrder;
+  onOrderSelect: (order: MappedLimitOrder) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -188,7 +193,10 @@ export const TransactionContent = ({
               </>
             </TabPanel>
             <TabPanel>
-              <OrderHistory />
+              <OrderHistory
+                selectedOrder={selectedOrder}
+                onOrderSelect={onOrderSelect}
+              />
             </TabPanel>
           </TabPanels>
         </TabGroup>

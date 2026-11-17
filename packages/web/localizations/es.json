@@ -1418,14 +1418,16 @@
     "creationAwaitingConfirmation": "Una creación anterior de libro de órdenes para este par sigue pendiente de confirmación onchain. Inténtalo de nuevo en unos minutos.",
     "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis.",
     "returned": "Devuelto",
-    "partlyFilled": "Ejecutado parcialmente",
     "filledPercent": "{percent}% ejecutado",
     "returnedUnfilled": "Devuelto (no ejecutado)",
     "alreadyReceived": "Ya recibido",
     "paidOut": "Pagado",
+    "placed": "Colocada",
+    "activity": "Actividad",
     "howPayoutsWork": "¿Cómo funcionan los pagos?",
-    "payoutNote": "Los importes ejecutados normalmente se pagan en su billetera de forma automática, a menudo en varios pagos a medida que se ejecuta la orden, y pueden llegar horas o días antes de que la cancele. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado. Cancelar solo devuelve el importe no ejecutado.",
-    "limitOrder": "Orden límite"
+    "payoutNote": "Cuando una orden está casi totalmente ejecutada, el importe ejecutado normalmente se paga en su billetera de forma automática, a veces en más de un pago. Hasta entonces, permanece en la orden. Al cancelar, se paga lo ejecutado que aún no se haya pagado y se devuelve el importe no ejecutado. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado.",
+    "buyLimitOrder": "Orden límite de compra",
+    "sellLimitOrder": "Orden límite de venta"
   },
   "tradeDetails": {
     "priceImpact": {

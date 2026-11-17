@@ -1,9 +1,14 @@
+import type { MappedLimitOrder } from "@osmosis-labs/server";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
+import {
+  OrderDetailsSlideover,
+  OrderModal,
+} from "~/components/complex/orders-history/order-modal";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
 import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
@@ -101,8 +106,18 @@ const Transactions: React.FC = memo(() => {
     setSelectedTransactionHash,
     onRequestClose,
     selectedTransaction,
-    isLargeDesktop,
+    showSlideover,
   } = useTransactionModal({ transactions });
+
+  const [tab] = useQueryState("tab");
+  const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
+  // Closing the side panel slides it out first and clears the order after, so
+  // the table keeps its layout and widens as the panel shrinks.
+  const [isOrderPanelOpen, setIsOrderPanelOpen] = useState(false);
+  const selectOrder = (order: MappedLimitOrder) => {
+    setSelectedOrder(order);
+    setIsOrderPanelOpen(true);
+  };
 
   return (
     <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
@@ -119,8 +134,24 @@ const Transactions: React.FC = memo(() => {
         page={pageString}
         hasNextPage={hasNextPage}
         wallet={wallet}
+        selectedOrder={selectedOrder}
+        onOrderSelect={selectOrder}
       />
-      {isLargeDesktop ? (
+      {tab === "orders" ? (
+        showSlideover ? (
+          <OrderDetailsSlideover
+            order={selectedOrder}
+            open={isOrderPanelOpen}
+            onRequestClose={() => setIsOrderPanelOpen(false)}
+            afterLeave={() => setSelectedOrder(undefined)}
+          />
+        ) : (
+          <OrderModal
+            order={selectedOrder}
+            onRequestClose={() => setSelectedOrder(undefined)}
+          />
+        )
+      ) : showSlideover ? (
         <TransactionDetailsSlideover
           onRequestClose={onRequestClose}
           open={open}

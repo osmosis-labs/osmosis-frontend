@@ -15,7 +15,6 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
-import { OrderModal } from "~/components/complex/orders-history/order-modal";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { SortHeader } from "~/components/table/headers/sort";
@@ -71,8 +70,15 @@ const sortKeys: Record<string, OrderSortKey> = {
 
 const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
+const compactGridClasses = "grid grid-cols-[2fr_1fr_1fr]";
 
-export const OrderHistory = () => {
+export const OrderHistory = ({
+  selectedOrder,
+  onOrderSelect,
+}: {
+  selectedOrder?: MappedLimitOrder;
+  onOrderSelect: (order: MappedLimitOrder) => void;
+}) => {
   // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
   // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
   // memoized reads would keep stale rows. The compiler only flags
@@ -94,9 +100,13 @@ export const OrderHistory = () => {
     return () => observer.disconnect();
   }, []);
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
-  const { isMobile } = useWindowSize(Breakpoint.md);
+  const { isMobile, isExtraLargeDesktop } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
-  const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
+  // The page shows the details panel from xxxl, like the trade history's. It
+  // leaves too little width for every column, so the table takes the layout it
+  // has on xl screens while the panel is open.
+  const isDetailsOpen = isExtraLargeDesktop && !!selectedOrder;
+  const compact = isLargeScreen || isDetailsOpen;
   const [sortKey, setSortKey_] = useState<OrderSortKey>("placedAt");
   // Always sorted, so a click on the sorted column flips its direction instead of clearing it.
   const setSortKey = useCallback((key: OrderSortKey | undefined) => {
@@ -240,33 +250,54 @@ export const OrderHistory = () => {
   }
 
   return (
-    <div className="mt-3 flex flex-col overflow-x-scroll xl:overflow-visible">
+    <div
+      className={classNames(
+        "mt-3 flex flex-col",
+        // Beside the details panel, keep about the width the trade history tab
+        // keeps there, which its search and filter bar sets.
+        isDetailsOpen
+          ? "min-w-[51rem] overflow-visible"
+          : "overflow-x-scroll xl:overflow-visible"
+      )}
+    >
       {historyUnavailable && (
         <p className="body2 mb-3 text-osmoverse-300">
           {t("limitOrders.historyTable.historyUnavailable")}
         </p>
       )}
       <table
-        className="relative min-w-[900px] table-auto xl:min-w-[100%]"
+        className={classNames(
+          "relative table-auto",
+          isDetailsOpen ? "min-w-[100%]" : "min-w-[900px] xl:min-w-[100%]"
+        )}
         ref={listRef}
       >
         {!isLoading && (
           <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
-            <tr className={classNames("bg-osmoverse-1000", gridClasses)}>
+            <tr
+              className={classNames(
+                "bg-osmoverse-1000",
+                isDetailsOpen ? compactGridClasses : gridClasses
+              )}
+            >
               {headers.map((header) => (
                 <th
                   key={header}
-                  className={classNames("flex !px-0", {
+                  className={classNames("flex items-center !px-0", {
                     "md:hidden": !mdHeaders.includes(header),
                     "xl:hidden": !lgHeaders.includes(header),
-                    "xl:justify-end": isLargeScreen && header === "status",
+                    hidden: isDetailsOpen && !lgHeaders.includes(header),
+                    "justify-end": compact && header === "status",
                   })}
                 >
                   {sortKeys[header] ? (
                     <SortHeader<OrderSortKey>
-                      className={classNames("body2 sm:caption mr-auto ml-0", {
-                        "xl:ml-auto xl:mr-0": header === "status",
-                      })}
+                      className={classNames(
+                        "body2 sm:caption",
+                        compact && header === "status"
+                          ? "ml-auto mr-0"
+                          : "mr-auto ml-0"
+                      )}
                       label={t(`limitOrders.historyTable.columns.${header}`)}
                       sortKey={sortKeys[header]}
                       currentSortKey={sortKey}
@@ -283,12 +314,14 @@ export const OrderHistory = () => {
                   )}
                 </th>
               ))}
-              {!isLargeScreen && <th />}
+              {!compact && <th />}
             </tr>
           </thead>
         )}
         <tbody
-          className="bg-transparent xl:overflow-visible"
+          className={classNames("bg-transparent xl:overflow-visible", {
+            "overflow-visible": isDetailsOpen,
+          })}
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {isLoading ? (
@@ -329,14 +362,20 @@ export const OrderHistory = () => {
 
               const order = row as MappedLimitOrder;
               // style.left = isLargeScreen ? "rem" : "0";
-              style.width = isLargeScreen ? "calc(100% + 2rem)" : "100%";
+              style.width = compact ? "calc(100% + 2rem)" : "100%";
               return (
                 <TableOrderRow
                   key={`${virtualRow.index}`}
                   order={order}
                   style={style}
                   refetch={refetch}
-                  onOrderSelect={setSelectedOrder}
+                  onOrderSelect={onOrderSelect}
+                  forceCompact={isDetailsOpen}
+                  isSelected={
+                    isDetailsOpen &&
+                    selectedOrder.order_id === order.order_id &&
+                    selectedOrder.orderbookAddress === order.orderbookAddress
+                  }
                 />
               );
             })
@@ -349,10 +388,6 @@ export const OrderHistory = () => {
             fetchNextPage();
           }
         }}
-      />
-      <OrderModal
-        order={selectedOrder}
-        onRequestClose={() => setSelectedOrder(undefined)}
       />
     </div>
   );
@@ -441,22 +476,20 @@ const TableGroupHeader = ({
               ? t("limitOrders.orderHistoryHeaders.pending")
               : t("limitOrders.orderHistoryHeaders.past")}
           </span>
-          {group === "past" && (
-            <GenericDisclaimer
-              title={t("limitOrders.howPayoutsWork")}
-              body={t("limitOrders.payoutNote")}
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
-                <Icon
-                  id="question"
-                  className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
-                  width={24}
-                  height={24}
-                  viewBox="0 0 24 24"
-                />
-              </div>
-            </GenericDisclaimer>
-          )}
+          <GenericDisclaimer
+            title={t("limitOrders.howPayoutsWork")}
+            body={t("limitOrders.payoutNote")}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
+              <Icon
+                id="question"
+                className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
+                width={24}
+                height={24}
+                viewBox="0 0 24 24"
+              />
+            </div>
+          </GenericDisclaimer>
         </div>
       </td>
     </tr>
@@ -469,11 +502,16 @@ const TableOrderRow = memo(
     style,
     refetch,
     onOrderSelect,
+    forceCompact,
+    isSelected,
   }: {
     order: MappedLimitOrder;
     style: object;
     refetch: () => Promise<any>;
     onOrderSelect: (order: MappedLimitOrder) => void;
+    /** Use the xl layout at any width, e.g. while the details panel is open. */
+    forceCompact: boolean;
+    isSelected: boolean;
   }) => {
     const { t } = useTranslation();
 
@@ -527,14 +565,11 @@ const TableOrderRow = memo(
             ? new Int(1)
             : percentFilled.mul(new Dec(100)).truncate();
           return (
-            <>
-              <span className="text-bullish-400">
-                {t("limitOrders.filledPercent", {
-                  percent: percent.toString(),
-                })}
-              </span>{" "}
-              · {t("limitOrders.cancelled")}
-            </>
+            <span className="text-bullish-400">
+              {t("limitOrders.filledPercent", {
+                percent: percent.toString(),
+              })}
+            </span>
           );
         }
       }
@@ -580,8 +615,12 @@ const TableOrderRow = memo(
         data-transaction-hash={order.placed_tx}
         style={style}
         className={classNames(
-          gridClasses,
-          "hover:cursor-pointer hover:bg-osmoverse-900 xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 sm:[&>td]:!py-0"
+          forceCompact ? compactGridClasses : gridClasses,
+          "hover:cursor-pointer hover:bg-osmoverse-900 xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 sm:[&>td]:!py-0",
+          {
+            "-mx-4 items-center overflow-visible px-4": forceCompact,
+            "bg-osmoverse-850": isSelected,
+          }
         )}
         onClick={() => onOrderSelect(order)}
         tabIndex={0}
@@ -594,7 +633,12 @@ const TableOrderRow = memo(
           }
         }}
       >
-        <td className="flex items-center justify-center !px-0 !text-left xl:hidden">
+        <td
+          className={classNames(
+            "flex items-center justify-center !px-0 !text-left xl:hidden",
+            { hidden: forceCompact }
+          )}
+        >
           <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">
             <Icon
               id="coins"
@@ -708,11 +752,13 @@ const TableOrderRow = memo(
             </div>
           </div>
         </td>
-        <td className="!px-0 !text-left xl:hidden">
+        <td
+          className={classNames("!px-0 !text-left xl:hidden", {
+            hidden: forceCompact,
+          })}
+        >
           <div className="flex flex-col gap-1">
-            <p className="body2 text-osmoverse-300">
-              {baseAsset?.symbol} · {t("limitOrders.limit")}
-            </p>
+            <p className="body2 text-osmoverse-300">1 {baseAsset?.symbol} =</p>
             <p>
               {formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price), {
                 ...getPriceExtendedFormatOptions(price),
@@ -720,7 +766,11 @@ const TableOrderRow = memo(
             </p>
           </div>
         </td>
-        <td className="!px-0 !text-left xl:!py-0 md:hidden">
+        <td
+          className={classNames("!px-0 !text-left xl:!py-0 md:hidden", {
+            "!py-0": forceCompact,
+          })}
+        >
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
@@ -729,9 +779,16 @@ const TableOrderRow = memo(
         <td
           className={classNames("!px-0 !text-left xl:!py-0", {
             "flex items-center xl:justify-end": status === "filled",
+            "!py-0": forceCompact,
+            "justify-end": forceCompact && status === "filled",
           })}
         >
-          <div className="flex flex-col gap-1 xl:items-end xl:justify-end">
+          <div
+            className={classNames(
+              "flex flex-col gap-1 xl:items-end xl:justify-end",
+              { "items-end justify-end": forceCompact }
+            )}
+          >
             {statusComponent}
             <span
               className={classNames(
@@ -749,7 +806,12 @@ const TableOrderRow = memo(
             </span>
           </div>
         </td>
-        <td className="flex w-[150px] items-center justify-end !px-0 !text-left xl:hidden">
+        <td
+          className={classNames(
+            "flex w-[150px] items-center justify-end !px-0 !text-left xl:hidden",
+            { hidden: forceCompact }
+          )}
+        >
           <ActionsCell order={order} refetch={refetch} />
         </td>
       </tr>
