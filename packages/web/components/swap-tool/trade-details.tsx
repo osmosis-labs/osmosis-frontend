@@ -260,14 +260,18 @@ export const TradeDetails = memo(
                       }
                       right={
                         <>
-                          {swapState?.tokenInFeeAmountFiatValue && (
-                            <>
-                              {swapState?.tokenInFeeAmountFiatValue
-                                .toDec()
-                                .gt(new Dec(0)) ? (
-                                <span>
+                          {swapState?.quote?.swapFee &&
+                            (swapState.quote.swapFee.toDec().isZero() ? (
+                              <span className="text-bullish-400">
+                                {t("transfer.free")}
+                              </span>
+                            ) : (
+                              <span>
+                                {swapState.tokenInFeeAmountFiatValue
+                                  .toDec()
+                                  .gt(new Dec(0)) && (
                                   <span className="text-osmoverse-100">
-                                    {swapState?.tokenInFeeAmountFiatValue
+                                    {swapState.tokenInFeeAmountFiatValue
                                       .toDec()
                                       .lte(new Dec(0.01)) ? (
                                       <>&lt;$0.01</>
@@ -275,28 +279,21 @@ export const TradeDetails = memo(
                                       <>
                                         ~
                                         {formatPretty(
-                                          swapState?.tokenInFeeAmountFiatValue,
+                                          swapState.tokenInFeeAmountFiatValue,
                                           {
                                             maxDecimals: 3,
                                             maximumSignificantDigits: 4,
                                           }
                                         )}
                                       </>
-                                    )}
+                                    )}{" "}
                                   </span>
-                                  <span className="text-osmoverse-500">
-                                    {swapState?.quote?.swapFee
-                                      ? ` (${swapState?.quote?.swapFee})`
-                                      : ""}
-                                  </span>
+                                )}
+                                <span className="text-osmoverse-500">
+                                  ({swapState.quote.swapFee.toString()})
                                 </span>
-                              ) : (
-                                <span className="text-bullish-400">
-                                  {t("transfer.free")}
-                                </span>
-                              )}
-                            </>
-                          )}
+                              </span>
+                            ))}
                         </>
                       }
                     />
