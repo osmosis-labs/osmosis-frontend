@@ -7805,6 +7805,7 @@ __metadata:
     "@types/react-dom": "npm:19.3.0"
     "@types/react-modal": "npm:^3.13.1"
     "@types/ws": "npm:^7.4.1"
+    "@vercel/speed-insights": "npm:^1.0.12"
     "@visx/curve": "npm:^4.0.0"
     "@visx/gradient": "npm:^4.0.0"
     "@visx/responsive": "npm:^4.0.0"
@@ -12170,6 +12171,33 @@ __metadata:
   version: 1.12.2
   resolution: "@unrs/resolver-binding-win32-x64-msvc@npm:1.12.2"
   conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@vercel/speed-insights@npm:^1.0.12":
+  version: 1.0.12
+  resolution: "@vercel/speed-insights@npm:1.0.12"
+  peerDependencies:
+    "@sveltejs/kit": ^1 || ^2
+    next: ">= 13"
+    react: ^18 || ^19
+    svelte: ^4
+    vue: ^3
+    vue-router: ^4
+  peerDependenciesMeta:
+    "@sveltejs/kit":
+      optional: true
+    next:
+      optional: true
+    react:
+      optional: true
+    svelte:
+      optional: true
+    vue:
+      optional: true
+    vue-router:
+      optional: true
+  checksum: 10c0/d1cc16952fdaddf8aff76e6c5909e8417cf11efe2458c70392e5172da620bcca39aea9eeaa8eb83b77fb2cb072a69047d62ba890f0c3a75cb110e3edb35b1648
   languageName: node
   linkType: hard
 

@@ -1,8 +1,7 @@
 import { solanaRpcHandler } from "~/server/api-handlers/solana-rpc";
-import { toNodeApiHandler } from "~/utils/fetch-api-handler";
 
-export default toNodeApiHandler(solanaRpcHandler);
+export default solanaRpcHandler;
 
 export const config = {
-  api: { bodyParser: false },
+  runtime: "edge",
 };
