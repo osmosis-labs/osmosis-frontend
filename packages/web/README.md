@@ -86,23 +86,19 @@ requires them; never commit credentials.
 settings if that is intended; otherwise use test wallets and do not broadcast
 real transactions unless explicitly intended.
 
-Set runtime variables and secrets on the `osmosis-frontend-stage` Worker in
-Cloudflare, using the dashboard or Wrangler. For a first deployment, deploy to
-create the Worker, then configure credentials before testing the associated
-features. Only enable providers whose staging credentials are configured, such
-as `SKIP_API_KEY`, `SOLANA_RPC_URL`, and `SWAPPED_COM_SK`. Optional data-provider
-credentials include `COINGECKO_API_KEY` and `NUMIA_API_KEY`. For example, after the
-Worker exists (Wrangler prompts for the secret value):
-
-```bash
-yarn workspace @osmosis-labs/web exec wrangler secret put SOLANA_RPC_URL
-```
+This Worker has no API routes: it forwards `/api/*` to the `osmosis-frontend-api-stage`
+Worker over the `API` service binding, so runtime secrets such as `SKIP_API_KEY`,
+`SOLANA_RPC_URL`, `SWAPPED_COM_SK`, `COINGECKO_API_KEY` and `NUMIA_API_KEY` belong on
+the API Worker, not on `osmosis-frontend-stage`. `api-worker/README.md` covers setting
+them and deploying it. Only enable providers whose staging credentials are configured.
 
 For Solana testing, configure `NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID` at build
 time and enable `solana-skip-routes` in that LaunchDarkly environment. Deployed
 builds intentionally return 404 from `/api/solana-rpc` without the flag enabled.
 
-Deploy to the dedicated staging Worker, not a production route:
+Deploy the API Worker first (`yarn cf:api:deploy` from a `stage` checkout, see
+`api-worker/README.md`): until it exists, the binding fails `/api/*`. Then deploy to the
+dedicated staging Worker, not a production route:
 
 ```bash
 yarn cf:deploy
@@ -135,12 +131,13 @@ contents or Durable Object state; do not delete those resources as a rollback
 step. On a first deployment, stop testing or remove its staging route if needed;
 production remains untouched.
 
-`worker.ts` wraps OpenNext's Worker with the shared cache Vercel's CDN provided, per
-Cloudflare location (`x-edge-cache: HIT|MISS` shows the result):
+The shared cache Vercel's CDN provided is kept per Cloudflare location
+(`x-edge-cache: HIT|MISS` shows the result):
 
 - GET `/api/*` responses that send `Cache-Control: s-maxage` (`/api/pools`,
-  `/api/active-gauges`, public `edge-trpc-assets` queries) are kept for that long.
-- `/_next/image` results are kept for seven days (browsers: one day), keyed by the
+  `/api/active-gauges`, public `edge-trpc-assets` queries) are kept for that long,
+  by the API Worker (`api-worker/dispatch.ts`).
+- `/_next/image` results, cached by `worker.ts`, are kept for seven days (browsers: one day), keyed by the
   formats the browser accepts. The `IMAGES` binding (Cloudflare Images) does the
   resizing; without it OpenNext serves originals. Cloudflare bills unique
   transformations per month beyond the free 5,000, and the Images product must be

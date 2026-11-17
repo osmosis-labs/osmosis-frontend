@@ -10,6 +10,10 @@ const config = {
   reactStrictMode: true,
   experimental: {
     reactCompiler: true,
+    // `yarn cf:build:profile` keeps Next's server chunks unminified so Cloudflare CPU/heap
+    // profiles show their function names (Wrangler's source map stops at OpenNext's handler.mjs).
+    // Regular builds minify: it saves ~260KB gzip of the Worker.
+    serverMinification: process.env.CF_PROFILE !== "true",
   },
   env: {
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
@@ -42,12 +46,6 @@ const config = {
   // than under Node, so Next's file tracing only copies their Node entrypoints. Keeping them external
   // lets OpenNext copy the whole package and rewrite the exports for `workerd`.
   serverExternalPackages: ["isows", "uncrypto"],
-  experimental: {
-    // `yarn cf:build:profile` keeps Next's server chunks unminified so Cloudflare CPU/heap
-    // profiles show their function names (Wrangler's source map stops at OpenNext's handler.mjs).
-    // Regular builds minify: it saves ~260KB gzip of the Worker.
-    serverMinification: process.env.CF_PROFILE !== "true",
-  },
   images: {
     remotePatterns: [
       {
