@@ -48,8 +48,9 @@
   },
   "upload_source_maps": true,
   // Mangles identifiers on top of OpenNext's whitespace/syntax minification (~760KB gzip).
-  // Function and class names are kept (Wrangler's keep_names default), so profiles stay readable.
   "minify": true,
+  // Avoid name-preservation helpers in production (~145 KiB gzip). Enable for readable profiles.
+  "keep_names": false,
   // Per-PR Worker Previews (`wrangler preview`, .github/workflows/cf-deploy.yml). Previews
   // inherit no bindings, so each one the Worker reads from `env` is restated here.
   // Version URLs are not an option: they are not generated for Workers that export a
