@@ -119,11 +119,11 @@ function restore() {
 
 function runBuild() {
   return new Promise((resolve) => {
-    child = spawn(
-      process.execPath,
-      [opennextBin(), "build", "--dangerouslyUseUnsupportedNextVersion"],
-      { cwd: webRoot, stdio: "inherit", env: process.env }
-    );
+    child = spawn(process.execPath, [opennextBin(), "build"], {
+      cwd: webRoot,
+      stdio: "inherit",
+      env: process.env,
+    });
     child.on("exit", (code, signal) => {
       resolve({ code: code ?? 1, signal });
     });
