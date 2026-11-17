@@ -2,7 +2,7 @@ import type { UserPosition, UserPositionDetails } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, {
+import {
   FunctionComponent,
   memo,
   useCallback,

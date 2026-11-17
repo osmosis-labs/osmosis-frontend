@@ -4,14 +4,7 @@ import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
