@@ -10,7 +10,7 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
@@ -75,9 +75,12 @@ const compactGridClasses = "grid grid-cols-[2fr_1fr_1fr]";
 export const OrderHistory = ({
   selectedOrder,
   onOrderSelect,
+  onSelectedOrderChange,
 }: {
   selectedOrder?: MappedLimitOrder;
   onOrderSelect: (order: MappedLimitOrder) => void;
+  /** Receives each refetched copy of the selected order. */
+  onSelectedOrderChange: (order: MappedLimitOrder) => void;
 }) => {
   // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
   // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
@@ -130,6 +133,22 @@ export const OrderHistory = ({
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     sort: { keyPath: sortKey, direction: sortDirection },
   });
+  // The page keeps the copy of the selected order taken on click. Hand it each
+  // refetched copy, so the details show the order's current status and build the
+  // claim or cancel from its current fill. An order no longer in the loaded
+  // pages keeps its last copy.
+  const refetchedSelectedOrder =
+    selectedOrder &&
+    orders.find(
+      (o) =>
+        o.order_id === selectedOrder.order_id &&
+        o.orderbookAddress === selectedOrder.orderbookAddress
+    );
+  useEffect(() => {
+    if (refetchedSelectedOrder && refetchedSelectedOrder !== selectedOrder) {
+      onSelectedOrderChange(refetchedSelectedOrder);
+    }
+  }, [refetchedSelectedOrder, selectedOrder, onSelectedOrderChange]);
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
     () =>
@@ -365,7 +384,8 @@ export const OrderHistory = ({
               style.width = compact ? "calc(100% + 2rem)" : "100%";
               return (
                 <TableOrderRow
-                  key={`${virtualRow.index}`}
+                  // Keyed by order, so a row's pending claim or cancel stays with its order when the list reorders.
+                  key={`${order.orderbookAddress}-${order.order_id}`}
                   order={order}
                   style={style}
                   refetch={refetch}

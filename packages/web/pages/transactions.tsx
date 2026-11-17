@@ -136,6 +136,7 @@ const Transactions: React.FC = memo(() => {
         wallet={wallet}
         selectedOrder={selectedOrder}
         onOrderSelect={selectOrder}
+        onSelectedOrderChange={setSelectedOrder}
       />
       {tab === "orders" ? (
         showSlideover ? (

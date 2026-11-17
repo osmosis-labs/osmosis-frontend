@@ -4,7 +4,14 @@ import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { Icon } from "~/components/assets";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
@@ -38,6 +45,7 @@ export const OrderModal = memo(({ order, onRequestClose }: OrderModalProps) => {
       className="!px-0 !pb-0 !pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
     >
       <OrderDetails
+        key={order && `${order.orderbookAddress}-${order.order_id}`}
         order={order}
         isModal={true}
         onRequestClose={onRequestClose}
@@ -72,6 +80,7 @@ export const OrderDetailsSlideover = ({
       afterLeave={afterLeave}
     >
       <OrderDetails
+        key={`${order.orderbookAddress}-${order.order_id}`}
         order={order}
         isModal={false}
         onRequestClose={onRequestClose}
@@ -93,6 +102,15 @@ const OrderDetails = ({
 }: OrderDetailsProps) => {
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [broadcasting, setBroadcasting] = useState(false);
+  // The details are keyed by order, so they unmount when another order is
+  // selected. An action still signing then mustn't close that order's details.
+  const isShown = useRef(false);
+  useEffect(() => {
+    isShown.current = true;
+    return () => {
+      isShown.current = false;
+    };
+  }, []);
 
   const isPastOrder =
     order?.status === "cancelled" || order?.status === "fullyClaimed";
@@ -258,7 +276,7 @@ const OrderDetails = ({
         undefined
       ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
-      onRequestClose();
+      if (isShown.current) onRequestClose();
     } catch (error) {
       console.error(error);
       setBroadcasting(false);

@@ -37,6 +37,7 @@ export const TransactionContent = ({
   wallet,
   selectedOrder,
   onOrderSelect,
+  onSelectedOrderChange,
 }: {
   setSelectedTransactionHash: (hash: string) => void;
   selectedTransactionHash?: string;
@@ -53,6 +54,7 @@ export const TransactionContent = ({
   wallet?: AccountStoreWallet;
   selectedOrder?: MappedLimitOrder;
   onOrderSelect: (order: MappedLimitOrder) => void;
+  onSelectedOrderChange: (order: MappedLimitOrder) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -196,6 +198,7 @@ export const TransactionContent = ({
               <OrderHistory
                 selectedOrder={selectedOrder}
                 onOrderSelect={onOrderSelect}
+                onSelectedOrderChange={onSelectedOrderChange}
               />
             </TabPanel>
           </TabPanels>
