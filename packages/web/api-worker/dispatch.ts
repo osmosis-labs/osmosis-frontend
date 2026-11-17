@@ -8,8 +8,7 @@ type WaitUntil = (promise: Promise<unknown>) => void;
 /**
  * API Worker fetch, with handlers injected so tests never load the server bundle.
  *
- * Blocked user agents get the same 403 as `middleware.ts` (matcher `/api/:path*`) and never see a
- * cached response. Unknown paths are JSON 404. Handler throws become a JSON 500 with no stack.
+ * Blocked user agents get 403 and never see a cached response. Unknown paths are JSON 404. Handler throws become a JSON 500 with no stack.
  * Method checks stay inside the handlers.
  */
 export async function handleApiRequest(

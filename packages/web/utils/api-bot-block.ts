@@ -1,7 +1,7 @@
 /**
  * Whether an API request comes from the Python requests library. These are likely bots using our
- * router backend for arbs or other purposes. Shared by the middleware and the Cloudflare Worker's
- * API cache, which must not serve cached responses to clients the middleware blocks.
+ * API backend for arbs or other purposes. The API Worker checks this before
+ * serving a cached response.
  */
 export function isBlockedApiUserAgent(userAgent: string | null): boolean {
   return (userAgent ?? "").includes("python-requests");

@@ -7,8 +7,8 @@ type WaitUntil = (promise: Promise<unknown>) => void;
 export const EDGE_CACHE_STATUS_HEADER = "x-edge-cache";
 
 /**
- * How long optimized images stay at the edge, and in browsers. Vercel keeps them for a year
- * (`max-age=31536000`); token logos can change in place upstream, so stay well under that.
+ * How long optimized images stay at the edge, and in browsers. Token logos can
+ * change in place upstream, so avoid caching them for a full year.
  */
 export const IMAGE_EDGE_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const IMAGE_BROWSER_TTL_SECONDS = 24 * 60 * 60;
@@ -110,7 +110,7 @@ function applyEdgeCache(
 
 /**
  * Caches GET `/api/*` responses that send `Cache-Control: s-maxage`. Routes decide what is
- * shareable through that header (see `utils/trpc-cdn-cache.ts`). Like Vercel, the key is the URL
+ * shareable through that header (see `utils/trpc-cdn-cache.ts`). The key is the URL
  * alone, and browsers get the header without `s-maxage`.
  */
 export function withApiEdgeCache(
@@ -177,7 +177,7 @@ function parseCacheControl(header: string | null): Map<string, string> {
   return directives;
 }
 
-/** Cache-Control without the CDN-only directives, as Vercel sends it to browsers. */
+/** Cache-Control for browsers, without the CDN-only directives. */
 function withoutSharedDirectives(header: string | null): string {
   return (header ?? "")
     .split(",")

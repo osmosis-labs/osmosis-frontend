@@ -18,10 +18,6 @@ const config = {
     serverMinification: process.env.CF_PROFILE !== "true",
   },
   env: {
-    // Vercel sets VERCEL=1 at build time. Speed Insights loads
-    // /_vercel/speed-insights/script.js, which only Vercel serves, so the
-    // Cloudflare build leaves it out.
-    NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS: process.env.VERCEL ? "true" : "",
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
     // exposed; the URLs carry API keys and stay server-side. An explicit list
@@ -62,6 +58,16 @@ const config = {
         hostname: "raw.githubusercontent.com",
       },
     ],
+  },
+  // Node development/start uses the local API Worker. Deployed Cloudflare requests
+  // reach the API service binding in worker.ts before OpenNext handles rewrites.
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://127.0.0.1:8787/api/:path*",
+      },
+    ];
   },
   async redirects() {
     return [

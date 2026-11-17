@@ -1,9 +1,6 @@
 /**
  * @jest-environment node
  */
-import fs from "node:fs";
-import path from "node:path";
-
 import { handleApiRequest } from "../dispatch";
 import {
   API_HANDLER_IDS,
@@ -65,20 +62,6 @@ function dispatch(url: string, init?: RequestInit, handlers = stubHandlers()) {
   };
 }
 
-/** Every `pages/api` file, relative to that directory. */
-function listApiPageFiles(dir: string, prefix = ""): string[] {
-  const files: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
-    if (entry.isDirectory()) {
-      files.push(...listApiPageFiles(path.join(dir, entry.name), rel));
-    } else if (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")) {
-      files.push(rel);
-    }
-  }
-  return files;
-}
-
 describe("matchApiRoute", () => {
   it.each([
     ["/api/trpc/pools.list", "trpc"],
@@ -125,13 +108,8 @@ describe("matchApiRoute", () => {
   });
 });
 
-describe("pages/api drift", () => {
-  it("has a route-table entry for every pages/api file, and no extra entries", () => {
-    const root = path.resolve(__dirname, "../../pages/api");
-    const onDisk = listApiPageFiles(root).sort();
-    const inTable = API_ROUTES.map((route) => route.page).sort();
-
-    expect(inTable).toEqual(onDisk);
+describe("API route table", () => {
+  it("routes every handler exactly once", () => {
     expect(new Set(API_ROUTES.map((route) => route.handlerId)).size).toBe(
       API_HANDLER_IDS.length
     );

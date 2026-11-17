@@ -2,7 +2,7 @@
 
 /**
  * Security headers for every response, applied from `headers()` in
- * `next.config.js`, so the Vercel and OpenNext (Cloudflare Workers) builds
+ * `next.config.js`, so local Next and OpenNext (Cloudflare Workers) builds
  * serve the same policy.
  *
  * The CSP is a static header: pages use the pages router with ISR and have no
@@ -52,8 +52,7 @@ const WORMHOLE_CONNECT_ORIGIN = "https://www.unpkg.com";
 
 /**
  * @param {{ isDev: boolean, wormholeConnect: boolean }} options `isDev` is
- *  `next dev`: React Refresh needs `eval`, and Vercel Speed Insights loads its
- *  debug script from Vercel's CDN. `wormholeConnect` is for /wormhole, whose
+ *  `next dev`: React Refresh needs `eval`. `wormholeConnect` is for /wormhole, whose
  *  third-party bundle loads from unpkg and evaluates strings.
  * @returns {Record<string, string[]>}
  */
@@ -61,7 +60,7 @@ function cspDirectives({ isDev, wormholeConnect }) {
   return {
     "default-src": ["'self'"],
     "script-src": [
-      // Includes /tradingview/ and /_vercel/speed-insights/.
+      // Includes /tradingview/.
       "'self'",
       // Nomic, Wormhole and the Solana/Sui SDKs instantiate WebAssembly.
       "'wasm-unsafe-eval'",
@@ -69,7 +68,6 @@ function cspDirectives({ isDev, wormholeConnect }) {
       "https://static.cloudflareinsights.com",
       ...(wormholeConnect ? [WORMHOLE_CONNECT_ORIGIN] : []),
       ...(isDev || wormholeConnect ? ["'unsafe-eval'"] : []),
-      ...(isDev ? ["https://va.vercel-scripts.com"] : []),
     ],
     "style-src": [
       // Styled and animation libraries set inline styles.

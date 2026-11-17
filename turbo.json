@@ -36,7 +36,6 @@
   },
   "globalEnv": [
     "NODE_ENV",
-    "VERCEL_URL",
     "PORT",
     "NEXT_PUBLIC_SQUID_INTEGRATOR_ID",
     "NEXT_PUBLIC_SIDECAR_BASE_URL",
