@@ -1,10 +1,32 @@
 import { type BrowserContext, chromium } from "@playwright/test";
 import { fail } from "assert";
 
-import { getKeplrExtensionId } from "./pages/keplr-helper";
+import { getKeplrExtensionId, isKeplrPopupPage } from "./pages/keplr-helper";
 import { WalletPage } from "./pages/keplr-page";
 import { TestConfig } from "./test-config";
 import { UnzipExtension } from "./unzip-extension";
+
+/**
+ * Keplr positions each approval popup from `windows.getCurrent()`, which in its
+ * service worker means the last focused window. When a popup closes, nothing on
+ * the CI runner's desktop hands focus back to the app window, so the next popup
+ * can be placed from a window that no longer exists, or not opened at all; the
+ * test then waits out its timeout. Give the app window focus back as soon as
+ * each popup closes.
+ */
+function refocusAppAfterKeplrPopups(context: BrowserContext) {
+  context.on("page", (page) => {
+    page.once("close", () => {
+      if (!isKeplrPopupPage(page)) return;
+      const app = context
+        .pages()
+        .find(
+          (p) => !p.isClosed() && !p.url().startsWith("chrome-extension://")
+        );
+      app?.bringToFront().catch(() => {});
+    });
+  });
+}
 
 export class SetupKeplr {
   /**
@@ -81,6 +103,7 @@ export class SetupKeplr {
     try {
       const context = await chromium.launchPersistentContext("", testConfig);
       context.setDefaultNavigationTimeout(30_000);
+      if (!headless) refocusAppAfterKeplrPopups(context);
       const page = await this.getKeplrRegisterPage(context);
       await page.waitForURL("**/register.html#", {
         timeout: 15_000,
