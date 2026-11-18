@@ -912,6 +912,9 @@
     "free": "Özgür",
     "cheapest": "En ucuz",
     "fastest": "En hızlı",
+    "transferSpeed": "Transfer hızı",
+    "standardSpeed": "Standart",
+    "fastSpeed": "Hızlı",
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
@@ -1344,6 +1347,7 @@
     "cancel": "İptal et",
     "daysAgo": "{days} gün önce",
     "hoursAgo": "{hours} saat önce",
+    "minutesAgo": "{minutes} dakika önce",
     "buyWith": "{coinA} veya {coinB} ile satın alın",
     "orderHistory": "Emir geçmişi",
     "tradeAnotherAssetOr": "Başka bir varlığı {coinA} veya {coinB} karşılığında takas edin",
@@ -1426,12 +1430,16 @@
     "creationAwaitingConfirmation": "Bu parite için önceki emir defteri oluşturma işlemi hâlâ zincir üstü onay bekliyor. Birkaç dakika sonra tekrar deneyin.",
     "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar.",
     "returned": "İade edildi",
-    "partlyFilled": "Kısmen gerçekleşti",
+    "filledPercent": "%{percent} gerçekleşti",
     "returnedUnfilled": "İade edildi (gerçekleşmeyen)",
     "alreadyReceived": "Zaten alındı",
+    "paidOut": "Ödendi",
+    "placed": "Emir verildi",
+    "activity": "Hareketler",
     "howPayoutsWork": "Ödemeler nasıl çalışır?",
-    "payoutNote": "Gerçekleşen tutarlar genellikle cüzdanınıza otomatik olarak, çoğu zaman emir gerçekleştikçe birkaç ödeme halinde aktarılır ve iptal etmenizden saatler ya da günler önce gelebilir. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir. İptal etmek yalnızca gerçekleşmeyen tutarı iade eder.",
-    "limitOrder": "Limit emir"
+    "payoutNote": "Bir emir neredeyse tamamen gerçekleştiğinde, gerçekleşen tutar genellikle cüzdanınıza otomatik olarak aktarılır, bazen birden fazla ödeme halinde. O zamana kadar emirde kalır. İptal etmek, henüz ödenmemiş gerçekleşen tutarı öder ve gerçekleşmeyen tutarı iade eder. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir.",
+    "buyLimitOrder": "Limit alış emri",
+    "sellLimitOrder": "Limit satış emri"
   },
   "tradeDetails": {
     "priceImpact": {

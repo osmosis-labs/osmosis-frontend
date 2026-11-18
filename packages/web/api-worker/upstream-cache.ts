@@ -2,8 +2,7 @@
  * Shared Cache API in front of upstream GETs the API Worker makes.
  *
  * Installed by wrapping `globalThis.fetch` from `worker.ts`. Shared packages
- * keep calling `fetch` unchanged, so the Vercel monolith (which never loads
- * this module) is unaffected. The allowlist is `upstream-cache-rules.ts`.
+ * keep calling `fetch` unchanged. Only the API Worker loads this module. The allowlist is `upstream-cache-rules.ts`.
  *
  * Cache failures and a missing request context fall through to the network.
  */

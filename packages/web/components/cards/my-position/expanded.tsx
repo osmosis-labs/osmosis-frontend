@@ -14,7 +14,7 @@ import moment from "dayjs";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, {
+import {
   ComponentProps,
   FunctionComponent,
   memo,

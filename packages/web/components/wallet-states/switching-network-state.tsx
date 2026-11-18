@@ -1,5 +1,4 @@
 import { isNil } from "@osmosis-labs/utils";
-import React from "react";
 
 interface SwitchingNetworkStateProps {
   walletLogo?: string;

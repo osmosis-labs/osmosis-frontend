@@ -3,18 +3,17 @@
 The Cloudflare frontend's own backend. The OpenNext pages Worker keeps pages and
 `/_next/image` and forwards `/api/*` here over its `API` service binding
 (`worker.ts`), so the traffic router only picks a frontend and never routes API
-calls. Vercel stays a monolith: `pages/api/*` and `middleware.ts` still build and
-serve there.
+calls. API handlers live in `server/api-handlers`; `routes.ts` is the route table
+and `handlers.ts` maps its IDs to Fetch handlers. There are no Next API wrappers.
 
-| Branch      | Pages Worker                  | API Worker                                                                     |
-| ----------- | ----------------------------- | ------------------------------------------------------------------------------ |
-| `stage`     | Vercel                        | `osmosis-frontend-api-stage` (this config; deploy from here)                   |
-| `stage-cf`  | `osmosis-frontend-stage`      | same Worker name, bound by the pages Worker; do not deploy it from this branch |
-| `master-cf` | `osmosis-frontend-production` | `osmosis-frontend-api-production`                                              |
+| Branch   | Pages Worker                  | API Worker                        |
+| -------- | ----------------------------- | --------------------------------- |
+| `stage`  | `osmosis-frontend-stage`      | `osmosis-frontend-api-stage`      |
+| `master` | `osmosis-frontend-production` | `osmosis-frontend-api-production` |
 
-The route table is `routes.ts`. It must list every file under `pages/api`; the Jest
-drift test fails when one is missing. Handlers live in `server/api-handlers` and are
-the same functions the Next wrappers call.
+`.github/workflows/cf-deploy.yml` deploys both Workers on pushes to those branches,
+API first. PR Previews use the deployed stage API Worker, so a PR's API changes
+are not included in its Preview. Validate those locally before merging.
 
 ## Environment
 
@@ -27,8 +26,9 @@ Secrets are not written into `wrangler.jsonc` or the bundle. `nodejs_compat` on
 compatibility date `2026-09-01` copies vars and secrets onto `process.env` before the
 module body runs, so module-scope reads in `@osmosis-labs/server` see them. Set them
 with `yarn wrangler secret put <NAME> -c api-worker/wrangler.jsonc` from `packages/web`
-(or `api-worker/.dev.vars` for `cf:api:dev`). A bare `wrangler secret put` does not
-select this config, and on `stage-cf` it would write the pages Worker instead:
+(or `api-worker/.dev.vars` for local development). A bare `wrangler secret put`
+does not select this config and would write the pages Worker instead. Add
+`--env production` when setting production secrets:
 
 - `NUMIA_API_KEY`
 - `COINGECKO_API_KEY`
@@ -61,17 +61,23 @@ From `packages/web`:
 
 ```bash
 yarn cf:api:dry-run   # bundle only, writes .wrangler/api
-yarn cf:api:dev       # local Worker
+yarn cf:api:dev       # local Worker on port 8787, using the development env
+yarn cf:api:start     # local Worker on port 8787, using the production env
 yarn cf:api:deploy    # deploys osmosis-frontend-api-stage
 ```
 
-`stage` owns `osmosis-frontend-api-stage`. Run `yarn cf:api:deploy` from `packages/web`
-on that branch. `stage-cf` uses the same Worker name for its pages binding, so a
-deploy from that checkout overwrites this one. `master-cf` renames the Worker
-before its own deploy. There is no public URL: `workers_dev` and preview URLs are
+The default config targets stage. Add `--env production` to deploy the production
+API Worker. There is no public URL: `workers_dev` and preview URLs are
 off, and the pages Worker reaches this one over the `API` service binding. Deploy
 this Worker before the pages Worker: until it exists, that binding has nothing to
-call and Cloudflare `/api/*` fails. Smoke-test with `yarn cf:api:dev` or
+call and Cloudflare `/api/*` fails.
+
+`yarn dev` and `yarn start` run this local Worker alongside Next, which forwards
+`/api/*` to port 8787. Set local runtime secrets in `api-worker/.dev.vars`; public
+values use development dotenv files for `dev` and production dotenv files for
+`start`, matching Next.
+
+Smoke-test with `yarn cf:api:dev` or
 `wrangler dev --remote -c api-worker/wrangler.jsonc`, not a workers.dev hostname.
 
 The `app-only` upstream exception (`sqsprod.osmosis.zone`, `rpc.app.osmosis.zone`,

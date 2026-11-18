@@ -10,7 +10,7 @@ import {
 } from "@headlessui/react";
 import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
-import React, { Fragment, memo, useMemo, useState } from "react";
+import { Fragment, memo, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";

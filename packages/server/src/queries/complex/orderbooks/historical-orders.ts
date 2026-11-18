@@ -155,6 +155,16 @@ async function mapHistoricalToMapped(
       totalFilled,
       orderbookAddress: o.contract,
       placed_tx: o.place_tx_hash,
+      cancel_tx: o.cancel_tx_hash ?? undefined,
+      cancelled_at: o.cancel_timestamp
+        ? dayjs.utc(o.cancel_timestamp).unix()
+        : undefined,
+      // Numia has payouts only for orders placed since 2026-11-09, and backfills older ones over time.
+      claims: o.claims?.map((c) => ({
+        tx: c.tx_hash,
+        claimed_at: dayjs.utc(c.timestamp).unix(),
+        amount: new Dec(c.amount),
+      })),
     };
   });
 }

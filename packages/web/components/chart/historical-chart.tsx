@@ -6,7 +6,7 @@ import {
   LineType,
   Time,
 } from "lightweight-charts";
-import React, { FunctionComponent, memo } from "react";
+import { FunctionComponent, memo } from "react";
 
 import { AreaChartController } from "~/components/chart/light-weight-charts/area-chart";
 import { priceFormatter } from "~/components/chart/light-weight-charts/utils";

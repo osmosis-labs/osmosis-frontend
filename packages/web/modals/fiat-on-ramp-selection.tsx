@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";

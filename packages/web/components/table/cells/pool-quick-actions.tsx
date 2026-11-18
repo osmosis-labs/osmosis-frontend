@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { PoolCompositionCell } from "~/components/table/cells/pool-composition";

@@ -6,7 +6,7 @@ import {
 import { type Address, createPublicClient } from "viem";
 import { getTransactionReceipt } from "viem/actions";
 
-/** This app's EVM RPC route (pages/api/evm-rpc), which forwards to the
+/** This app's EVM RPC route (/api/evm-rpc), which forwards to the
  *  chain's keyed provider server-side. */
 const EVM_RPC_PROXY_PATH = "/api/evm-rpc";
 

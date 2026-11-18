@@ -12,7 +12,7 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
 - [React](https://reactjs.org/): ui
 - [Tailwind CSS](https://tailwindcss.com/): styling, theming
 - [Next.js](https://nextjs.org/): scaffolding/SSR/CDN/SEO
-  - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimizations out of the box, behind [CloudFlare](https://www.cloudflare.com/)
+  - Cloudflare Workers hosts the OpenNext frontend and a separate API Worker.
 - [Turbo Repo](https://turbo.build/repo): mono repo management with package script execution, with heavy emphasis on build caching (including shared remote caching in Vercel)
 
 ## Deployment 🚀

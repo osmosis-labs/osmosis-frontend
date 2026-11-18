@@ -7,7 +7,7 @@ import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import React, { PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 
 import { useEstimateTxFees } from "../use-estimate-tx-fees";
 
