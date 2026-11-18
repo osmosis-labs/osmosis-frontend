@@ -8,7 +8,8 @@ COPY packages /app/packages/
 RUN yarn
 RUN yarn build
 
-FROM node:24.21.0-alpine
+# The local API Worker uses workerd, which requires glibc.
+FROM node:24.21.0-slim
 
 WORKDIR /app
 COPY --from=build /app .

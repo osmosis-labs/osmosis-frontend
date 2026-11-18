@@ -10,7 +10,7 @@ import {
   buildChartTheme,
   XYChart,
 } from "@visx/xychart";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { theme } from "~/tailwind.config";
 

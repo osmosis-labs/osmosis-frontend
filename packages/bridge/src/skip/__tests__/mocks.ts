@@ -858,3 +858,214 @@ export const ETH_OsmosisToEthereum_DestinationSwap_Msgs = {
   txs: [],
   estimated_fees: [],
 };
+
+/** Base USDC as Skip describes it: the asset a Go Fast leg moves and charges in. */
+const BaseUsdcSkipAsset = {
+  denom: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  chain_id: "8453",
+  origin_denom: "",
+  origin_chain_id: "",
+  trace: "",
+  is_cw20: false,
+  is_evm: true,
+  is_svm: false,
+  symbol: "USDC",
+  name: "Base USDC",
+  decimals: 6,
+  token_contract: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  coingecko_id: "usd-coin",
+  recommended_symbol: "USDC",
+};
+
+/** Registry entries for the Go Fast pair, added to `SkipAssets` per test. */
+export const GoFastSkipAssets = {
+  "8453": {
+    assets: [
+      {
+        denom: "base-native",
+        chain_id: "8453",
+        origin_denom: "base-native",
+        origin_chain_id: "8453",
+        trace: "",
+        is_cw20: false,
+        is_evm: true,
+        is_svm: false,
+        symbol: "ETH",
+        name: "Ethereum",
+        decimals: 18,
+        coingecko_id: "ethereum",
+        recommended_symbol: "ETH",
+      },
+      BaseUsdcSkipAsset,
+    ],
+  },
+  "osmosis-1": {
+    assets: [
+      {
+        denom:
+          "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        chain_id: "osmosis-1",
+        origin_denom:
+          "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        origin_chain_id: "osmosis-1",
+        trace: "",
+        is_cw20: false,
+        is_evm: false,
+        is_svm: false,
+        symbol: "allETH",
+        name: "allETH",
+        decimals: 18,
+        coingecko_id: "ethereum",
+        recommended_symbol: "allETH",
+      },
+      {
+        denom:
+          "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+        chain_id: "osmosis-1",
+        origin_denom:
+          "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC",
+        origin_chain_id: "osmosis-1",
+        trace: "",
+        is_cw20: false,
+        is_evm: false,
+        is_svm: false,
+        // Skip lists allUSDC with no coingecko_id: only its symbol says USDC.
+        symbol: "USDC",
+        name: "USDC",
+        decimals: 6,
+        recommended_symbol: "USDC",
+      },
+    ],
+  },
+};
+
+/**
+ * 0.01 ETH on Base -> allETH on Osmosis through Go Fast, trimmed from a live
+ * `/route` response (2026-11-06, `go_fast: true`). Skip has no standard route
+ * for this pair. The ETH is swapped to Base USDC, Go Fast moves it to Osmosis
+ * as USDC.noble in about 10 seconds, and it is swapped to allETH. The fee is
+ * the BRIDGE entry: 10 bps (22363) plus 10000 each for the source and
+ * destination chains, 42363 Base USDC in total, deducted in transit.
+ */
+export const ETH_BaseToOsmosisAllEth_GoFastRoute = {
+  source_asset_denom: "base-native",
+  source_asset_chain_id: "8453",
+  dest_asset_denom:
+    "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+  dest_asset_chain_id: "osmosis-1",
+  amount_in: "10000000000000000",
+  amount_out: "9932414730421164",
+  operations: [
+    {
+      evm_swap: {
+        input_token: "",
+        amount_in: "10000000000000000",
+        swap_calldata: "0xead2fe5b",
+        amount_out: "22362578",
+        from_chain_id: "8453",
+        denom_in: "base-native",
+        denom_out: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        swap_venues: [{ name: "base-uniswap-v3", chain_id: "8453" }],
+      },
+      tx_index: 0,
+      amount_in: "10000000000000000",
+      amount_out: "22362578",
+    },
+    {
+      go_fast_transfer: {
+        from_chain_id: "8453",
+        to_chain_id: "osmosis-1",
+        fee: {
+          fee_asset: BaseUsdcSkipAsset,
+          bps_fee: "10",
+          bps_fee_amount: "22363",
+          bps_fee_usd: "0.022352",
+          source_chain_fee_amount: "10000",
+          source_chain_fee_usd: "0.009995",
+          destination_chain_fee_amount: "10000",
+          destination_chain_fee_usd: "0.009995",
+        },
+        bridge_id: "GO_FAST",
+        denom_in: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        denom_out:
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        source_domain: "8453",
+        destination_domain: "875",
+      },
+      tx_index: 0,
+      amount_in: "22362578",
+      amount_out: "22320215",
+    },
+    {
+      swap: {
+        swap_in: {
+          swap_venue: { name: "osmosis-poolmanager", chain_id: "osmosis-1" },
+          swap_operations: [
+            {
+              pool: "1948",
+              denom_in:
+                "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+              denom_out:
+                "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+            },
+          ],
+          swap_amount_in: "22320215",
+          price_impact_percent: "0.2023",
+          estimated_amount_out: "9932414730421164",
+        },
+        from_chain_id: "osmosis-1",
+        chain_id: "osmosis-1",
+        denom_in:
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+        denom_out:
+          "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+      },
+      tx_index: 0,
+      amount_in: "22320215",
+      amount_out: "9932414730421164",
+    },
+  ],
+  chain_ids: ["8453", "osmosis-1"],
+  does_swap: true,
+  estimated_amount_out: "9932414730421164",
+  swap_venues: [
+    { name: "base-uniswap-v3", chain_id: "8453" },
+    { name: "osmosis-poolmanager", chain_id: "osmosis-1" },
+  ],
+  txs_required: 1,
+  usd_amount_in: "22.2576",
+  usd_amount_out: "22.10717141",
+  estimated_fees: [
+    {
+      fee_type: "BRIDGE",
+      bridge_id: "GO_FAST",
+      amount: "42363",
+      usd_amount: "0.042342",
+      origin_asset: BaseUsdcSkipAsset,
+      chain_id: "8453",
+      tx_index: 0,
+      fee_behavior: "FEE_BEHAVIOR_DEDUCTED",
+    },
+  ],
+  required_chain_addresses: ["8453", "osmosis-1", "osmosis-1"],
+  estimated_route_duration_seconds: 10,
+};
+
+/** The single EVM transaction Skip builds for that route (calldata trimmed). */
+export const ETH_BaseToOsmosisAllEth_GoFastMsgs = {
+  msgs: [
+    {
+      evm_tx: {
+        chain_id: "8453",
+        to: "0x9335C0c0CBc0317291fd48c00b2f71C8b39DA6F8",
+        // Exactly amount_in: the Go Fast fee is deducted, not added on top.
+        value: "10000000000000000",
+        data: "b5f0d695",
+        required_erc20_approvals: [],
+        signer_address: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      },
+    },
+  ],
+  txs: [],
+  estimated_fees: [],
+};

@@ -903,6 +903,9 @@
     "free": "Free",
     "cheapest": "Cheapest",
     "fastest": "Fastest",
+    "transferSpeed": "Transfer speed",
+    "standardSpeed": "Standard",
+    "fastSpeed": "Fast",
     "stepLabels": {
       "asset": "Asset",
       "amount": "Amount",
@@ -1335,6 +1338,7 @@
     "cancel": "Cancel",
     "daysAgo": "{days}d ago",
     "hoursAgo": "{hours}h ago",
+    "minutesAgo": "{minutes}m ago",
     "buyWith": "Buy with {coinA} or {coinB}",
     "orderHistory": "Order history",
     "tradeAnotherAssetOr": "Trade another asset for {coinA} or {coinB}",
@@ -1417,12 +1421,16 @@
     "creationAwaitingConfirmation": "A previous orderbook creation for this pair is still awaiting confirmation onchain. Try again in a few minutes.",
     "createOrderbookDescription": "Creating an orderbook pool allows limit orders to be placed for this trading pair on Osmosis.",
     "returned": "Returned",
-    "partlyFilled": "Partly filled",
+    "filledPercent": "{percent}% filled",
     "returnedUnfilled": "Returned (unfilled)",
     "alreadyReceived": "Already received",
+    "paidOut": "Paid out",
+    "placed": "Placed",
+    "activity": "Activity",
     "howPayoutsWork": "How do payouts work?",
-    "payoutNote": "Filled amounts are usually paid into your wallet automatically, often in several payouts as the order fills, and can arrive hours or days before you cancel. If an order shows Claim, part of the filled amount hasn't been paid yet. Cancelling only returns the unfilled amount.",
-    "limitOrder": "Limit Order"
+    "payoutNote": "Once an order is almost fully filled, the filled amount is usually paid into your wallet automatically, sometimes in more than one payout. Until then, it stays in the order. Cancelling pays out anything filled that hasn't been paid yet and returns the unfilled amount. If an order shows Claim, part of the filled amount hasn't been paid yet.",
+    "buyLimitOrder": "Buy Limit Order",
+    "sellLimitOrder": "Sell Limit Order"
   },
   "tradeDetails": {
     "priceImpact": {

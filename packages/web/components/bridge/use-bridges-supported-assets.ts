@@ -54,10 +54,16 @@ export const useBridgesSupportedAssets = ({
   // Sources whose only route is multi-tx (e.g. Solana USDC into an alloy)
   // are advertised only where the flow can execute them: deposits, with the
   // flag on. Mirrors the quote-side `allowMultiTx` gating in useBridgeQuotes.
-  const { multiTxBridgeRoutes, solanaSkipRoutes } = useFeatureFlags();
+  const { multiTxBridgeRoutes, solanaSkipRoutes, fastBridgeTransfers } =
+    useFeatureFlags();
   const allowMultiTx = multiTxBridgeRoutes === true && direction === "deposit";
   // Kill switch for the Phantom-signed Solana routes, in both directions.
   const allowSolana = solanaSkipRoutes === true;
+  // Kill switch for fast transfers, in both directions: sources and
+  // destinations that only a fast route reaches (e.g. Base ETH into allETH)
+  // are offered only while it is on. Mirrors the fast quote in
+  // useBridgeQuotes.
+  const allowFastTransfer = fastBridgeTransfers === true;
 
   const supportedAssetsResults = api.useQueries((t) =>
     supportedAssetsBridges.flatMap((bridge) =>
@@ -74,6 +80,7 @@ export const useBridgesSupportedAssets = ({
             chain,
             allowMultiTx,
             allowSolana,
+            allowFastTransfer,
           },
           {
             enabled: !isNil(assets),

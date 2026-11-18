@@ -1,6 +1,6 @@
 import { WalletRepo } from "@cosmos-kit/core";
 import classNames from "classnames";
-import React, { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { useTranslation, WalletSelectOption } from "~/hooks";
 import { OnConnectWallet } from "~/modals/wallet-select/use-connect-wallet";

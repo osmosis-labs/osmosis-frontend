@@ -3,7 +3,7 @@
  * Worker. The pages Worker (`worker.ts`) forwards `/api/*` here over its `API` service binding.
  *
  * `installUpstreamCache` wraps this isolate's `fetch` so shared packages pick up the upstream
- * cache without a code change. The pages Worker and Vercel never load this module.
+ * cache without a code change. The pages Worker never loads this module.
  */
 import { handleApiRequest } from "./dispatch";
 import { apiHandlers } from "./handlers";

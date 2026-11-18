@@ -32,29 +32,22 @@ jobs:
   stage-deploy:
     if: github.event_name != 'pull_request' || (github.head_ref == 'stage' && github.event.pull_request.head.repo.fork == false && github.event.pull_request.draft == false)
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 50
     permissions:
-      statuses: read
+      actions: read
+      contents: read
     steps:
+      - name: Check out deployment lookup
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github/scripts
       - name: Wait for the stage deployment
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          # The hosting provider's commit status; change with the hosting.
-          STATUS_CONTEXT: "Vercel – osmosis-frontend"
-        run: |
-          for _ in $(seq 1 60); do
-            STATE=$(gh api "repos/$REPO/commits/$SHA/statuses?per_page=100" \
-              --jq "[.[] | select(.context == \"$STATUS_CONTEXT\")][0].state // empty") || true
-            case "$STATE" in
-              success) echo "Stage build for $SHA is live."; exit 0 ;;
-              failure | error) echo "Stage deployment of $SHA failed."; exit 1 ;;
-            esac
-            sleep 20
-          done
-          echo "Timed out waiting for the stage deployment of $SHA."
-          exit 1
+          EVENT: push
+        run: bash .github/scripts/wait-cf-deployment.sh
 
   wallet-tests:
     needs: stage-deploy
@@ -71,6 +64,7 @@ jobs:
             /.yarnrc.yml
             /.yarn-4.18.1.cjs
             /packages/*/package.json
+            /packages/web/etc/
             /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -116,6 +110,7 @@ jobs:
             /.yarnrc.yml
             /.yarn-4.18.1.cjs
             /packages/*/package.json
+            /packages/web/etc/
             /packages/e2e/
       - name: Setup Node.js
         uses: actions/setup-node@v6

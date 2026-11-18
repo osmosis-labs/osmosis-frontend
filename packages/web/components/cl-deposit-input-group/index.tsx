@@ -7,7 +7,7 @@ import {
 } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import Image from "next/image";
-import React, { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { InputBox } from "~/components/input";
 import { EntityImage } from "~/components/ui/entity-image";

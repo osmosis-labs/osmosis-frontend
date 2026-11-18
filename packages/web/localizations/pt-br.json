@@ -903,6 +903,9 @@
     "free": "Livre",
     "cheapest": "Mais barato",
     "fastest": "O mais rápido",
+    "transferSpeed": "Velocidade da transferência",
+    "standardSpeed": "Padrão",
+    "fastSpeed": "Rápida",
     "stepLabels": {
       "asset": "Ativo",
       "amount": "Quantia",
@@ -1335,6 +1338,7 @@
     "cancel": "Cancelar",
     "daysAgo": "há {days} d",
     "hoursAgo": "há {hours} h",
+    "minutesAgo": "há {minutes} min",
     "buyWith": "Compre com {coinA} ou {coinB}",
     "orderHistory": "Histórico de ordens",
     "tradeAnotherAssetOr": "Negocie outro ativo por {coinA} ou {coinB}",
@@ -1417,12 +1421,16 @@
     "creationAwaitingConfirmation": "Uma criação anterior de livro de ordens para este par ainda aguarda confirmação onchain. Tente novamente em alguns minutos.",
     "createOrderbookDescription": "Criar um orderbook pool permite que limit orders sejam colocadas para este par de negociação na Osmosis.",
     "returned": "Devolvido",
-    "partlyFilled": "Parcialmente executado",
+    "filledPercent": "{percent}% executado",
     "returnedUnfilled": "Devolvido (não executado)",
     "alreadyReceived": "Já recebido",
+    "paidOut": "Pago",
+    "placed": "Criada",
+    "activity": "Atividade",
     "howPayoutsWork": "Como funcionam os pagamentos?",
-    "payoutNote": "Os valores executados normalmente são pagos automaticamente na sua carteira, muitas vezes em vários pagamentos à medida que a ordem é executada, e podem chegar horas ou dias antes de você cancelar. Se uma ordem mostrar “Resgatar”, parte do valor executado ainda não foi paga. Cancelar devolve apenas o valor não executado.",
-    "limitOrder": "Ordem limitada"
+    "payoutNote": "Quando uma ordem está quase totalmente executada, o valor executado normalmente é pago automaticamente na sua carteira, às vezes em mais de um pagamento. Até lá, ele fica na ordem. Cancelar paga o valor executado que ainda não foi pago e devolve o valor não executado. Se uma ordem mostrar “Resgatar”, parte do valor executado ainda não foi paga.",
+    "buyLimitOrder": "Ordem limitada de compra",
+    "sellLimitOrder": "Ordem limitada de venda"
   },
   "tradeDetails": {
     "priceImpact": {

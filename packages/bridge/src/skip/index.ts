@@ -92,6 +92,30 @@ import {
 const DEFAULT_SLIPPAGE_PERCENT = 0.5;
 
 /**
+ * Whether a route moves funds through a fast transfer leg. Only Go Fast
+ * today. CCTP v2 Fast Transfer legs belong here once Skip routes them, and
+ * the rest of the fast-transfer logic needs no change.
+ */
+const hasFastTransferLeg = (route: SkipRouteResponse) =>
+  route.operations.some((operation) => "go_fast_transfer" in operation);
+
+/**
+ * USDC in any variant (USDC.noble, allUSDC, USDC.inj, USDC.axl and so on).
+ * Skip lists allUSDC with no CoinGecko ID, so the symbol is checked too, as
+ * the web app's `isUsdcAsset` does.
+ *
+ * Fast transfers are not offered into USDC. Go Fast into Osmosis pays out
+ * USDC.noble, the variant being wound down as Noble leaves CCTP, and Go Fast
+ * into allUSDC errors today. The intended fast path for USDC is CCTP v2 Fast
+ * Transfer into USDC.inj, which needs its own rule once Skip supports it.
+ */
+const isUsdcAsset = (asset: SkipAsset) =>
+  asset.coingecko_id === "usd-coin" ||
+  [asset.symbol, asset.recommended_symbol].some((symbol) =>
+    symbol?.toUpperCase().includes("USDC")
+  );
+
+/**
  * Restore the invariant that the Osmosis leg must produce at least what the
  * destination swap is going to spend.
  *
@@ -293,6 +317,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       toAddress,
       allowMultiTx,
       allowSolana,
+      fastTransfer,
       slippage = DEFAULT_SLIPPAGE_PERCENT,
     } = params;
 
@@ -325,6 +350,9 @@ export class SkipBridgeProvider implements BridgeProvider {
         // Part of the key even though the kill switch above runs first, so a
         // cached Solana quote can never be served to a caller without it.
         allowSolana,
+        // The fast and standard quotes for the same pair are different
+        // routes, so each needs its own cache entry.
+        fastTransfer,
       }),
       ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
@@ -348,6 +376,16 @@ export class SkipBridgeProvider implements BridgeProvider {
           });
         }
 
+        // Refused before any route request, so the fast quote for a USDC
+        // transfer costs no Skip call. See `isUsdcAsset` for why.
+        if (fastTransfer && isUsdcAsset(destinationAsset)) {
+          throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
+            errorType: "UnsupportedQuoteError",
+            message: "Fast transfers into USDC are not offered",
+          });
+        }
+
         const fetchRoute = (allowMulti: boolean) =>
           this.skipClient
             .route({
@@ -359,6 +397,12 @@ export class SkipBridgeProvider implements BridgeProvider {
               // Omit the key entirely when off so the request matches the
               // pre-multi-tx shape byte for byte.
               ...(allowMulti ? { allow_multi_tx: true } : {}),
+              // Sent only on the fast quote. The flag alone changes Skip's
+              // route choice even where no Go Fast leg is used: live,
+              // allETH -> Ethereum switched from swap > axelar to
+              // swap > axelar > evm_swap and paid about 0.75% less. Sending it
+              // on the standard quote would silently worsen that route.
+              ...(fastTransfer ? { go_fast: true } : {}),
             })
             .catch((e) => {
               if (e instanceof Error) {
@@ -428,7 +472,24 @@ export class SkipBridgeProvider implements BridgeProvider {
         const MULTI_TX_MIN_IMPROVEMENT_BPS = BigInt(50); // 0.5%
 
         let route: Awaited<ReturnType<typeof fetchRoute>>;
-        if (!allowMultiTx) {
+        if (fastTransfer) {
+          // One request, with the same multi-tx permission the standard
+          // quote has (how the fast routes were measured live). Go Fast
+          // routes are single-tx, so there is no single vs multi-tx choice
+          // to make here.
+          route = await fetchRoute(allowMultiTx === true);
+          // With go_fast set, Skip still returns a standard route when it has
+          // no Go Fast one (see the comment in fetchRoute). That route is
+          // never faster, often worse, and the standard quote already
+          // covers it, so it must not be offered as the fast option.
+          if (!hasFastTransferLeg(route)) {
+            throw new BridgeQuoteError({
+              bridgeId: SkipBridgeProvider.ID,
+              errorType: "NoQuotesError",
+              message: "No fast transfer route found",
+            });
+          }
+        } else if (!allowMultiTx) {
           route = await fetchRoute(false);
         } else {
           const [singleResult, multiResult] = await Promise.allSettled([
@@ -551,22 +612,75 @@ export class SkipBridgeProvider implements BridgeProvider {
           }
         }
 
-        // Routes without an Axelar leg (e.g. CCTP) pay Skip's relayer
-        // instead, and that fee only appears as a SMART_RELAY estimate.
-        // Only fees in the source asset fit the single-coin transferFee.
-        if (!route.operations.some((op) => "axelar_transfer" in op)) {
-          const isSameAsset = (
-            fee: SkipEstimatedFee,
-            chainId: string,
-            denom: string
-          ) =>
-            fee.chain_id === chainId &&
-            fee.origin_asset?.denom.toLowerCase() === denom.toLowerCase();
-          const sumAmounts = (fees: SkipEstimatedFee[]) =>
-            fees
-              .reduce((sum, fee) => sum + BigInt(fee.amount), BigInt(0))
-              .toString();
+        const isSameAsset = (
+          fee: SkipEstimatedFee,
+          chainId: string,
+          denom: string
+        ) =>
+          fee.chain_id === chainId &&
+          fee.origin_asset?.denom.toLowerCase() === denom.toLowerCase();
+        const sumAmounts = (fees: SkipEstimatedFee[]) =>
+          fees
+            .reduce((sum, fee) => sum + BigInt(fee.amount), BigInt(0))
+            .toString();
 
+        if (hasFastTransferLeg(route)) {
+          // A fast route has no Axelar leg and no SMART_RELAY estimate: its
+          // whole fee is the BRIDGE entry in estimated_fees (Go Fast: the
+          // 10 bps fee plus fixed source and destination chain fees). It is
+          // charged in the USDC the fast leg moves, not the source asset
+          // (Base ETH is swapped to Base USDC first), so it is reported in
+          // that asset. Decimals and denom come from the fee asset, never
+          // assumed, as for the Noble relayer fee below.
+          const bridgeFees =
+            route.estimated_fees?.filter(
+              (fee) => fee.fee_type === "BRIDGE" && fee.amount
+            ) ?? [];
+          const feeAsset = bridgeFees[0]?.origin_asset;
+          // Another fee type (e.g. a relay fee on a later leg) cannot be
+          // added to this coin, so the amount would not be the whole fee.
+          const hasOtherFees = (route.estimated_fees ?? []).some(
+            (fee) =>
+              fee.fee_type !== "BRIDGE" && BigInt(fee.amount || "0") > BigInt(0)
+          );
+
+          if (
+            feeAsset?.decimals !== undefined &&
+            bridgeFees.every((fee) =>
+              isSameAsset(fee, bridgeFees[0].chain_id, feeAsset.denom)
+            )
+          ) {
+            transferFee = {
+              amount: sumAmounts(bridgeFees),
+              denom: feeAsset.symbol ?? feeAsset.denom,
+              chainId: feeAsset.is_evm
+                ? Number(feeAsset.chain_id)
+                : feeAsset.chain_id,
+              address: feeAsset.is_evm
+                ? (feeAsset.token_contract ?? NativeEVMTokenConstantAddress)
+                : feeAsset.denom,
+              decimals: feeAsset.decimals,
+              coinGeckoId: feeAsset.coingecko_id,
+              // Go Fast reports FEE_BEHAVIOR_DEDUCTED: the fee comes out of
+              // the USDC in transit (the signed tx sends exactly amount_in),
+              // so a Max input must not reserve it from the source balance.
+              // Only an explicit ADDITIONAL counts, because a fee in another
+              // asset cannot be reserved from the source balance anyway.
+              isAdditive: bridgeFees.some(
+                (fee) => fee.fee_behavior === "FEE_BEHAVIOR_ADDITIONAL"
+              ),
+              ...(hasOtherFees ? { isUnknown: true } : {}),
+            };
+          } else {
+            // No BRIDGE entry, no decimals, or several assets: the fee
+            // cannot be one scaled coin. Leaving the zero amount would tell
+            // the user the fast transfer is free.
+            transferFee = { ...transferFee, isUnknown: true };
+          }
+        } else if (!route.operations.some((op) => "axelar_transfer" in op)) {
+          // Routes without an Axelar leg (e.g. CCTP) pay Skip's relayer
+          // instead, and that fee only appears as a SMART_RELAY estimate.
+          // Only fees in the source asset fit the single-coin transferFee.
           const allRelayFees =
             route.estimated_fees?.filter(
               (fee) => fee.fee_type === "SMART_RELAY" && fee.amount
@@ -824,6 +938,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     direction,
     allowMultiTx,
     allowSolana,
+    allowFastTransfer,
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
@@ -1066,6 +1181,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         asset,
         chainAsset,
         allowMultiTx,
+        allowFastTransfer,
         candidates: [...mergeCandidates.values()],
       });
       for (const key of unroutable) foundVariants.delete(key);
@@ -1106,6 +1222,11 @@ export class SkipBridgeProvider implements BridgeProvider {
    * minutes. Fail-open: with no price for the asset, or any answer that is
    * not a definitive no-route (timeout, 5xx, rate limit), candidates are kept
    * and left to the quote error.
+   *
+   * With `allowFastTransfer`, a candidate with no standard route gets a second
+   * check with `go_fast` and is kept if Skip has a fast route for it. Without
+   * this, a pair only Go Fast can route (Base or Arbitrum ETH into allETH) is
+   * dropped here, and its fast quote is never requested.
    */
   protected async findUnroutableTransferCandidates({
     direction,
@@ -1113,6 +1234,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     asset,
     chainAsset,
     allowMultiTx,
+    allowFastTransfer,
     candidates,
   }: {
     direction: "deposit" | "withdraw";
@@ -1120,6 +1242,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     asset: BridgeAsset;
     chainAsset: SkipAsset;
     allowMultiTx?: boolean;
+    allowFastTransfer?: boolean;
     candidates: RouteProbeCandidate[];
   }): Promise<string[]> {
     if (candidates.length === 0 || !this.ctx.getAssetUsdPrice) return [];
@@ -1132,6 +1255,11 @@ export class SkipBridgeProvider implements BridgeProvider {
     const isWithdraw = direction === "withdraw";
     // Deposits offered only for multi-tx callers need it to route.
     const multiTx = !isWithdraw && allowMultiTx === true;
+    // Every candidate shares the Osmosis asset's family, so a USDC Osmosis
+    // asset means a USDC transfer either way, and no fast quote is ever
+    // offered for it (see `isUsdcAsset`).
+    const checkFastRoutes =
+      allowFastTransfer === true && !isUsdcAsset(chainAsset);
     const osmosis = {
       denom: chainAsset.denom,
       chainId: chain.chainId.toString(),
@@ -1148,32 +1276,46 @@ export class SkipBridgeProvider implements BridgeProvider {
         .truncate()
         .toString();
 
-      return cachified({
-        cache: this.ctx.cache,
-        key: `${SkipBridgeProvider.ID}_route_probe_${direction}${
-          multiTx ? "_multi" : ""
-        }_${osmosis.denom}_${candidate.chainId}_${candidate.denom}`,
-        ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 30,
-        // A timeout rejects, so it is neither cached nor treated as a drop.
-        getFreshValue: () =>
-          withTimeout(
-            this.skipClient
-              .route({
-                source_asset_denom: from.denom,
-                source_asset_chain_id: from.chainId,
-                dest_asset_denom: to.denom,
-                dest_asset_chain_id: to.chainId,
-                amount_in: probeAmount,
-                ...(multiTx ? { allow_multi_tx: true } : {}),
-              })
-              .then(() => true)
-              .catch((e) => {
-                if (isDefinitiveNoRouteError(e)) return false;
-                throw e;
-              }),
-            ROUTE_PROBE_REQUEST_TIMEOUT_MS
-          ),
-      });
+      const isRoutable = (fast: boolean) =>
+        cachified({
+          cache: this.ctx.cache,
+          key: `${SkipBridgeProvider.ID}_route_probe_${direction}${
+            multiTx ? "_multi" : ""
+          }${fast ? "_fast" : ""}_${osmosis.denom}_${candidate.chainId}_${
+            candidate.denom
+          }`,
+          ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 30,
+          // A timeout rejects, so it is neither cached nor treated as a drop.
+          getFreshValue: () =>
+            withTimeout(
+              this.skipClient
+                .route({
+                  source_asset_denom: from.denom,
+                  source_asset_chain_id: from.chainId,
+                  dest_asset_denom: to.denom,
+                  dest_asset_chain_id: to.chainId,
+                  amount_in: probeAmount,
+                  ...(multiTx ? { allow_multi_tx: true } : {}),
+                  ...(fast ? { go_fast: true } : {}),
+                })
+                // A go_fast request can still return a standard route, which
+                // the standard check already ruled out. Only a real fast leg
+                // makes the candidate routable, as in getQuote.
+                .then((route) => !fast || hasFastTransferLeg(route))
+                .catch((e) => {
+                  if (isDefinitiveNoRouteError(e)) return false;
+                  throw e;
+                }),
+              ROUTE_PROBE_REQUEST_TIMEOUT_MS
+            ),
+        });
+
+      // The fast check only runs for candidates with no standard route, so
+      // it adds no request for pairs that already route.
+      return (
+        (await isRoutable(false)) ||
+        (checkFastRoutes && (await isRoutable(true)))
+      );
     });
   }
 

@@ -111,6 +111,16 @@ export function humanizeTime(
   return [{ value: date.format("MMM D, YYYY"), unitTranslationKey: "" }];
 }
 
+/** Adds the year only when it isn't this year, so older dates can be told apart. */
+export function formatDate(date: dayjs.Dayjs) {
+  return date.format(date.year() === dayjs().year() ? "MMM D" : "MMM D, YYYY");
+}
+
+/** `formatDate` followed by a 12-hour time, e.g. "Nov 10, 10:42 PM". */
+export function formatDateTime(date: dayjs.Dayjs) {
+  return `${formatDate(date)}, ${date.format("h:mm A")}`;
+}
+
 export function displayHumanizedTime({
   humanizedTime,
   t,

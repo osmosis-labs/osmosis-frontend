@@ -8,7 +8,7 @@ import {
   Time,
   TimeChartOptions,
 } from "lightweight-charts";
-import React, {
+import {
   memo,
   PropsWithChildren,
   useCallback,

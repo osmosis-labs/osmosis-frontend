@@ -1,5 +1,5 @@
 import { Chain } from "@osmosis-labs/types";
-import { getEvmExplorerUrl, poll } from "@osmosis-labs/utils";
+import { poll } from "@osmosis-labs/utils";
 
 import type {
   BridgeEnvironment,
@@ -189,8 +189,8 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
 
     const hasEvmEnd =
       typeof fromChainId === "number" || typeof toChainId === "number";
-    // Routes without an Axelar leg (CCTP, Eureka) are not on Axelarscan:
-    // link the signed tx on its own chain instead.
+    // Routes without an Axelar leg (Go Fast, CCTP, Eureka) are not on
+    // Axelarscan.
     const axelarScanned =
       snapshot.trackingChainId === undefined &&
       hasEvmEnd &&
@@ -199,10 +199,10 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     if (axelarScanned) {
       // EVM transfer
       return `${this.axelarScanBaseUrl}/gmp/${sendTxHash}`;
-    } else if (typeof explorerChainId === "number") {
-      return (
-        getEvmExplorerUrl({ hash: sendTxHash, chainId: explorerChainId }) ?? ""
-      );
+    } else if (hasEvmEnd) {
+      // Skip's explorer follows the whole transfer, where the signing chain's
+      // explorer only shows the send. It needs the chain id of the hash.
+      return `https://explorer.skip.build/?tx_hash=${sendTxHash}&chain_id=${explorerChainId}`;
     } else {
       const chain = this.chainList.find(
         (chain) => chain.chain_id === explorerChainId
