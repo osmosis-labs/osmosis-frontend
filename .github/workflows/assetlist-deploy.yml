@@ -62,8 +62,13 @@ jobs:
         if: steps.changes.outputs.deploy == 'true'
         run: |
           # cf-deploy.yml reaches master with the first Cloudflare release.
-          if ! gh api "repos/$GH_REPO/contents/.github/workflows/cf-deploy.yml?ref=master" --silent 2>/dev/null; then
-            echo "::notice::cf-deploy.yml is not on master yet; skipping the production deploy"
-            exit 0
+          # Skip only on a 404; any other API error fails the step.
+          if ! err=$(gh api "repos/$GH_REPO/contents/.github/workflows/cf-deploy.yml?ref=master" --silent 2>&1); then
+            if [[ "$err" == *"HTTP 404"* ]]; then
+              echo "::notice::cf-deploy.yml is not on master yet; skipping the production deploy"
+              exit 0
+            fi
+            echo "$err" >&2
+            exit 1
           fi
           gh workflow run cf-deploy.yml --ref master
