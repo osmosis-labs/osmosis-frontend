@@ -41,6 +41,9 @@
   "env": {
     "production": {
       "name": "osmosis-frontend-api-production",
+      // Restated: with `--env`, the inherited top-level value resolves to
+      // `api-worker/tsconfig.json` from this directory and the build fails.
+      "tsconfig": "../tsconfig.json",
       // vars are not inherited from the top level.
       "vars": {
         "NODE_ENV": "production",
