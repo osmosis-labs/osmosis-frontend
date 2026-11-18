@@ -8,15 +8,10 @@ import { getTxReceivedAmount } from "../utils/tx-confirm";
 import { deriveAddress } from "../utils/wallet-utils";
 
 // Round trips from USDC: each return leg sends back exactly what its outbound
-// leg received, so the wallet only pays fees and spread. PR runs
-// check one pair; the rest run in the full suite (@full), since they exercise
-// the same swap path with a different token.
-const ROUND_TRIPS = [
-  { token: "TIA", usdcAmount: "0.1", fullOnly: false },
-  { token: "ATOM", usdcAmount: "0.1", fullOnly: true },
-  { token: "INJ", usdcAmount: "0.2", fullOnly: true },
-  { token: "AKT", usdcAmount: "0.1", fullOnly: true },
-] as const;
+// leg received, so the wallet only pays fees and spread. One pair: more tokens
+// exercise the same swap path, and the fake-wallet suite checks the signed
+// message for each swap without spending funds.
+const ROUND_TRIPS = [{ token: "TIA", usdcAmount: "0.1" }] as const;
 
 test.describe("Test Swap to/from USDC feature", () => {
   test.describe.configure({ mode: "serial" });
@@ -58,10 +53,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     }
   });
 
-  for (const { token, usdcAmount, fullOnly } of ROUND_TRIPS) {
-    const tag = fullOnly ? " @full" : "";
-
-    test(`User should be able to swap USDC to ${token}${tag}`, async () => {
+  for (const { token, usdcAmount } of ROUND_TRIPS) {
+    test(`User should be able to swap USDC to ${token}`, async () => {
       await tradePage.selectPair("USDC", token);
       await tradePage.enterAmount(usdcAmount);
       await tradePage.showSwapInfo();
@@ -80,7 +73,7 @@ test.describe("Test Swap to/from USDC feature", () => {
       console.log(`Received ${received[token]} ${token}.`);
     });
 
-    test(`User should be able to swap ${token} to USDC${tag}`, async () => {
+    test(`User should be able to swap ${token} to USDC`, async () => {
       expect(
         received[token],
         `The USDC to ${token} leg did not run.`
