@@ -1,6 +1,5 @@
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { render, waitFor } from "@testing-library/react";
-import React from "react";
 
 import { trimPlaceholderZeros } from "~/utils/number";
 

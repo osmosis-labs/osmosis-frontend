@@ -6,7 +6,7 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import React, { Fragment, memo, useEffect, useMemo, useState } from "react";
+import { Fragment, memo, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import {

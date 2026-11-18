@@ -1,7 +1,7 @@
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import React, { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import {
   ATOM_BASE_DENOM,

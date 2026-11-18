@@ -10,7 +10,7 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";

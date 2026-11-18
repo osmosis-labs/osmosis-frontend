@@ -1,6 +1,5 @@
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import React from "react";
 
 import { Icon } from "~/components/assets";
 import {

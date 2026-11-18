@@ -1,7 +1,6 @@
 import { TxSnapshot } from "@osmosis-labs/bridge";
 import { render, screen } from "@testing-library/react";
 import dayjs from "dayjs";
-import React from "react";
 
 import { useTranslation } from "~/hooks";
 

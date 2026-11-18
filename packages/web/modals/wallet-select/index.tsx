@@ -2,7 +2,7 @@ import { State, WalletStatus } from "@cosmos-kit/core";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import React, { FunctionComponent, memo, useEffect, useState } from "react";
+import { FunctionComponent, memo, useEffect, useState } from "react";
 import { useUpdateEffect } from "react-use";
 import { Connector } from "wagmi";
 

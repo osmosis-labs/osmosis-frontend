@@ -1,7 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { render, screen } from "@testing-library/react";
-import React from "react";
 
 import { AssetsInfo } from "../expanded";
 

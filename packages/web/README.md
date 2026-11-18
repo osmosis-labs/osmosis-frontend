@@ -57,6 +57,13 @@ through the generated chain list.
 without the unsupported-version bypass. Keep the adapter's Next.js peer range satisfied
 when upgrading either package.
 
+The dev, build, and analyze scripts explicitly select Webpack. The sprite loader,
+crypto aliases, server wallet replacements, and generated list chunks in
+`next.config.js` depend on that callback. OpenNext runs the web `build` script;
+keep its bundler selection aligned with the other scripts when updating it.
+`yarn typecheck` generates Next route declarations before running TypeScript,
+so CI does not depend on a previous dev or production build.
+
 `yarn cf:build:profile` builds with Next.js server minification off, so Cloudflare
 CPU and heap profiles show readable function names.
 
@@ -157,7 +164,9 @@ At the root of the repo or package:
 yarn analyze
 ```
 
-On completion, two local html files containing visual bundle trees for client and server code will appear in your default browser.
+On completion, local HTML reports in `.next/analyze` show the client and server
+bundle trees and open in your default browser. Use `CI=true yarn analyze` to
+generate the reports without opening a browser.
 
 ## Environment Variables
 

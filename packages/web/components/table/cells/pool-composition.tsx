@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import Image from "next/image";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { useTranslation } from "~/hooks";

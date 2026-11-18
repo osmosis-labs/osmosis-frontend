@@ -7188,19 +7188,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/bundle-analyzer@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/bundle-analyzer@npm:15.5.29"
+"@next/bundle-analyzer@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/bundle-analyzer@npm:16.4.6"
   dependencies:
     webpack-bundle-analyzer: "npm:4.10.1"
-  checksum: 10c0/e5c0dc383973ea190bcf445a5a6c4845e226a6698d9db1c16c523bfe67da0ff53ddaad9bb21ff2e0ad1aab38ae97990e12bceb3ac72108fee30c468b7295cfa6
+  checksum: 10c0/23698e07886568d29ea49868d92e5ac82a5524c4898f5912a84fc523c910b8ff9874ca250dad1d63e35891cb410ae14dd5a65ecfc3815ae99e29bd1c868915b2
   languageName: node
   linkType: hard
 
-"@next/env@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/env@npm:15.5.29"
-  checksum: 10c0/4787d597cf3d956bec97d7d7202f7adf69d54eb731b5aafd60d595c7051d99dcf27dc413527e23bea2320e1c3b988f205f21bd251ce3aaa7e8e4b3c192473e56
+"@next/env@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/env@npm:16.4.6"
+  checksum: 10c0/250195b2e55869e2dd3178e0445e8933f6a0919dd305eb4e64d68e55e426bc56b0612eb91a602d4d7bc15e8aedcc31dd93b9993d7d790bf3ad5f89f61fbebe97
   languageName: node
   linkType: hard
 
@@ -7211,58 +7211,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-arm64@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-darwin-arm64@npm:15.5.29"
+"@next/swc-darwin-arm64@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-darwin-arm64@npm:16.4.6"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-x64@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-darwin-x64@npm:15.5.29"
+"@next/swc-darwin-x64@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-darwin-x64@npm:16.4.6"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-gnu@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-linux-arm64-gnu@npm:15.5.29"
+"@next/swc-linux-arm64-gnu@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-arm64-gnu@npm:16.4.6"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-musl@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-linux-arm64-musl@npm:15.5.29"
+"@next/swc-linux-arm64-musl@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-arm64-musl@npm:16.4.6"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-gnu@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-linux-x64-gnu@npm:15.5.29"
+"@next/swc-linux-x64-gnu@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-x64-gnu@npm:16.4.6"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-musl@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-linux-x64-musl@npm:15.5.29"
+"@next/swc-linux-x64-musl@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-linux-x64-musl@npm:16.4.6"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-win32-arm64-msvc@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-win32-arm64-msvc@npm:15.5.29"
+"@next/swc-win32-arm64-msvc@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-win32-arm64-msvc@npm:16.4.6"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-win32-x64-msvc@npm:15.5.29":
-  version: 15.5.29
-  resolution: "@next/swc-win32-x64-msvc@npm:15.5.29"
+"@next/swc-win32-x64-msvc@npm:16.4.6":
+  version: 16.4.6
+  resolution: "@next/swc-win32-x64-msvc@npm:16.4.6"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -7769,7 +7769,7 @@ __metadata:
     "@keplr-wallet/provider-mock": "npm:0.12.12"
     "@mysten/sui": "npm:^1"
     "@mysten/wallet-standard": "npm:^0"
-    "@next/bundle-analyzer": "npm:15.5.29"
+    "@next/bundle-analyzer": "npm:16.4.6"
     "@opennextjs/cloudflare": "npm:1.20.17"
     "@osmosis-labs/bridge": "npm:^1.0.0"
     "@osmosis-labs/math": "npm:^5.1.0"
@@ -7849,7 +7849,7 @@ __metadata:
     lightweight-charts: "npm:^4.1.4"
     lottie-react: "npm:^3.1.2"
     lru-cache: "npm:^10.0.1"
-    next: "npm:15.5.29"
+    next: "npm:16.4.6"
     next-seo: "npm:^6.6.0"
     next-sitemap: "npm:^4.2.3"
     nuqs: "npm:^2.10.1"
@@ -10882,12 +10882,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/helpers@npm:0.5.15":
-  version: 0.5.15
-  resolution: "@swc/helpers@npm:0.5.15"
+"@swc/helpers@npm:0.5.23":
+  version: 0.5.23
+  resolution: "@swc/helpers@npm:0.5.23"
   dependencies:
     tslib: "npm:^2.8.0"
-  checksum: 10c0/33002f74f6f885f04c132960835fdfc474186983ea567606db62e86acd0680ca82f34647e8e610f4e1e422d1c16fce729dde22cd3b797ab1fd9061a825dabca4
+  checksum: 10c0/02da7b4df465693933ecd4851cc193ec729c309939c8a84eccae5ec0010aafc3894e713b8ef8d13a6ba401759f0e900c88e2dcfef5872c27bb91e70f73275cce
   languageName: node
   linkType: hard
 
@@ -14197,6 +14197,15 @@ __metadata:
   bin:
     baseline-browser-mapping: dist/cli.cjs
   checksum: 10c0/5c86b9a1efe9db2411b6f3268ae015ca7cc5229e5e53c20263936e9dbbe9651d2fc19dc46642f7a3db8ad2b4a300c5bbc702d3b79c49e740ff0fcc97e3c55692
+  languageName: node
+  linkType: hard
+
+"baseline-browser-mapping@npm:^2.9.19":
+  version: 2.11.35
+  resolution: "baseline-browser-mapping@npm:2.11.35"
+  bin:
+    baseline-browser-mapping: dist/cli.cjs
+  checksum: 10c0/2f34ab2ed285a03860bc633cbf9cfea8974c37bb366d04e1adfa07a95ebec77a24d3daa2800d2d685b499aa9514700229b2cc7c6d49c0f5a363297e3382f7322
   languageName: node
   linkType: hard
 
@@ -22365,23 +22374,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:15.5.29":
-  version: 15.5.29
-  resolution: "next@npm:15.5.29"
+"next@npm:16.4.6":
+  version: 16.4.6
+  resolution: "next@npm:16.4.6"
   dependencies:
-    "@next/env": "npm:15.5.29"
-    "@next/swc-darwin-arm64": "npm:15.5.29"
-    "@next/swc-darwin-x64": "npm:15.5.29"
-    "@next/swc-linux-arm64-gnu": "npm:15.5.29"
-    "@next/swc-linux-arm64-musl": "npm:15.5.29"
-    "@next/swc-linux-x64-gnu": "npm:15.5.29"
-    "@next/swc-linux-x64-musl": "npm:15.5.29"
-    "@next/swc-win32-arm64-msvc": "npm:15.5.29"
-    "@next/swc-win32-x64-msvc": "npm:15.5.29"
-    "@swc/helpers": "npm:0.5.15"
+    "@next/env": "npm:16.4.6"
+    "@next/swc-darwin-arm64": "npm:16.4.6"
+    "@next/swc-darwin-x64": "npm:16.4.6"
+    "@next/swc-linux-arm64-gnu": "npm:16.4.6"
+    "@next/swc-linux-arm64-musl": "npm:16.4.6"
+    "@next/swc-linux-x64-gnu": "npm:16.4.6"
+    "@next/swc-linux-x64-musl": "npm:16.4.6"
+    "@next/swc-win32-arm64-msvc": "npm:16.4.6"
+    "@next/swc-win32-x64-msvc": "npm:16.4.6"
+    "@swc/helpers": "npm:0.5.23"
+    baseline-browser-mapping: "npm:^2.9.19"
     caniuse-lite: "npm:^1.0.30001579"
-    postcss: "npm:8.4.31"
-    sharp: "npm:^0.34.3 || ^0.35.5"
+    postcss: "npm:8.5.23"
+    sharp: "npm:^0.35.5"
     styled-jsx: "npm:5.1.6"
   peerDependencies:
     "@opentelemetry/api": ^1.1.0
@@ -22420,7 +22430,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 10c0/be939a7c233b0549b6d68816b1bf696a8331206eabc63d4f813268482d49edc1f681b066c41327c970343657730c8f6c6567e9b3f00f7c8f659bfedec41c97f9
+  checksum: 10c0/c387dabdbe5f796afd67fe1cafb9c29ce5e1952335c5df730b04c3b6e2ffaba0837e36ca2b075a6d33bccd6bfb39cf4dc3f35f7fd61dbdfd0b365265fab742c4
   languageName: node
   linkType: hard
 
@@ -25576,7 +25586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:0.35.5, sharp@npm:^0.34.3 || ^0.35.5, sharp@npm:^0.35.5":
+"sharp@npm:0.35.5, sharp@npm:^0.35.5":
   version: 0.35.5
   resolution: "sharp@npm:0.35.5"
   dependencies:

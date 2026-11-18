@@ -8,8 +8,10 @@ const { securityHeaders } = require("./config/security-headers");
  **/
 const config = {
   reactStrictMode: true,
+  // Keep framework startup from creating or changing repository agent instructions.
+  agentRules: false,
+  reactCompiler: true,
   experimental: {
-    reactCompiler: true,
     // `yarn cf:build:profile` keeps Next's server chunks unminified so Cloudflare CPU/heap
     // profiles show their function names (Wrangler's source map stops at OpenNext's handler.mjs).
     // Regular builds minify: it saves ~260KB gzip of the Worker.
@@ -38,11 +40,7 @@ const config = {
       ]),
     ].join(","),
   },
-  // CI lints (lint-and-check-format.yml) and type-checks (`yarn typecheck`) every push,
-  // so skip both here to save ~40s on each Vercel build.
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // CI type-checks (`yarn typecheck`) every push, including tests that Next does not check.
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -51,6 +49,9 @@ const config = {
   // lets OpenNext copy the whole package and rewrite the exports for `workerd`.
   serverExternalPackages: ["isows", "uncrypto"],
   images: {
+    // Preserve the Next 15 cache interval and 16px icons across the default changes in Next 16.
+    minimumCacheTTL: 60,
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: "https",
@@ -239,6 +240,7 @@ const config = {
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
+  openAnalyzer: process.env.CI !== "true",
 });
 
 module.exports = withBundleAnalyzer(config);
