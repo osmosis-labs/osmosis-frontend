@@ -32,9 +32,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 
@@ -51,5 +48,3 @@ sitemap.xml
 .open-next
 .wrangler
 .dev.vars
-# pages/api and middleware.ts while cf:build has them set aside
-.cf-pages-aside

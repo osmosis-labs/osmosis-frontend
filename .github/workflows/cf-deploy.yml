@@ -10,10 +10,8 @@ name: Cloudflare deploy
 #                     (`--env production` in both wrangler configs), environment
 #                     `cloudflare-production`
 #   pull request   -> Worker Preview `pr-<number>` of osmosis-frontend-stage
-#   into stage or     (`wrangler preview`, the `previews` block in wrangler.jsonc),
-#   stage-cf          environment `cloudflare-preview`, then the no-funds E2E
-#                     suites against it (frontend-e2e-tests.yml). Closing the PR
-#                     deletes the Preview.
+#   into stage        (`wrangler preview`, the `previews` block in wrangler.jsonc),
+#                     environment `cloudflare-preview`. Closing the PR deletes it.
 #
 # Previews: the API Worker is not previewed. A Preview's `/api/*` goes to the
 # deployed osmosis-frontend-api-stage, so a PR's API changes are not in it.
@@ -22,6 +20,7 @@ name: Cloudflare deploy
 # Previews inherit no secrets from the Worker; the pages secrets below are
 # uploaded with every Preview. Fork PRs get no Preview (no secrets). Drafts get
 # a Preview but no E2E run; marking one ready for review runs it.
+# frontend-e2e-tests.yml waits for this run and tests its deployment URL artifact.
 #
 # Everything comes from that GitHub environment. Unset
 # or empty values are left out, so `packages/web/.env` defaults and code
@@ -59,7 +58,7 @@ on:
   push:
     branches: [stage, master]
   pull_request:
-    branches: [stage, stage-cf]
+    branches: [stage]
     types: [opened, synchronize, reopened, ready_for_review, closed]
   workflow_dispatch:
 
@@ -87,8 +86,6 @@ jobs:
     environment:
       name: ${{ github.event_name == 'pull_request' && 'cloudflare-preview' || github.ref_name == 'master' && 'cloudflare-production' || 'cloudflare-stage' }}
       url: ${{ steps.pages.outputs.url || steps.preview.outputs.url }}
-    outputs:
-      preview_url: ${{ steps.preview.outputs.url }}
     defaults:
       run:
         working-directory: packages/web
@@ -293,33 +290,28 @@ jobs:
             echo "Latest for this PR: ${alias:-n/a}"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # E2E resolves this artifact from the successful run for its exact commit.
+      - name: Record frontend deployment URL
+        if: github.event_name == 'pull_request' || github.ref_name == 'stage'
+        env:
+          DEPLOYMENT_URL: ${{ steps.pages.outputs.url || steps.preview.outputs.url }}
+        run: |
+          test -n "$DEPLOYMENT_URL"
+          mkdir -p "$RUNNER_TEMP/cf-frontend-deployment"
+          printf '%s\n' "$DEPLOYMENT_URL" > "$RUNNER_TEMP/cf-frontend-deployment/url.txt"
+
+      - name: Upload frontend deployment URL
+        if: github.event_name == 'pull_request' || github.ref_name == 'stage'
+        uses: actions/upload-artifact@v6
+        with:
+          name: cf-frontend-deployment
+          path: ${{ runner.temp }}/cf-frontend-deployment/url.txt
+          retention-days: 30
+
       - name: Remove secrets files
         if: always()
         working-directory: .
         run: rm -f "$RUNNER_TEMP"/cf-*-secrets.json
-
-  # The no-funds E2E suites (fake wallet, pools, pair selection) against this
-  # commit's Preview. The real-funds smoke test stays on the Vercel preview: it
-  # shares one wallet with every other run.
-  preview-e2e:
-    needs: deploy
-    if: >-
-      github.event_name == 'pull_request'
-      && github.event.pull_request.draft == false
-      && needs.deploy.outputs.preview_url != ''
-    # What frontend-e2e-tests.yml's jobs ask for; a called workflow gets no
-    # more than this.
-    permissions:
-      actions: write
-      contents: read
-      deployments: read
-      pull-requests: read
-      statuses: read
-    uses: ./.github/workflows/frontend-e2e-tests.yml
-    with:
-      base_url: ${{ needs.deploy.outputs.preview_url }}
-    # No secrets: the no-funds suites use none, so the E2E wallet keys stay
-    # out of PR runs.
 
   # Repo-level secrets: no environment, so closing a PR creates no deployment.
   delete-preview:

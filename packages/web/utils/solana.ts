@@ -4,7 +4,7 @@ import {
 } from "@osmosis-labs/bridge/build/utils/solana";
 import { apiClient } from "@osmosis-labs/utils";
 
-/** This app's Solana RPC route (pages/api/solana-rpc), which forwards to the
+/** This app's Solana RPC route (/api/solana-rpc), which forwards to the
  *  keyed provider server-side. */
 const SOLANA_RPC_PROXY_PATH = "/api/solana-rpc";
 

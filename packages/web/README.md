@@ -6,10 +6,12 @@ Commands can be run from root of repo or package:
 
 ### Develop
 
-Watch server:
+Run Next and the local API Worker together (ports 3000 and 8787). Next forwards
+`/api/*` to the Worker. Put runtime secrets in `api-worker/.dev.vars`:
 
 ```
-yarn build && yarn dev
+yarn workspace @osmosis-labs/web build:packages
+yarn dev
 ```
 
 ### Test
@@ -30,15 +32,22 @@ yarn lint:fix
 
 ### Deploy
 
-```
-yarn build && yarn start
-```
+Pushes to `stage` and `master` deploy the Cloudflare API/frontend pair through
+`.github/workflows/cf-deploy.yml`. PRs into `stage` get a frontend Worker Preview;
+its API calls use the deployed stage API Worker. Frontend E2E tests wait for the
+Cloudflare run for their exact commit and test its recorded deployment URL.
+The `e2e-gate` check includes the existing real-funds smoke test; drafts skip the
+suites until marked ready, and forks have no Preview or E2E secrets.
+
+For a local production-mode frontend, `yarn build && yarn start` runs Next plus
+the local API Worker with production dotenv values. Use `cf:build` and
+`cf:preview` to exercise the OpenNext frontend and Worker service bindings.
 
 ### Cloudflare staging
 
 Use Node 24 and install the locked dependencies with `yarn install --immutable`.
 Use a Workers Paid account: the Worker exceeds the Free plan's 3 MiB compressed
-limit (the migration validation measured about 7.1 MiB, below the paid 10 MiB limit).
+limit.
 Enable R2 on the same account. The following commands work from the repository
 root or this package:
 
@@ -93,11 +102,12 @@ requires them; never commit credentials.
 settings if that is intended; otherwise use test wallets and do not broadcast
 real transactions unless explicitly intended.
 
-This Worker has no API routes: it forwards `/api/*` to the `osmosis-frontend-api-stage`
+The frontend Worker forwards `/api/*` to the `osmosis-frontend-api-stage`
 Worker over the `API` service binding, so runtime secrets such as `SKIP_API_KEY`,
 `SOLANA_RPC_URL`, `SWAPPED_COM_SK`, `COINGECKO_API_KEY` and `NUMIA_API_KEY` belong on
-the API Worker, not on `osmosis-frontend-stage`. `api-worker/README.md` covers setting
-them and deploying it. Only enable providers whose staging credentials are configured.
+the API Worker. The frontend also needs `COINGECKO_API_KEY` and `NUMIA_API_KEY`
+for prerendering and ISR. `api-worker/README.md` covers API secrets and deployment.
+Only enable providers whose staging credentials are configured.
 
 For Solana testing, configure `NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID` at build
 time and enable `solana-skip-routes` in that LaunchDarkly environment. Deployed
@@ -138,7 +148,7 @@ contents or Durable Object state; do not delete those resources as a rollback
 step. On a first deployment, stop testing or remove its staging route if needed;
 production remains untouched.
 
-The shared cache Vercel's CDN provided is kept per Cloudflare location
+Shared API and image responses are cached per Cloudflare location
 (`x-edge-cache: HIT|MISS` shows the result):
 
 - GET `/api/*` responses that send `Cache-Control: s-maxage` (`/api/pools`,

@@ -1,6 +1,4 @@
-/** Body limit for handlers that read JSON, matching the 1MB default of
- *  Next's API body parser, which these routes used before taking the raw
- *  request. */
+/** Body limit for handlers that read JSON: 1 MiB. */
 export const MAX_JSON_BODY_BYTES = 1024 * 1024;
 
 /** The body as text, or undefined when it is larger than `maxBytes` UTF-8
@@ -26,9 +24,7 @@ export async function readBodyText(
 
       byteLength += value.byteLength;
       if (byteLength > maxBytes) {
-        // Stops the upload instead of leaving the platform to drain it. The
-        // 413 still reaches the client under `toNodeApiHandler` (see
-        // `fetch-api-handler.spec.ts`).
+        // Stop the upload instead of leaving the platform to drain it.
         await reader.cancel();
         return undefined;
       }

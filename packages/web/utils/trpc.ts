@@ -29,7 +29,6 @@ import { PERSIST_BUSTER, shouldPersistQuery } from "~/utils/trpc-persist";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
 
@@ -101,17 +100,11 @@ export const api = createTRPCNext<AppRouter>({
               (opts.direction === "down" && opts.result instanceof Error)),
         }),
         /**
-         * Split calls to the node server and the edge server.
-         * Edge server has some benefits over the node server:
-         * - It's faster
-         * - Has no cold starts
-         *
-         * However, the edge server does not have the node.js api available, so we can't use it for everything.
-         * We'll use the edge server for simple fetches (E.g. getting pools) or calculations (E.g. calculating price).
-         * We'll use the node server for things that require the node.js api (E.g. Creating transactions).
+         * Select the API Worker endpoint for each router, or execute local queries
+         * in the browser. The endpoint names preserve the existing tRPC URLs.
          */
         (runtime) => {
-          // initialize the different links for different targets (edge and node)
+          // Initialize the links for the API endpoints and local router.
           const servers = {
             node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
             [constructEdgeRouterKey("main")]: makeSkipBatchLink(
@@ -124,11 +117,9 @@ export const api = createTRPCNext<AppRouter>({
             })(runtime),
 
             /**
-             * Create a separate links for specific edge server routers since their queries are too expensive
-             * and it's slowing the other queries down because of JS single threaded nature.
+             * Keep the existing per-router endpoints for API compatibility.
              *
-             * If you add another key please remember to create the function on the
-             * /pages/api/ folder with the following format: edge-trpc-[key]/[trpc].ts
+             * Register new endpoints in api-worker/routes.ts and api-worker/handlers.ts.
              */
             [constructEdgeRouterKey("pools")]: makeSkipBatchLink(
               `${getBaseUrl()}${constructEdgeUrlPathname("pools")}`

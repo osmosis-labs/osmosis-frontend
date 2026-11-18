@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 
 /**
- * Public, display-only assets procedures that Vercel's CDN may cache, with
+ * Public, display-only assets procedures that the API Worker may cache, with
  * the max age in seconds. The server also keeps these in memory (market data
  * 1-5 min, historical prices 3 min, CoinGecko coins 30 min), and the CDN's age
  * adds to that, so market data (prices shown next to trading) is kept short.

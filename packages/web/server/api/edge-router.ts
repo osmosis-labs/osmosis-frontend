@@ -8,7 +8,7 @@ import {
   transactionsRouter,
 } from "@osmosis-labs/trpc";
 
-/** Contains tRPC functions running on Vercel's edge network. */
+/** Contains tRPC procedures served by the API Worker. */
 export const edgeRouter = createTRPCRouter({
   assets: assetsRouter,
   pools: poolsRouter,

@@ -7,7 +7,7 @@
 ## When you reach for this doc
 
 - Something is failing or blocking that shouldn't be: workflow error, Socket outage, gate REJECTing valid PRs.
-- A real attack is suspected and you need to know what to do *and not do* (do not override).
+- A real attack is suspected and you need to know what to do _and not do_ (do not override).
 - An override turned out, post-hoc, to have approved something bad.
 
 If none of the above, you probably want [USER_GUIDE.md](./USER_GUIDE.md) instead.
@@ -19,7 +19,7 @@ If none of the above, you probably want [USER_GUIDE.md](./USER_GUIDE.md) instead
 This section will cover:
 
 - **Symptoms.** Socket-API calls in the workflow time out or 5xx; aggregator emits REJECTED verdicts with `reason: socket_unavailable`; sticky comments fire on every PR; #security-gate-alerts fills up.
-- **Expected behaviour.** The gate fails *closed* by design - Socket being missing is treated as a high-severity finding, so all PRs touching deps are REJECTED until Socket recovers. This is intentional; do not override around it.
+- **Expected behaviour.** The gate fails _closed_ by design - Socket being missing is treated as a high-severity finding, so all PRs touching deps are REJECTED until Socket recovers. This is intentional; do not override around it.
 - **Diagnosis.** Check Socket's status page (`status.socket.dev` or the current equivalent) and the `socket` job logs in a recent failed workflow run.
 - **Escalation.** Notify `#security-gate-alerts` with the suspected duration.
 - **Temporary `advisory` flip.** If the outage is prolonged (>= 1 hour) and dev velocity is impacted, open a fast-track PR against [`gate-config.yml`](./gate-config.yml) flipping `mode: gate` to `mode: advisory`. CODEOWNERS reviews. **Always paired with a flip-back PR queued and a stated plan for when Socket recovers.** The flip itself posts an always-on Slack alert.
@@ -73,7 +73,7 @@ This section will cover incident response when an override is granted in good fa
 
 ## Scope & limitations (residual risk)
 
-The gate runs in GitHub Actions. Vercel builds the merged commit independently and does NOT run the gate. The mitigation is structural: because nothing reaches `stage` without passing the gate, Vercel only ever builds commits that have already been cleared. Runtime egress monitoring on the Vercel side is out of scope for this initiative; StepSecurity Harden-Runner is Linux-runner-only and is tracked separately under MTN-59 (Phase 06).
+The gate runs in GitHub Actions. Cloudflare builds the merged commit independently and does NOT run the gate. The mitigation is structural: because nothing reaches `stage` without passing the gate, the stage Worker pair only builds commits that have already been cleared. Runtime egress monitoring on the Workers is out of scope for this initiative; StepSecurity Harden-Runner is Linux-runner-only and is tracked separately under MTN-59 (Phase 06).
 
 ## See also
 
