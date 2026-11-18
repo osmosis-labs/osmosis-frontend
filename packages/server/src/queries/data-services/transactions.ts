@@ -13,8 +13,15 @@ interface Pool {
 }
 
 interface Info {
+  /** Present on `swap` metadata. */
   tokenIn: Token;
   tokenOut: Token;
+  /** Present on `ibc_send` / `ibc_received` metadata. */
+  token?: Token;
+  /** Chain name (chain registry) of the next hop, on `ibc_send`. */
+  chain_to?: string;
+  /** Chain name (chain registry) of the previous hop, on `ibc_received`. */
+  chain_from?: string;
 }
 
 interface Token {
@@ -49,12 +56,14 @@ export interface Metadata {
   value: Value[];
 }
 
-interface Message {
-  sender: string;
-  routes: Route[];
-  token_in_denom: string;
-  token_out_min_amount: string;
+/** Decoded tx message. Fields depend on `@type`. */
+export interface Message {
   "@type": string;
+  sender?: string;
+  routes?: Route[];
+  token_in_denom?: string;
+  token_out_min_amount?: string;
+  [key: string]: unknown;
 }
 
 export interface Transaction {
@@ -65,6 +74,7 @@ export interface Transaction {
   blockTimestamp: string;
   index: number;
   height: number;
+  fee?: { denom: string; amount: string }[];
   code: number;
   info: string;
   gasWanted: number;

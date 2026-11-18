@@ -1,19 +1,28 @@
-import type { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
+import {
+  ASSET_CATEGORY_KEYS,
+  type AssetList,
+  type Chain,
+  type MinimalAsset,
+} from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { AsyncTimeoutError, timeout } from "@osmosis-labs/utils";
 import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import {
+  DATA_SERVICES_MARKET_MAX_AGE,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
   type CoingeckoVsCurrencies,
   queryCoingeckoCoin,
-  queryCoingeckoCoinIds,
 } from "../../coingecko";
 import { querySupplyTotal } from "../../cosmos";
 import { queryAllTokenData, type TokenData } from "../../data-services";
 import { type AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getAssetPrice } from "./price";
 import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
 
 export type AssetMarketInfo = Partial<{
@@ -27,9 +36,83 @@ export type AssetMarketInfo = Partial<{
   liquidity: PricePretty;
 }>;
 
+/** How long a market asset waits for its SQS price. An SQS price batch can wait up to 10s
+ *  when SQS stalls or its queue is full. */
+const SQS_PRICE_WAIT_MS = 2000;
+
+/** Cached function that returns an asset with market info included. The current price
+ *  comes from SQS, as in the swap form, since the data services' price is cached for
+ *  minutes and lags in a volatile market. It falls back to the data services when SQS has
+ *  none or is slower than `SQS_PRICE_WAIT_MS`. Price changes, market cap, liquidity and
+ *  volume come from the data services. */
+export async function getMarketAsset<TAsset extends MinimalAsset>(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  asset: TAsset;
+  includeTotalSupply?: boolean;
+}): Promise<TAsset & AssetMarketInfo> {
+  const [marketAsset, sqsPrice] = await Promise.all([
+    getDataServicesMarketAsset(params),
+    timeout(
+      () => getSqsPrice(params),
+      SQS_PRICE_WAIT_MS,
+      "getSqsPrice"
+    )().catch(() => undefined),
+  ]);
+  return sqsPrice ? { ...marketAsset, currentPrice: sqsPrice } : marketAsset;
+}
+
+/** Fills a missing current price from SQS, which prices from pool state and doesn't
+ *  depend on the data services. Only the spot price: price changes, market cap, liquidity
+ *  and volume stay unknown. */
+export async function withSqsPriceFallback<
+  TAsset extends MinimalAsset & AssetMarketInfo,
+>({
+  asset,
+  ...params
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  asset: TAsset;
+}): Promise<TAsset> {
+  if (asset.currentPrice) return asset;
+  return { ...asset, currentPrice: await getSqsPrice({ ...params, asset }) };
+}
+
+/** The asset's SQS price, or undefined when SQS has none. Many listed assets have no SQS
+ *  price (no pools), so a failure isn't reported. Not cached here, since `getAssetPrice`
+ *  caches its own prices. */
+function getSqsPrice(params: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  asset: MinimalAsset;
+}): Promise<PricePretty | undefined> {
+  return getAssetPrice(params).then(
+    (price) => new PricePretty(DEFAULT_VS_CURRENCY, price),
+    () => undefined
+  );
+}
+
+const totalSupplyCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Total supply on its own, longer cache: it moves slowly, while the market info entry
+ *  of an asset with no price is retried every few seconds and must not re-query the chain
+ *  each time. A failed query isn't cached. */
+function getCachedTotalSupply(params: {
+  chainList: Chain[];
+  assetLists: AssetList[];
+  denom: string;
+}) {
+  return cachified({
+    cache: totalSupplyCache,
+    key: `total-supply-${params.denom}`,
+    ttl: 1000 * 60 * 10, // 10 minutes
+    getFreshValue: () => querySupplyTotal(params),
+  });
+}
+
 const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Cached function that returns an asset with market info included. */
-export async function getMarketAsset<TAsset extends MinimalAsset>({
+/** Cached function that returns an asset with market info from the data services only. */
+async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
   asset,
   includeTotalSupply = false,
   ...params
@@ -43,18 +126,30 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
     cache: marketInfoCache,
     key: `market-asset-${asset.coinMinimalDenom}-${includeTotalSupply}`,
     ttl: 1000 * 60, // 1 minute
-    getFreshValue: async () => {
-      const [assetMarketActivity, totalSupply] = await Promise.all([
-        getAssetMarketActivity(asset).catch((e) =>
-          captureErrorAndReturn(e, undefined)
-        ),
+    getFreshValue: async ({ metadata }) => {
+      const [marketActivity, totalSupply] = await Promise.all([
+        getAssetMarketActivityWithFreshness(asset).catch((e) => {
+          // Market data is unavailable, not absent: retry soon instead of
+          // holding the asset without it for the full ttl.
+          metadata.ttl = 1000 * 5; // 5 seconds
+          return captureErrorAndReturn(e, undefined);
+        }),
         includeTotalSupply
-          ? querySupplyTotal({
+          ? getCachedTotalSupply({
               ...params,
               denom: asset.coinMinimalDenom,
             }).catch((e) => captureErrorAndReturn(e, undefined))
           : undefined,
       ]);
+      const assetMarketActivity = marketActivity?.activity;
+
+      // Never hold a price past the token data's freshness, and retry soon when
+      // there's no price (it may be unavailable rather than absent).
+      if (marketActivity) {
+        metadata.ttl = assetMarketActivity?.price
+          ? Math.min(1000 * 60, marketActivity.freshForMs)
+          : 1000 * 5;
+      }
 
       return {
         currentPrice: assetMarketActivity?.price,
@@ -75,7 +170,10 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
 }
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
- *  If no assets provided, they will be fetched and passed the given search params. */
+ *  If no assets provided, they will be fetched and passed the given search params.
+ *  Without market data the liquidity and volume filters drop every asset, which would read
+ *  as an empty list rather than an outage: callers that use them check
+ *  `isMarketDataAvailable` first and report the outage with their own error code. */
 export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   assets,
   excludeVariants = false,
@@ -83,11 +181,15 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   minLiquidity,
   minVolume24h,
   maxPriceChange24h,
+  sqsPriceFallback = true,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
+  /** Fill missing prices from SQS. Turn off when most rows lack a price (a data services
+   *  outage) and price only the rows actually returned. Defaults to true. */
+  sqsPriceFallback?: boolean;
   /** Exclude non-canonical variants (keep only assets where variantGroupKey === coinMinimalDenom). Defaults to false. */
   excludeVariants?: boolean;
   /** Exclude stablecoins (assets with "stablecoin" category). Defaults to false. */
@@ -128,11 +230,11 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   }
 
   const marketAssets = await Promise.all(
-    assets.map((asset) => getMarketAsset({ asset, ...params }))
+    assets.map((asset) => getDataServicesMarketAsset({ asset, ...params }))
   );
 
   // Filter for assets that meet liquidity and volume requirements
-  return marketAssets.filter((asset) => {
+  const listedMarketAssets = marketAssets.filter((asset) => {
     const liquidityDec = asset.liquidity?.toDec() ?? new Dec(0);
 
     if (minLiquidity !== undefined) {
@@ -155,6 +257,14 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
 
     return true;
   });
+
+  // Only after filtering: pricing every listed asset from SQS at once would flood it.
+  if (!sqsPriceFallback) return listedMarketAssets;
+  return Promise.all(
+    listedMarketAssets.map((asset) =>
+      withSqsPriceFallback({ asset, ...params })
+    )
+  );
 }
 
 const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(
@@ -219,33 +329,231 @@ export async function getAssetCoingeckoCoin({
   });
 }
 
-const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** How long token data, which includes prices, counts as fresh. */
+const TOKEN_DATA_TTL = 1000 * 60 * 5; // 5 minutes since there's price data
+
+/** How long past its ttl token data still counts as fresh. Right after the ttl a failed
+ *  refresh falls back to the cached entry with its prices; only data older than this is
+ *  treated as an outage. */
+const TOKEN_DATA_REFRESH_GRACE = 1000 * 60 * 2; // 2 minutes
+
+/** Every token data fetch gives up after this long. The data services have no timeout of
+ *  their own, and a hanging fetch would hold every request waiting on it. */
+const TOKEN_DATA_FETCH_TIMEOUT = 1000 * 4; // 4 seconds
+
+/** A refresh still pending this long after it started is treated as lost, and the next
+ *  request starts a new one instead of waiting on it. A refresh can outlive every request
+ *  waiting on it (they time out first), and on the serverless runtime it can then stall,
+ *  abort timer included, and would otherwise be shared with every later request on the
+ *  instance. */
+const TOKEN_DATA_REFRESH_ABANDON_AFTER = TOKEN_DATA_FETCH_TIMEOUT + 1000; // 5 seconds
+
+/** After a failed refresh, wait this long before trying again. */
+const TOKEN_DATA_REFRESH_RETRY_DELAY = 1000 * 30; // 30 seconds
+
+let tokenDataRefreshFailedAt = 0;
+
+function isTokenDataFresh(fetchedAt: number): boolean {
+  return Date.now() - fetchedAt <= TOKEN_DATA_TTL + TOKEN_DATA_REFRESH_GRACE;
+}
+
+/** Fields that are prices or derived from prices. They are dropped when the token data is
+ *  served stale during a data-services outage: a last-known price can be badly wrong in a
+ *  volatile market, so it's shown as unknown instead. */
+const PRICE_DERIVED_FIELDS = [
+  "price",
+  "price1hChange",
+  "price24hChange",
+  "price7dChange",
+  "marketCap",
+  "liquidity",
+  "liquidity24hChange",
+] as const;
+
+/** Token data from the data services, keyed by upper-cased denom, with when it was fetched.
+ *  `fetchedAt` is when the fetch started: a response that arrives late (e.g. from a refresh
+ *  that stalled) is no newer than the moment it was requested. */
+async function fetchTokenData(fetchedAt: number) {
+  const allTokenData = await queryAllTokenData({
+    signal: AbortSignal.timeout(TOKEN_DATA_FETCH_TIMEOUT),
+  });
+
+  const tokenInfoMap = new Map<string, MarketActivity>();
+  allTokenData.forEach((tokenData) => {
+    const activity = makeMarketActivityFromTokenData(tokenData);
+    tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
+  });
+  return {
+    tokenInfoMap,
+    fetchedAt,
+    // The data services can answer with every price or liquidity null, which is an
+    // outage of that field rather than data.
+    hasPrices: allTokenData.some(({ price }) => price !== null),
+    hasLiquidity: allTokenData.some(({ liquidity }) => liquidity !== null),
+  };
+}
+
+type TokenDataEntry = Awaited<ReturnType<typeof fetchTokenData>>;
+
+/** The last token data fetched. A failed refresh leaves it in place without renewing it,
+ *  so it ages out at its maximum age. */
+let tokenDataEntry: TokenDataEntry | undefined;
+/** The refresh in flight, shared by every request that needs one. */
+let tokenDataRefresh:
+  { promise: Promise<TokenDataEntry>; startedAt: number } | undefined;
+
+/** The cached token data entry if it's within its maximum age, without fetching. */
+function readCachedTokenData(): TokenDataEntry | undefined {
+  if (
+    !tokenDataEntry ||
+    Date.now() - tokenDataEntry.fetchedAt > DATA_SERVICES_MARKET_MAX_AGE
+  ) {
+    return undefined;
+  }
+  return tokenDataEntry;
+}
+
+/** Refreshes token data, joining the refresh in flight unless it has been pending long
+ *  enough to count as lost. A failure of the current refresh is recorded for the retry
+ *  delay. */
+function refreshTokenData(): Promise<TokenDataEntry> {
+  if (
+    tokenDataRefresh &&
+    Date.now() - tokenDataRefresh.startedAt < TOKEN_DATA_REFRESH_ABANDON_AFTER
+  ) {
+    return tokenDataRefresh.promise;
+  }
+
+  const startedAt = Date.now();
+  const refresh: NonNullable<typeof tokenDataRefresh> = {
+    startedAt,
+    promise: fetchTokenData(startedAt).then(
+      (entry) => {
+        // A lost refresh that settles after its replacement must not put older data back.
+        if (!tokenDataEntry || entry.fetchedAt > tokenDataEntry.fetchedAt) {
+          tokenDataEntry = entry;
+        }
+        return tokenDataEntry;
+      },
+      (e) => {
+        // A lost refresh failing late says nothing about its replacement.
+        if (tokenDataRefresh === refresh) tokenDataRefreshFailedAt = Date.now();
+        throw e;
+      }
+    ),
+  };
+  tokenDataRefresh = refresh;
+  // A lost refresh that settles late must not clear its replacement.
+  refresh.promise
+    .finally(() => {
+      if (tokenDataRefresh === refresh) tokenDataRefresh = undefined;
+    })
+    .catch(() => undefined);
+  return refresh.promise;
+}
+
+/** Waits for a token data refresh, but never longer than a fetch may take: the shared
+ *  refresh can be a lost one, and this request's own timer still fires. Timing out counts
+ *  as a failed refresh, so the retry delay applies even when the refresh never settles. */
+async function waitForTokenDataRefresh(): Promise<TokenDataEntry> {
+  try {
+    return await timeout(
+      refreshTokenData,
+      TOKEN_DATA_FETCH_TIMEOUT,
+      "refreshTokenData"
+    )();
+  } catch (e) {
+    if (e instanceof AsyncTimeoutError) tokenDataRefreshFailedAt = Date.now();
+    throw e;
+  }
+}
+
+/** Token data, refreshed once it's past its ttl. The request that finds it past its ttl
+ *  waits for the refresh (never longer than a fetch may take), rather than refreshing in
+ *  the background: on the serverless runtime a refresh nobody waits for can stall after
+ *  the request that started it ends. A failed refresh falls back to the cached entry, which
+ *  is treated as stale once past the grace, and no refresh is tried again for
+ *  `TOKEN_DATA_REFRESH_RETRY_DELAY`. Token data without any price is refreshed after that
+ *  delay instead of the ttl, so prices come back soon after the data services recover. */
+async function getTokenData(): Promise<TokenDataEntry> {
+  const tokenData = readCachedTokenData();
+
+  // Within the retry delay after a failed fetch, don't call the data services at all,
+  // including for a cold or expired cache.
+  if (Date.now() - tokenDataRefreshFailedAt < TOKEN_DATA_REFRESH_RETRY_DELAY) {
+    if (tokenData) return tokenData;
+    throw new Error("Token data is unavailable");
+  }
+
+  if (tokenData) {
+    const refreshAfter = tokenData.hasPrices
+      ? TOKEN_DATA_TTL
+      : TOKEN_DATA_REFRESH_RETRY_DELAY;
+    if (Date.now() - tokenData.fetchedAt <= refreshAfter) return tokenData;
+  }
+
+  return waitForTokenDataRefresh().catch((e) => {
+    // Another request may have saved newer data in the meantime.
+    const latest = readCachedTokenData();
+    if (!latest) throw e;
+    return latest;
+  });
+}
+
+/** False while a data-services outage leaves no fresh token data, or token data without
+ *  any liquidity: liquidity is then unknown for every asset, not missing for some, and the
+ *  asset list filtered by it would read as empty. Missing prices alone don't count, since
+ *  they fall back to SQS. */
+export async function isMarketDataAvailable(): Promise<boolean> {
+  return getTokenData().then(
+    ({ fetchedAt, hasLiquidity }) =>
+      hasLiquidity && isTokenDataFresh(fetchedAt),
+    () => false
+  );
+}
 
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
  *  configured outside of our asset list (from data services).
- *  Returns `undefined` for a given coin denom if there was an error or it's not available. */
+ *  Returns `undefined` for a given coin denom if there was an error or it's not available.
+ *  While a data-services outage keeps the data past its ttl and refresh grace, price-derived
+ *  fields are undefined. */
 export async function getAssetMarketActivity({
   coinMinimalDenom,
 }: {
   coinMinimalDenom: string;
-}) {
-  const assetMarketMap = await cachified({
-    cache: assetMarketCache,
-    ttl: 1000 * 60 * 5, // 5 minutes since there's price data
-    key: "allTokenData",
-    getFreshValue: async () => {
-      const allTokenData = await queryAllTokenData();
+}): Promise<AssetMarketActivity | undefined> {
+  return (await getAssetMarketActivityWithFreshness({ coinMinimalDenom }))
+    .activity;
+}
 
-      const tokenInfoMap = new Map<string, MarketActivity>();
-      allTokenData.forEach((tokenData) => {
-        const activity = makeMarketActivityFromTokenData(tokenData);
-        tokenInfoMap.set(tokenData.denom.toUpperCase(), activity);
-      });
-      return tokenInfoMap;
-    },
-  });
+/** Market activity whose price-derived fields may be missing (stale data). */
+type AssetMarketActivity = Omit<
+  MarketActivity,
+  (typeof PRICE_DERIVED_FIELDS)[number]
+> &
+  Partial<Pick<MarketActivity, (typeof PRICE_DERIVED_FIELDS)[number]>>;
 
-  return assetMarketMap.get(coinMinimalDenom.toUpperCase());
+/** `getAssetMarketActivity`, plus how much longer its prices stay fresh. */
+async function getAssetMarketActivityWithFreshness({
+  coinMinimalDenom,
+}: {
+  coinMinimalDenom: string;
+}): Promise<{
+  activity: AssetMarketActivity | undefined;
+  freshForMs: number;
+}> {
+  const { tokenInfoMap, fetchedAt } = await getTokenData();
+  const freshForMs = Math.max(
+    0,
+    fetchedAt + TOKEN_DATA_TTL + TOKEN_DATA_REFRESH_GRACE - Date.now()
+  );
+
+  const activity = tokenInfoMap.get(coinMinimalDenom.toUpperCase());
+  if (!activity || freshForMs > 0) return { activity, freshForMs };
+
+  const staleActivity: Partial<MarketActivity> = { ...activity };
+  PRICE_DERIVED_FIELDS.forEach((field) => delete staleActivity[field]);
+  return { activity: staleActivity as AssetMarketActivity, freshForMs };
 }
 
 type MarketActivity = ReturnType<typeof makeMarketActivityFromTokenData>;
@@ -258,7 +566,11 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
         : undefined,
     denom: tokenData.denom,
     symbol: tokenData.symbol,
-    liquidity: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity ?? 0),
+    // Null liquidity and volume are unknown, not zero.
+    liquidity:
+      tokenData.liquidity !== null
+        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity)
+        : undefined,
     liquidity24hChange:
       tokenData.liquidity_24h_change !== null
         ? new RatePretty(
@@ -268,7 +580,10 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
     marketCap: tokenData.coingecko_mcap
       ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.coingecko_mcap)
       : undefined,
-    volume24h: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h ?? 0),
+    volume24h:
+      tokenData.volume_24h !== null
+        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h)
+        : undefined,
     volume24hChange:
       tokenData.volume_24h_change !== null
         ? new RatePretty(new Dec(tokenData.volume_24h_change).quo(new Dec(100)))
@@ -291,15 +606,70 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
   };
 }
 
-/** Set of active CoinGecko IDs that CoinGecko has data for (is "active"). */
-export async function getActiveCoingeckoCoins() {
-  return await cachified({
-    cache: assetMarketCache,
+const categoryImageSamplesCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+
+/** Image urls of the top verified assets of each category, by market cap. Assets without
+ *  a market cap follow, ordered by 24h volume, then by denom so the order is stable.
+ *  Non-canonical variants are left out so one alloyed asset can't fill a category. Assets
+ *  without an image are skipped. Cached for an hour; an empty result (a data services
+ *  outage) is retried after a few seconds instead. Categories are `ASSET_CATEGORY_KEYS`. Matches by denom, not symbol. */
+export async function getCategoryImageSamples({
+  assetLists,
+  chainList,
+  perCategory = 3,
+}: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+  perCategory?: number;
+}): Promise<Record<string, string[]>> {
+  return cachified({
+    cache: categoryImageSamplesCache,
+    key: `category-image-samples-${perCategory}`,
     ttl: 1000 * 60 * 60, // 1 hour
-    key: "coinGeckoIds",
-    getFreshValue: () =>
-      queryCoingeckoCoinIds().then(
-        (coins) => new Set(coins.map(({ id }) => id))
-      ),
+    getFreshValue: async ({ metadata }) => {
+      const marketAssets = await mapGetMarketAssets({
+        assetLists,
+        chainList,
+        onlyVerified: true,
+        excludeVariants: true,
+        sqsPriceFallback: false,
+      });
+
+      const categoriesByDenom = new Map(
+        assetLists
+          .flatMap(({ assets }) => assets)
+          .map((asset) => [asset.coinMinimalDenom, asset.categories])
+      );
+
+      const zero = new Dec(0);
+      const compareDesc = (a: Dec | undefined, b: Dec | undefined) => {
+        const [x, y] = [a ?? zero, b ?? zero];
+        return x.equals(y) ? 0 : x.gt(y) ? -1 : 1;
+      };
+      const ranked = marketAssets
+        .filter((asset) => !!asset.coinImageUrl)
+        .sort(
+          (a, b) =>
+            compareDesc(a.marketCap?.toDec(), b.marketCap?.toDec()) ||
+            compareDesc(a.volume24h?.toDec(), b.volume24h?.toDec()) ||
+            a.coinMinimalDenom.localeCompare(b.coinMinimalDenom)
+        );
+
+      const samples: Record<string, string[]> = {};
+      for (const category of ASSET_CATEGORY_KEYS) {
+        const urls = ranked
+          .filter((asset) =>
+            categoriesByDenom.get(asset.coinMinimalDenom)?.includes(category)
+          )
+          .slice(0, perCategory)
+          .map((asset) => asset.coinImageUrl as string);
+        if (urls.length > 0) samples[category] = urls;
+      }
+
+      if (Object.keys(samples).length === 0) metadata.ttl = 1000 * 5;
+      return samples;
+    },
   });
 }

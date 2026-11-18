@@ -9,17 +9,16 @@ import {
   StepsIndicator,
 } from "~/components/stepper";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
-import { useStore } from "~/stores";
 
 const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
   isWalletConnected,
   setShowValidatorModal,
 }) => {
   const { t } = useTranslation();
-  const { chainStore } = useStore();
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const osmosisChainId = OsmosisChainInfo.chainId;
   const { onOpenWalletSelect } = useWalletSelect();
 
   const onStakeButtonClick = useCallback(() => {
@@ -45,7 +44,8 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
   return (
     <Button
       variant="success"
-      className={"w-1/2 self-center lg:w-full"}
+      // at least half the card, but wide enough for its label in narrow cards
+      className="min-w-[50%] self-center px-6 lg:w-full"
       onClick={onStakeButtonClick}
     >
       {buttonText}

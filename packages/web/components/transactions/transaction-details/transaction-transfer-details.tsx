@@ -14,6 +14,7 @@ import { ChainLogo } from "~/components/assets/chain-logo";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import { IconButton } from "~/components/buttons/icon-button";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { UnknownAddress } from "~/components/transactions/unknown-address";
 import { Button } from "~/components/ui/button";
 import { IS_TESTNET } from "~/config";
 import { useTranslation } from "~/hooks";
@@ -222,16 +223,22 @@ export const TransactionTransferDetails = ({
                 </div>
               </div>
             </div>
-            <CopyIconButton
-              valueToCopy={transaction.fromAddress}
-              label={shorten(transaction.fromAddress, {
-                prefixLength: 10,
-                suffixLength: 6,
-              })}
-              classes={{
-                label: "!text-right !font-body1 !text-body1",
-              }}
-            />
+            {transaction.fromAddress ? (
+              <CopyIconButton
+                valueToCopy={transaction.fromAddress}
+                label={shorten(transaction.fromAddress, {
+                  prefixLength: 10,
+                  suffixLength: 6,
+                })}
+                classes={{
+                  label: "!text-right !font-body1 !text-body1",
+                }}
+              />
+            ) : (
+              // e.g. an Axelar deposit whose source sender couldn't be looked
+              // up yet
+              <UnknownAddress className="body1 text-osmoverse-300" />
+            )}
           </div>
           <div className="flex h-10 w-14 items-center justify-center p-2">
             <Icon
@@ -271,16 +278,21 @@ export const TransactionTransferDetails = ({
                 </div>
               </div>
             </div>
-            <CopyIconButton
-              valueToCopy={transaction.toAddress}
-              label={shorten(transaction.toAddress, {
-                prefixLength: 10,
-                suffixLength: 6,
-              })}
-              classes={{
-                label: "!text-right !font-body1 !text-body1",
-              }}
-            />
+            {transaction.toAddress ? (
+              <CopyIconButton
+                valueToCopy={transaction.toAddress}
+                label={shorten(transaction.toAddress, {
+                  prefixLength: 10,
+                  suffixLength: 6,
+                })}
+                classes={{
+                  label: "!text-right !font-body1 !text-body1",
+                }}
+              />
+            ) : (
+              // e.g. a bridge payload that couldn't be decoded
+              <UnknownAddress className="body1 text-osmoverse-300" />
+            )}
           </div>
         </div>
         <div className="flex flex-col py-3">

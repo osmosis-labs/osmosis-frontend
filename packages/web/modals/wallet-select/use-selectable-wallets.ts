@@ -16,7 +16,12 @@ export function getDisplayableEvmConnector<T extends Connector>(wallet: T): T {
     newWallet.icon = "/logos/metamask.svg";
   }
 
-  if (wallet.type === WagmiMetamaskSdkType) {
+  // wagmi stores the connector passed to `connect`, which is already this
+  // displayable copy, so the account connector can come through here twice.
+  if (
+    wallet.type === WagmiMetamaskSdkType &&
+    !wallet.name.endsWith(" Mobile")
+  ) {
     newWallet.name = newWallet.name + " Mobile";
   }
 

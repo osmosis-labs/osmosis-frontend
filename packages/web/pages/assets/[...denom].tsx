@@ -1,10 +1,4 @@
 import {
-  getActiveCoingeckoCoins,
-  getAssetMarketActivity,
-} from "@osmosis-labs/server";
-import { sort } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
-import {
   GetStaticPathsResult,
   GetStaticPropsContext,
   InferGetStaticPropsType,
@@ -14,8 +8,8 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
-import { FunctionComponent, useEffect, useMemo } from "react";
-import { useLocalStorage, useUnmount } from "react-use";
+import { FunctionComponent, memo, useEffect, useMemo } from "react";
+import { useLocalStorage } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
@@ -36,7 +30,6 @@ import {
 } from "~/components/place-limit-tool/defaults";
 import { SwapToolProps } from "~/components/swap-tool";
 import { TradeTool } from "~/components/trade-tool";
-import { AssetLists } from "~/config/generated/asset-lists";
 import {
   useAssetInfoConfig,
   useFeatureFlags,
@@ -50,7 +43,7 @@ import { createTrpcHelpers } from "~/utils/helpers";
 
 type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
 
-const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
+const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = memo(
   (props) => {
     const featureFlags = useFeatureFlags();
     const router = useRouter();
@@ -73,53 +66,117 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
   }
 );
 
-const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
-  () => {
-    const { t } = useTranslation();
-    const router = useRouter();
-    const [previousTrade, setPreviousTrade] =
-      useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
+const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const [previousTrade, setPreviousTrade] =
+    useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
-    const {
-      title,
-      coinGeckoId,
-      asset,
-      description,
-      denom: routerDenom,
-    } = useAssetInfo();
+  const {
+    title,
+    coinGeckoId,
+    asset,
+    description,
+    denom: routerDenom,
+  } = useAssetInfo();
 
-    useEffect(() => {
-      if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
-        router.push(`/assets/${encodeURIComponent(asset.coinMinimalDenom)}`);
-      }
-    }, [asset, router, routerDenom]);
+  useEffect(() => {
+    if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
+      router.push(`/assets/${encodeURIComponent(asset.coinMinimalDenom)}`);
+    }
+  }, [asset, router, routerDenom]);
 
-    const assetInfoConfig = useAssetInfoConfig(
-      asset.coinDenom,
-      asset.coinMinimalDenom,
-      coinGeckoId,
-      true
-    );
+  const assetInfoConfig = useAssetInfoConfig(
+    asset.coinDenom,
+    asset.coinMinimalDenom,
+    coinGeckoId,
+    true
+  );
 
-    const swapToolProps: SwapToolProps = useMemo(
-      () => ({
-        fixedWidth: true,
-        useQueryParams: false,
-        useOtherCurrencies: true,
-        initialSendTokenDenom:
-          asset.coinMinimalDenom === USDC_BASE_DENOM
-            ? "uosmo"
-            : USDC_BASE_DENOM,
-        initialOutTokenDenom: asset.coinMinimalDenom,
-      }),
-      [asset.coinMinimalDenom]
-    );
-    const [ref] = useQueryState("ref");
+  const swapToolProps: SwapToolProps = useMemo(
+    () => ({
+      fixedWidth: true,
+      useQueryParams: false,
+      useOtherCurrencies: true,
+      initialSendTokenDenom:
+        asset.coinMinimalDenom === USDC_BASE_DENOM ? "uosmo" : USDC_BASE_DENOM,
+      initialOutTokenDenom: asset.coinMinimalDenom,
+    }),
+    [asset.coinMinimalDenom]
+  );
+  const [ref] = useQueryState("ref");
 
-    useNavBar({
-      title: (
+  useNavBar({
+    title: (
+      <LinkButton
+        className="mr-auto md:invisible"
+        icon={
+          <Image
+            alt="left"
+            src="/icons/arrow-left.svg"
+            width={24}
+            height={24}
+            className="text-osmoverse-200"
+          />
+        }
+        label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
+        ariaLabel={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
+        href={ref === "portfolio" ? "/portfolio" : "/assets"}
+      />
+    ),
+    ctas: [],
+  });
+
+  const contextValue = useMemo(
+    () => ({
+      assetInfoConfig,
+    }),
+    [assetInfoConfig]
+  );
+
+  if (!asset) {
+    return null;
+  }
+
+  /**
+   * Give the Buy/Sell tools a valid quote from the first render. An empty
+   * or same-as-asset quote would only be fixed by an effect after the
+   * Buy/Sell click, which is the pattern that froze this page.
+   */
+  const quoteDenom =
+    previousTrade?.quoteDenom &&
+    previousTrade.quoteDenom !== asset.coinMinimalDenom
+      ? previousTrade.quoteDenom
+      : asset.coinMinimalDenom === USDC_BASE_DENOM
+        ? USDT_BASE_DENOM
+        : USDC_BASE_DENOM;
+
+  const tradeToolProps = {
+    swapToolProps,
+    setPreviousTrade,
+    previousTrade: {
+      baseDenom: asset.coinMinimalDenom,
+      sendTokenDenom: swapToolProps.initialSendTokenDenom ?? "",
+      outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
+      quoteDenom,
+    },
+  };
+
+  return (
+    <AssetInfoViewProvider value={contextValue}>
+      <Script
+        src="/tradingview/charting_library.standalone.js"
+        strategy="afterInteractive"
+      />
+      <NextSeo
+        title={`${
+          title ? `${title} (${asset.coinDenom})` : asset.coinDenom
+        } | Osmosis`}
+        description={description}
+      />
+      <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 pb-11 xs:px-2">
         <LinkButton
-          className="mr-auto md:invisible"
+          className="mr-auto hidden md:flex"
           icon={
             <Image
               alt="left"
@@ -129,202 +186,113 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
               className="text-osmoverse-200"
             />
           }
-          label={ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")}
-          ariaLabel={
-            ref === "portfolio" ? t("menu.portfolio") : t("menu.assets")
-          }
-          href={ref === "portfolio" ? "/portfolio" : "/assets"}
+          label={t("menu.assets")}
+          ariaLabel={t("menu.assets")}
+          href="/assets"
         />
-      ),
-      ctas: [],
-    });
-
-    useUnmount(() => {
-      if (process.env.NODE_ENV === "production") {
-        assetInfoConfig.dispose();
-      }
-    });
-
-    const contextValue = useMemo(
-      () => ({
-        assetInfoConfig,
-      }),
-      [assetInfoConfig]
-    );
-
-    if (!asset) {
-      return null;
-    }
-
-    /**
-     * Give the Buy/Sell tools a valid quote from the first render. An empty
-     * or same-as-asset quote would only be fixed by an effect after the
-     * Buy/Sell click, which is the pattern that froze this page.
-     */
-    const quoteDenom =
-      previousTrade?.quoteDenom &&
-      previousTrade.quoteDenom !== asset.coinMinimalDenom
-        ? previousTrade.quoteDenom
-        : asset.coinMinimalDenom === USDC_BASE_DENOM
-          ? USDT_BASE_DENOM
-          : USDC_BASE_DENOM;
-
-    const tradeToolProps = {
-      swapToolProps,
-      setPreviousTrade,
-      previousTrade: {
-        baseDenom: asset.coinMinimalDenom,
-        sendTokenDenom: swapToolProps.initialSendTokenDenom ?? "",
-        outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
-        quoteDenom,
-      },
-    };
-
-    return (
-      <AssetInfoViewProvider value={contextValue}>
-        <Script
-          src="/tradingview/charting_library.standalone.js"
-          strategy="afterInteractive"
-        />
-        <NextSeo
-          title={`${
-            title ? `${title} (${asset.coinDenom})` : asset.coinDenom
-          } | Osmosis`}
-          description={description}
-        />
-        <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 pb-11 xs:px-2">
-          <LinkButton
-            className="mr-auto hidden md:flex"
-            icon={
-              <Image
-                alt="left"
-                src="/icons/arrow-left.svg"
-                width={24}
-                height={24}
-                className="text-osmoverse-200"
-              />
-            }
-            label={t("menu.assets")}
-            ariaLabel={t("menu.assets")}
-            href="/assets"
-          />
-          <div className="grid grid-cols-tokenpage gap-11 xl:flex xl:flex-col sm:gap-10">
-            <div className="flex flex-col gap-12 sm:gap-10">
-              <div className="flex flex-col gap-5">
-                <AssetNavigation />
-                <AssetPriceChart />
-              </div>
-              <AssetBalance className="hidden xl:block" />
-              {asset.tooltipMessage && (
-                <div className="flex items-start gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-4">
-                  <Icon
-                    id="info"
-                    className="mt-0.5 h-5 w-5 shrink-0 text-osmoverse-300"
-                  />
-                  <LinkifiedText
-                    text={asset.tooltipMessage}
-                    className="body2 text-osmoverse-200"
-                  />
-                </div>
-              )}
-              <AssetDetails />
-              <AssetStats className="hidden xl:flex" />
-              <AssetPools
-                coinMinimalDenom={asset.coinMinimalDenom}
-                coinDenom={asset.coinDenom}
-              />
-              <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
-                <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                  <TradeTool {...tradeToolProps}>
-                    <AssetOrderHistory />
-                  </TradeTool>
-                </div>
-              </div>
-              {!asset.areTransfersDisabled && asset.contract ? (
-                <AlloyedAssetsSection
-                  className="hidden xl:block"
-                  title={title ?? asset.coinDenom}
-                  denom={asset.coinDenom}
-                  coinMinimalDenom={asset.coinMinimalDenom}
-                  contractAddress={asset.contract}
-                />
-              ) : null}
+        <div className="grid grid-cols-tokenpage gap-11 xl:flex xl:flex-col sm:gap-10">
+          <div className="flex flex-col gap-12 sm:gap-10">
+            <div className="flex flex-col gap-5">
+              <AssetNavigation />
+              <AssetPriceChart />
             </div>
-
-            <div className="flex flex-col gap-11 sm:gap-10">
-              <div className="xl:hidden">
+            <AssetBalance className="hidden xl:block" />
+            {asset.tooltipMessage && (
+              <div className="flex items-start gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-4">
+                <Icon
+                  id="info"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-osmoverse-300"
+                />
+                <LinkifiedText
+                  text={asset.tooltipMessage}
+                  className="body2 text-osmoverse-200"
+                />
+              </div>
+            )}
+            <AssetDetails />
+            <AssetStats className="hidden xl:flex" />
+            <AssetPools
+              coinMinimalDenom={asset.coinMinimalDenom}
+              coinDenom={asset.coinDenom}
+            />
+            <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
+              <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                 <TradeTool {...tradeToolProps}>
                   <AssetOrderHistory />
                 </TradeTool>
               </div>
-              <AssetBalance className="xl:hidden" />
-              <AssetStats className="xl:hidden" />
-              {!asset.areTransfersDisabled && asset.contract ? (
-                <AlloyedAssetsSection
-                  className="xl:hidden"
-                  title={title ?? asset.coinDenom}
-                  denom={asset.coinDenom}
-                  coinMinimalDenom={asset.coinMinimalDenom}
-                  contractAddress={asset.contract}
-                />
-              ) : null}
             </div>
+            {!asset.areTransfersDisabled && asset.contract ? (
+              <AlloyedAssetsSection
+                className="hidden xl:block"
+                title={title ?? asset.coinDenom}
+                denom={asset.coinDenom}
+                coinMinimalDenom={asset.coinMinimalDenom}
+                contractAddress={asset.contract}
+              />
+            ) : null}
           </div>
-        </main>
-      </AssetInfoViewProvider>
-    );
-  }
-);
+
+          <div className="flex flex-col gap-11 sm:gap-10">
+            <div className="xl:hidden">
+              <TradeTool {...tradeToolProps}>
+                <AssetOrderHistory />
+              </TradeTool>
+            </div>
+            <AssetBalance className="xl:hidden" />
+            <AssetStats className="xl:hidden" />
+            {!asset.areTransfersDisabled && asset.contract ? (
+              <AlloyedAssetsSection
+                className="xl:hidden"
+                title={title ?? asset.coinDenom}
+                denom={asset.coinDenom}
+                coinMinimalDenom={asset.coinMinimalDenom}
+                contractAddress={asset.contract}
+              />
+            ) : null}
+          </div>
+        </div>
+      </main>
+    </AssetInfoViewProvider>
+  );
+});
 
 export default AssetInfoPage;
 
-/** Number of assets, sorted by volume, to generate static paths for. */
-const TOP_VOLUME_ASSETS_COUNT = 50;
-
 /**
- * Prerender important denoms. See function body for what we consider "important".
+ * Asset page paths prerendered at build: those with 200+ weekly views on
+ * app.osmosis.zone (Cloudflare analytics, 7 days to 2026-11-02). Pages are cached by path, so a
+ * symbol and its denom (`OSMO`, `uosmo`) are separate entries.
+ *
+ * The list is fixed so the build makes no network calls and renders the same
+ * pages every time. Rendering them also fails the build if this page breaks.
+ * Every other path renders on its first request (`fallback: "blocking"`). An
+ * entry that leaves the asset list still renders; it just has no prefetched asset.
  */
-export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
-  const assets = AssetLists.flatMap((list) => list.assets);
-  const activeCoinGeckoIds = await getActiveCoingeckoCoins();
+const BUILD_TIME_ASSET_PATHS = [
+  "ibc/BC26A7A805ECD6822719472BCB7842A48EF09DF206182F8F259B2593EB5D23FB", // ATONE
+  "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228", // HUAHUA
+  "ibc/CE5BFF1D9BADA03BB5CCA5F56939392A761B53A10FBD03B37506669C3218D3B2", // HASH
+  "uosmo",
+  "ibc/F16FDC11A7662B86BC0B9CE61871CBACF7C20606F95E86260FD38915184B75B4", // L1
+  "ATONE",
+  "BTC",
+  "HASH",
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", // ATOM
+  "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC",
+  "OSMO",
+  // ETH, below the cutoff (48-82 weekly views) but kept alongside BTC.
+  "ETH",
+  "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+  "WETH",
+];
 
-  const importantAssets = assets.filter(
-    (asset) =>
-      asset.verified &&
-      !asset.unstable &&
-      !asset.preview &&
-      // Prevent repeated "coin not found" errors from CoinGecko coin query downsteram
-      asset.coingeckoId &&
-      activeCoinGeckoIds.has(asset.coingeckoId)
-  );
-
-  const marketAssets = (
-    await Promise.all(
-      importantAssets.map((asset) =>
-        getAssetMarketActivity(asset).then((activity) => ({
-          ...activity,
-          ...asset,
-        }))
-      )
-    )
-  ).filter((asset): asset is NonNullable<typeof asset> => asset !== undefined);
-
-  const topVolumeAssets = sort(marketAssets, "volume7d").slice(
-    0,
-    TOP_VOLUME_ASSETS_COUNT
-  );
-
-  /**
-   * Add cache for all available currencies
-   */
-  const paths = topVolumeAssets.map((asset) => ({
-    params: {
-      denom: asset.coinMinimalDenom.split("/"),
-    },
-  })) as { params: { denom: string[] } }[];
-
-  return { paths, fallback: "blocking" };
-};
+export const getStaticPaths = async (): Promise<GetStaticPathsResult> => ({
+  paths: BUILD_TIME_ASSET_PATHS.map((path) => ({
+    params: { denom: path.split("/") },
+  })),
+  fallback: "blocking",
+});
 
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const denom = params?.denom as string[];

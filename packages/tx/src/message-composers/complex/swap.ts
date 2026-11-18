@@ -101,13 +101,16 @@ export function getSwapTxParameters({
       .toDec()
       .mul(DecUtils.getTenExponentNInPrecisionRange(tokenOutCoinDecimals))
       .mul(new Dec(1).sub(new Dec(maxSlippage)))
-      .truncate()
-      .toString();
+      .truncate();
 
     return {
       routes,
       tokenIn,
-      tokenOutMinAmount,
+      // The chain rejects a minimum that isn't positive, which a small quote
+      // truncates to (1 unit at any slippage). 1 is the loosest valid bound.
+      tokenOutMinAmount: tokenOutMinAmount.isPositive()
+        ? tokenOutMinAmount.toString()
+        : "1",
     };
   } else {
     const routes: SwapTxRouteInGivenOut[] = [];
@@ -245,67 +248,4 @@ export async function getSwapMessages({
   }
 
   throw new Error(`Unsupported quote type ${quoteType}`);
-}
-
-export const SkipSwapIbcHookContractAddress =
-  "osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv";
-
-export function makeSkipIbcHookSwapMemo({
-  denomIn,
-  denomOut,
-  minAmountOut: amountOut,
-  poolId,
-  receiverOsmoAddress,
-  env,
-  timeoutTimestamp,
-}: {
-  denomIn: string;
-  denomOut: string;
-  minAmountOut: string;
-  poolId: string;
-  timeoutTimestamp: number;
-  receiverOsmoAddress: string;
-  env: "testnet" | "mainnet";
-}) {
-  return {
-    wasm: {
-      contract:
-        env === "testnet"
-          ? // osmosis-1 and osmo-test-5 share the same contract address
-            SkipSwapIbcHookContractAddress // https://celatone.osmosis.zone/osmo-test-5/contracts/osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv
-          : SkipSwapIbcHookContractAddress, // https://celatone.osmosis.zone/osmo-1/contracts/osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv
-      msg: {
-        swap_and_action: {
-          user_swap: {
-            swap_exact_asset_in: {
-              swap_venue_name:
-                env === "testnet"
-                  ? "testnet-osmosis-poolmanager"
-                  : "osmosis-poolmanager",
-              operations: [
-                {
-                  denom_in: denomIn,
-                  denom_out: denomOut,
-                  pool: poolId,
-                },
-              ],
-            },
-          },
-          timeout_timestamp: timeoutTimestamp,
-          min_asset: {
-            native: {
-              denom: denomOut,
-              amount: amountOut,
-            },
-          },
-          post_swap_action: {
-            transfer: {
-              to_address: receiverOsmoAddress,
-            },
-          },
-          affiliates: [],
-        },
-      },
-    },
-  };
 }

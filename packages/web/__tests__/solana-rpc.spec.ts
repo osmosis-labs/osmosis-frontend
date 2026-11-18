@@ -1,10 +1,9 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { delay, http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
-import solanaRpcHandler, {
-  resetSolanaRpcFlagCache,
-} from "~/pages/api/solana-rpc";
+import { solanaRpcHandler } from "~/server/api-handlers/solana-rpc";
+import { resetServerFlagCache } from "~/utils/server-flags";
 
 const PUBLIC_RPC = "https://api.mainnet-beta.solana.com";
 const KEYED_RPC = "https://solana-provider.test/?api-key=secret";
@@ -19,16 +18,15 @@ function post(
   { origin = `https://${APP_HOST}` }: { origin?: string | null } = {}
 ) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
-  return {
+  return new Request(`https://${APP_HOST}/api/solana-rpc`, {
     method: "POST",
-    url: `https://${APP_HOST}/api/solana-rpc`,
-    headers: new Headers({
+    headers: {
       host: APP_HOST,
       ...(origin ? { origin } : {}),
       ...headers,
-    }),
-    text: () => Promise.resolve(text),
-  } as unknown as Request;
+    },
+    body: text,
+  });
 }
 
 const allowedRequest = {
@@ -63,7 +61,7 @@ function launchDarklyServes(flags: Record<string, unknown>) {
 }
 
 beforeEach(() => {
-  resetSolanaRpcFlagCache();
+  resetServerFlagCache();
   // The route fails closed without a client-side id outside development, so
   // every test runs as a deployed build with the flag on unless it says
   // otherwise.
@@ -269,19 +267,9 @@ it("rejects invalid JSON and oversized bodies", async () => {
 });
 
 it("rejects a declared oversize body without reading it", async () => {
-  const text = jest.fn(() => Promise.resolve("{}"));
-  const request = {
-    method: "POST",
-    url: `https://${APP_HOST}/api/solana-rpc`,
-    headers: new Headers({
-      host: APP_HOST,
-      origin: `https://${APP_HOST}`,
-      "content-length": String(17 * 1024),
-    }),
-    text,
-  } as unknown as Request;
+  const request = post("{}", { "content-length": String(17 * 1024) });
   expect((await solanaRpcHandler(request)).status).toBe(413);
-  expect(text).not.toHaveBeenCalled();
+  expect(request.bodyUsed).toBe(false);
 });
 
 it("measures the body limit in bytes, not UTF-16 code units", async () => {

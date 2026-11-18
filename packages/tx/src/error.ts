@@ -49,3 +49,17 @@ export function isAccountNotFoundError(message: string) {
   const regexAccountNotFoundError = /account [a-zA-Z0-9]{39,} not found/;
   return regexAccountNotFoundError.test(message);
 }
+
+/** A tx the node accepted whose result could not be confirmed, because its
+ *  trace timed out or no RPC endpoint could be reached. It may still be
+ *  included, so it must not be reported as failed. */
+export class TxStatusUnknownError extends Error {
+  constructor(
+    readonly txHash: string,
+    readonly reason: unknown
+  ) {
+    super(`Status of transaction ${txHash} is unknown`);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, TxStatusUnknownError.prototype);
+  }
+}

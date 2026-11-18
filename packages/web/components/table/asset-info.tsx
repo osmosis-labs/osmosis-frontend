@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -83,7 +82,7 @@ export function getCategoryFilters(selectedCategory: string | undefined): {
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-}> = observer(({ tableTopPadding = 0 }) => {
+}> = ({ tableTopPadding = 0 }) => {
   const showUnverifiedAssets = useUserSettingsStore(
     (state) => state.showUnverifiedAssets
   );
@@ -194,6 +193,7 @@ export const AssetsInfoTable: FunctionComponent<{
     data: assetPagesData,
     hasNextPage,
     isLoading,
+    error,
     isFetching,
     isPlaceholderData,
     isFetchingNextPage,
@@ -217,7 +217,14 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
-      placeholderData: keepPreviousData,
+      // Don't carry rows over from a query that failed: during an outage they'd show
+      // last-known prices while the new filters load.
+      placeholderData: (previousData, previousQuery) =>
+        previousQuery?.state.status === "error"
+          ? undefined
+          : keepPreviousData(previousData),
+      // A failing server times out after about 12 s; one retry is enough.
+      retry: 1,
 
       // expensive query
       trpc: {
@@ -227,13 +234,23 @@ export const AssetsInfoTable: FunctionComponent<{
       },
     }
   );
+  // The server reports a market data outage with its own code. Other errors (such as a
+  // failed next page) keep the rows already loaded.
+  const isMarketDataUnavailable = error?.data?.code === "SERVICE_UNAVAILABLE";
   const assetsData = useMemo(() => {
+    // Rows kept from an earlier load (including the persisted cache) would show
+    // last-known prices.
+    if (isMarketDataUnavailable) return [];
     const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
     if (selectedCategory === "topGainers") {
-      return assets.slice(undefined, 10);
+      // The server sort keeps rows with an unknown 24h change (last); they are not
+      // gainers, so leave them out rather than show blank change cells.
+      return assets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(undefined, 10);
     }
     return assets;
-  }, [selectedCategory, assetPagesData]);
+  }, [isMarketDataUnavailable, selectedCategory, assetPagesData]);
   const clientCategoryImageSamples = useMemo(() => {
     if (selectedCategory === "topGainers") {
       const topGainers = assetsData
@@ -427,6 +444,7 @@ export const AssetsInfoTable: FunctionComponent<{
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
+  // eslint-disable-next-line hooks-compat/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: assetsData,
     columns: collapsedColumns,
@@ -628,7 +646,12 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-      {noSearchResults && searchQuery?.query && (
+      {isMarketDataUnavailable && (
+        <p className="body2 py-8 text-center text-osmoverse-300">
+          {t("assets.table.marketDataUnavailable")}
+        </p>
+      )}
+      {!isMarketDataUnavailable && noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
           query={searchQuery.query}
@@ -636,7 +659,7 @@ export const AssetsInfoTable: FunctionComponent<{
       )}
     </div>
   );
-});
+};
 
 // table cells
 

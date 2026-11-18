@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 import { CopyIcon, Icon } from "~/components/assets";
@@ -11,7 +11,7 @@ export const CopyIconButton = ({
   classes,
 }: {
   valueToCopy: string;
-  label: string | JSX.Element;
+  label: string | ReactElement;
   classes?: Partial<Record<"container" | "label", string>>;
 }) => {
   const [hasCopied, setHasCopied] = useState(false);

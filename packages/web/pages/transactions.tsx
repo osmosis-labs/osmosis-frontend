@@ -1,13 +1,21 @@
-import { observer } from "mobx-react-lite";
+import type { MappedLimitOrder } from "@osmosis-labs/server";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
-import { useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
+import {
+  OrderDetailsSlideover,
+  OrderModal,
+} from "~/components/complex/orders-history/order-modal";
 import { TransactionContent } from "~/components/transactions/transaction-content";
 import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
 import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
+import {
+  isAllKinds,
+  useTransactionFilters,
+} from "~/components/transactions/transaction-filters";
 import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
 import {
   useFeatureFlags,
@@ -16,14 +24,14 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 
 // @ts-ignore
 const EXAMPLE = {
   ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
 };
 
-const Transactions: React.FC = observer(() => {
+const Transactions: React.FC = memo(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
 
   const router = useRouter();
@@ -40,21 +48,21 @@ const Transactions: React.FC = observer(() => {
     ? addressFromQuery[0]
     : addressFromQuery;
 
-  const { accountStore, chainStore } = useStore();
-  const osmosisChainId = chainStore.osmosis.chainId;
-  const wallet = accountStore.getWallet(osmosisChainId);
+  const { wallet, address: walletAddress, isWalletConnected } = useWallet();
   // for easy testing, pass in an optional address query string to override connected address
   // /transactions?page=0&address=osmoADDRESS
-  const address = addressFromQueryString || wallet?.address || "";
-
-  const isWalletConnected = Boolean(wallet?.isWalletConnected);
+  const address = addressFromQueryString || walletAddress || "";
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 
-  const { transactions, hasNextPage, isLoading } = useTransactionHistory({
-    pageNumber: pageString,
-    pageSize: pageSizeString,
-  });
+  // type filters run in the API, so they apply across all pages
+  const [{ txTypes }] = useTransactionFilters();
+  const { transactions, hasNextPage, isLoading, isError } =
+    useTransactionHistory({
+      pageNumber: pageString,
+      pageSize: pageSizeString,
+      types: isAllKinds(txTypes) ? undefined : [...txTypes],
+    });
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
@@ -98,8 +106,18 @@ const Transactions: React.FC = observer(() => {
     setSelectedTransactionHash,
     onRequestClose,
     selectedTransaction,
-    isLargeDesktop,
+    showSlideover,
   } = useTransactionModal({ transactions });
+
+  const [tab] = useQueryState("tab");
+  const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
+  // Closing the side panel slides it out first and clears the order after, so
+  // the table keeps its layout and widens as the panel shrinks.
+  const [isOrderPanelOpen, setIsOrderPanelOpen] = useState(false);
+  const selectOrder = (order: MappedLimitOrder) => {
+    setSelectedOrder(order);
+    setIsOrderPanelOpen(true);
+  };
 
   return (
     <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
@@ -111,12 +129,30 @@ const Transactions: React.FC = observer(() => {
         open={open}
         address={address}
         isLoading={isLoading || isWalletLoading}
+        isError={isError}
         isWalletConnected={isWalletConnected}
         page={pageString}
         hasNextPage={hasNextPage}
         wallet={wallet}
+        selectedOrder={selectedOrder}
+        onOrderSelect={selectOrder}
+        onSelectedOrderChange={setSelectedOrder}
       />
-      {isLargeDesktop ? (
+      {tab === "orders" ? (
+        showSlideover ? (
+          <OrderDetailsSlideover
+            order={selectedOrder}
+            open={isOrderPanelOpen}
+            onRequestClose={() => setIsOrderPanelOpen(false)}
+            afterLeave={() => setSelectedOrder(undefined)}
+          />
+        ) : (
+          <OrderModal
+            order={selectedOrder}
+            onRequestClose={() => setSelectedOrder(undefined)}
+          />
+        )
+      ) : showSlideover ? (
         <TransactionDetailsSlideover
           onRequestClose={onRequestClose}
           open={open}

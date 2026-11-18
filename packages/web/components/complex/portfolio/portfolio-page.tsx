@@ -1,6 +1,5 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
@@ -13,18 +12,17 @@ import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { PortfolioAssetBalancesTable } from "~/components/table/portfolio-asset-balances";
 import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { api } from "~/utils/trpc";
 
 import { GetStartedWithOsmosis } from "./get-started-with-osmosis";
 
-export const PortfolioPage: FunctionComponent = observer(() => {
+export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
   const hideDust = useUserSettingsStore((state) => state.hideDust);
   const setHideDust = useUserSettingsStore((state) => state.setHideDust);
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, isWalletConnected: isConnected } = useWallet();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   const {
@@ -33,23 +31,25 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     isFetched: isFetchedAllocation,
   } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
-      address: wallet?.address ?? "",
+      address: address ?? "",
     },
     {
-      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      enabled: Boolean(isConnected && address),
     }
   );
 
   const totalCap = allocation?.totalCap;
 
-  const userHasNoAssets = Boolean(allocation && totalCap?.toDec()?.isZero());
+  // An unknown total (a held coin couldn't be priced) is not "no assets".
+  const userHasNoAssets = Boolean(
+    allocation && !allocation.totalCapUnknown && totalCap?.toDec()?.isZero()
+  );
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
-  const isWalletConnected =
-    wallet && wallet.isWalletConnected && wallet.address;
+  const isWalletConnected = isConnected && address;
 
   return (
     <div className="flex justify-center p-8 pt-4 1.5xl:flex-col md:p-4">
@@ -61,6 +61,8 @@ export const PortfolioPage: FunctionComponent = observer(() => {
             <section className="flex py-3" ref={overviewRef}>
               <AssetsOverview
                 totalValue={totalCap}
+                isTotalValueUnknown={allocation?.totalCapUnknown}
+                unpricedAssets={allocation?.unpricedAssets}
                 isTotalValueFetched={isFetchedAllocation}
               />
             </section>
@@ -114,7 +116,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                       />
                     </TabPanel>
                     <TabPanel>
-                      <UserPositionsSection address={wallet?.address} />
+                      <UserPositionsSection address={address} />
                     </TabPanel>
                   </TabPanels>
                 )}
@@ -154,4 +156,4 @@ export const PortfolioPage: FunctionComponent = observer(() => {
       )}
     </div>
   );
-});
+};

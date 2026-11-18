@@ -57,25 +57,20 @@ jest.mock("~/utils/trpc", () => {
   };
 });
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    chainStore: {
-      osmosis: { chainId: "osmosis-1" },
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({
+    wallet: {
+      address: undefined,
+      txTypeInProgress: "",
+      isWalletConnected: false,
+      client: {
+        getAccount: jest.fn().mockResolvedValue({ isNanoLedger: true }),
+      },
+      walletInfo: { prettyName: "Keplr" },
     },
-    accountStore: {
-      osmosisChainId: "osmosis-1",
-      getWallet: () => ({
-        address: undefined,
-        txTypeInProgress: "",
-        isWalletConnected: false,
-        client: {
-          getAccount: jest.fn().mockResolvedValue({ isNanoLedger: true }),
-        },
-        walletInfo: { prettyName: "Keplr" },
-      }),
-      shouldBeSignedWithOneClickTrading: jest.fn().mockResolvedValue(false),
-      signAndBroadcast: jest.fn(),
-    },
+    address: undefined,
+    txTypeInProgress: "",
+    isWalletConnected: false,
   }),
 }));
 
@@ -130,6 +125,10 @@ jest.mock("~/hooks/use-debounced-state", () => ({
 
 jest.mock("~/hooks/input/use-amount-input", () => {
   const { CoinPretty } = require("@osmosis-labs/unit");
+  // Stable like the real hook's useCallback setters; fresh functions per render
+  // would make useSwap's deep-memoised input loop on any re-render.
+  const setAmount = jest.fn();
+  const reset = jest.fn();
 
   return {
     useAmountInput: ({ currency }: { currency?: any }) => {
@@ -146,8 +145,8 @@ jest.mock("~/hooks/input/use-amount-input", () => {
         price: undefined,
         fiatValue: undefined,
         error: undefined,
-        setAmount: jest.fn(),
-        reset: jest.fn(),
+        setAmount,
+        reset,
       };
     },
   };

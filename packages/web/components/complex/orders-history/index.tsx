@@ -1,22 +1,28 @@
-import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
+import {
+  DEFAULT_VS_CURRENCY,
+  getOrderLastActivityAt,
+  MappedLimitOrder,
+} from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
+import type { SortDirection } from "@osmosis-labs/utils";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
-import { OrderModal } from "~/components/complex/orders-history/order-modal";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
+import { SortHeader } from "~/components/table/headers/sort";
+import { Tooltip } from "~/components/tooltip";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   Breakpoint,
   useFeatureFlags,
@@ -25,10 +31,12 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
+  OrderSortKey,
   useOrderbookClaimableOrders,
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
+import { formatDate, formatDateTime } from "~/utils/date";
 import {
   formatFiatPrice,
   formatPretty,
@@ -54,34 +62,93 @@ function groupOrdersByStatus(orders: MappedLimitOrder[]) {
 const headers = ["order", "amount", "price", "orderPlaced", "status"];
 const mdHeaders = ["order", "status"];
 const lgHeaders = ["order", "orderPlaced", "status"];
+// The status cell shows each closed order's last activity, so its column sorts by that.
+const sortKeys: Record<string, OrderSortKey> = {
+  orderPlaced: "placedAt",
+  status: "lastActivity",
+};
 
 const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
+const compactGridClasses = "grid grid-cols-[2fr_1fr_1fr]";
 
-export const OrderHistory = observer(() => {
+export const OrderHistory = ({
+  selectedOrder,
+  onOrderSelect,
+  onSelectedOrderChange,
+}: {
+  selectedOrder?: MappedLimitOrder;
+  onOrderSelect: (order: MappedLimitOrder) => void;
+  /** Receives each refetched copy of the selected order. */
+  onSelectedOrderChange: (order: MappedLimitOrder) => void;
+}) => {
+  // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
+  // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
+  // memoized reads would keep stale rows. The compiler only flags
+  // `useVirtualizer` as incompatible, not the window variant.
+  "use no memo";
+
   const featureFlags = useFeatureFlags();
-  const { accountStore } = useStore();
   const { t } = useTranslation();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const listRef = useRef<HTMLTableElement>(null);
+  const { address, isWalletConnected } = useWallet();
+  const [scrollMargin, setScrollMargin] = useState(0);
+  // Re-measured when the page layout resizes, e.g. a banner above the table loads.
+  const listRef = useCallback((el: HTMLTableElement | null) => {
+    if (!el) return;
+    const measure = () => setScrollMargin(el.offsetTop);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body);
+    return () => observer.disconnect();
+  }, []);
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
-  const { isMobile } = useWindowSize(Breakpoint.md);
+  const { isMobile, isExtraLargeDesktop } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
-  const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
+  // The page shows the details panel from xxxl, like the trade history's. It
+  // leaves too little width for every column, so the table takes the layout it
+  // has on xl screens while the panel is open.
+  const isDetailsOpen = isExtraLargeDesktop && !!selectedOrder;
+  const compact = isLargeScreen || isDetailsOpen;
+  const [sortKey, setSortKey_] = useState<OrderSortKey>("placedAt");
+  // Always sorted, so a click on the sorted column flips its direction instead of clearing it.
+  const setSortKey = useCallback((key: OrderSortKey | undefined) => {
+    if (key) setSortKey_(key);
+  }, []);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const {
     orders,
+    historyUnavailable,
     isLoading,
+    isError,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
     refetch,
     isRefetching,
   } = useOrderbookOrders({
-    userAddress: wallet?.address ?? "",
+    userAddress: address ?? "",
     pageSize: 20,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+    sort: { keyPath: sortKey, direction: sortDirection },
   });
+  // The page keeps the copy of the selected order taken on click. Hand it each
+  // refetched copy, so the details show the order's current status and build the
+  // claim or cancel from its current fill. An order no longer in the loaded
+  // pages keeps its last copy.
+  const refetchedSelectedOrder =
+    selectedOrder &&
+    orders.find(
+      (o) =>
+        o.order_id === selectedOrder.order_id &&
+        o.orderbookAddress === selectedOrder.orderbookAddress
+    );
+  useEffect(() => {
+    if (refetchedSelectedOrder && refetchedSelectedOrder !== selectedOrder) {
+      onSelectedOrderChange(refetchedSelectedOrder);
+    }
+  }, [refetchedSelectedOrder, selectedOrder, onSelectedOrderChange]);
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
     () =>
@@ -108,7 +175,7 @@ export const OrderHistory = observer(() => {
     estimateSize: () => (isMobile ? 60 : 84),
     paddingEnd: 110,
     overscan: 10,
-    scrollMargin: listRef.current?.offsetTop ?? 0,
+    scrollMargin,
     paddingStart: 45,
   });
   const filledOrdersInDisplay = useMemo(() => {
@@ -117,7 +184,7 @@ export const OrderHistory = observer(() => {
 
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
-      userAddress: wallet?.address ?? "",
+      userAddress: address ?? "",
       disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
       refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     });
@@ -131,15 +198,7 @@ export const OrderHistory = observer(() => {
     }
   }, [claimAllOrders, refetch]);
 
-  const showConnectWallet = !wallet?.isWalletConnected && !isWalletLoading;
-
-  const onOrderSelect = useCallback(
-    (order: MappedLimitOrder) => {
-      if (!isLargeScreen) return;
-      setSelectedOrder(order);
-    },
-    [isLargeScreen]
-  );
+  const showConnectWallet = !isWalletConnected && !isWalletLoading;
 
   if (showConnectWallet) {
     return (
@@ -164,7 +223,7 @@ export const OrderHistory = observer(() => {
                 walletOptions: [
                   {
                     walletType: "cosmos",
-                    chainId: accountStore.osmosisChainId,
+                    chainId: OsmosisChainInfo.chainId,
                   },
                 ],
               })
@@ -174,6 +233,17 @@ export const OrderHistory = observer(() => {
             {t("transactions.connectWallet")}
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  if (orders.length === 0 && !isLoading && isError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-6">
+        <h6>{t("limitOrders.historyTable.errorState.title")}</h6>
+        <p className="body2 text-osmoverse-300">
+          {t("limitOrders.historyTable.errorState.subtitle")}
+        </p>
       </div>
     );
   }
@@ -199,36 +269,78 @@ export const OrderHistory = observer(() => {
   }
 
   return (
-    <div className="mt-3 flex flex-col overflow-x-scroll xl:overflow-visible">
+    <div
+      className={classNames(
+        "mt-3 flex flex-col",
+        // Beside the details panel, keep about the width the trade history tab
+        // keeps there, which its search and filter bar sets.
+        isDetailsOpen
+          ? "min-w-[51rem] overflow-visible"
+          : "overflow-x-scroll xl:overflow-visible"
+      )}
+    >
+      {historyUnavailable && (
+        <p className="body2 mb-3 text-osmoverse-300">
+          {t("limitOrders.historyTable.historyUnavailable")}
+        </p>
+      )}
       <table
-        className="relative min-w-[900px] table-auto xl:min-w-[100%]"
+        className={classNames(
+          "relative table-auto",
+          isDetailsOpen ? "min-w-[100%]" : "min-w-[900px] xl:min-w-[100%]"
+        )}
         ref={listRef}
       >
         {!isLoading && (
           <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
-            <tr className={classNames("bg-osmoverse-1000", gridClasses)}>
+            <tr
+              className={classNames(
+                "bg-osmoverse-1000",
+                isDetailsOpen ? compactGridClasses : gridClasses
+              )}
+            >
               {headers.map((header) => (
                 <th
                   key={header}
-                  className={classNames("flex !px-0", {
+                  className={classNames("flex items-center !px-0", {
                     "md:hidden": !mdHeaders.includes(header),
                     "xl:hidden": !lgHeaders.includes(header),
-                    "xl:justify-end": isLargeScreen && header === "status",
+                    hidden: isDetailsOpen && !lgHeaders.includes(header),
+                    "justify-end": compact && header === "status",
                   })}
                 >
-                  {header !== "amount" && (
-                    <small className="body2 sm:caption">
-                      {t(`limitOrders.historyTable.columns.${header}`)}
-                    </small>
+                  {sortKeys[header] ? (
+                    <SortHeader<OrderSortKey>
+                      className={classNames(
+                        "body2 sm:caption",
+                        compact && header === "status"
+                          ? "ml-auto mr-0"
+                          : "mr-auto ml-0"
+                      )}
+                      label={t(`limitOrders.historyTable.columns.${header}`)}
+                      sortKey={sortKeys[header]}
+                      currentSortKey={sortKey}
+                      currentDirection={sortDirection}
+                      setSortKey={setSortKey}
+                      setSortDirection={setSortDirection}
+                    />
+                  ) : (
+                    header !== "amount" && (
+                      <small className="body2 sm:caption">
+                        {t(`limitOrders.historyTable.columns.${header}`)}
+                      </small>
+                    )
                   )}
                 </th>
               ))}
-              {!isLargeScreen && <th />}
+              {!compact && <th />}
             </tr>
           </thead>
         )}
         <tbody
-          className="bg-transparent xl:overflow-visible"
+          className={classNames("bg-transparent xl:overflow-visible", {
+            "overflow-visible": isDetailsOpen,
+          })}
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {isLoading ? (
@@ -269,14 +381,21 @@ export const OrderHistory = observer(() => {
 
               const order = row as MappedLimitOrder;
               // style.left = isLargeScreen ? "rem" : "0";
-              style.width = isLargeScreen ? "calc(100% + 2rem)" : "100%";
+              style.width = compact ? "calc(100% + 2rem)" : "100%";
               return (
                 <TableOrderRow
-                  key={`${virtualRow.index}`}
+                  // Keyed by order, so a row's pending claim or cancel stays with its order when the list reorders.
+                  key={`${order.orderbookAddress}-${order.order_id}`}
                   order={order}
                   style={style}
                   refetch={refetch}
                   onOrderSelect={onOrderSelect}
+                  forceCompact={isDetailsOpen}
+                  isSelected={
+                    isDetailsOpen &&
+                    selectedOrder.order_id === order.order_id &&
+                    selectedOrder.orderbookAddress === order.orderbookAddress
+                  }
                 />
               );
             })
@@ -290,15 +409,9 @@ export const OrderHistory = observer(() => {
           }
         }}
       />
-      {isLargeScreen && (
-        <OrderModal
-          order={selectedOrder}
-          onRequestClose={() => setSelectedOrder(undefined)}
-        />
-      )}
     </div>
   );
-});
+};
 
 const TableGroupHeader = ({
   group,
@@ -345,12 +458,13 @@ const TableGroupHeader = ({
                 title={t("limitOrders.whatIsOrderClaim.title")}
                 body={t("limitOrders.whatIsOrderClaim.description")}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
                   <Icon
                     id="question"
-                    className="h-6 w-6 text-wosmongton-200"
+                    className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
                     width={24}
                     height={24}
+                    viewBox="0 0 24 24"
                   />
                 </div>
               </GenericDisclaimer>
@@ -376,11 +490,27 @@ const TableGroupHeader = ({
   return (
     <tr style={style} className="flex items-center">
       <td colSpan={headers.length + 1} className="!p-0">
-        <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
-          {group === "pending"
-            ? t("limitOrders.orderHistoryHeaders.pending")
-            : t("limitOrders.orderHistoryHeaders.past")}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
+            {group === "pending"
+              ? t("limitOrders.orderHistoryHeaders.pending")
+              : t("limitOrders.orderHistoryHeaders.past")}
+          </span>
+          <GenericDisclaimer
+            title={t("limitOrders.howPayoutsWork")}
+            body={t("limitOrders.payoutNote")}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
+              <Icon
+                id="question"
+                className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
+                width={24}
+                height={24}
+                viewBox="0 0 24 24"
+              />
+            </div>
+          </GenericDisclaimer>
+        </div>
       </td>
     </tr>
   );
@@ -392,11 +522,16 @@ const TableOrderRow = memo(
     style,
     refetch,
     onOrderSelect,
+    forceCompact,
+    isSelected,
   }: {
     order: MappedLimitOrder;
     style: object;
     refetch: () => Promise<any>;
     onOrderSelect: (order: MappedLimitOrder) => void;
+    /** Use the xl layout at any width, e.g. while the details panel is open. */
+    forceCompact: boolean;
+    isSelected: boolean;
   }) => {
     const { t } = useTranslation();
 
@@ -409,11 +544,30 @@ const TableOrderRow = memo(
       price,
       placed_at,
       status,
+      percentFilled,
+      totalFilled,
     } = order;
 
-    const placedAt = dayjs.unix(placed_at);
-    const formattedTime = placedAt.format("h:mm A");
-    const formattedDate = placedAt.format("MMM D");
+    // A cancelled order that partly filled is shown by what filled; the modal adds what was returned.
+    const isPartlyFilledCancel =
+      status === "cancelled" && percentFilled.isPositive();
+    const isUnfilledCancel = status === "cancelled" && !isPartlyFilledCancel;
+    const shownQuantity = isPartlyFilledCancel ? totalFilled : placed_quantity;
+    const shownOutput = isPartlyFilledCancel
+      ? output.mul(percentFilled)
+      : output;
+
+    // An unfilled cancel only returned its input, so name the asset that went back to the wallet.
+    const lineAsset =
+      isUnfilledCancel && order_direction === "bid" ? quoteAsset : baseAsset;
+
+    // The mapper stores 0 when Numia has no place time, so leave it blank rather than show 1 Jan 1970.
+    const placedAt = placed_at ? dayjs.unix(placed_at) : undefined;
+    const formattedTime = placedAt?.format("h:mm A");
+    const formattedDate = placedAt && formatDate(placedAt);
+
+    const lastActivityUnix = getOrderLastActivityAt(order);
+    const lastActivityAt = lastActivityUnix && dayjs.unix(lastActivityUnix);
 
     const statusString = (() => {
       switch (status) {
@@ -421,11 +575,50 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return t("limitOrders.open");
         case "filled":
+          return t("limitOrders.filled");
         case "fullyClaimed":
           return t("limitOrders.filled");
-        case "cancelled":
-          return t("limitOrders.cancelled");
+        case "cancelled": {
+          if (!isPartlyFilledCancel) return t("limitOrders.cancelled");
+          // Like OrderProgressBar, show a fill under 1% as 1% so it never reads "0% filled".
+          const percent = percentFilled.lt(new Dec(0.01))
+            ? new Int(1)
+            : percentFilled.mul(new Dec(100)).truncate();
+          return (
+            <span className="text-bullish-400">
+              {t("limitOrders.filledPercent", {
+                percent: percent.toString(),
+              })}
+            </span>
+          );
+        }
       }
+    })();
+
+    const lastActivity = (() => {
+      if (!lastActivityAt) return;
+      const now = dayjs(new Date());
+      const dayDiff = now.diff(lastActivityAt, "d");
+      const hourDiff = now.diff(lastActivityAt, "h");
+      const minuteDiff = Math.max(now.diff(lastActivityAt, "m"), 1);
+
+      return (
+        <Tooltip
+          content={formatDateTime(lastActivityAt)}
+          className="w-fit"
+          enablePropagation
+        >
+          <span className="body2 md:caption text-osmoverse-300">
+            {dayDiff > 0
+              ? t("limitOrders.daysAgo", { days: dayDiff.toString() })
+              : hourDiff > 0
+                ? t("limitOrders.hoursAgo", { hours: hourDiff.toString() })
+                : t("limitOrders.minutesAgo", {
+                    minutes: minuteDiff.toString(),
+                  })}
+          </span>
+        </Tooltip>
+      );
     })();
 
     const statusComponent = (() => {
@@ -433,25 +626,8 @@ const TableOrderRow = memo(
         case "open":
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
-        case "cancelled":
-          const dayDiff = dayjs(new Date()).diff(placedAt, "d");
-          const hourDiff = dayjs(new Date()).diff(placedAt, "h");
-
-          return (
-            <span className="body2 md:caption text-osmoverse-300">
-              {dayDiff > 0
-                ? t("limitOrders.daysAgo", {
-                    days: dayDiff.toString(),
-                  })
-                : hourDiff > 0
-                  ? t("limitOrders.hoursAgo", {
-                      hours: hourDiff.toString(),
-                    })
-                  : "<1 hour ago"}
-            </span>
-          );
         default:
-          return;
+          return lastActivity;
       }
     })();
     return (
@@ -459,20 +635,40 @@ const TableOrderRow = memo(
         data-transaction-hash={order.placed_tx}
         style={style}
         className={classNames(
-          gridClasses,
-          "xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900 sm:[&>td]:!py-0"
+          forceCompact ? compactGridClasses : gridClasses,
+          "hover:cursor-pointer hover:bg-osmoverse-900 xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 sm:[&>td]:!py-0",
+          {
+            "-mx-4 items-center overflow-visible px-4": forceCompact,
+            "bg-osmoverse-850": isSelected,
+          }
         )}
         onClick={() => onOrderSelect(order)}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          // Ignore keys aimed at the row's own Cancel/Claim buttons.
+          if (e.target !== e.currentTarget) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOrderSelect(order);
+          }
+        }}
       >
-        <td className="flex items-center justify-center !px-0 !text-left xl:hidden">
+        <td
+          className={classNames(
+            "flex items-center justify-center !px-0 !text-left xl:hidden",
+            { hidden: forceCompact }
+          )}
+        >
           <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">
             <Icon
               id="coins"
               width={24}
               height={24}
               className={classNames("h-6 w-6", {
-                "text-rust-400": order_direction === "ask",
-                "text-bullish-400": order_direction === "bid",
+                "text-osmoverse-500": isUnfilledCancel,
+                "text-rust-400": !isUnfilledCancel && order_direction === "ask",
+                "text-bullish-400":
+                  !isUnfilledCancel && order_direction === "bid",
               })}
             />
           </div>
@@ -494,7 +690,7 @@ const TableOrderRow = memo(
                         coinDenom: baseAsset?.symbol ?? "",
                         coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
                       },
-                      order_direction === "ask" ? placed_quantity : output
+                      order_direction === "ask" ? shownQuantity : shownOutput
                     )
                   )}
                 </span>
@@ -512,55 +708,77 @@ const TableOrderRow = memo(
                         coinDenom: quoteAsset?.symbol ?? "",
                         coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "",
                       },
-                      order_direction === "ask" ? output : placed_quantity
+                      order_direction === "ask" ? shownOutput : shownQuantity
                     )
                   )}
                 </span>
               </p>
               <div className="md:body2 inline-flex items-center gap-2">
                 <span>
-                  {order_direction === "bid"
-                    ? t("limitOrders.buy")
-                    : t("limitOrders.sell")}{" "}
-                  {formatFiatPrice(
-                    new PricePretty(
-                      DEFAULT_VS_CURRENCY,
-                      order_direction === "bid"
-                        ? placed_quantity /
-                            Number(
-                              new Dec(10)
-                                .pow(new Int(quoteAsset?.decimals ?? 0))
-                                .toString()
-                            )
-                        : output.quo(
-                            new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0))
-                          )
-                    ),
-                    2
-                  )}{" "}
-                  {t("limitOrders.of")}
+                  {isUnfilledCancel ? (
+                    <>
+                      {t("limitOrders.returned")}{" "}
+                      {formatPretty(
+                        new CoinPretty(
+                          {
+                            coinDecimals: lineAsset?.decimals ?? 0,
+                            coinDenom: lineAsset?.symbol ?? "",
+                            coinMinimalDenom: lineAsset?.coinMinimalDenom ?? "",
+                          },
+                          placed_quantity
+                        ).hideDenom(true)
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {order_direction === "bid"
+                        ? t("limitOrders.buy")
+                        : t("limitOrders.sell")}{" "}
+                      {formatFiatPrice(
+                        new PricePretty(
+                          DEFAULT_VS_CURRENCY,
+                          order_direction === "bid"
+                            ? shownQuantity /
+                                Number(
+                                  new Dec(10)
+                                    .pow(new Int(quoteAsset?.decimals ?? 0))
+                                    .toString()
+                                )
+                            : shownOutput.quo(
+                                new Dec(10).pow(
+                                  new Int(quoteAsset?.decimals ?? 0)
+                                )
+                              )
+                        ),
+                        2
+                      )}{" "}
+                      {t("limitOrders.of")}
+                    </>
+                  )}
                 </span>
                 <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                   <EntityImage
                     width={20}
                     height={20}
                     logoURIs={
-                      baseAsset?.rawAsset.logoURIs ?? { png: undefined }
+                      lineAsset?.rawAsset.logoURIs ?? { png: undefined }
                     }
-                    name={baseAsset?.rawAsset.name ?? ""}
-                    symbol={baseAsset?.rawAsset.symbol ?? ""}
+                    name={lineAsset?.rawAsset.name ?? ""}
+                    symbol={lineAsset?.rawAsset.symbol ?? ""}
                   />
                 </div>
-                <span>{baseAsset?.symbol}</span>
+                <span>{lineAsset?.symbol}</span>
               </div>
             </div>
           </div>
         </td>
-        <td className="!px-0 !text-left xl:hidden">
+        <td
+          className={classNames("!px-0 !text-left xl:hidden", {
+            hidden: forceCompact,
+          })}
+        >
           <div className="flex flex-col gap-1">
-            <p className="body2 text-osmoverse-300">
-              {baseAsset?.symbol} · {t("limitOrders.limit")}
-            </p>
+            <p className="body2 text-osmoverse-300">1 {baseAsset?.symbol} =</p>
             <p>
               {formatPretty(new PricePretty(DEFAULT_VS_CURRENCY, price), {
                 ...getPriceExtendedFormatOptions(price),
@@ -568,7 +786,11 @@ const TableOrderRow = memo(
             </p>
           </div>
         </td>
-        <td className="!px-0 !text-left xl:!py-0 md:hidden">
+        <td
+          className={classNames("!px-0 !text-left xl:!py-0 md:hidden", {
+            "!py-0": forceCompact,
+          })}
+        >
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
@@ -577,9 +799,16 @@ const TableOrderRow = memo(
         <td
           className={classNames("!px-0 !text-left xl:!py-0", {
             "flex items-center xl:justify-end": status === "filled",
+            "!py-0": forceCompact,
+            "justify-end": forceCompact && status === "filled",
           })}
         >
-          <div className="flex flex-col gap-1 xl:items-end xl:justify-end">
+          <div
+            className={classNames(
+              "flex flex-col gap-1 xl:items-end xl:justify-end",
+              { "items-end justify-end": forceCompact }
+            )}
+          >
             {statusComponent}
             <span
               className={classNames(
@@ -597,7 +826,12 @@ const TableOrderRow = memo(
             </span>
           </div>
         </td>
-        <td className="flex w-[150px] items-center justify-end !px-0 !text-left xl:hidden">
+        <td
+          className={classNames(
+            "flex w-[150px] items-center justify-end !px-0 !text-left xl:hidden",
+            { hidden: forceCompact }
+          )}
+        >
           <ActionsCell order={order} refetch={refetch} />
         </td>
       </tr>

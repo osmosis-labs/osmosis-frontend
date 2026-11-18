@@ -2,7 +2,8 @@ import type {
   ConcentratedPoolRawResponse,
   StablePoolRawResponse,
   WeightedPoolRawResponse,
-} from "../../osmosis/poolmanager/pools";
+} from "@osmosis-labs/types";
+
 import type { Pool } from "./index";
 
 /** Typed accessors over `Pool["raw"]`. The `raw` field is the discriminated

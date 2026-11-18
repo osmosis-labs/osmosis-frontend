@@ -3,16 +3,21 @@ import type {
   UserPosition,
   UserPositionDetails,
 } from "@osmosis-labs/server";
+import {
+  prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock,
+  prepareCollectAllPositionsRewardsMsgs,
+  prepareStakeExistingPositionMsg,
+} from "@osmosis-labs/tx";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import moment from "dayjs";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, {
+import {
   ComponentProps,
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -22,23 +27,26 @@ import React, {
 import { FallbackImg } from "~/components/assets";
 import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useConst } from "~/hooks/use-const";
 import { usePositionMigrationForPosition } from "~/hooks/use-position-migration-for-position";
+import { useWallet } from "~/hooks/use-wallet";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { MigrateConcentratedPositionModal } from "~/modals/migrate-concentrated-position";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
-import { useStore } from "~/stores";
 import {
+  formatFiatPrice,
   formatPretty,
   formatPriceWithUserPrecision,
   getFullPrecisionPrice,
@@ -70,7 +78,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   showLinkToPool?: boolean;
   isLoadingPositionDetails: boolean;
   hasPositionDetailsError: boolean;
-}> = observer(
+}> = memo(
   ({
     poolId,
     position,
@@ -81,13 +89,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     hasPositionDetailsError,
   }) => {
     const {
-      chainStore: {
-        osmosis: { chainId },
-      },
-      accountStore,
-    } = useStore();
-
-    const account = accountStore.getWallet(chainId);
+      wallet: account,
+      txTypeInProgress,
+      signAndBroadcast,
+      transactionContext,
+    } = useWallet();
 
     const {
       position: rawPosition,
@@ -117,6 +123,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       totalRewardCoins,
       totalEarnedValue,
     } = positionPerformance ?? {};
+    // Performance comes from the data services. While it's unavailable the rewards are
+    // unknown, so the reward panels stay blank instead of saying there are none.
 
     const { t } = useTranslation();
     const router = useRouter();
@@ -187,14 +195,21 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     const sendCollectAllRewardsMsg = useCallback(() => {
       const hasSpreadRewards = rawPosition.claimable_spread_rewards.length > 0;
       const hasIncentiveRewards = rawPosition.claimable_incentives.length > 0;
-      account!.osmosis
-        .sendCollectAllPositionsRewardsMsgs(
-          hasSpreadRewards ? [rawPosition.position.position_id] : [],
-          hasIncentiveRewards ? [rawPosition.position.position_id] : [],
-          undefined
-        )
+      prepareCollectAllPositionsRewardsMsgs(
+        transactionContext,
+        hasSpreadRewards ? [rawPosition.position.position_id] : [],
+        hasIncentiveRewards ? [rawPosition.position.position_id] : [],
+        undefined
+      )
+        .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
-    }, [account, rawPosition]);
+    }, [
+      rawPosition.claimable_incentives.length,
+      rawPosition.claimable_spread_rewards.length,
+      rawPosition.position.position_id,
+      signAndBroadcast,
+      transactionContext,
+    ]);
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
@@ -287,41 +302,47 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
         <div className="flex w-full flex-col gap-4 sm:flex-col">
-          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+          {/* Phones: the row wrappers dissolve and `order` lists Total
+              Rewards Earned after Principal Assets. */}
+          <div className="flex flex-wrap justify-between gap-3 sm:contents">
             <AssetsInfo
-              className="flex-1 sm:w-full"
+              className="flex-1 sm:order-1 sm:w-full"
               title={t("clPositions.currentAssets")}
               assets={currentCoins}
               totalValue={currentValue}
             />
             <AssetsInfo
-              className="flex-1 sm:w-full"
+              className="flex-1 sm:order-3 sm:w-full"
               title={t("clPositions.totalRewardsEarned")}
               assets={totalRewardCoins}
               totalValue={totalEarnedValue}
-              emptyText={t("clPositions.noRewards")}
+              emptyText={
+                positionPerformance ? t("clPositions.noRewards") : undefined
+              }
             />
           </div>
-          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+          <div className="flex flex-wrap justify-between gap-3 sm:contents">
             {(principalCoins?.length ?? 0) < 1 &&
             positionPerformance ? undefined : (
               <AssetsInfo
-                className="flex-1 sm:w-full"
+                className="flex-1 sm:order-2 sm:w-full"
                 title={t("clPositions.principalAssets")}
                 assets={principalCoins}
                 totalValue={principalValue}
               />
             )}
             <AssetsInfo
-              className="flex-1 sm:w-full"
+              className="flex-1 sm:order-4 sm:w-full"
               title={t("clPositions.unclaimedRewards")}
               assets={claimableRewardCoins}
               totalValue={claimableRewardsValue}
-              emptyText={t("clPositions.noRewards")}
+              emptyText={
+                positionPerformance ? t("clPositions.noRewards") : undefined
+              }
             />
           </div>
           {unbondEndTime && !superfluidData && (
-            <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+            <div className="flex flex-wrap justify-between gap-3 sm:order-5 sm:flex-col">
               <div className="flex flex-col text-right md:pl-4">
                 <span>
                   {t("clPositions.unbondingFromNow", {
@@ -368,11 +389,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     isOpen={selectSfValidatorAddress}
                     onRequestClose={() => setSelectSfValidatorAddress(false)}
                     onSelectValidator={(validatorAddress) => {
-                      account.osmosis
-                        .sendStakeExistingPositionMsg(
-                          position.id,
-                          validatorAddress
-                        )
+                      prepareStakeExistingPositionMsg(
+                        transactionContext,
+                        position.id,
+                        validatorAddress
+                      )
+                        .then((prepared) => signAndBroadcast(...prepared))
                         .catch(console.error);
                       setSelectSfValidatorAddress(false);
                     }}
@@ -383,30 +405,32 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           <PositionButton
             disabled={
               claimableRewardCoins?.length === 0 ||
-              Boolean(account?.txTypeInProgress) ||
+              Boolean(txTypeInProgress) ||
               !Boolean(account)
             }
             onClick={sendCollectAllRewardsMsg}
           >
             {t("clPositions.collectRewards")}
           </PositionButton>
-          <Tooltip
-            disabled={!hasPositionDetailsError}
-            className="cursor-default"
-            content={t("clPositions.errorFetchingPositions")}
-          >
-            <PositionButton
-              disabled={
-                !status ||
-                Boolean(account?.txTypeInProgress) ||
-                Boolean(superfluidData?.undelegationEndTime) ||
-                status === "unbonding" ||
-                !Boolean(account)
-              }
-              onClick={useCallback(() => {
-                if (superfluidData?.delegationLockId) {
-                  account!.osmosis
-                    .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+          {/* Phones: Remove and Increase wrap together, as one line. */}
+          <div className="contents sm:flex sm:flex-wrap sm:gap-3">
+            <Tooltip
+              disabled={!hasPositionDetailsError}
+              className="cursor-default"
+              content={t("clPositions.errorFetchingPositions")}
+            >
+              <PositionButton
+                disabled={
+                  !status ||
+                  Boolean(txTypeInProgress) ||
+                  Boolean(superfluidData?.undelegationEndTime) ||
+                  status === "unbonding" ||
+                  !Boolean(account)
+                }
+                onClick={() => {
+                  if (superfluidData?.delegationLockId) {
+                    prepareBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                      transactionContext,
                       [
                         {
                           lockId: superfluidData.delegationLockId,
@@ -414,34 +438,36 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                         },
                       ]
                     )
-                    .catch(console.error);
-                } else setActiveModal("remove");
-              }, [account, superfluidData])}
-              isLoading={isLoadingPositionDetails}
+                      .then((prepared) => signAndBroadcast(...prepared))
+                      .catch(console.error);
+                  } else setActiveModal("remove");
+                }}
+                isLoading={isLoadingPositionDetails}
+              >
+                {Boolean(superfluidData?.delegationLockId)
+                  ? t("clPositions.unstake")
+                  : t("clPositions.removeLiquidity")}
+              </PositionButton>
+            </Tooltip>
+            <Tooltip
+              disabled={!hasPositionDetailsError}
+              className="cursor-default"
+              content={t("clPositions.errorFetchingPositions")}
             >
-              {Boolean(superfluidData?.delegationLockId)
-                ? t("clPositions.unstake")
-                : t("clPositions.removeLiquidity")}
-            </PositionButton>
-          </Tooltip>
-          <Tooltip
-            disabled={!hasPositionDetailsError}
-            className="cursor-default"
-            content={t("clPositions.errorFetchingPositions")}
-          >
-            <PositionButton
-              disabled={
-                !status ||
-                Boolean(account?.txTypeInProgress) ||
-                Boolean(superfluidData?.undelegationEndTime) ||
-                status === "unbonding"
-              }
-              onClick={useCallback(() => setActiveModal("increase"), [])}
-              isLoading={isLoadingPositionDetails}
-            >
-              {t("clPositions.increaseLiquidity")}
-            </PositionButton>
-          </Tooltip>
+              <PositionButton
+                disabled={
+                  !status ||
+                  Boolean(txTypeInProgress) ||
+                  Boolean(superfluidData?.undelegationEndTime) ||
+                  status === "unbonding"
+                }
+                onClick={() => setActiveModal("increase")}
+                isLoading={isLoadingPositionDetails}
+              >
+                {t("clPositions.increaseLiquidity")}
+              </PositionButton>
+            </Tooltip>
+          </div>
 
           {eligibleMigration && (
             <PositionButton
@@ -450,7 +476,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               // action cannot be taken on an eligibility that is about to
               // change.
               disabled={
-                Boolean(account?.txTypeInProgress) ||
+                Boolean(txTypeInProgress) ||
                 !Boolean(account) ||
                 isPoolDataRefetching
               }
@@ -526,24 +552,29 @@ export const AssetsInfo: FunctionComponent<
   {
     title: string;
     assets?: CoinPretty[];
+    /** Undefined when the assets couldn't be priced; shown as unknown, not hidden. */
     totalValue?: PricePretty;
     emptyText?: string;
   } & CustomClasses
-> = observer(({ className, title, assets = [], totalValue, emptyText }) => {
+> = ({ className, title, assets = [], totalValue, emptyText }) => {
   const { t } = useTranslation();
 
   return (
+    // Phones: the total moves up beside the title; the asset row dissolves
+    // (`contents`) so its children sit in the grid.
     <div
       className={classNames(
-        "subtitle1 flex flex-col gap-2 text-osmoverse-400",
+        "subtitle1 flex flex-col gap-2 text-osmoverse-400 sm:grid sm:grid-cols-[1fr_auto]",
         className
       )}
     >
-      <div>{title}</div>
+      <div className="sm:col-start-1 sm:row-start-1">{title}</div>
       {assets.length > 0 ? (
-        <div className="flex flex-wrap gap-3">
-          <div className="flex gap-2">
-            <div className="flex flex-wrap gap-x-5 gap-y-3">
+        <div className="flex flex-wrap gap-3 sm:contents">
+          <div className="flex gap-2 sm:col-span-2 sm:row-start-2">
+            {/* Phones: one asset per line in every section, so the sections
+                line up rather than each wrapping at its own width. */}
+            <div className="flex flex-wrap gap-x-5 gap-y-3 sm:flex-col">
               {assets.map((asset) => (
                 <div key={asset.denom} className="flex items-center gap-2">
                   <div className="h-[24px] w-[24px] flex-shrink-0 overflow-hidden rounded-full">
@@ -555,25 +586,35 @@ export const AssetsInfo: FunctionComponent<
                       width={24}
                     />
                   </div>
-                  <span className="whitespace-nowrap">
-                    {formatPretty(asset, { maxDecimals: 6 })}
+                  {/* Phones: may break between amount and symbol on very
+                      narrow cards rather than running past the edge. */}
+                  <span className="whitespace-nowrap sm:whitespace-normal">
+                    <PrivateText
+                      text={formatPretty(asset, { maxDecimals: 6 })}
+                    />
                   </span>
                 </div>
               ))}
             </div>
           </div>
-          <div>
-            {totalValue && (
-              <div className="text-white-full">({totalValue.toString()})</div>
-            )}
+          <div className="sm:col-start-2 sm:row-start-1">
+            <div className="text-white-full">
+              (
+              <PrivateText
+                text={totalValue ? formatFiatPrice(totalValue) : "–"}
+              />
+              )
+            </div>
           </div>
         </div>
       ) : emptyText ? (
-        <span className="italic">{t("clPositions.checkBackForRewards")}</span>
+        <span className="italic sm:col-span-2">
+          {t("clPositions.checkBackForRewards")}
+        </span>
       ) : null}
     </div>
   );
-});
+};
 
 const PriceBox: FunctionComponent<{
   label: string;
@@ -607,16 +648,16 @@ const PriceBox: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
-}> = observer(({ config }) => {
+  config: HistoricalAndLiquidityData;
+}> = ({ config }) => {
   const {
     historicalRange,
     priceDecimal,
     setHistoricalRange,
     baseDenom,
     quoteDenom,
-    hoverPrice,
   } = config;
+  const hoverPrice = useHoverPrice(config);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -634,15 +675,15 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-});
+};
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  config: ObservableHistoricalAndLiquidityData;
+  config: HistoricalAndLiquidityData;
   position: UserPosition;
-}> = observer(({ config, position: { isFullRange } }) => {
+}> = ({ config, position: { isFullRange } }) => {
   const {
     historicalChartData,
     yRange,
@@ -669,7 +710,7 @@ const Chart: FunctionComponent<{
       }
     />
   );
-});
+};
 
 const SuperfluidPositionInfo: FunctionComponent<
   NonNullable<
@@ -704,7 +745,10 @@ const SuperfluidPositionInfo: FunctionComponent<
         />
         <div className="md:caption flex flex-col">
           <span>{validatorName}</span>
-          <span>~{equivalentStakedAmount.trim(true).toString()}</span>
+          <span>
+            ~
+            <PrivateText text={equivalentStakedAmount.trim(true).toString()} />
+          </span>
         </div>
         <div className="md:caption flex flex-col pl-8 text-right md:pl-4">
           <span className="text-superfluid-gradient">

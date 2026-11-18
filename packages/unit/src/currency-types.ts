@@ -41,17 +41,11 @@ export interface IBCCurrency extends Currency {
   /** The chain the currency is from, or undefined if that chain is unknown. */
   readonly originChainId: string | undefined;
   readonly originCurrency:
-    | Currency
-    | CW20Currency
-    | Secret20Currency
-    | undefined;
+    Currency | CW20Currency | Secret20Currency | undefined;
 }
 
 export type AppCurrency =
-  | Currency
-  | CW20Currency
-  | Secret20Currency
-  | IBCCurrency;
+  Currency | CW20Currency | Secret20Currency | IBCCurrency;
 
 export interface FiatCurrency {
   readonly currency: string;

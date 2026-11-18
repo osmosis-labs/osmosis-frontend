@@ -31,11 +31,20 @@ const UNKNOWN_STATUS_ORDER = 99;
 /**
  * Compares two user positions for sort order, surfacing those needing
  * attention first (out of range), then larger USD value within each status
- * group, with a final tiebreaker on position id for deterministic ordering.
+ * group (unknown values last), with a final tiebreaker on position id for
+ * deterministic ordering.
  */
 export function compareUserPositionsByStatusThenValue(
-  a: { status?: PositionStatus; currentValue: PricePretty; id: string },
-  b: { status?: PositionStatus; currentValue: PricePretty; id: string }
+  a: {
+    status?: PositionStatus;
+    currentValue: PricePretty | undefined;
+    id: string;
+  },
+  b: {
+    status?: PositionStatus;
+    currentValue: PricePretty | undefined;
+    id: string;
+  }
 ): number {
   const aOrder =
     (a.status && POSITION_STATUS_ORDER[a.status]) ?? UNKNOWN_STATUS_ORDER;
@@ -43,9 +52,13 @@ export function compareUserPositionsByStatusThenValue(
     (b.status && POSITION_STATUS_ORDER[b.status]) ?? UNKNOWN_STATUS_ORDER;
   if (aOrder !== bOrder) return aOrder - bOrder;
 
-  const sizeDiff = b.currentValue.toDec().sub(a.currentValue.toDec());
-  if (sizeDiff.isPositive()) return 1;
-  if (sizeDiff.isNegative()) return -1;
+  if (a.currentValue && b.currentValue) {
+    const sizeDiff = b.currentValue.toDec().sub(a.currentValue.toDec());
+    if (sizeDiff.isPositive()) return 1;
+    if (sizeDiff.isNegative()) return -1;
+  } else if (a.currentValue !== b.currentValue) {
+    return a.currentValue ? -1 : 1;
+  }
 
   // Final tiebreaker keeps order stable across refetches when status and
   // value are identical (e.g. two zero-value positions).

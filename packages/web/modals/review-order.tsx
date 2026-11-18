@@ -1,9 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import {
-  InsufficientBalanceForFeeError,
-  ObservableSlippageConfig,
-} from "@osmosis-labs/stores";
-import { QuoteDirection } from "@osmosis-labs/tx";
+import type { TxFeMemoFlags } from "@osmosis-labs/tx";
+import { formatWarnPct, QuoteDirection } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import {
   CoinPretty,
@@ -12,24 +9,35 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
+import { AutosizeInput } from "~/components/input/autosize-input";
+import {
+  hasActiveWarning,
+  needsAcknowledgement,
+} from "~/components/loss-acknowledgement";
+import { LossAcknowledgementCheckbox } from "~/components/loss-acknowledgement/checkbox";
+import {
+  deriveTradeMemoFlags,
+  getTradeWarnings,
+  hasQuoteDriftedBeyondSlippage,
+} from "~/components/loss-acknowledgement/trade-gate";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
-import { Button } from "~/components/ui/button";
-import { Button as UIButton } from "~/components/ui/button";
+import { Button, Button as UIButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
+import { HighSlippageToleranceGate } from "~/config/trade-warnings";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -39,22 +47,39 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
+import { useWalletPrompt } from "~/hooks/use-wallet-prompt";
 import { ModalBase } from "~/modals";
-import { useStore } from "~/stores";
 import {
   formatFiatPrice,
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { SlippageSource } from "~/utils/slippage";
+import {
+  formatSlippagePercent,
+  parseSlippageInput,
+  requiresValueDisparityAcknowledgement,
+  slippageBoundTruncatesToZero,
+} from "~/utils/swap-review";
 
 interface ReviewOrderProps {
   isOpen: boolean;
   onClose: () => void;
-  confirmAction: () => void;
+  /**
+   * `warnFlags` are the figures the user acknowledged, frozen at tick time, for
+   * stamping into the tx auth memo (MTN-137). The modal owns the
+   * acknowledgement, so it is the only place that can derive them honestly.
+   */
+  confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
-  slippageConfig?: ObservableSlippageConfig;
+  /** True from the confirm click until the transaction attempt settles, i.e.
+   *  while a wallet prompt may be open. */
+  isAwaitingSignature?: boolean;
+  slippageConfig?: SlippageConfig;
   amountWithSlippage?: IntPretty;
   fiatAmountWithSlippage?: PricePretty;
   outputDifference?: RatePretty;
@@ -75,9 +100,40 @@ interface ReviewOrderProps {
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
+  /** Note that the limit order's quote asset is off its $1 peg, or that its
+   *  peg couldn't be checked. */
+  limitQuotePegNote?: string;
+  /**
+   * Price impact for the quote being reviewed, as the router reports it (sign
+   * included). Optional because this modal is shared by all three tabs.
+   */
+  priceImpactTokenOut?: RatePretty;
+  /** SQS could not compute the quote's price impact. */
+  priceImpactUnknown?: boolean;
+  /**
+   * The quote's amount in display units, before slippage: the output for
+   * exact-in, the input for exact-out. Undefined while there is no quote.
+   */
+  quoteAmount?: Dec;
+  /**
+   * The output asset's own price. Prices the exact-in minimum received
+   * independently of the router's price impact.
+   */
+  outAssetPrice?: PricePretty;
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
   /** Effective order type; overrides the `type` URL param when provided. */
   orderType?: "market" | "limit";
+  /** Where the submitted slippage came from, when the caller chooses it
+   *  automatically. */
+  slippageSource?: SlippageSource;
+  /** True when an automatic slippage was chosen without knowing the route's
+   *  liquidity. */
+  slippageLiquidityUnknown?: boolean;
+  /** The quote's swap (taker) fee rate. Undefined when the quote does not
+   *  report one; the market fee row is then hidden rather than shown as 0. */
+  swapFee?: RatePretty;
+  /** Fiat value of the swap fee, charged on the input token. */
+  swapFeeFiat?: PricePretty;
 }
 
 export function ReviewOrder({
@@ -85,6 +141,7 @@ export function ReviewOrder({
   onClose: onCloseProp,
   confirmAction,
   isConfirmationDisabled,
+  isAwaitingSignature = false,
   slippageConfig,
   amountWithSlippage,
   fiatAmountWithSlippage,
@@ -105,9 +162,18 @@ export function ReviewOrder({
   toAsset,
   fromAsset,
   isBeyondOppositePrice = false,
+  limitQuotePegNote,
+  priceImpactTokenOut,
+  priceImpactUnknown,
+  quoteAmount,
+  outAssetPrice,
   quoteType,
   overspendErrorParams,
   orderType: orderTypeProp,
+  slippageSource,
+  slippageLiquidityUnknown = false,
+  swapFee,
+  swapFeeFiat,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const [manualSlippage, setManualSlippage] = useState("");
@@ -118,9 +184,8 @@ export function ReviewOrder({
     useState(false);
 
   const featureFlags = useFeatureFlags();
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-  const { isNewAccount } = useIsCosmosNewAccount({ address: wallet?.address });
+  const { address } = useWallet();
+  const { isNewAccount } = useIsCosmosNewAccount({ address });
   const show1CT = featureFlags.oneClickTrading && !isNewAccount;
 
   const {
@@ -154,70 +219,270 @@ export function ReviewOrder({
     parseAsString.withDefault("market")
   );
   const orderType = orderTypeProp ?? queryOrderType;
+
+  /** An active session with unchanged settings signs locally, so there is no
+   *  wallet prompt to wait on. Changing the settings sends a session tx that
+   *  the wallet does sign, and limit orders are always signed by the wallet. */
+  const signsWithOneClickSession =
+    show1CT &&
+    is1CTEnabled &&
+    !transaction1CTParamsChanges?.length &&
+    orderType !== "limit";
+  const walletPrompt = useWalletPrompt({
+    isLoading: isAwaitingSignature,
+    signsLocally: signsWithOneClickSession,
+  });
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
+  /**
+   * This warning and the acknowledgement checkbox must read the same number.
+   * While they did not, any tolerance between the two thresholds showed a loss
+   * warning with nothing to acknowledge and no gate behind it.
+   *
+   * Note the unit difference that made them easy to diverge: `manualSlippage`
+   * is a percentage string ("5"), while the config's value is already a
+   * fraction (0.05). The previous comparison also ran the typed value through
+   * `parseInt`, so 1.9% truncated to 1 and warned nowhere.
+   */
+  const manualSlippagePercent = Number(manualSlippage);
+  const effectiveSlippage = manualSlippage
+    ? new Dec(
+        Number.isFinite(manualSlippagePercent)
+          ? manualSlippagePercent.toString()
+          : "0"
+      ).quo(new Dec(100))
+    : slippageConfig?.slippage.toDec();
   const isManualSlippageTooHigh =
-    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
-    (!manualSlippage &&
-      !!slippageConfig &&
-      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
+    effectiveSlippage?.gte(HighSlippageToleranceGate) ?? false;
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
 
-  //Value is memoized as it must be frozen when the component is mounted
-  const initialOutput = useMemo(
-    () => amountWithSlippage ?? new IntPretty(0),
+  // The review notes an auto-adjusted tolerance, and one picked without
+  // knowing route liquidity, only while the user has not typed their own.
+  const showAutoAdjusted = manualSlippage === "" && slippageSource === "auto";
+  const showLiquidityUnknown =
+    manualSlippage === "" &&
+    slippageLiquidityUnknown &&
+    (slippageSource === "auto" || slippageSource === "default");
+
+  /**
+   * The quote the user is reviewing, which later quotes are compared against.
+   *
+   * Held in state rather than as a local inside a memo, so that accepting an
+   * updated quote actually re-renders — its predecessor reassigned a memo-local
+   * variable, which changed nothing on screen and was reset to the original
+   * value on the next quote tick, leaving the "Accept" button inert.
+   *
+   * Keyed on `isOpen`, not on mount: this component renders unconditionally and
+   * passes `isOpen` down to `ModalBase`, so its body stays mounted between opens
+   * and a mount-keyed baseline would be the first quote the page ever saw.
+   */
+  const [reviewedOutput, setReviewedOutput] = useState(amountWithSlippage);
+
+  // Re-baselined during render when the modal opens, so the drift check never
+  // runs against the previous session's quote. Deliberately keyed on `isOpen`
+  // alone — re-baselining on every quote tick would mean nothing ever counts
+  // as drift.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) setReviewedOutput(amountWithSlippage);
+  }
+
+  // A resting limit order fills at its limit price, so movement in the market
+  // quote is not drift for it; only market orders compare against the
+  // reviewed quote.
+  const diffGteSlippage =
+    orderType === "market" &&
+    hasQuoteDriftedBeyondSlippage({
+      initial: reviewedOutput?.toDec(),
+      current: amountWithSlippage?.toDec(),
+      slippageTolerance: slippageConfig?.slippage.toDec(),
+      quoteType,
+    });
+
+  const resolvedQuoteType = quoteType ?? "out-given-in";
+
+  // A market trade whose minimum received is worth far less than what is sent
+  // joins the loss acknowledgement below as one more warning reason. Each side
+  // is priced from its own asset's price, so a mispriced pool whose quoted
+  // impact looks fine is still caught.
+  const usdNum = (value?: Dec) =>
+    value === undefined ? undefined : Number(value.toString());
+  const isExtremeValueDisparity =
+    orderType === "market" &&
+    requiresValueDisparityAcknowledgement({
+      quoteType: resolvedQuoteType,
+      inputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(fiatAmountWithSlippage?.toDec())
+          : usdNum(inAmountFiat?.toDec()),
+      minimumOutputUsd:
+        resolvedQuoteType === "in-given-out"
+          ? usdNum(expectedOutputFiat?.toDec())
+          : amountWithSlippage && outAssetPrice
+            ? usdNum(amountWithSlippage.toDec().mul(outAssetPrice.toDec()))
+            : undefined,
+    });
+
+  // The chain rejects a slippage bound (exact-in's minimum output, exact-out's
+  // maximum input) that serializes to zero, and acknowledging cannot make that
+  // transaction valid, so confirmation is disabled outright. Market orders
+  // only: limit orders serialize differently.
+  const slippageBoundAsset =
+    resolvedQuoteType === "in-given-out" ? fromAsset : toAsset;
+  const isSlippageBoundZeroOnChain =
+    orderType === "market" &&
+    quoteAmount !== undefined &&
+    quoteAmount.isPositive() &&
+    slippageConfig !== undefined &&
+    slippageBoundAsset !== undefined &&
+    slippageBoundTruncatesToZero({
+      quoteAmount,
+      slippage: slippageConfig.slippage.toDec(),
+      coinDecimals: slippageBoundAsset.coinDecimals,
+      quoteType: resolvedQuoteType,
+    });
+
+  /**
+   * Live loss figures for the trade being reviewed (MTN-150).
+   *
+   * The identity is what makes this a different trade rather than a re-quote of
+   * the same one, so slippage and price impact are deliberately excluded — they
+   * drift on every 5s requote and belong to the tolerance-governed figures
+   * instead. The limit price is safe to include because opening this modal locks
+   * it (see the `limitSetPriceLock` effect above).
+   *
+   * The amount is the side the user fixed. On an exact-out market trade that is
+   * the output: the input is the quoted figure, rewritten on every requote, so
+   * keying on it would re-arm the checkbox whenever it moved by one base unit.
+   */
+  const fixedAmount =
+    orderType !== "limit" && quoteType === "in-given-out"
+      ? expectedOutput
+      : inAmountToken;
+  const currentLossFigures = useMemo(
+    () => ({
+      identityKey: [
+        fromAsset?.coinMinimalDenom,
+        toAsset?.coinMinimalDenom,
+        fixedAmount?.toCoin().amount,
+        orderType,
+        quoteType,
+        orderType === "limit" ? limitPriceFiat?.toDec().toString() : "",
+      ].join("|"),
+      ...getTradeWarnings({
+        priceImpactTokenOut,
+        priceImpactUnknown,
+        slippage: slippageConfig?.slippage.toDec(),
+        isBeyondOppositePrice,
+        percentAdjusted,
+        isExtremeValueDisparity,
+        orderType: orderType === "limit" ? "limit" : "market",
+      }),
+    }),
+    [
+      fromAsset?.coinMinimalDenom,
+      toAsset?.coinMinimalDenom,
+      fixedAmount,
+      orderType,
+      quoteType,
+      limitPriceFiat,
+      priceImpactTokenOut,
+      priceImpactUnknown,
+      slippageConfig?.slippage,
+      isBeyondOppositePrice,
+      percentAdjusted,
+      isExtremeValueDisparity,
+    ]
+  );
+
+  const {
+    acknowledgedBasis,
+    hasAcknowledgedLoss,
+    setLossAcknowledged,
+    warningNeedsAcknowledgement,
+  } = useLossAcknowledgement(currentLossFigures);
+
+  // Re-arm on every open. The hook only clears the basis when the figures go
+  // stale, and this component's body stays mounted between opens, so without
+  // this a user who ticked the box, closed the modal and reopened it would find
+  // the trade already acknowledged.
+  //
+  // Rising edge only: `isOpen` going false fires this effect too, and clearing
+  // the tick on the way out is visible for the whole of the modal's exit
+  // transition — so a cancelled signature looks like it silently un-ticked the
+  // box the user had just ticked.
+  useEffect(() => {
+    if (isOpen) setLossAcknowledged(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  }, [isOpen]);
 
-  const [originalValue, setOriginalValue] = useState(initialOutput);
+  /**
+   * Accepting a drifted quote re-baselines the comparison *and* re-arms the loss
+   * acknowledgement, so the user has to tick again.
+   *
+   * The two guards cover independent risks — the banner is the market moving
+   * against you, the checkbox is this trade's own price impact, and impact can be
+   * unchanged while the output drops. Re-asking is nonetheless the right default
+   * on a signing surface: the user is being shown materially worse terms than the
+   * ones they consented to, and one extra click in a rare case is cheaper than a
+   * consent that silently carries over to a different set of numbers. Declared
+   * after `useLossAcknowledgement` because it needs `setLossAcknowledged`.
+   */
+  const acceptUpdatedQuote = useCallback(() => {
+    setReviewedOutput(amountWithSlippage);
+    setLossAcknowledged(false);
+  }, [amountWithSlippage, setLossAcknowledged]);
 
-  const { diffGteSlippage, restart } = useMemo(
-    () => {
-      return {
-        diffGteSlippage: slippageConfig
-          ? originalValue
-              .sub(amountWithSlippage ?? new IntPretty(0))
-              .toDec()
-              .gte(slippageConfig?.slippage.toDec())
-          : false,
-        restart: () => {
-          setOriginalValue(amountWithSlippage ?? new IntPretty(0));
-        },
-      };
-    },
-
-    /**
-     * Dependencies are disabled for this hook as we only want to update the
-     * current slippage amount when the outAmountLessSlippage changes.
-     *
-     * This is to monitor if the output amount changes too much from the original
-     * quote so as to warn the user.
-     */
-    [amountWithSlippage, originalValue, slippageConfig]
-  );
+  // Typed slippage belongs to one review. Cleared after the exit transition,
+  // so the next review's first render already shows the submitted value as
+  // the placeholder.
+  const clearTypedSlippage = useCallback(() => setManualSlippage(""), []);
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
-      if (value.length > 3) return;
+      const parsed = parseSlippageInput(value);
+      if (!parsed) return;
 
-      if (value === "") {
-        setManualSlippage("");
-        slippageConfig?.setManualSlippage(
-          slippageConfig?.defaultManualSlippage
-        );
-        return;
+      setManualSlippage(parsed.display);
+      if (parsed.display === "") {
+        // Clearing hands control back to the tool's own slippage, shown as
+        // the placeholder. A caller that sets slippage automatically picks it
+        // up from the cleared override; otherwise fall back to the preset
+        // (or one the fee-error path selected).
+        slippageConfig?.clearUserOverride();
+        if (slippageSource === undefined) {
+          slippageConfig?.setIsManualSlippage(false);
+        }
+      } else if (parsed.commit !== undefined) {
+        slippageConfig?.markUserOverride();
+        slippageConfig?.setManualSlippage(parsed.commit);
       }
-
-      if (!isValidNumericalRawInput(value)) {
-        return;
-      }
-
-      setManualSlippage(value);
-      slippageConfig?.setManualSlippage(new Dec(+value).toString());
     },
-    [slippageConfig]
+    [slippageConfig, slippageSource]
   );
+
+  // Leaving the field with an incomplete value ("1.", "0", "0.") must not
+  // leave the display out of step with the submitted tolerance: complete a
+  // positive value, otherwise clear it.
+  const handleManualSlippageBlur = useCallback(() => {
+    setIsEditingSlippage(false);
+    if (manualSlippage === "") return;
+    if (parseSlippageInput(manualSlippage)?.commit !== undefined) return;
+
+    const value = Number(manualSlippage);
+    if (value > 0) {
+      setManualSlippage(String(value));
+      slippageConfig?.markUserOverride();
+      slippageConfig?.setManualSlippage(String(value));
+    } else {
+      setManualSlippage("");
+      slippageConfig?.clearUserOverride();
+      if (slippageSource === undefined) {
+        slippageConfig?.setIsManualSlippage(false);
+      }
+    }
+  }, [manualSlippage, slippageConfig, slippageSource]);
 
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
@@ -288,6 +553,7 @@ export function ReviewOrder({
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onClose}
+      onAfterClose={clearTypedSlippage}
       hideCloseButton
       className={
         show1CT && showOneClickTradingSettings
@@ -510,11 +776,16 @@ export function ReviewOrder({
                             ? "text-rust-400"
                             : "text-osmoverse-300"
                         )}
-                      >{`${
-                        outputDifference.toDec().isPositive() ? "-" : "+"
-                      }${new RatePretty(
-                        outputDifference.toDec().abs()
-                      )}`}</span>
+                      >
+                        <GenericDisclaimer
+                          title={t("tradeDetails.outputDifference.header")}
+                          body={t("tradeDetails.outputDifference.content")}
+                        >{`${
+                          outputDifference.toDec().isPositive() ? "-" : "+"
+                        }${new RatePretty(
+                          outputDifference.toDec().abs()
+                        )}`}</GenericDisclaimer>
+                      </span>
                     )}
                     <span className="sm:subtitle2">
                       {formatFiatPrice(
@@ -588,7 +859,21 @@ export function ReviewOrder({
                     <RecapRow
                       left={t("swap.settings.slippage")}
                       right={
-                        <div className="flex items-center justify-end">
+                        <div className="flex items-center justify-end gap-2">
+                          {showAutoAdjusted && (
+                            <GenericDisclaimer
+                              title={t("swap.slippageAutoAdjustedTitle")}
+                              body={t("swap.slippageAutoAdjustedBody")}
+                            >
+                              <Icon
+                                id="alert-triangle"
+                                label={t("swap.slippageAutoAdjustedTitle")}
+                                width={16}
+                                height={16}
+                                className="text-ammelia-400"
+                              />
+                            </GenericDisclaimer>
+                          )}
                           <div
                             className={classNames(
                               "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
@@ -602,7 +887,11 @@ export function ReviewOrder({
                               inputMode="decimal"
                               minWidth={30}
                               placeholder={
-                                slippageConfig?.defaultManualSlippage + "%"
+                                // The tolerance that will be submitted, not a
+                                // nominal default.
+                                formatSlippagePercent(
+                                  slippageConfig.slippage.toDec()
+                                ) + "%"
                               }
                               className="sm:caption w-fit bg-transparent px-0"
                               inputClassName={classNames(
@@ -613,21 +902,8 @@ export function ReviewOrder({
                                 }
                               )}
                               value={manualSlippage}
-                              onFocus={() => {
-                                slippageConfig?.setIsManualSlippage(true);
-                                setIsEditingSlippage(true);
-                              }}
-                              onBlur={() => {
-                                if (
-                                  isManualSlippageTooHigh &&
-                                  +manualSlippage > 50
-                                ) {
-                                  handleManualSlippageChange(
-                                    (+manualSlippage).toString().split("")[0]
-                                  );
-                                }
-                                setIsEditingSlippage(false);
-                              }}
+                              onFocus={() => setIsEditingSlippage(true)}
+                              onBlur={handleManualSlippageBlur}
                               onChange={(e) => {
                                 handleManualSlippageChange(e.target.value);
                               }}
@@ -645,8 +921,13 @@ export function ReviewOrder({
                         </div>
                       }
                     />
+                    {showLiquidityUnknown && (
+                      <p className="caption text-ammelia-400">
+                        {t("swap.routeLiquidityUnknown")}
+                      </p>
+                    )}
                     {isManualSlippageTooHigh && (
-                      <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
+                      <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 px-5 py-2.5">
                         <Icon
                           id="alert-triangle"
                           width={24}
@@ -660,7 +941,11 @@ export function ReviewOrder({
                             )}
                           </span>
                           <span className="body2 sm:caption text-osmoverse-300">
-                            {t("limitOrders.lowerSlippageToleranceRecommended")}
+                            {showAutoAdjusted
+                              ? t("swap.slippageAutoAdjustedHigh")
+                              : t(
+                                  "limitOrders.lowerSlippageToleranceRecommended"
+                                )}
                           </span>
                         </div>
                       </div>
@@ -741,6 +1026,47 @@ export function ReviewOrder({
                     }
                   />
                 )}
+                {orderType === "market" && swapFee && (
+                  <RecapRow
+                    left={
+                      <GenericDisclaimer
+                        title={t("tradeDetails.swapFees.header")}
+                        body={t("tradeDetails.swapFees.content")}
+                      >
+                        {t("pools.aprBreakdown.swapFees")}
+                      </GenericDisclaimer>
+                    }
+                    right={
+                      swapFee.toDec().isZero() ? (
+                        <span className="sm:caption text-bullish-400">
+                          {t("transfer.free")}
+                        </span>
+                      ) : (
+                        <span className="sm:caption">
+                          {swapFeeFiat &&
+                            swapFeeFiat.toDec().gt(new Dec(0)) && (
+                              <span className="text-osmoverse-100">
+                                {swapFeeFiat.toDec().lte(new Dec(0.01)) ? (
+                                  <>&lt;$0.01</>
+                                ) : (
+                                  <>
+                                    ~
+                                    {formatPretty(swapFeeFiat, {
+                                      maxDecimals: 3,
+                                      maximumSignificantDigits: 4,
+                                    })}
+                                  </>
+                                )}{" "}
+                              </span>
+                            )}
+                          <span className="text-osmoverse-500">
+                            ({swapFee.toString()})
+                          </span>
+                        </span>
+                      )
+                    }
+                  />
+                )}
                 <RecapRow
                   left={t("swap.gas.additionalNetworkFee")}
                   right={
@@ -753,6 +1079,11 @@ export function ReviewOrder({
                   }
                 />
               </div>
+              {limitQuotePegNote && (
+                <p className="caption px-2 text-osmoverse-300">
+                  {limitQuotePegNote}
+                </p>
+              )}
               {isBeyondOppositePrice && orderType === "limit" && (
                 <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                   <Icon
@@ -771,6 +1102,28 @@ export function ReviewOrder({
                       {tab === "buy"
                         ? t("limitOrders.aboveMarket.description")
                         : t("limitOrders.belowMarket.description")}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {currentLossFigures.warnPriceImpact && (
+                <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
+                  <Icon
+                    id="alert-triangle"
+                    width={24}
+                    height={24}
+                    className="text-rust-400"
+                  />
+                  <div className="body2 sm:caption flex flex-col gap-1">
+                    <span>{t("limitOrders.highPriceImpact.title")}</span>
+                    <span className="text-osmoverse-300">
+                      {t("limitOrders.highPriceImpact.description", {
+                        // Same rounding as the memo's `pi=`, so the figure the
+                        // user is shown is the figure the tx records.
+                        impact: priceImpactUnknown
+                          ? t("transfer.unknown")
+                          : `${formatWarnPct(currentLossFigures.priceImpact)}%`,
+                      })}
                     </span>
                   </div>
                 </div>
@@ -794,23 +1147,75 @@ export function ReviewOrder({
                   onParamsChange={() => setShowOneClickTradingSettings(true)}
                 />
               )}
+              {/*
+                The acknowledgement lives inside this block so that at most one
+                of {drift banner} / {checkbox + confirm} is ever interactable:
+                when the quote has drifted the confirm row is replaced by the
+                banner, and the checkbox goes with it rather than floating above
+                a button that is no longer there.
+              */}
               {!diffGteSlippage && (
-                <div className="flex w-full justify-between gap-3 pt-3">
-                  <Button
-                    mode="primary"
-                    onClick={() => {
-                      confirmAction();
-                    }}
-                    disabled={
-                      isConfirmationDisabled ||
-                      wouldExceedSpendLimit ||
-                      hasInsufficientFeeTokens
-                    }
-                    className="body2 sm:caption !rounded-2xl"
-                  >
-                    <h6>{t("limitOrders.confirm")}</h6>
-                  </Button>
-                </div>
+                <>
+                  {isSlippageBoundZeroOnChain && (
+                    <p className="body2 sm:caption mt-3 text-rust-400">
+                      {t("swap.amountTooSmallForSlippage")}
+                    </p>
+                  )}
+                  {hasActiveWarning(currentLossFigures) && (
+                    <LossAcknowledgementCheckbox
+                      label={t("limitOrders.lossAcknowledgement")}
+                      checked={hasAcknowledgedLoss}
+                      onCheckedChange={setLossAcknowledged}
+                    />
+                  )}
+                  <div className="flex w-full justify-between gap-3 pt-3">
+                    <Button
+                      mode={
+                        warningNeedsAcknowledgement || hasAcknowledgedLoss
+                          ? "primary-warning"
+                          : "primary"
+                      }
+                      onClick={() => {
+                        // Defence in depth only: this reads the same render as
+                        // `disabled`, so it cannot catch a quote that has not
+                        // rendered yet. It guards the sign path against a
+                        // future change that enables the button some other way.
+                        if (
+                          needsAcknowledgement(
+                            acknowledgedBasis,
+                            currentLossFigures
+                          )
+                        ) {
+                          return;
+                        }
+                        confirmAction({
+                          warnFlags: deriveTradeMemoFlags(acknowledgedBasis),
+                        });
+                      }}
+                      disabled={
+                        isConfirmationDisabled ||
+                        wouldExceedSpendLimit ||
+                        hasInsufficientFeeTokens ||
+                        isSlippageBoundZeroOnChain ||
+                        warningNeedsAcknowledgement
+                      }
+                      isLoading={isAwaitingSignature}
+                      loadingText={walletPrompt.label}
+                      className="body2 sm:caption !rounded-2xl"
+                    >
+                      <h6>{t("limitOrders.confirm")}</h6>
+                    </Button>
+                    {walletPrompt.onCancel && (
+                      <Button
+                        mode="secondary"
+                        onClick={walletPrompt.onCancel}
+                        className="body2 sm:caption w-fit !rounded-2xl"
+                      >
+                        <h6>{t("limitOrders.cancel")}</h6>
+                      </Button>
+                    )}
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -830,7 +1235,7 @@ export function ReviewOrder({
                 </span>
                 <Button
                   mode="primary"
-                  onClick={restart}
+                  onClick={acceptUpdatedQuote}
                   className="body2 w-fit !rounded-2xl"
                 >
                   <h6>{t("limitOrders.accept")}</h6>
@@ -956,14 +1361,25 @@ const OneClickTradingActiveSessionParamsEdit = ({
       onClick={onClick}
     >
       <span className="body1 text-wosmongton-200 whitespace-nowrap">
-        {changes.includes("spendLimit") ? (
-          <span className="text-bullish-400">
-            {transactionParams?.spendLimit.toString()}
+        {changes.includes("spendLimit") || !remainingSpendLimit ? (
+          <span
+            className={
+              changes.includes("spendLimit") ? "text-bullish-400" : undefined
+            }
+          >
+            {t("oneClickTrading.spendLimitPerDay", {
+              amount: transactionParams?.spendLimit.toString() ?? "",
+            })}
           </span>
         ) : (
-          <span> {remainingSpendLimit} </span>
+          <span>
+            {" "}
+            {t("oneClickTrading.spendLimitLeftToday", {
+              amount: remainingSpendLimit,
+            })}{" "}
+          </span>
         )}
-        {" / "}
+        {" · "}
         {changes.includes("sessionPeriod") &&
         transactionParams?.sessionPeriod.end ? (
           <span className="text-bullish-400">

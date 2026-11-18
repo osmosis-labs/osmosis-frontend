@@ -2,12 +2,14 @@ import { cva, VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import { debounce } from "debounce";
 import {
-  type ChangeEvent,
   type DOMAttributes,
   forwardRef,
   FunctionComponent,
-  useCallback,
+  type SyntheticEvent,
+  useEffect,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useMount } from "react-use";
@@ -15,6 +17,7 @@ import { useMount } from "react-use";
 import { Icon } from "~/components/assets";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
 import { useTranslation } from "~/hooks";
+import { useCallbackRef } from "~/hooks/use-callback-ref";
 
 const searchBoxClasses = cva(
   "flex flex-nowrap items-center group justify-between gap-3 bg-osmoverse-825 transition-colors ease-out duration-200 group-focus-within:bg-osmoverse-800",
@@ -86,15 +89,37 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     },
     ref
   ) {
-    const _onInput = useCallback(
-      (e: ChangeEvent<HTMLInputElement>) => onInput(e.target.value),
-      [onInput]
-    );
+    /** Last value the input and `currentValue` agreed on, used to tell our own
+     *  input echoing back from an external change. */
+    const syncedValueRef = useRef(currentValue ?? "");
+
+    const _onInput = useCallbackRef((e: SyntheticEvent<HTMLInputElement>) => {
+      const value = (e.target as HTMLInputElement).value;
+      syncedValueRef.current = value;
+      onInput(value);
+    });
 
     const _debouncedOnInput = useMemo(
       () => (!_debounce ? _onInput : debounce(_onInput, _debounce)),
       [_debounce, _onInput]
     );
+
+    const inputRef = useRef<HTMLInputElement>(null);
+    // Empty deps: callers like useDimension pass a state-setter ref, which would
+    // re-render forever if the handle were reassigned on every render.
+    useImperativeHandle(ref, () => inputRef.current!, []);
+
+    // A debounced input is uncontrolled, so `defaultValue` is only read on mount.
+    // Sync later external changes (e.g. URL state that loads after hydration, or
+    // back/forward navigation). Skip our own debounced value coming back, which
+    // can lag behind what the user has typed since.
+    useEffect(() => {
+      const input = inputRef.current;
+      const nextValue = currentValue ?? "";
+      if (!_debounce || !input || nextValue === syncedValueRef.current) return;
+      syncedValueRef.current = nextValue;
+      input.value = nextValue;
+    }, [_debounce, currentValue]);
 
     const [canAutoFocus, setCanAutoFocus] = useState(false);
 
@@ -119,7 +144,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
         <label htmlFor="search-input" className="shrink grow">
           <input
             id="search-input"
-            ref={ref}
+            ref={inputRef}
             className="h-full w-full appearance-none bg-transparent tracking-wider placeholder:font-medium placeholder:text-osmoverse-500 group-focus-within:placeholder:text-osmoverse-600"
             defaultValue={_debounce ? currentValue : undefined}
             value={_debounce ? undefined : currentValue}

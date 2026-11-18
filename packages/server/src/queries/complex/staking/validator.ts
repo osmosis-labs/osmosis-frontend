@@ -18,7 +18,7 @@ export async function getValidators({
 }) {
   return cachified({
     cache: validatorsCache,
-    key: "validators",
+    key: `validators-${status}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
       return (await queryValidators({ chainList, status })).validators;

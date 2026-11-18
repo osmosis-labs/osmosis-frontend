@@ -1,0 +1,106 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`remove concentrated liquidity calculations scales liquidity and token amounts at 0 of the position 1`] = `
+{
+  "base": {
+    "amount": "0",
+    "denom": "uosmo",
+  },
+  "error": "EmptyAmountError",
+  "liquidity": "0.000000000000000000",
+  "quote": {
+    "amount": "0",
+    "denom": "weth",
+  },
+}
+`;
+
+exports[`remove concentrated liquidity calculations scales liquidity and token amounts at 0.01 of the position 1`] = `
+{
+  "base": {
+    "amount": "1234567",
+    "denom": "uosmo",
+  },
+  "error": undefined,
+  "liquidity": "1234567.891234567890000000",
+  "quote": {
+    "amount": "9876543219876543",
+    "denom": "weth",
+  },
+}
+`;
+
+exports[`remove concentrated liquidity calculations scales liquidity and token amounts at 0.5 of the position 1`] = `
+{
+  "base": {
+    "amount": "61728394",
+    "denom": "uosmo",
+  },
+  "error": undefined,
+  "liquidity": "61728394.561728394500000000",
+  "quote": {
+    "amount": "493827160993827160",
+    "denom": "weth",
+  },
+}
+`;
+
+exports[`remove concentrated liquidity calculations scales liquidity and token amounts at 0.25 of the position 1`] = `
+{
+  "base": {
+    "amount": "30864197",
+    "denom": "uosmo",
+  },
+  "error": undefined,
+  "liquidity": "30864197.280864197250000000",
+  "quote": {
+    "amount": "246913580496913580",
+    "denom": "weth",
+  },
+}
+`;
+
+exports[`remove concentrated liquidity calculations scales liquidity and token amounts at 0.33 of the position 1`] = `
+{
+  "base": {
+    "amount": "40740740",
+    "denom": "uosmo",
+  },
+  "error": undefined,
+  "liquidity": "40740740.410740740370000000",
+  "quote": {
+    "amount": "325925926255925925",
+    "denom": "weth",
+  },
+}
+`;
+
+exports[`remove concentrated liquidity calculations scales liquidity and token amounts at 0.75 of the position 1`] = `
+{
+  "base": {
+    "amount": "92592591",
+    "denom": "uosmo",
+  },
+  "error": undefined,
+  "liquidity": "92592591.842592591750000000",
+  "quote": {
+    "amount": "740740741490740740",
+    "denom": "weth",
+  },
+}
+`;
+
+exports[`remove concentrated liquidity calculations scales liquidity and token amounts at 1 of the position 1`] = `
+{
+  "base": {
+    "amount": "123456789",
+    "denom": "uosmo",
+  },
+  "error": undefined,
+  "liquidity": "123456789.123456789000000000",
+  "quote": {
+    "amount": "987654321987654321",
+    "denom": "weth",
+  },
+}
+`;

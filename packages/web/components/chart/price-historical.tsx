@@ -2,7 +2,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { curveNatural } from "@visx/curve";
 import { LinearGradient } from "@visx/gradient";
 import { ParentSize } from "@visx/responsive";
-import { scaleLinear } from "@visx/scale";
+import { scaleLinear, scaleTime } from "@visx/scale";
 import {
   AnimatedAreaSeries,
   AnimatedAxis,
@@ -18,8 +18,7 @@ import {
 } from "@visx/xychart";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, memo, useCallback, useMemo } from "react";
+import { FunctionComponent, memo, useCallback, useMemo } from "react";
 
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { ChartButton } from "~/components/ui/button";
@@ -34,6 +33,40 @@ import {
 import { getDecimalCount } from "~/utils/number";
 
 const NUM_Y_TICKS = 5;
+/** Minimum gap between x-axis date labels, so they don't collide on narrow (phone) charts. */
+const MIN_PX_PER_X_TICK = 80;
+
+/**
+ * d3's time ticks are only a hint on count and restart at month boundaries
+ * (e.g. Oct 31 then Nov 1), so on a narrow plot adjacent labels overlap.
+ * Takes the same ticks the axis would draw and drops any that land closer
+ * than `MIN_PX_PER_X_TICK` to the previously kept one.
+ */
+function getSpacedXTicks(
+  data: { time: number }[],
+  plotWidth: number,
+  numTicks: number
+): Date[] | undefined {
+  if (data.length < 2 || plotWidth <= 0) return undefined;
+  let min = Infinity;
+  let max = -Infinity;
+  for (const { time } of data) {
+    if (time < min) min = time;
+    if (time > max) max = time;
+  }
+  if (!(max > min)) return undefined;
+  const scale = scaleTime({ domain: [min, max], range: [0, plotWidth] });
+  const kept: Date[] = [];
+  let lastX = -Infinity;
+  for (const tick of scale.ticks(numTicks)) {
+    const x = scale(tick);
+    if (x - lastX >= MIN_PX_PER_X_TICK) {
+      kept.push(tick);
+      lastX = x;
+    }
+  }
+  return kept;
+}
 
 /**
  * Derives the y-axis tick formatter and the left margin needed to fit the
@@ -102,10 +135,6 @@ export const HistoricalPriceChart: FunctionComponent<{
   onPointerOut?: () => void;
   showGradient?: boolean;
   /**
-   * Renders a more compact graph with less information on the screen
-   */
-  minimal?: boolean;
-  /**
    * specifies the tick count of the horizontal asset
    */
   xNumTicks?: number;
@@ -122,7 +151,6 @@ export const HistoricalPriceChart: FunctionComponent<{
     onPointerHover,
     onPointerOut,
     showGradient = true,
-    minimal = false,
     xNumTicks = 4,
     showTooltip = false,
     fiatSymbol,
@@ -130,19 +158,11 @@ export const HistoricalPriceChart: FunctionComponent<{
     const { formatYTick, leftMargin } = useYAxisTickLayout(domain);
 
     return (
-      <ParentSize
-        className={`flex-shrink-1 flex-1 ${
-          !minimal ? "overflow-hidden" : "[&>svg]:overflow-visible"
-        }`}
-      >
+      <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
         {({ height, width }) => (
           <XYChart
             key="line-chart"
-            margin={
-              minimal
-                ? { top: 0, right: 0, bottom: 24, left: 0 }
-                : { top: 0, right: 0, bottom: 24, left: leftMargin }
-            }
+            margin={{ top: 0, right: 0, bottom: 24, left: leftMargin }}
             height={height}
             width={width}
             xScale={{
@@ -195,20 +215,15 @@ export const HistoricalPriceChart: FunctionComponent<{
             <AnimatedAxis
               orientation="bottom"
               numTicks={xNumTicks}
-              hideTicks={minimal}
-              hideZero={minimal}
+              tickValues={getSpacedXTicks(data, width - leftMargin, xNumTicks)}
             />
-            {!minimal && (
-              <AnimatedAxis
-                orientation="left"
-                numTicks={NUM_Y_TICKS}
-                strokeWidth={0}
-                tickFormat={formatYTick}
-              />
-            )}
-            {!minimal && (
-              <AnimatedGrid columns={false} numTicks={NUM_Y_TICKS} />
-            )}
+            <AnimatedAxis
+              orientation="left"
+              numTicks={NUM_Y_TICKS}
+              strokeWidth={0}
+              tickFormat={formatYTick}
+            />
+            <AnimatedGrid columns={false} numTicks={NUM_Y_TICKS} />
 
             {showGradient ? (
               <>
@@ -340,165 +355,162 @@ export const PriceChartHeader: FunctionComponent<{
     pricesHeaderRootContainer?: string;
   };
   compactZeros?: boolean;
-}> = observer(
-  ({
-    historicalRange,
-    setHistoricalRange,
-    baseDenom,
-    quoteDenom,
-    hoverDate,
-    hoverPrice,
-    formatOpts,
-    decimal,
-    hideButtons,
-    classes,
-    fiatSymbol,
-    showAllRange = false,
-    isLoading = false,
-    compactZeros = false,
-  }) => {
-    const { t } = useTranslation();
+}> = ({
+  historicalRange,
+  setHistoricalRange,
+  baseDenom,
+  quoteDenom,
+  hoverDate,
+  hoverPrice,
+  formatOpts,
+  decimal,
+  hideButtons,
+  classes,
+  fiatSymbol,
+  showAllRange = false,
+  isLoading = false,
+  compactZeros = false,
+}) => {
+  const { t } = useTranslation();
 
-    const getFormattedPrice = useCallback(
-      (
-        additionalFormatOpts?: Partial<
-          Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
-        >
-      ) =>
-        formatPretty(new Dec(hoverPrice), {
-          maxDecimals: decimal,
-          notation: "compact",
-          ...formatOpts,
-          ...additionalFormatOpts,
-        }) || "",
-      [decimal, formatOpts, hoverPrice]
-    );
+  const getFormattedPrice = useCallback(
+    (
+      additionalFormatOpts?: Partial<
+        Intl.NumberFormatOptions & { disabledTrimZeros: boolean }
+      >
+    ) =>
+      formatPretty(new Dec(hoverPrice), {
+        maxDecimals: decimal,
+        notation: "compact",
+        ...formatOpts,
+        ...additionalFormatOpts,
+      }) || "",
+    [decimal, formatOpts, hoverPrice]
+  );
 
-    const { decimalDigits, significantDigits, zeros } = useMemo(
-      () =>
-        compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
-      [getFormattedPrice]
-    );
+  const { decimalDigits, significantDigits, zeros } = useMemo(
+    () => compressZeros(getFormattedPrice({ disabledTrimZeros: false }), false),
+    [getFormattedPrice]
+  );
 
-    return (
+  return (
+    <div
+      className={classNames(
+        "flex flex-row lg:flex-col-reverse sm:items-start sm:gap-y-4",
+        classes?.pricesHeaderRootContainer
+      )}
+    >
       <div
         className={classNames(
-          "flex flex-row lg:flex-col-reverse sm:items-start sm:gap-y-4",
-          classes?.pricesHeaderRootContainer
+          "flex flex-1 flex-row",
+          classes?.pricesHeaderContainerClass
         )}
       >
-        <div
-          className={classNames(
-            "flex flex-1 flex-row",
-            classes?.pricesHeaderContainerClass
-          )}
-        >
-          <div>
-            <SkeletonLoader isLoaded={!isLoading}>
-              <h4
-                className={classNames(
-                  "row-span-2 pr-1 font-caption sm:text-h5",
-                  classes?.priceHeaderClass
-                )}
-              >
-                {fiatSymbol}
-                {compactZeros ? (
-                  <>
-                    {significantDigits}
-                    {(decimalDigits || Boolean(zeros)) && "."}
-                    {Boolean(zeros) && (
-                      <>
-                        0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
-                      </>
-                    )}
-                    {decimalDigits}
-                  </>
-                ) : (
-                  getFormattedPrice()
-                )}
-              </h4>
-            </SkeletonLoader>
-            {hoverDate !== undefined ? (
-              <p
-                className={classNames(
-                  "flex flex-1 flex-col justify-center font-caption text-wosmongton-200",
-                  {
-                    "invisible h-6": hoverDate === null,
-                  }
-                )}
-              >
-                {hoverDate}
-              </p>
-            ) : (
-              false
-            )}
-          </div>
-          {baseDenom && quoteDenom ? (
-            <div
+        <div>
+          <SkeletonLoader isLoaded={!isLoading}>
+            <h4
               className={classNames(
-                "flex flex-col justify-center font-caption",
-                classes?.priceSubheaderClass
+                "row-span-2 pr-1 font-caption sm:text-h5",
+                classes?.priceHeaderClass
               )}
             >
-              <div className="text-caption text-osmoverse-300">
-                {t("addConcentratedLiquidity.currentPrice")}
-              </div>
-              <div className="whitespace-nowrap text-caption text-osmoverse-300">
-                {t("addConcentratedLiquidity.basePerQuote", {
-                  base: baseDenom,
-                  quote: quoteDenom,
-                })}
-              </div>
-            </div>
-          ) : undefined}
+              {fiatSymbol}
+              {compactZeros ? (
+                <>
+                  {significantDigits}
+                  {(decimalDigits || Boolean(zeros)) && "."}
+                  {Boolean(zeros) && (
+                    <>
+                      0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
+                    </>
+                  )}
+                  {decimalDigits}
+                </>
+              ) : (
+                getFormattedPrice()
+              )}
+            </h4>
+          </SkeletonLoader>
+          {hoverDate !== undefined ? (
+            <p
+              className={classNames(
+                "flex flex-1 flex-col justify-center font-caption text-wosmongton-200",
+                {
+                  "invisible h-6": hoverDate === null,
+                }
+              )}
+            >
+              {hoverDate}
+            </p>
+          ) : (
+            false
+          )}
         </div>
-        {!hideButtons && (
+        {baseDenom && quoteDenom ? (
           <div
             className={classNames(
-              "flex flex-1 justify-end gap-1 pr-2",
-              classes?.buttons
+              "flex flex-col justify-center font-caption",
+              classes?.priceSubheaderClass
             )}
           >
-            <ChartButton
-              label={t("tokenInfos.chart.xHour", { h: "1" })}
-              onClick={() => setHistoricalRange("1h")}
-              selected={historicalRange === "1h"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xDay", { d: "1" })}
-              onClick={() => setHistoricalRange("1d")}
-              selected={historicalRange === "1d"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xDay", { d: "7" })}
-              onClick={() => setHistoricalRange("7d")}
-              selected={historicalRange === "7d"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xDay", { d: "30" })}
-              onClick={() => setHistoricalRange("1mo")}
-              selected={historicalRange === "1mo"}
-            />
-            <ChartButton
-              label={t("tokenInfos.chart.xYear", { y: "1" })}
-              onClick={() => setHistoricalRange("1y")}
-              selected={historicalRange === "1y"}
-            />
-            {showAllRange ? (
-              <ChartButton
-                label={t("tokenInfos.chart.all", { y: "1" })}
-                onClick={() => setHistoricalRange("all")}
-                selected={historicalRange === "all"}
-              />
-            ) : (
-              false
-            )}
+            <div className="text-caption text-osmoverse-300">
+              {t("addConcentratedLiquidity.currentPrice")}
+            </div>
+            <div className="whitespace-nowrap text-caption text-osmoverse-300">
+              {t("addConcentratedLiquidity.basePerQuote", {
+                base: baseDenom,
+                quote: quoteDenom,
+              })}
+            </div>
           </div>
-        )}
+        ) : undefined}
       </div>
-    );
-  }
-);
+      {!hideButtons && (
+        <div
+          className={classNames(
+            "flex flex-1 justify-end gap-1 pr-2",
+            classes?.buttons
+          )}
+        >
+          <ChartButton
+            label={t("tokenInfos.chart.xHour", { h: "1" })}
+            onClick={() => setHistoricalRange("1h")}
+            selected={historicalRange === "1h"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xDay", { d: "1" })}
+            onClick={() => setHistoricalRange("1d")}
+            selected={historicalRange === "1d"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xDay", { d: "7" })}
+            onClick={() => setHistoricalRange("7d")}
+            selected={historicalRange === "7d"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xDay", { d: "30" })}
+            onClick={() => setHistoricalRange("1mo")}
+            selected={historicalRange === "1mo"}
+          />
+          <ChartButton
+            label={t("tokenInfos.chart.xYear", { y: "1" })}
+            onClick={() => setHistoricalRange("1y")}
+            selected={historicalRange === "1y"}
+          />
+          {showAllRange ? (
+            <ChartButton
+              label={t("tokenInfos.chart.all", { y: "1" })}
+              onClick={() => setHistoricalRange("all")}
+              selected={historicalRange === "all"}
+            />
+          ) : (
+            false
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const ChartUnavailable: FunctionComponent = () => {
   const { t } = useTranslation();

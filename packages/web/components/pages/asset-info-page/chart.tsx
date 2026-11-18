@@ -1,7 +1,6 @@
 import { Dec } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { UTCTimestamp } from "lightweight-charts";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
@@ -26,13 +25,13 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useFeatureFlags, useTranslation } from "~/hooks";
-import { AvailablePriceRanges } from "~/hooks/ui-config";
+import { AvailablePriceRanges, useAssetInfoHover } from "~/hooks/ui-config";
 import { useAssetInfoView } from "~/hooks/use-asset-info-view";
 import { humanizeTime } from "~/utils/date";
 import { historicalDatafeed } from "~/utils/trading-view";
 import { api } from "~/utils/trpc";
 
-export const AssetPriceChart: FunctionComponent = observer(() => {
+export const AssetPriceChart: FunctionComponent = () => {
   const { assetInfoConfig } = useAssetInfoView();
   const apiUtils = api.useUtils();
 
@@ -94,9 +93,9 @@ export const AssetPriceChart: FunctionComponent = observer(() => {
       <ChartFooter />
     </section>
   );
-});
+};
 
-const ChartFooter: FunctionComponent = observer(() => {
+const ChartFooter: FunctionComponent = () => {
   const { assetInfoConfig } = useAssetInfoView();
   const { advancedChart } = useFeatureFlags();
   const { t } = useTranslation();
@@ -173,10 +172,12 @@ const ChartFooter: FunctionComponent = observer(() => {
       </div>
     </footer>
   );
-});
+};
 
-const ChartHeader = observer(() => {
+const ChartHeader: FunctionComponent = () => {
   const { assetInfoConfig } = useAssetInfoView();
+  const { hoverData: hoveredPrice, hoverDate } =
+    useAssetInfoHover(assetInfoConfig);
 
   const { data: marketAsset, isLoading } =
     api.edge.assets.getMarketAsset.useQuery(
@@ -188,33 +189,25 @@ const ChartHeader = observer(() => {
       }
     );
 
-  const hoverData = useMemo(() => {
-    let data = new Dec(0);
-    const decHoverPrice = assetInfoConfig.hoverData?.toDec();
+  // Undefined when market data has no current value, so it isn't shown as $0. The last
+  // chart close isn't used in its place: chart history can be served stale during a
+  // data-services outage, and a last-known price is misleading as the current one.
+  const hoverData = useMemo((): Dec | undefined => {
+    const decHoverPrice = hoveredPrice?.toDec();
+    if (decHoverPrice) return decHoverPrice;
 
-    if (decHoverPrice) {
-      data = decHoverPrice;
-    } else {
-      if (assetInfoConfig.dataType === "price") {
-        data =
-          marketAsset?.currentPrice?.toDec() ??
-          new Dec(assetInfoConfig.lastChartData?.close ?? 0);
-      } else {
-        data = marketAsset?.volume24h?.toDec() ?? new Dec(0);
-      }
-    }
-
-    return data;
+    return assetInfoConfig.dataType === "price"
+      ? marketAsset?.currentPrice?.toDec()
+      : marketAsset?.volume24h?.toDec();
   }, [
-    assetInfoConfig.hoverData,
+    hoveredPrice,
     assetInfoConfig.dataType,
-    assetInfoConfig.lastChartData?.close,
     marketAsset?.currentPrice,
     marketAsset?.volume24h,
   ]);
 
   const fiatSymbol =
-    assetInfoConfig.hoverData?.fiatCurrency?.symbol ??
+    hoveredPrice?.fiatCurrency?.symbol ??
     marketAsset?.currentPrice?.symbol ??
     "$";
 
@@ -223,12 +216,12 @@ const ChartHeader = observer(() => {
       <HistoricalChartHeader
         isLoading={isLoading || assetInfoConfig.isHistoricalDataLoading}
         hoverData={hoverData}
-        hoverDate={assetInfoConfig.hoverDate}
+        hoverDate={hoverDate}
         fiatSymbol={fiatSymbol}
       />
     </header>
   );
-});
+};
 
 const COMPACT_UNIT_BY_KEY: Record<string, string> = {
   "timeUnits.second": "s",

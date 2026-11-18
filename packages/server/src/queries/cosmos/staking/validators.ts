@@ -2,7 +2,7 @@ import { BondStatus } from "@osmosis-labs/types";
 
 import { createNodeQuery } from "../../create-node-query";
 
-type Validator = {
+export type Validator = {
   operator_address: string;
   consensus_pubkey: {
     "@type": string;

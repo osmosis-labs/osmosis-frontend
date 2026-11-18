@@ -38,7 +38,16 @@ export const PoolAssetsName: FunctionComponent<{
             ) : (
               formatAssetName(symbol)
             )}
-            {index < assetDenoms.length - 1 && (size === "sm" ? "/" : " / ")}
+            {/* The compact "A/B" form has no spaces, so offer a break after the
+                slash; otherwise a long pair can't wrap on a narrow table. */}
+            {index < assetDenoms.length - 1 &&
+              (size === "sm" ? (
+                <>
+                  /<wbr />
+                </>
+              ) : (
+                " / "
+              ))}
           </Fragment>
         ))}
       </>

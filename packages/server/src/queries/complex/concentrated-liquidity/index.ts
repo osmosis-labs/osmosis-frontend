@@ -1,4 +1,5 @@
 import { BigDec, maxTick, minTick, tickToPrice } from "@osmosis-labs/math";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import {
   CoinPretty,
@@ -13,8 +14,7 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
-  calcCoinValue,
-  calcSumCoinsValue,
+  calcSumCoinsValueOrUnknown,
   getAsset,
   mapRawCoinToPretty,
 } from "../../../queries/complex/assets";
@@ -25,10 +25,7 @@ import {
   getPoolIncentives,
 } from "../../../queries/complex/pools/incentives";
 import { getValidatorInfo } from "../../../queries/complex/staking/validator";
-import {
-  ConcentratedPoolRawResponse,
-  queryPoolChain,
-} from "../../../queries/osmosis";
+import { queryPoolChain } from "../../../queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,
@@ -41,7 +38,6 @@ import {
   queryAccountUndelegatingPositions,
 } from "../../../queries/osmosis/superfluid";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
-import { captureErrorAndReturn } from "../../../utils/error";
 import { queryPositionPerformance } from "../../data-services";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getSuperfluidPoolIds } from "../pools/superfluid";
@@ -319,9 +315,12 @@ export async function mapGetUserPositionDetails({
           `Error finding assets for position ${position.position_id}`
         );
       }
-      const currentValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
+      // undefined (unknown) when a coin that should have a price can't be priced
+      const currentValue = await calcSumCoinsValueOrUnknown({
+        ...params,
+        coins: [baseCoin, quoteCoin],
+      }).then((value) =>
+        value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
       );
 
       const lowerTick = new Int(position.lower_tick);
@@ -340,19 +339,18 @@ export async function mapGetUserPositionDetails({
       ]);
 
       // the APR range query involves a lot of calculation and can timeout the gateway
-      // instead, let's timeout the query and return undefined if it takes too long
-      const rangeApr = await timeout(
+      // instead, let's timeout the query and return undefined if it takes too long.
+      // Undefined means unknown, so it isn't shown as 0%.
+      const rangeApr: RatePretty | undefined = await timeout(
         () =>
           getConcentratedRangePoolApr({
             lowerTick: lowerTick.toString(),
             upperTick: upperTick.toString(),
             poolId: position.pool_id,
-          })
-            .then((rate) => rate ?? new RatePretty(0))
-            .catch(() => new RatePretty(0)),
+          }),
         4_000, // 4 seconds
         "getConcentratedRangePoolApr"
-      )().catch(() => new RatePretty(0));
+      )().catch(() => undefined);
 
       const pool = pools.items.find((pool) => pool.id === position.pool_id);
       if (!pool) {
@@ -490,7 +488,7 @@ export async function mapGetUserPositionDetails({
       }
 
       const totalRangeApr =
-        isSuperfluidStaked || isSuperfluidUnstaking
+        rangeApr && (isSuperfluidStaked || isSuperfluidUnstaking)
           ? rangeApr.add(superfluidApr ?? new Dec(0))
           : rangeApr;
 
@@ -613,10 +611,28 @@ export async function mapGetUserPositions({
           `Error finding assets for position ${position.position_id}`
         );
       }
-      const currentValue = new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        await calcSumCoinsValue({ ...params, coins: [baseCoin, quoteCoin] })
+      // undefined (unknown) when a coin that should have a price can't be priced
+      const currentValue = await calcSumCoinsValueOrUnknown({
+        ...params,
+        coins: [baseCoin, quoteCoin],
+      }).then((value) =>
+        value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
       );
+      const rawRewards = [
+        ...position_.claimable_spread_rewards,
+        ...position_.claimable_incentives,
+      ];
+      const rewardCoins = mapRawCoinToPretty(params.assetLists, rawRewards);
+      // undefined (unknown) when any claimable reward is unlisted or can't be priced
+      const claimableRewardsValue =
+        rewardCoins.length < rawRewards.length
+          ? undefined
+          : await calcSumCoinsValueOrUnknown({
+              ...params,
+              coins: aggregateCoinsByDenom(rewardCoins),
+            }).then((value) =>
+              value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
+            );
 
       const lowerTick = new Int(position.lower_tick);
       const upperTick = new Int(position.upper_tick);
@@ -667,6 +683,7 @@ export async function mapGetUserPositions({
         position: position_,
         currentCoins: [baseCoin, quoteCoin],
         currentValue,
+        claimableRewardsValue,
         isFullRange,
         priceRange,
         liquidity: new Dec(position.liquidity),
@@ -754,53 +771,45 @@ export async function getPositionHistoricalPerformance({
     ...totalSpreadRewardCoins,
   ]);
 
-  // calculate fiat values
+  // calculate fiat values; each is undefined (unknown) when a coin that should
+  // have a price can't be priced
+
+  const sumValue = (coins: CoinPretty[]) =>
+    calcSumCoinsValueOrUnknown({ ...params, coins }).then((value) =>
+      value ? new PricePretty(DEFAULT_VS_CURRENCY, value) : undefined
+    );
 
   const [
     currentValue,
-    currentCoinsValues,
     principalValue,
     claimableRewardsValue,
     totalEarnedValue,
   ] = await Promise.all([
-    calcSumCoinsValue({ ...params, coins: currentCoins })
-      .then((value) => new PricePretty(DEFAULT_VS_CURRENCY, value))
-      .catch(() => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))),
-    Promise.all(
-      currentCoins
-        .map((coin) => calcCoinValue({ ...params, coin }))
-        .map((p) => p.catch((e) => captureErrorAndReturn(e, 0)))
-    ).then((values) =>
-      values.map((p) => new PricePretty(DEFAULT_VS_CURRENCY, p))
-    ),
-    calcSumCoinsValue({ ...params, coins: principalCoins }).then(
-      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-    ),
-    calcSumCoinsValue({ ...params, coins: claimableRewardCoins }).then(
-      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-    ),
-    calcSumCoinsValue({ ...params, coins: totalRewardCoins }).then(
-      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-    ),
+    sumValue(currentCoins),
+    sumValue(principalCoins),
+    sumValue(claimableRewardCoins),
+    sumValue(totalRewardCoins),
   ]);
 
-  const principalValueDec = principalValue.toDec();
-
-  const roi = new RatePretty(
-    currentValue
-      .toDec()
-      .add(claimableRewardsValue.toDec())
-      .add(totalEarnedValue.toDec())
-      .sub(principalValueDec)
-      .quo(
-        // Principal can be 0 if the position is not found
-        principalValueDec.equals(new Dec(0)) ? new Dec(1) : principalValueDec
-      )
-  );
+  const roi =
+    currentValue && principalValue && claimableRewardsValue && totalEarnedValue
+      ? new RatePretty(
+          currentValue
+            .toDec()
+            .add(claimableRewardsValue.toDec())
+            .add(totalEarnedValue.toDec())
+            .sub(principalValue.toDec())
+            .quo(
+              // Principal can be 0 if the position is not found
+              principalValue.toDec().equals(new Dec(0))
+                ? new Dec(1)
+                : principalValue.toDec()
+            )
+        )
+      : undefined;
 
   return {
     currentCoins,
-    currentCoinsValues,
     currentValue,
     principalCoins,
     principalValue,

@@ -1,12 +1,17 @@
+import { maxTick, minTick } from "@osmosis-labs/math";
 import {
   createSortSchema,
   CursorPaginationSchema,
   getCachedPoolIncentivesMap,
   getCachedTransmuterTotalPoolLiquidity,
+  getConcentratedRangePoolApr,
+  getLockableDurations,
   getPool,
+  getPoolGaugeIncentives,
   getPools,
   getSharePool,
   getSharePoolBondDurations,
+  getSuperfluidPoolApr,
   getSuperfluidPoolIds,
   getUserPools,
   getUserSharePools,
@@ -31,8 +36,6 @@ const marketIncentivePoolsSortKeys = [
   "market.volume24hUsd",
   "incentives.aprBreakdown.total.upper",
 ] as const;
-export type MarketIncentivePoolSortKey =
-  (typeof marketIncentivePoolsSortKeys)[number];
 
 export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
@@ -85,7 +88,7 @@ export const poolsRouter = createTRPCRouter({
     .input(
       GetInfinitePoolsSchema.merge(
         z.object({
-          sort: createSortSchema(marketIncentivePoolsSortKeys).default({
+          sort: createSortSchema(marketIncentivePoolsSortKeys).prefault({
             keyPath: "totalFiatValueLocked",
           }),
         })
@@ -122,10 +125,41 @@ export const poolsRouter = createTRPCRouter({
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>
     getSuperfluidPoolIds(ctx)
   ),
+  /** Superfluid staking APR of a pool; zero if the pool isn't superfluid. */
+  getSuperfluidPoolApr: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId }, ctx }) =>
+      getSuperfluidPoolApr({ ...ctx, poolId })
+    ),
   getPoolIncentives: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
       getCachedPoolIncentivesMap().then((map) => map.get(poolId) ?? null)
+    ),
+  /** Extrapolated APR of a concentrated tick range; defaults to full range. */
+  getPriceRangeApr: publicProcedure
+    .input(
+      z.object({
+        poolId: z.string(),
+        lowerTickIndex: z.number().int().optional(),
+        upperTickIndex: z.number().int().optional(),
+      })
+    )
+    .query(
+      async ({
+        input: { poolId, lowerTickIndex = minTick, upperTickIndex = maxTick },
+      }) =>
+        (await getConcentratedRangePoolApr({
+          poolId,
+          lowerTick: lowerTickIndex.toString(),
+          upperTick: upperTickIndex.toString(),
+        }).catch(() => undefined)) ?? null
+    ),
+  getLockableDurations: publicProcedure.query(() => getLockableDurations()),
+  getPoolGaugeIncentives: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId }, ctx }) =>
+      getPoolGaugeIncentives({ ...ctx, poolId })
     ),
   getTransmuterTotalPoolLiquidity: publicProcedure
     .input(z.object({ contractAddress: z.string() }))

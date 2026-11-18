@@ -1,11 +1,10 @@
 import type { MainWalletBase } from "@cosmos-kit/core";
+import type { CosmosRegistryWallet } from "@osmosis-labs/tx";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
-  type CosmosRegistryWallet,
-} from "@osmosis-labs/stores";
+} from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
   ReactNode,
@@ -91,63 +90,66 @@ export interface WalletSelectParams {
   onConnect?: () => void;
 }
 
-export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
-  observer(({ children }) => {
-    const { accountStore } = useStore();
+export const WalletSelectProvider: FunctionComponent<{
+  children: ReactNode;
+}> = ({ children }) => {
+  const { walletRuntime } = useStore();
 
-    const [walletSelectParams, setWalletSelectParams] =
-      useState<WalletSelectParams | null>(null);
-    const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+  const [walletSelectParams, setWalletSelectParams] =
+    useState<WalletSelectParams | null>(null);
+  const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-      const init = async () => {
-        try {
-          await installPrevSessionWallet({
-            walletRegistry: CosmosWalletRegistry,
-            mainWallets: accountStore.walletManager.mainWallets,
-            addWallet: (w) => accountStore.addWallet(w),
-          });
-          // On mounted handles wallet connection if a session exists
-          await accountStore.walletManager.onMounted();
-        } finally {
-          setIsLoading(false);
-        }
-      };
+  useEffect(() => {
+    let cancelled = false;
+    const init = async () => {
+      try {
+        await installPrevSessionWallet({
+          walletRegistry: CosmosWalletRegistry,
+          mainWallets: walletRuntime.mainWallets,
+          addWallet: (w) => walletRuntime.installWallet(w),
+        });
+        // On mounted handles wallet connection if a session exists
+        if (!cancelled) await walletRuntime.mount();
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
 
-      init();
+    init();
 
-      return () => {
-        accountStore.walletManager.onUnmounted();
-      };
-    }, [accountStore]);
+    return () => {
+      cancelled = true;
+      walletRuntime.unmount();
+    };
+  }, [walletRuntime]);
 
-    const onOpenWalletSelect = useCallback((params: WalletSelectParams) => {
-      setIsWalletSelectOpen(true);
-      setWalletSelectParams(params);
-    }, []);
+  const onOpenWalletSelect = useCallback((params: WalletSelectParams) => {
+    setIsWalletSelectOpen(true);
+    setWalletSelectParams(params);
+  }, []);
 
-    const context = useMemo(
-      () => ({ onOpenWalletSelect, isLoading, isOpen: isWalletSelectOpen }),
-      [isLoading, isWalletSelectOpen, onOpenWalletSelect]
-    );
+  const context = useMemo(
+    () => ({ onOpenWalletSelect, isLoading, isOpen: isWalletSelectOpen }),
+    [isLoading, isWalletSelectOpen, onOpenWalletSelect]
+  );
 
-    return (
-      <WalletSelectInnerProvider value={context}>
-        {!isNil(walletSelectParams) &&
-          walletSelectParams.walletOptions.length > 0 && (
-            <WalletSelectModal
-              walletOptions={walletSelectParams.walletOptions}
-              onConnect={() => walletSelectParams.onConnect?.()}
-              isOpen={isWalletSelectOpen}
-              onRequestClose={() => {
-                setIsWalletSelectOpen(false);
-                setWalletSelectParams(null);
-              }}
-              layout={walletSelectParams?.layout}
-            />
-          )}
-        {children}
-      </WalletSelectInnerProvider>
-    );
-  });
+  return (
+    <WalletSelectInnerProvider value={context}>
+      {!isNil(walletSelectParams) &&
+        walletSelectParams.walletOptions.length > 0 && (
+          <WalletSelectModal
+            walletOptions={walletSelectParams.walletOptions}
+            onConnect={() => walletSelectParams.onConnect?.()}
+            isOpen={isWalletSelectOpen}
+            onRequestClose={() => {
+              setIsWalletSelectOpen(false);
+              setWalletSelectParams(null);
+            }}
+            layout={walletSelectParams?.layout}
+          />
+        )}
+      {children}
+    </WalletSelectInnerProvider>
+  );
+};

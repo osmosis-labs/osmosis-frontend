@@ -10,3 +10,4 @@ export * from "./poolmanager";
 export * from "./superfluid";
 export * from "./tokenfactory";
 export * from "./txfees";
+export * from "./valset-pref";

@@ -1,6 +1,6 @@
 import cases from "jest-in-case";
 
-import { isNumeric } from "../assertion";
+import { isNumeric, normalizeDecimalSeparator } from "../assertion";
 
 cases(
   "isNumeric",
@@ -67,3 +67,20 @@ cases(
     { name: "should return false for NaN", input: "NaN", expected: false },
   ]
 );
+
+describe("normalizeDecimalSeparator", () => {
+  it("turns a decimal comma into a dot, never a different magnitude", () => {
+    expect(normalizeDecimalSeparator("1,5")).toBe("1.5");
+    expect(normalizeDecimalSeparator("1,")).toBe("1.");
+    expect(normalizeDecimalSeparator("0,500")).toBe("0.500");
+    expect(normalizeDecimalSeparator("1,2345")).toBe("1.2345");
+    expect(normalizeDecimalSeparator("1.5")).toBe("1.5");
+  });
+
+  it("rejects ambiguous or malformed comma input", () => {
+    expect(normalizeDecimalSeparator("1,000")).toBeNull();
+    expect(normalizeDecimalSeparator("1,000.5")).toBeNull();
+    expect(normalizeDecimalSeparator("1.000,5")).toBeNull();
+    expect(normalizeDecimalSeparator("1,000,000")).toBeNull();
+  });
+});

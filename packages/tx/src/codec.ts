@@ -30,6 +30,10 @@ export async function getOsmosisCodec() {
   return import("@osmosis-labs/proto-codecs").then((module) => module.osmosis);
 }
 
+export async function getCosmosCodec() {
+  return import("@osmosis-labs/proto-codecs").then((module) => module.cosmos);
+}
+
 export async function getCosmwasmCodec() {
   return import("@osmosis-labs/proto-codecs").then((module) => module.cosmwasm);
 }

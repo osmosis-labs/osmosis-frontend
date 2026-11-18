@@ -6,11 +6,11 @@ import type { Pool } from "@osmosis-labs/server";
 import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
-import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
   FunctionComponent,
+  memo,
   ReactNode,
   useCallback,
   useEffect,
@@ -32,15 +32,16 @@ import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { DetentSlider } from "~/components/ui/detent-slider";
 import {
-  ObservableAddConcentratedLiquidityConfig,
+  AddConcentratedLiquidityConfig,
   useTranslation,
+  useWindowSize,
 } from "~/hooks";
 import {
-  ObservableHistoricalAndLiquidityData,
+  type HistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
+  useHoverPrice,
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
-import { useStore } from "~/stores";
 import { calcSigmaRange, calcWindowStats } from "~/utils/cl-sigma-range";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -65,11 +66,11 @@ const HistoricalPriceChart = dynamic(
 
 export const AddConcLiquidity: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(({ className, addLiquidityConfig, actionButton }) => {
+> = memo(({ className, addLiquidityConfig, actionButton }) => {
   const { poolId } = addLiquidityConfig;
 
   const { data: pool } = api.local.pools.getPool.useQuery({
@@ -90,11 +91,12 @@ export const AddConcLiquidity: FunctionComponent<
 const AddConcLiqView: FunctionComponent<
   {
     pool?: Pool;
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     isInactivePool?: boolean;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
+> = memo(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
+  const { isMobile } = useWindowSize();
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -124,18 +126,11 @@ const AddConcLiqView: FunctionComponent<
   const [persistedAdvanced, setPersistedAdvanced] = useLocalStorageState<{
     enabled?: boolean;
   } | null>(ADV_LP_STORAGE_KEY, null);
-  const [advancedEnabled, setAdvancedEnabledState] = useState(false);
-  // Hydrate the toggle from localStorage on mount.
-  useEffect(() => {
-    if (persistedAdvanced && typeof persistedAdvanced.enabled === "boolean") {
-      setAdvancedEnabledState(persistedAdvanced.enabled);
-    }
-    // Only run on mount; subsequent persistence is handled by setAdvancedEnabled.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only hydrate
-  }, []);
+  // useLocalStorageState renders the initial value until hydrated, so the
+  // toggle starts off on the server and picks up the stored value after.
+  const advancedEnabled = persistedAdvanced?.enabled === true;
   const setAdvancedEnabled = useCallback(
     (next: boolean) => {
-      setAdvancedEnabledState(next);
       setPersistedAdvanced({ ...(persistedAdvanced ?? {}), enabled: next });
     },
     [persistedAdvanced, setPersistedAdvanced]
@@ -148,7 +143,6 @@ const AddConcLiqView: FunctionComponent<
     setAdvancedEnabled(false);
   }, [setAdvancedEnabled]);
 
-  const { derivedDataStore, queriesExternalStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
 
   // Default to passive strategy for inactive pools (only on mount)
@@ -159,27 +153,61 @@ const AddConcLiqView: FunctionComponent<
     }
   }, [isInactivePool, fullRange, setFullRange]);
 
-  const superfluidPoolDetail =
-    derivedDataStore.superfluidPoolDetails.get(poolId);
+  const { data: superfluidPoolIds } =
+    api.edge.pools.getSuperfluidPoolIds.useQuery();
+  const isSuperfluidPool = Boolean(superfluidPoolIds?.includes(poolId));
+  const { data: superfluidApr } = api.edge.pools.getSuperfluidPoolApr.useQuery(
+    { poolId },
+    { enabled: isSuperfluidPool }
+  );
+  const { data: stakingParams } = api.edge.staking.getStakingParams.useQuery(
+    undefined,
+    { enabled: isSuperfluidPool }
+  );
 
-  const { yRange, xRange, depthChartData } = chartConfig;
+  const { yRange, xRange, depthChartData, setPriceRange } = chartConfig;
 
   const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
-  const queryCurrentRangeApr = fullRange
-    ? queriesExternalStore.queryPriceRangeAprs.get(poolId)
-    : queriesExternalStore.queryPriceRangeAprs.get(
-        poolId,
-        tickRange[0],
-        tickRange[1]
-      );
+  // the full range tick range is already [minTick, maxTick]
+  const { data: currentRangeApr, isFetching: isRangeAprFetching } =
+    api.edge.pools.getPriceRangeApr.useQuery({
+      poolId,
+      lowerTickIndex: Number(tickRange[0].toString()),
+      upperTickIndex: Number(tickRange[1].toString()),
+    });
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
   // TODO: this is a code smell. the chart config should observe the add liq config
   //        this may be acieved by using an interface
   useEffect(() => {
-    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-  }, [chartConfig, rangeWithCurrencyDecimals]);
+    setPriceRange(rangeWithCurrencyDecimals);
+  }, [setPriceRange, rangeWithCurrencyDecimals]);
+
+  // Rendered inside the depth chart box on desktop and in the price header row
+  // on phones, where they leave the charts more height.
+  const zoomButtons = (
+    <>
+      <ChartButton
+        alt="refresh"
+        icon="refresh-ccw"
+        selected={false}
+        onClick={() => chartConfig.resetZoom()}
+      />
+      <ChartButton
+        alt="zoom out"
+        icon="zoom-out"
+        selected={false}
+        onClick={chartConfig.zoomOut}
+      />
+      <ChartButton
+        alt="zoom in"
+        icon="zoom-in"
+        selected={false}
+        onClick={chartConfig.zoomIn}
+      />
+    </>
+  );
 
   // Moving the lookback always retunes the price chart to the smallest
   // preset that encloses the window (exact at the 1h/1d/7d/1mo stops).
@@ -220,18 +248,38 @@ const AddConcLiqView: FunctionComponent<
         <span className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.priceRange")}
         </span>
-        <div className="flex w-full gap-1">
-          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
+        {/* Phones: the price header and the zoom buttons get their own
+            full-width row above the charts, so neither pushes a plot down.
+            Both charts then start 16px from the top and end 52px from the
+            bottom, so the two price scales line up. */}
+        <div className="hidden items-end gap-2 px-4 pb-3 md:flex">
+          <div className="min-w-0 flex-1">
+            {!chartConfig.isHistoricalDataLoading &&
+              !chartConfig.historicalChartUnavailable && (
+                <ChartHeader
+                  chartConfig={chartConfig}
+                  addLiquidityConfig={addLiquidityConfig}
+                />
+              )}
+          </div>
+          <div className="flex h-6 shrink-0 gap-1">{zoomButtons}</div>
+        </div>
+        {/* Phones: no gap, so the price and depth charts read as one chart
+            rather than being split by a line of the modal background. */}
+        <div className="flex w-full gap-1 md:gap-0">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:min-w-0 md:gap-0 md:pb-7 md:pl-3 md:pt-4">
             {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
               <ChartUnavailable />
             ) : (
               <>
-                <ChartHeader
-                  chartConfig={chartConfig}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
+                <div className="md:hidden">
+                  <ChartHeader
+                    chartConfig={chartConfig}
+                    addLiquidityConfig={addLiquidityConfig}
+                  />
+                </div>
                 <Chart
                   chartConfig={chartConfig}
                   addLiquidityConfig={addLiquidityConfig}
@@ -239,27 +287,13 @@ const AddConcLiqView: FunctionComponent<
               </>
             )}
           </div>
-          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
-            <div className="flex flex-1 flex-col">
-              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 xs:ml-4">
-                <ChartButton
-                  alt="refresh"
-                  icon="refresh-ccw"
-                  selected={false}
-                  onClick={() => chartConfig.resetZoom()}
-                />
-                <ChartButton
-                  alt="zoom out"
-                  icon="zoom-out"
-                  selected={false}
-                  onClick={chartConfig.zoomOut}
-                />
-                <ChartButton
-                  alt="zoom in"
-                  icon="zoom-in"
-                  selected={false}
-                  onClick={chartConfig.zoomIn}
-                />
+          {/* Phones: the price history stays beside this box, so the depth
+              chart narrows to about a fifth of the row and the range inputs
+              narrow too. */}
+          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:w-auto md:shrink-0">
+            <div className="flex flex-1 flex-col md:w-[20vw] md:flex-none md:pt-4">
+              <div className="mb-8 mr-6 mt-7 flex h-6 justify-end gap-1 md:hidden">
+                {zoomButtons}
               </div>
               <ConcentratedLiquidityDepthChart
                 min={Number(rangeWithCurrencyDecimals[0].toString())}
@@ -274,21 +308,21 @@ const AddConcLiqView: FunctionComponent<
                   }),
                   [chartConfig.xRange, currentPriceWithDecimals]
                 )}
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(
-                  debounce((num: number) => {
-                    onManualPriceEdit();
-                    setMaxRange(num.toString());
-                  }, 250),
-                  [onManualPriceEdit]
+                onMoveMax={useMemo(
+                  () =>
+                    debounce((num: number) => {
+                      onManualPriceEdit();
+                      setMaxRange(num.toString());
+                    }, 250),
+                  [onManualPriceEdit, setMaxRange]
                 )}
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(
-                  debounce((num: number) => {
-                    onManualPriceEdit();
-                    setMinRange(num.toString());
-                  }, 250),
-                  [onManualPriceEdit]
+                onMoveMin={useMemo(
+                  () =>
+                    debounce((num: number) => {
+                      onManualPriceEdit();
+                      setMinRange(num.toString());
+                    }, 250),
+                  [onManualPriceEdit, setMinRange]
                 )}
                 onSubmitMin={useCallback(
                   (val: number) => {
@@ -304,14 +338,22 @@ const AddConcLiqView: FunctionComponent<
                   },
                   [setMaxRange, onManualPriceEdit]
                 )}
-                offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                // The right margin leaves room for the drag handles; on phones
+                // they need far less than desktop's 36px, and the space goes
+                // to the narrow depth chart instead.
+                offset={{
+                  top: 0,
+                  right: isMobile ? 12 : 36,
+                  bottom: 24 + 28,
+                  left: 0,
+                }}
                 horizontal
                 fullRange={fullRange}
               />
-              {queryCurrentRangeApr.apr && (
-                <div className="absolute right-8 top-5 flex select-none flex-col text-right">
+              {currentRangeApr && (
+                <div className="absolute right-8 top-5 flex select-none flex-col text-right md:right-3 md:top-3">
                   <div className="flex items-center justify-end gap-1">
-                    <span className="text-osmoverse-300">
+                    <span className="text-osmoverse-300 md:text-caption">
                       {t("addConcentratedLiquidity.estimated")}
                     </span>
                     <Tooltip
@@ -324,11 +366,11 @@ const AddConcLiqView: FunctionComponent<
                       <Icon id="info" height={15} width={15} />
                     </Tooltip>
                   </div>
-                  {queryCurrentRangeApr.isFetching ? (
+                  {isRangeAprFetching ? (
                     <Spinner className="m-auto mt-1.5" />
                   ) : (
-                    <h5 className="text-osmoverse-100">
-                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ""}{" "}
+                    <h5 className="text-osmoverse-100 md:text-h6 md:font-h6">
+                      {currentRangeApr.maxDecimals(1).toString() ?? ""}{" "}
                       {t("pool.APR")}
                     </h5>
                   )}
@@ -363,13 +405,13 @@ const AddConcLiqView: FunctionComponent<
       {advancedEnabled && (
         <BacktestPanel
           addLiquidityConfig={addLiquidityConfig}
-          rangeApr={queryCurrentRangeApr.apr}
+          rangeApr={currentRangeApr ?? undefined}
         />
       )}
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
-          {superfluidPoolDetail.isSuperfluid && (
+          {isSuperfluidPool && (
             <div className="flex gap-3">
               <Checkbox
                 id="superfluid-stake"
@@ -388,19 +430,20 @@ const AddConcLiqView: FunctionComponent<
               >
                 <h6 className="md:text-subtitle1 md:font-subtitle1">
                   {t("lockToken.superfluidStake")}{" "}
-                  {superfluidPoolDetail.superfluidApr.toDec().isPositive()
-                    ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
-                        0
-                      )} APR)`
+                  {superfluidApr?.toDec().isPositive()
+                    ? `(+${superfluidApr.maxDecimals(0)} APR)`
                     : undefined}
                 </h6>
-                <span className="caption text-osmoverse-300">
-                  {t("lockToken.bondingRequirement", {
-                    numDays: superfluidPoolDetail.unstakingDuration
-                      .asDays()
-                      .toString(),
-                  })}
-                </span>
+                {stakingParams && (
+                  <span className="caption text-osmoverse-300">
+                    {t("lockToken.bondingRequirement", {
+                      numDays: (
+                        stakingParams.unbondingTimeSeconds /
+                        (24 * 60 * 60)
+                      ).toString(),
+                    })}
+                  </span>
+                )}
               </label>
             </div>
           )}
@@ -449,13 +492,13 @@ const AddConcLiqView: FunctionComponent<
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
+  chartConfig: HistoricalAndLiquidityData;
 
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig, chartConfig }) => {
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
+}> = memo(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
-  const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
-    chartConfig;
+  const { historicalRange, setHistoricalRange, priceDecimal } = chartConfig;
+  const hoverPrice = useHoverPrice(chartConfig);
 
   const formatOpts = useMemo(
     () => getPriceExtendedFormatOptions(new Dec(hoverPrice)),
@@ -471,6 +514,12 @@ const ChartHeader: FunctionComponent<{
       quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
+      // Phones: the price on top and the date-range buttons below,
+      // left-aligned, on the same row as the zoom buttons.
+      classes={{
+        pricesHeaderRootContainer: "md:flex-col",
+        buttons: "md:justify-start md:pr-0",
+      }}
     />
   );
 });
@@ -479,9 +528,9 @@ const ChartHeader: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const Chart: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig, chartConfig }) => {
+  chartConfig: HistoricalAndLiquidityData;
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
+}> = memo(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
@@ -656,13 +705,13 @@ const ADV_LP_STORAGE_KEY = "osmosis.add-cl-liquidity.advanced-v1";
 
 const StrategySelectorGroup: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
     isInactivePool?: boolean;
     advancedEnabled: boolean;
     onAdvancedToggle: (next: boolean) => void;
   } & CustomClasses
-> = observer((props) => {
+> = memo((props) => {
   const { t } = useTranslation();
   const { currentStrategy } = props.addLiquidityConfig;
 
@@ -814,8 +863,8 @@ const AdvancedStrategyCard: FunctionComponent<
 };
 
 const AdvancedRangeControls: FunctionComponent<{
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer((props) => {
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
+}> = memo((props) => {
   const { t } = useTranslation();
   const {
     setFullRange,
@@ -847,11 +896,12 @@ const AdvancedRangeControls: FunctionComponent<{
 
   /** The lookback window's mean and observed extremes in display units,
    *  when computable. */
+  const [nowMs] = useState(() => Date.now());
   const windowInfo = useMemo(() => {
     const stats = calcWindowStats({
       prices: allHistoricalPricesInDisplayUnits,
       windowDays: lookbackDays,
-      nowMs: Date.now(),
+      nowMs,
     });
     if (stats.count < 10 || stats.mean <= 0 || stats.min <= 0) return undefined;
     return {
@@ -859,7 +909,7 @@ const AdvancedRangeControls: FunctionComponent<{
       min: new Dec(stats.min.toFixed(12)),
       max: new Dec(stats.max.toFixed(12)),
     };
-  }, [allHistoricalPricesInDisplayUnits, lookbackDays]);
+  }, [allHistoricalPricesInDisplayUnits, lookbackDays, nowMs]);
 
   const applyAdvancedRange = useCallback(() => {
     // Effective anchor: the selected center when computable, otherwise spot
@@ -1137,7 +1187,7 @@ const PresetStrategyCard: FunctionComponent<
   {
     type: null | "passive" | "moderate" | "aggressive";
     src: string;
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    addLiquidityConfig: AddConcentratedLiquidityConfig;
     label: string;
     width?: number;
     height?: number;
@@ -1151,7 +1201,7 @@ const PresetStrategyCard: FunctionComponent<
      *  card is the only highlighted entry. */
     forceUnselected?: boolean;
   } & CustomClasses
-> = observer(
+> = memo(
   ({
     type,
     src,
@@ -1390,13 +1440,13 @@ const SliderRow: FunctionComponent<{
 );
 
 const BacktestPanel: FunctionComponent<{
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  addLiquidityConfig: AddConcentratedLiquidityConfig;
   /** Imperator-projected APR for the current tick range — the same RatePretty
    *  instance the chart's top-right "Estimated APR" displays. Lifted to the
-   *  parent observer so the value flows in as a prop and updates here as
+   *  parent so the value flows in as a prop and updates here as
    *  soon as the chart's value updates. */
   rangeApr: RatePretty | undefined;
-}> = observer(({ addLiquidityConfig, rangeApr }) => {
+}> = memo(({ addLiquidityConfig, rangeApr }) => {
   const { t } = useTranslation();
   const {
     allHistoricalPricesInDisplayUnits,
@@ -1407,6 +1457,7 @@ const BacktestPanel: FunctionComponent<{
 
   // The backtest's timescale is independent of the Advanced lookback slider.
   const [backtestLookbackDays, setBacktestLookbackDays] = useState(7);
+  const [nowMs] = useState(() => Date.now());
 
   const lowerPrice = rangeWithCurrencyDecimals[0];
   const upperPrice = rangeWithCurrencyDecimals[1];
@@ -1424,7 +1475,7 @@ const BacktestPanel: FunctionComponent<{
         isFallback: false,
       };
     }
-    const cutoff = Date.now() - backtestLookbackDays * 86_400_000;
+    const cutoff = nowMs - backtestLookbackDays * 86_400_000;
     let filtered = allHistoricalPricesInDisplayUnits.filter(
       (p) => p.time >= cutoff
     );
@@ -1459,6 +1510,7 @@ const BacktestPanel: FunctionComponent<{
   }, [
     allHistoricalPricesInDisplayUnits,
     backtestLookbackDays,
+    nowMs,
     lowerPrice,
     upperPrice,
     fullRange,
@@ -1624,12 +1676,12 @@ const BacktestStat: FunctionComponent<{ label: string; value: string }> = ({
 const PriceInputBox: FunctionComponent<{
   label: string;
   forPriceIndex: 0 | 1;
-  addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  addConcLiquidityConfig: AddConcentratedLiquidityConfig;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
   /** Fired on every user keystroke. Used by the parent to flip selection
    *  back to Custom when the user manually edits the high/low price. */
   onManualEdit?: () => void;
-}> = observer(
+}> = memo(
   ({
     label,
     forPriceIndex,
@@ -1655,7 +1707,7 @@ const PriceInputBox: FunctionComponent<{
         );
 
     return (
-      <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
+      <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900 md:max-w-[6.5rem]">
         <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
         {isFullRange ? (
           <div className="flex h-[41px] items-center px-2">

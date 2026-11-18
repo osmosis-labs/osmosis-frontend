@@ -1,7 +1,7 @@
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
@@ -41,23 +41,15 @@ export const TransactionSwapDetails = ({
   // create a localized formatted date - example: Jan 1, 2022, 12:00
   const formattedDate = `${formattedMonth} ${formattedDateDayYearHourMinute}`;
 
-  const [conversion, setConversion] = useState({
-    numerator: tokenIn.token,
-    denominator: tokenOut.token,
-  });
-
-  useEffect(() => {
-    setConversion({
-      numerator: tokenIn.token,
-      denominator: tokenOut.token,
-    });
-  }, [tokenIn.token, tokenOut.token, transaction.hash]);
+  // Keyed by tx hash so selecting another transaction resets the direction.
+  const [flippedForHash, setFlippedForHash] = useState<string | null>(null);
+  const isFlipped = flippedForHash === transaction.hash;
+  const conversion = isFlipped
+    ? { numerator: tokenOut.token, denominator: tokenIn.token }
+    : { numerator: tokenIn.token, denominator: tokenOut.token };
 
   const toggleConversion = () => {
-    setConversion({
-      numerator: conversion.denominator,
-      denominator: conversion.numerator,
-    });
+    setFlippedForHash(isFlipped ? null : transaction.hash);
   };
 
   const conversionRate = useMemo(() => {

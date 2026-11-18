@@ -1,11 +1,14 @@
 import type { TxSnapshot } from "@osmosis-labs/bridge";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { type DeliverTxResponse, TxStatusUnknownError } from "@osmosis-labs/tx";
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import { useStore } from "~/stores";
+import { OsmosisChainInfo } from "~/config/chain";
+import { useWallet } from "~/hooks/use-wallet";
+import { useTransferHistoryStore } from "~/stores/transfer-history-instance";
+import { checkEvmReceiptOutcome } from "~/utils/evm-rpc";
 import {
   BRIDGE_FEE_EXCEEDS_BUDGET_MESSAGE,
   BRIDGE_ROUTE_EXPIRED_MESSAGE,
@@ -72,26 +75,26 @@ export type MultiTxStepQuoteParams = Omit<
  * the resume-from-history flow (`useMultiTxResume`).
  */
 export const useMultiTxFinalStep = () => {
-  const { accountStore, transferHistoryStore } = useStore();
+  const walletApi = useWallet();
+  const { getChainWallet } = walletApi;
+  const transferHistoryStore = useTransferHistoryStore();
   const apiUtils = api.useUtils();
 
   /** Connects the wallet on the intermediate chain (chain-suggest if
    *  needed) and returns the wallet's own account address there. */
   const getIntermediateAccount = useCallback(
     async (stepChainId: string): Promise<string | undefined> => {
-      let wallet = accountStore.getWallet(stepChainId);
+      let wallet = walletApi.getChainWallet(stepChainId).wallet;
       if (!wallet?.address) {
-        const osmosisWalletName = accountStore.getWallet(
-          accountStore.osmosisChainId
-        )?.walletName;
-        await accountStore
-          .getWalletRepo(stepChainId)
-          ?.connect(osmosisWalletName);
-        wallet = accountStore.getWallet(stepChainId);
+        const osmosisWalletName = walletApi.getChainWallet(
+          OsmosisChainInfo.chainId
+        ).wallet?.walletName;
+        await walletApi.getChainWallet(stepChainId)?.connect(osmosisWalletName);
+        wallet = walletApi.getChainWallet(stepChainId).wallet;
       }
       return wallet?.address;
     },
-    [accountStore]
+    [walletApi]
   );
 
   /**
@@ -160,8 +163,7 @@ export const useMultiTxFinalStep = () => {
         // resumable and another session could sign it again.
         let broadcasted = false;
         try {
-          return await accountStore.signAndBroadcast(
-            stepChainId,
+          return await getChainWallet(stepChainId).signAndBroadcast(
             `${stepChainId}:${quoteParams.fromAsset.denom} -> ${quoteParams.toChain.chainId}:${quoteParams.toAsset.denom}`,
             transactionStep.msgs,
             "",
@@ -241,7 +243,11 @@ export const useMultiTxFinalStep = () => {
       }
       return signExclusively();
     },
-    [accountStore, apiUtils, transferHistoryStore]
+    [
+      apiUtils.bridgeTransfer.getTransactionStepByBridge,
+      getChainWallet,
+      transferHistoryStore,
+    ]
   );
 
   return { getIntermediateAccount, signFinalStep };
@@ -253,7 +259,7 @@ export const useMultiTxFinalStep = () => {
  * chain, connects the wallet there, and signs the final step.
  */
 export const useMultiTxResume = () => {
-  const { transferHistoryStore } = useStore();
+  const transferHistoryStore = useTransferHistoryStore();
   const { getIntermediateAccount, signFinalStep } = useMultiTxFinalStep();
   const [resumingTxHashes, setResumingTxHashes] = useState<ReadonlySet<string>>(
     new Set()
@@ -327,6 +333,24 @@ export const useMultiTxResume = () => {
           }
         }
 
+        // An EVM first step may have reverted, which Skip never reports as
+        // failed: prove it from the receipt. Without a receipt (not mined
+        // yet, or the RPC didn't answer) its inclusion stays unproven.
+        if (snapshot.fromChain.chainType === "evm") {
+          const priorStepReceipt = await checkEvmReceiptOutcome({
+            txHash: pendingStep.priorStepTxHash,
+            chainId: snapshot.fromChain.chainId,
+          });
+          if (priorStepReceipt === "reverted") {
+            transferHistoryStore.receiveNewTxStatus(
+              snapshot.sendTxHash,
+              "failed",
+              undefined
+            );
+            return;
+          }
+        }
+
         const arrival = await waitForSkipStepArrival({
           chainId: String(snapshot.fromChain.chainId),
           txHash: pendingStep.priorStepTxHash,
@@ -337,9 +361,11 @@ export const useMultiTxResume = () => {
           // haven't arrived yet as soon as the first check says so, not
           // only after the whole budget is spent
           onWaiting: stillInTransitToast,
-          // Skip abandoning a landed Solana burn is a tracking timeout, not
-          // proof the funds are gone: keep the entry resumable.
-          abandonedIsFailed: !priorStepOnSolana,
+          // Skip abandoning a landed Solana or EVM burn is a tracking
+          // timeout, not proof the funds are gone: keep the entry resumable.
+          // A reverted EVM burn was already marked failed above.
+          abandonedIsFailed:
+            !priorStepOnSolana && snapshot.fromChain.chainType !== "evm",
         });
         if (arrival === "failed") {
           transferHistoryStore.receiveNewTxStatus(
@@ -445,6 +471,9 @@ export const useMultiTxResume = () => {
         });
       } catch (e) {
         console.error("Failed to resume multi-tx transfer", e);
+        // Accepted, with the entry advanced at broadcast: the tx client
+        // already showed the status-unknown toast.
+        if (e instanceof TxStatusUnknownError) return;
         // Named failures get specific recovery copy (route expired, fee
         // shortfall); everything else falls back to the generic error.
         displayToast(

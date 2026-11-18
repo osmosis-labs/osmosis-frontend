@@ -24,19 +24,24 @@ const QRCodeLoader = () => (
 
 type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
 
-export const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
-  wallet,
-}) => {
+export const QRCodeView: FunctionComponent<{
+  wallet?: ChainWalletBase;
+  /**
+   * QR state and message mirrored into React state by the modal. cosmos-kit
+   * mutates `wallet.qrUrl` in place, so reading them from the handle would not
+   * re-render this view once the wallet handle is memoized.
+   */
+  qrState: State;
+  qrMessage: string;
+}> = ({ wallet, qrState, qrMessage }) => {
   const { t } = useTranslation();
 
   const qrUrl = wallet?.qrUrl;
 
   const [errorTitle, errorDesc, status] = useMemo(() => {
-    const isExpired = qrUrl?.message === ExpiredError.message;
+    const isExpired = qrMessage === ExpiredError.message;
 
-    const errorDesc = isExpired
-      ? t("walletSelect.clickToRefresh")
-      : qrUrl?.message;
+    const errorDesc = isExpired ? t("walletSelect.clickToRefresh") : qrMessage;
     const errorTitle = isExpired
       ? t("walletSelect.qrCodeExpired")
       : t("walletSelect.qrCodeError");
@@ -48,8 +53,8 @@ export const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
       [State.Init]: undefined,
     };
 
-    return [errorTitle, errorDesc, statusDict[qrUrl?.state ?? State.Init]];
-  }, [qrUrl?.message, qrUrl?.state, t]);
+    return [errorTitle, errorDesc, statusDict[qrState]];
+  }, [qrMessage, qrState, t]);
 
   const downloadLink = wallet?.walletInfo.downloads?.find(
     ({ os }) => !os

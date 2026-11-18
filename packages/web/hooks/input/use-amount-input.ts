@@ -1,48 +1,84 @@
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import {
+  AmountTooSmallError,
   EmptyAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
-} from "@osmosis-labs/keplr-hooks";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+} from "@osmosis-labs/utils";
 import {
   InsufficientBalanceError,
   InsufficientBalanceForFeeError,
-} from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
-import { isNil, isValidNumericalRawInput } from "@osmosis-labs/utils";
+  isNil,
+  isValidNumericalRawInput,
+  normalizeDecimalSeparator,
+} from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
+
+/** Drops digits past `decimals` fractional places, so an amount never has
+ *  more precision than the asset's base unit. Expects an already valid raw
+ *  numerical input. */
+function truncateToDecimals(input: string, decimals: number): string {
+  const dotIndex = input.indexOf(".");
+  if (dotIndex === -1) return input;
+  const fractionLength = input.length - dotIndex - 1;
+  if (fractionLength <= decimals) return input;
+  // a 0-decimal asset has no fractional part, so the dot goes too
+  return decimals === 0
+    ? input.slice(0, dotIndex)
+    : input.slice(0, dotIndex + 1 + decimals);
+}
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user’s currency balance as input. Includes support for debounce on input.
  *  If provided a gas amount and it is the same as the input currency,
  *  the gas fee will be subtracted if the user is inputting the max amount.
+ *  `balanceOverride` replaces the wallet balance (e.g. a staked amount).
  */
 export function useAmountInput({
   currency,
   inputDebounceMs = 200,
   gasAmount,
+  balanceOverride,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
   gasAmount?: CoinPretty;
+  balanceOverride?: {
+    /** Base units; undefined while loading. */
+    amount: string | undefined;
+    isFetched: boolean;
+  };
 }) {
   // query user balance for currency
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { data: balances, isFetched: isBalancesFetched } =
+  const { address } = useWallet();
+  const { data: walletBalances, isFetched: isWalletBalancesFetched } =
     api.local.balances.getUserBalances.useQuery(
       {
-        bech32Address: account?.address ?? "",
+        bech32Address: address ?? "",
       },
-      { enabled: Boolean(account?.address) }
+      { enabled: Boolean(address) && !balanceOverride }
     );
+  const isBalancesFetched = balanceOverride
+    ? balanceOverride.isFetched
+    : isWalletBalancesFetched;
+  const overrideAmount = balanceOverride?.amount;
+  const overrideBalances = useMemo(
+    () => [{ denom: currency?.coinMinimalDenom, amount: overrideAmount }],
+    [currency?.coinMinimalDenom, overrideAmount]
+  );
+  const balances = balanceOverride
+    ? balanceOverride.isFetched
+      ? overrideBalances
+      : undefined
+    : walletBalances;
   const rawCurrencyBalance = balances?.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
@@ -53,7 +89,9 @@ export function useAmountInput({
 
   const setAmount = useCallback(
     (amount: string) => {
-      let updatedAmount = amount.trim();
+      const normalizedAmount = normalizeDecimalSeparator(amount.trim());
+      if (normalizedAmount === null) return;
+      let updatedAmount = normalizedAmount;
       if (updatedAmount.startsWith(".")) {
         updatedAmount = "0" + updatedAmount;
       }
@@ -61,20 +99,43 @@ export function useAmountInput({
       // check validity of raw input
       if (!isValidNumericalRawInput(updatedAmount)) return;
 
+      // Any input is cut to the asset's decimals: a digit typed at the end
+      // past the limit is ignored, and an insertion drops the last digit.
+      if (currency) {
+        updatedAmount = truncateToDecimals(
+          updatedAmount,
+          currency.coinDecimals
+        );
+      }
+
       if (fraction != null) {
         setFraction(null);
       }
 
       setAmount_(updatedAmount);
     },
-    [fraction]
+    [fraction, currency]
   );
 
   // clear fraction when user changes currency
   // and user has no balance
-  useEffect(() => {
+  const [prevBalanceInputs, setPrevBalanceInputs] = useState({
+    isBalancesFetched,
+    rawCurrencyBalance,
+    currencyDenom: currency?.coinMinimalDenom,
+  });
+  if (
+    prevBalanceInputs.isBalancesFetched !== isBalancesFetched ||
+    prevBalanceInputs.rawCurrencyBalance !== rawCurrencyBalance ||
+    prevBalanceInputs.currencyDenom !== currency?.coinMinimalDenom
+  ) {
+    setPrevBalanceInputs({
+      isBalancesFetched,
+      rawCurrencyBalance,
+      currencyDenom: currency?.coinMinimalDenom,
+    });
     if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
-  }, [isBalancesFetched, rawCurrencyBalance, currency]);
+  }
 
   const balance = useMemo(
     () =>
@@ -196,6 +257,17 @@ export function useAmountInput({
 
   const error = useMemo(() => {
     if (!amount) {
+      // a non-zero input that truncates to zero base units (e.g. the asset
+      // changed to one with fewer decimals) is not an empty input
+      if (
+        currency &&
+        fraction == null &&
+        inputAmount !== "" &&
+        isValidNumericalRawInput(inputAmount) &&
+        new Dec(inputAmount === "." ? "0" : inputAmount).isPositive()
+      ) {
+        return new AmountTooSmallError("Amount too small");
+      }
       return new EmptyAmountError("Empty amount");
     }
     if (!isValidNumericalRawInput(inputAmount)) {
@@ -213,7 +285,15 @@ export function useAmountInput({
     ) {
       return new InsufficientBalanceForFeeError("Insufficient balance for fee");
     }
-  }, [amount, inputAmount, isBalancesFetched, balance, maxAmountWithGas]);
+  }, [
+    amount,
+    currency,
+    fraction,
+    inputAmount,
+    isBalancesFetched,
+    balance,
+    maxAmountWithGas,
+  ]);
 
   const reset = useCallback(() => {
     setAmount("");

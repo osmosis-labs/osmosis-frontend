@@ -1,10 +1,10 @@
+import { Pool } from "@osmosis-labs/server";
 import {
   CONCENTRATED_LIQ_POOL_TYPE,
   COSMWASM_POOL_TYPE,
-  Pool,
   STABLE_POOL_TYPE,
   WEIGHTED_POOL_TYPE,
-} from "@osmosis-labs/server";
+} from "@osmosis-labs/types";
 
 import { toLegacyPoolResponse } from "~/server/api/legacy-pool-response";
 

@@ -1,10 +1,7 @@
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { renderHook } from "@testing-library/react";
 
-import {
-  DUST_THRESHOLD,
-  useUserSettingsStore,
-} from "../../../stores/user-settings-store";
+import { useUserSettingsStore } from "../../../stores/user-settings-store";
 import { useHideDustUserSetting } from "../use-hide-dust-filter";
 
 // Helper to create PricePretty values
@@ -99,10 +96,5 @@ describe("useHideDustUserSetting", () => {
     // Now only items above threshold should be present
     expect(result.current).toHaveLength(1);
     expect(result.current[0].id).toBe(2);
-  });
-
-  it("should use DUST_THRESHOLD constant", () => {
-    // Verify the threshold is 0.02 as expected
-    expect(Number(DUST_THRESHOLD.toString())).toBe(0.02);
   });
 });

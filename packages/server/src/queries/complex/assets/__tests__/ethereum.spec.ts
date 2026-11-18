@@ -1,5 +1,10 @@
 import { NativeEVMTokenConstantAddress } from "@osmosis-labs/utils";
-import { createPublicClient } from "viem";
+import {
+  BaseError,
+  ContractFunctionRevertedError,
+  ContractFunctionZeroDataError,
+  createPublicClient,
+} from "viem";
 
 import { getEvmBalance } from "../ethereum";
 
@@ -102,6 +107,58 @@ describe("getEvmBalance", () => {
     expect(erc20Balance).toEqual(BigInt(100));
     expect(createPublicClient).toHaveBeenCalledTimes(2);
     expect(mockClientFail.readContract).toHaveBeenCalledTimes(1);
+    expect(mockClientSuccess.readContract).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns zero without trying other RPCs when the token has no contract", async () => {
+    // viem's readContract wraps the zero-data answer in an execution error
+    const noContract = new BaseError("balanceOf failed", {
+      cause: new ContractFunctionZeroDataError({ functionName: "balanceOf" }),
+    });
+    const mockClient = {
+      getBalance: jest.fn(),
+      readContract: jest.fn().mockRejectedValue(noContract),
+    };
+    (createPublicClient as jest.Mock).mockReturnValue(mockClient);
+
+    const balance = await getEvmBalance({
+      address: "0xTokenAddress",
+      userAddress: "0x123",
+      chainId: 1,
+    });
+
+    expect(balance).toEqual(BigInt(0));
+    expect(mockClient.readContract).toHaveBeenCalledTimes(1);
+  });
+
+  it("tries the next RPC when one answers with a -32603 internal error", async () => {
+    // viem reports -32603 ("header not found", backend timeouts) as a revert
+    const internalError = new BaseError("balanceOf failed", {
+      cause: new ContractFunctionRevertedError({
+        abi: [],
+        functionName: "balanceOf",
+        message: "header not found",
+      }),
+    });
+    const mockClientFail = {
+      getBalance: jest.fn(),
+      readContract: jest.fn().mockRejectedValue(internalError),
+    };
+    const mockClientSuccess = {
+      getBalance: jest.fn(),
+      readContract: jest.fn().mockResolvedValue(BigInt(1_000_000)),
+    };
+    (createPublicClient as jest.Mock)
+      .mockReturnValueOnce(mockClientFail)
+      .mockReturnValueOnce(mockClientSuccess);
+
+    const balance = await getEvmBalance({
+      address: "0xTokenAddress",
+      userAddress: "0x123",
+      chainId: 1,
+    });
+
+    expect(balance).toEqual(BigInt(1_000_000));
     expect(mockClientSuccess.readContract).toHaveBeenCalledTimes(1);
   });
 

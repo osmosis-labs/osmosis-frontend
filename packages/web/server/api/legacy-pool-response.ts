@@ -1,11 +1,11 @@
+import { Pool } from "@osmosis-labs/server";
+import type { PoolRawResponse } from "@osmosis-labs/types";
 import {
   CONCENTRATED_LIQ_POOL_TYPE,
   COSMWASM_POOL_TYPE,
-  Pool,
-  PoolRawResponse,
   STABLE_POOL_TYPE,
   WEIGHTED_POOL_TYPE,
-} from "@osmosis-labs/server";
+} from "@osmosis-labs/types";
 
 const typeUrls: Partial<Record<Pool["type"], string>> = {
   weighted: WEIGHTED_POOL_TYPE,

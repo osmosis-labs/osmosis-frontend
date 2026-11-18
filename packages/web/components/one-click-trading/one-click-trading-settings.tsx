@@ -1,15 +1,17 @@
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import { noop, runIfFn } from "@osmosis-labs/utils";
+import {
+  InsufficientBalanceForFeeError,
+  noop,
+  runIfFn,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import React, {
   Dispatch,
   FunctionComponent,
   SetStateAction,
-  useEffect,
   useState,
 } from "react";
 import { useAsync } from "react-use";
@@ -25,6 +27,7 @@ import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-l
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, buttonVariants, GoBackButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
+import { OsmosisChainInfo } from "~/config/chain";
 import {
   OneClickTradingParamsChanges,
   useDisclosure,
@@ -33,8 +36,8 @@ import {
 } from "~/hooks";
 import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-swap-review";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
+import { useWalletPrompt } from "~/hooks/use-wallet-prompt";
 import { ModalBase, ModalCloseButton } from "~/modals";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 type Classes = "root";
@@ -141,6 +144,18 @@ export const OneClickTradingSettings = ({
   setExternalChanges,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
+  const walletPrompt = useWalletPrompt({
+    isLoading: !!isSendingTx || !!isEndingSession,
+  });
+  const walletPromptCancel = walletPrompt.onCancel && (
+    <Button
+      mode="secondary"
+      className="w-fit text-h6 font-h6"
+      onClick={walletPrompt.onCancel}
+    >
+      {t("limitOrders.cancel")}
+    </Button>
+  );
 
   const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
 
@@ -148,8 +163,6 @@ export const OneClickTradingSettings = ({
     useState<OneClickTradingParamsChanges>([]);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
-
-  const { chainStore } = useStore();
 
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
@@ -178,7 +191,7 @@ export const OneClickTradingSettings = ({
     error: estimateRemoveTxError,
   } = useEstimateTxFees({
     messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
-    chainId: chainStore.osmosis.chainId,
+    chainId: OsmosisChainInfo.chainId,
     enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
   });
 
@@ -193,12 +206,12 @@ export const OneClickTradingSettings = ({
   const hasInsufficientFeeTokensForRemove =
     estimateRemoveTxError instanceof InsufficientBalanceForFeeError;
 
-  useEffect(() => {
-    if (!transaction1CTParams || initialTransaction1CTParams) return;
+  // Snapshot the first params to arrive; runs once since the snapshot is then set.
+  if (transaction1CTParams && !initialTransaction1CTParams) {
     setInitialTransaction1CTParams(transaction1CTParams);
     setChanges(externalChanges);
     setInitialChanges(externalChanges);
-  }, [externalChanges, initialTransaction1CTParams, transaction1CTParams]);
+  }
 
   const {
     isOpen: isDiscardDialogOpen,
@@ -256,11 +269,11 @@ export const OneClickTradingSettings = ({
 
   const remainingSpendLimit =
     initialTransaction1CTParams?.spendLimit && amountSpentData?.amountSpent
-      ? `${formatSpendLimit(
+      ? formatSpendLimit(
           initialTransaction1CTParams.spendLimit.sub(
             amountSpentData.amountSpent
           )
-        )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
+        )
       : undefined;
 
   const changesWithoutIsEnabled = changes.filter((c) => c !== "isEnabled");
@@ -393,9 +406,16 @@ export const OneClickTradingSettings = ({
                       content={
                         <div className="flex items-center gap-3">
                           {hasExistingSession && isEndingSession && (
-                            <p className="text-wosmongton-200">
-                              {t("oneClickTrading.settings.endingSession")}
-                            </p>
+                            <div className="flex flex-col items-end">
+                              <p className="text-wosmongton-200">
+                                {t("oneClickTrading.settings.endingSession")}
+                              </p>
+                              {walletPrompt.isOnPhone && (
+                                <p className="caption text-osmoverse-300">
+                                  {t("signInMobileWallet")}
+                                </p>
+                              )}
+                            </div>
                           )}
                           {(isLoading || isEndingSession) && (
                             <Spinner className="text-wosmongton-200" />
@@ -437,11 +457,14 @@ export const OneClickTradingSettings = ({
                           {remainingSpendLimit &&
                           isOneClickTradingEnabled &&
                           !changes.includes("spendLimit")
-                            ? remainingSpendLimit
-                            : formatSpendLimit(
-                                transaction1CTParams?.spendLimit
-                              )}{" "}
-                          {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
+                            ? t("oneClickTrading.spendLimitLeftToday", {
+                                amount: remainingSpendLimit,
+                              })
+                            : t("oneClickTrading.spendLimitPerDay", {
+                                amount: `${formatSpendLimit(
+                                  transaction1CTParams?.spendLimit
+                                )} ${transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}`,
+                              })}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -494,31 +517,35 @@ export const OneClickTradingSettings = ({
                   hasExistingSession &&
                   changes.filter((c) => c !== "isEnabled").length > 0 &&
                   (!isSendingTx || !isEndingSession) && (
-                    <div className="px-8">
+                    <div className="flex gap-3 px-8">
                       <Button
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
+                        loadingText={walletPrompt.label}
                         disabled={hasInsufficientFeeTokensForRemove}
                       >
                         {hasInsufficientFeeTokensForRemove
                           ? t("errors.insufficientFeeTokens.buttonLabel")
                           : t("oneClickTrading.settings.editSessionButton")}
                       </Button>
+                      {walletPromptCancel}
                     </div>
                   )}
 
                 {standalone &&
                   !hasExistingSession &&
                   transaction1CTParams?.isOneClickEnabled && (
-                    <div className="px-8">
+                    <div className="flex gap-3 px-8">
                       <Button
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
+                        loadingText={walletPrompt.label}
                       >
                         {t("oneClickTrading.settings.startButton")}
                       </Button>
+                      {walletPromptCancel}
                     </div>
                   )}
 
@@ -566,8 +593,10 @@ export const OneClickTradingSettings = ({
                   transaction1CTParams={transaction1CTParams!}
                   setTransaction1CTParams={setTransaction1CTParams}
                   subtitle={
-                    isOneClickTradingEnabled
-                      ? `${remainingSpendLimit} ${t("remaining")}`
+                    isOneClickTradingEnabled && remainingSpendLimit
+                      ? t("oneClickTrading.spendLimitLeftToday", {
+                          amount: remainingSpendLimit,
+                        })
                       : undefined
                   }
                 />

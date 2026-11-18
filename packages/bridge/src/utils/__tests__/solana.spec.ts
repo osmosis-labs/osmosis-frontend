@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies -- msw is a workspace-root dev dependency, as in the other bridge specs
+// eslint-disable-next-line import-compat/no-extraneous-dependencies -- msw is a workspace-root dev dependency, as in the other bridge specs
 import { http, HttpResponse } from "msw";
 
 import { server } from "../../__tests__/msw";

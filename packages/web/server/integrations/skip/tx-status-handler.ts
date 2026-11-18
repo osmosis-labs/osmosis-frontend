@@ -1,5 +1,4 @@
 import { BridgeEnvironment, SkipApiClient } from "@osmosis-labs/bridge";
-import { NextApiRequest, NextApiResponse } from "next";
 
 /** API route that calls Skip on the server, where `SKIP_API_KEY` is available. */
 export function createSkipTxHandler(
@@ -8,27 +7,30 @@ export function createSkipTxHandler(
     params: { chainID: string; txHash: string }
   ) => Promise<unknown>
 ) {
-  return async (req: NextApiRequest, res: NextApiResponse) => {
-    const { chainID, txHash, env } = req.query as {
-      chainID: string;
-      txHash: string;
-      env: BridgeEnvironment;
-    };
+  return async (req: Request) => {
+    const searchParams = new URL(req.url).searchParams;
+    const chainID = searchParams.get("chainID");
+    const txHash = searchParams.get("txHash");
+    const env = searchParams.get("env") as BridgeEnvironment | null;
 
     if (!chainID || !txHash || !env) {
-      return res
-        .status(400)
-        .json({ error: "Missing required query parameters" });
+      return Response.json(
+        { error: "Missing required query parameters" },
+        { status: 400 }
+      );
     }
 
     try {
       const result = await query(new SkipApiClient(env), { chainID, txHash });
-      return res.status(200).json(result);
+      return Response.json(result);
     } catch (error) {
       if (error instanceof Error) {
-        return res.status(500).json({ error: error.message });
+        return Response.json({ error: error.message }, { status: 500 });
       }
-      return res.status(500).json({ error: "An unknown error occurred" });
+      return Response.json(
+        { error: "An unknown error occurred" },
+        { status: 500 }
+      );
     }
   };
 }

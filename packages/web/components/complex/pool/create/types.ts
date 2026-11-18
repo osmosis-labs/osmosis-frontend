@@ -1,9 +1,8 @@
-import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
-
 import { CustomClasses } from "~/components/types";
+import type { CreatePoolConfig } from "~/hooks/ui-config/use-create-pool-config";
 
 export interface StepProps extends CustomClasses {
-  createPoolConfig: ObservableCreatePoolConfig;
+  createPoolConfig: CreatePoolConfig;
   isSendingMsg?: boolean;
   advanceStep: () => void;
 }

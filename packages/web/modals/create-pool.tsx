@@ -1,6 +1,4 @@
-import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
 
 import {
@@ -10,17 +8,18 @@ import {
   Step3Confirm,
 } from "~/components/complex";
 import { CreateCLPool } from "~/components/complex/pool/create/cl-pool";
+import type { CreatePoolConfig } from "~/hooks/ui-config/use-create-pool-config";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 export const CreatePoolModal: FunctionComponent<
   ModalBaseProps & {
-    createPoolConfig: ObservableCreatePoolConfig;
+    createPoolConfig: CreatePoolConfig;
     isSendingMsg?: boolean;
     onCreatePool: () => void;
     /** Invoked when the duplicate-pool callout's "Provide liquidity instead" CTA is clicked. */
     onUseExistingPool?: (poolId: string) => void;
   }
-> = observer((props) => {
+> = (props) => {
   const {
     createPoolConfig: config,
     isSendingMsg,
@@ -119,4 +118,4 @@ export const CreatePoolModal: FunctionComponent<
       )}
     </ModalBase>
   );
-});
+};

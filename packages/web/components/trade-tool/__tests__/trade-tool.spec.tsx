@@ -32,10 +32,8 @@ jest.mock("~/hooks", () => ({
   useFeatureFlags: () => mockFlags,
 }));
 
-jest.mock("~/stores", () => ({
-  useStore: () => ({
-    accountStore: { osmosisChainId: "osmosis-1", getWallet: () => undefined },
-  }),
+jest.mock("~/hooks/use-wallet", () => ({
+  useWallet: () => ({ isWalletConnected: false }),
 }));
 
 jest.mock("~/components/assets", () => ({ Icon: () => null }));

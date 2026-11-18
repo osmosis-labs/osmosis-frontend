@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf .next",
-    "test": "npx playwright test",
+    "clean": "rm -rf node_modules; rm -rf playwright-report test-results",
+    "test:playwright": "npx playwright test",
+    "test:tooling": "playwright test tooling.spec.ts",
+    "typecheck": "tsc --noEmit",
     "setup": "yarn install && npx playwright install --with-deps chromium",
     "check-balances": "npx tsx scripts/check-balances.ts",
     "migrate-funds": "npx tsx scripts/migrate-funds.ts",
@@ -13,9 +15,8 @@
     "report-fleet-balances": "npx tsx scripts/report-fleet-balances.ts"
   },
   "dependencies": {
-    "@actions/core": "1.11.1",
     "@playwright/test": "1.63.0",
-    "decompress": "4.2.1"
+    "@xhmikosr/decompress": "11.1.4"
   },
   "devDependencies": {
     "@cosmjs/cosmwasm-stargate": "0.36.2",
@@ -25,6 +26,6 @@
     "bignumber.js": "9.1.2",
     "dotenv": "17.2.1",
     "tsx": "^4.22.4",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   }
 }

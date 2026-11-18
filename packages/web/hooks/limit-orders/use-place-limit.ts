@@ -1,27 +1,36 @@
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import type { TxFeMemoFlags } from "@osmosis-labs/tx";
 import {
   makeExecuteCosmwasmContractMsg,
   QuoteDirection,
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  isValidNumericalRawInput,
+  normalizeDecimalSeparator,
+} from "@osmosis-labs/utils";
+import { useCallback, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
-import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import {
+  onAdd1CTSession,
+  update1CTSessionAfterTrade,
+} from "~/hooks/mutations/one-click-trading";
 import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { use1CTSwapReviewMessages } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useSwap, useSwapAssets } from "~/hooks/use-swap";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { getQuotePegStatus } from "~/utils/limit-quote-peg";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
@@ -67,7 +76,7 @@ export const usePlaceLimit = ({
 }: UsePlaceLimitParams) => {
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
   const {
     makerFee,
     isMakerFeeLoading,
@@ -108,7 +117,11 @@ export const usePlaceLimit = ({
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const account = accountStore.getWallet(osmosisChainId);
+  const {
+    wallet: account,
+    address,
+    signAndBroadcast,
+  } = useWallet(osmosisChainId);
 
   // TODO: Readd this once orderbooks support non-stablecoin pairs
   // const { price: quoteAssetPrice } = usePrice({
@@ -118,6 +131,30 @@ export const usePlaceLimit = ({
     () => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1)),
     []
   );
+
+  // Order pricing above still assumes 1 quote = $1. These only check that
+  // assumption, so a quote trading off its peg is warned about or blocked.
+  const isQuotePegChecked = !!quoteAsset && !isMarket;
+  // `isFetchedAfterMount` rather than `isLoading`: react-query resets a failed
+  // query to pending on each refetch, which would make the status flicker, and
+  // a price restored from the persisted cache must not count until refetched.
+  const {
+    data: quoteOnchainPrice,
+    isFetchedAfterMount: isQuoteOnchainPriceFetched,
+    isError: isQuoteOnchainPriceError,
+  } = api.edge.assets.getAssetPrice.useQuery(
+    { coinMinimalDenom: quoteAsset?.coinMinimalDenom ?? "" },
+    { enabled: isQuotePegChecked, refetchInterval: 30_000 }
+  );
+  // A failed refetch keeps the last price: treat it as unknown, not current.
+  const quotePrice = isQuoteOnchainPriceError
+    ? undefined
+    : quoteOnchainPrice?.toDec();
+  /** Undefined for market orders and while the onchain price loads. */
+  const quotePegStatus =
+    isQuotePegChecked && isQuoteOnchainPriceFetched
+      ? getQuotePegStatus(quotePrice)
+      : undefined;
 
   const { price: baseAssetPrice } = usePrice({
     coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
@@ -211,6 +248,27 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.fiatValue,
   ]);
 
+  /**
+   * Display-only fiat value of the payment at the current spot price, so the
+   * review shows what an ask gives up when its limit is below market.
+   * Fees, the minimum order check and the expected output still use `paymentFiatValue`.
+   */
+  const paymentFiatValueAtMarket = useMemo(() => {
+    if (isMarket || orderDirection !== "ask") return paymentFiatValue;
+    if (!priceState.spotPrice) return;
+    return mulPrice(
+      paymentTokenValue,
+      new PricePretty(DEFAULT_VS_CURRENCY, priceState.spotPrice),
+      DEFAULT_VS_CURRENCY
+    );
+  }, [
+    isMarket,
+    orderDirection,
+    paymentFiatValue,
+    paymentTokenValue,
+    priceState.spotPrice,
+  ]);
+
   const feeUsdValue = useMemo(() => {
     return (
       paymentFiatValue?.mul(makerFee) ??
@@ -262,7 +320,7 @@ export const usePlaceLimit = ({
 
     return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
-      sender: account?.address ?? "",
+      sender: address ?? "",
       msg: placeLimitMsg,
       funds: [
         {
@@ -271,12 +329,7 @@ export const usePlaceLimit = ({
         },
       ],
     });
-  }, [
-    account?.address,
-    orderbookContractAddress,
-    paymentTokenValue,
-    placeLimitMsg,
-  ]);
+  }, [address, orderbookContractAddress, paymentTokenValue, placeLimitMsg]);
 
   const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
     use1CTSwapReviewMessages();
@@ -287,12 +340,12 @@ export const usePlaceLimit = ({
    */
   const { value: isLedger } = useAsync(async () => {
     const result = await account?.client?.getAccount?.(
-      accountStore.osmosisChainId
+      OsmosisChainInfo.chainId
     );
     return result?.isNanoLedger ?? true;
-    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
+    // Refresh account metadata when the address changes, even if the wallet instance is unchanged.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, account?.address, accountStore.osmosisChainId]);
+  }, [account, address]);
 
   const limitMessages = useMemo(() => {
     if (isLedger) {
@@ -304,184 +357,197 @@ export const usePlaceLimit = ({
       : [];
   }, [encodedMsg, isLedger, isMarket, oneClickMessages?.msgs]);
 
-  const placeLimit = useCallback(async () => {
-    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
-    if (quantity === "0") {
-      return;
-    }
-
-    if (isMarket) {
-      try {
-        await marketState.sendTradeTokenInTx();
-      } catch (error) {
-        console.error("swap failed", error);
-      } finally {
+  /**
+   * `memoFlags` carries the figures the user acknowledged in the review-order
+   * modal (MTN-137 / MTN-150) into the tx auth memo. Absent for an unwarned
+   * order.
+   */
+  const placeLimit = useCallback(
+    async (memoFlags?: TxFeMemoFlags) => {
+      const quantity = paymentTokenValue?.toCoin().amount ?? "0";
+      if (quantity === "0") {
         return;
       }
-    }
 
-    if (!limitMessages || limitMessages.length === 0) return;
+      if (isMarket) {
+        try {
+          // A market-type "limit" order is a swap, so the swap hook's own
+          // stamping covers it.
+          await marketState.sendTradeTokenInTx(memoFlags);
+        } catch (error) {
+          console.error("swap failed", error);
+        } finally {
+          return;
+        }
+      }
 
-    try {
-      /**
-       * If it's ledger and we have one-click messages, we need to add a 1CT session
-       * before broadcasting the transaction as there is a payload limit on ledger
-       */
-      if (
-        isLedger &&
-        oneClickMessages &&
-        oneClickMessages.msgs &&
-        shouldSend1CTTx
-      ) {
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "Add 1CT session",
-          oneClickMessages.msgs,
-          undefined,
-          undefined,
-          undefined,
-          async (tx) => {
-            const { code } = tx;
-            if (code) {
-              throw new Error("Failed to send swap exact amount in message");
-            } else {
-              if (
-                oneClickMessages &&
-                oneClickMessages.type === "create-1ct-session"
-              ) {
-                await onAdd1CTSession({
-                  privateKey: oneClickMessages.key,
-                  tx,
-                  userOsmoAddress: account?.address ?? "",
-                  fallbackGetAuthenticatorId:
-                    apiUtils.local.oneClickTrading.getSessionAuthenticator
-                      .fetch,
-                  accountStore,
-                  allowedMessages: oneClickMessages.allowedMessages,
-                  sessionPeriod: oneClickMessages.sessionPeriod,
-                  spendLimitTokenDecimals:
-                    oneClickMessages.spendLimitTokenDecimals,
-                  transaction1CTParams: oneClickMessages.transaction1CTParams,
-                  allowedAmount: oneClickMessages.allowedAmount,
-                  t,
-                });
-              } else if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "remove-1ct-session"
-              ) {
-                await onEnd1CTSession({
-                  accountStore,
-                  authenticatorId: oneClickMessages.authenticatorId,
-                });
+      if (!limitMessages || limitMessages.length === 0) return;
+      if (quotePegStatus === "block") return;
+
+      try {
+        /**
+         * If it's ledger and we have one-click messages, we need to add a 1CT session
+         * before broadcasting the transaction as there is a payload limit on ledger
+         */
+        if (
+          isLedger &&
+          oneClickMessages &&
+          oneClickMessages.msgs &&
+          shouldSend1CTTx
+        ) {
+          await signAndBroadcast(
+            "Add 1CT session",
+            oneClickMessages.msgs,
+            undefined,
+            undefined,
+            undefined,
+            async (tx) => {
+              const { code } = tx;
+              if (code) {
+                throw new Error("Failed to send swap exact amount in message");
+              } else {
+                if (
+                  oneClickMessages &&
+                  oneClickMessages.type === "create-1ct-session"
+                ) {
+                  await onAdd1CTSession({
+                    privateKey: oneClickMessages.key,
+                    tx,
+                    userOsmoAddress: account?.address ?? "",
+                    fallbackGetAuthenticatorId:
+                      apiUtils.local.oneClickTrading.getSessionAuthenticator
+                        .fetch,
+                    walletApi,
+                    allowedMessages: oneClickMessages.allowedMessages,
+                    sessionPeriod: oneClickMessages.sessionPeriod,
+                    spendLimitTokenDecimals:
+                      oneClickMessages.spendLimitTokenDecimals,
+                    transaction1CTParams: oneClickMessages.transaction1CTParams,
+                    allowedAmount: oneClickMessages.allowedAmount,
+                    t,
+                  });
+                } else if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "remove-1ct-session"
+                ) {
+                  await onEnd1CTSession({
+                    walletApi,
+                    authenticatorId: oneClickMessages.authenticatorId,
+                  });
+                }
               }
             }
-          }
-        );
+          );
 
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "executeWasm",
-          limitMessages
-        );
-      } else {
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
-          "executeWasm",
-          limitMessages,
-          "",
-          undefined,
-          undefined,
-          (tx) => {
-            if (!tx.code) {
-              if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "create-1ct-session"
-              ) {
-                onAdd1CTSession({
-                  privateKey: oneClickMessages.key,
-                  tx,
-                  userOsmoAddress: account?.address ?? "",
-                  fallbackGetAuthenticatorId:
-                    apiUtils.local.oneClickTrading.getSessionAuthenticator
-                      .fetch,
-                  accountStore,
-                  allowedMessages: oneClickMessages.allowedMessages,
-                  sessionPeriod: oneClickMessages.sessionPeriod,
-                  spendLimitTokenDecimals:
-                    oneClickMessages.spendLimitTokenDecimals,
-                  transaction1CTParams: oneClickMessages.transaction1CTParams,
-                  allowedAmount: oneClickMessages.allowedAmount,
-                  t,
-                });
-              } else if (
-                shouldSend1CTTx &&
-                oneClickMessages &&
-                oneClickMessages.type === "remove-1ct-session"
-              ) {
-                onEnd1CTSession({
-                  accountStore,
-                  authenticatorId: oneClickMessages.authenticatorId,
-                });
+          // Widened from three arguments so the ledger path can carry the memo
+          // at all — before this it had no way to record an acknowledgement.
+          await signAndBroadcast(
+            "executeWasm",
+            limitMessages,
+            undefined,
+            undefined,
+            memoFlags ? { preferNoSetMemo: true } : undefined,
+            undefined,
+            memoFlags
+          );
+        } else {
+          await signAndBroadcast(
+            "executeWasm",
+            limitMessages,
+            "",
+            undefined,
+            memoFlags ? { preferNoSetMemo: true } : undefined,
+            async (tx) => {
+              if (!tx.code) {
+                if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "create-1ct-session"
+                ) {
+                  await update1CTSessionAfterTrade(
+                    () =>
+                      onAdd1CTSession({
+                        privateKey: oneClickMessages.key,
+                        tx,
+                        userOsmoAddress: account?.address ?? "",
+                        fallbackGetAuthenticatorId:
+                          apiUtils.local.oneClickTrading.getSessionAuthenticator
+                            .fetch,
+                        walletApi,
+                        allowedMessages: oneClickMessages.allowedMessages,
+                        sessionPeriod: oneClickMessages.sessionPeriod,
+                        spendLimitTokenDecimals:
+                          oneClickMessages.spendLimitTokenDecimals,
+                        transaction1CTParams:
+                          oneClickMessages.transaction1CTParams,
+                        allowedAmount: oneClickMessages.allowedAmount,
+                        t,
+                      }),
+                    "create-1ct-session"
+                  );
+                } else if (
+                  shouldSend1CTTx &&
+                  oneClickMessages &&
+                  oneClickMessages.type === "remove-1ct-session"
+                ) {
+                  await update1CTSessionAfterTrade(
+                    () =>
+                      onEnd1CTSession({
+                        walletApi,
+                        authenticatorId: oneClickMessages.authenticatorId,
+                      }),
+                    "remove-1ct-session"
+                  );
+                }
               }
-            }
-          }
-        );
+            },
+            memoFlags
+          );
+        }
+      } catch (error) {
+        console.error("Error attempting to broadcast place limit tx", error);
       }
-    } catch (error) {
-      console.error("Error attempting to broadcast place limit tx", error);
-    }
-  }, [
-    paymentTokenValue,
-    isMarket,
-    limitMessages,
-    marketState,
-    isLedger,
-    oneClickMessages,
-    shouldSend1CTTx,
-    accountStore,
-    account?.address,
-    apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-    t,
-  ]);
+    },
+    [
+      paymentTokenValue,
+      isMarket,
+      limitMessages,
+      quotePegStatus,
+      marketState,
+      isLedger,
+      oneClickMessages,
+      shouldSend1CTTx,
+      signAndBroadcast,
+      account?.address,
+      apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+      walletApi,
+      t,
+    ]
+  );
 
-  const { data, isFetched: isBalancesFetched } =
-    api.edge.assets.getUserAssets.useQuery(
-      {
-        userOsmoAddress: account?.address ?? "",
-      },
-      {
-        enabled: !!account?.address,
-        select: ({ items }) =>
-          items.filter(
-            ({ coinMinimalDenom }) =>
-              coinMinimalDenom.toLowerCase() ===
-                baseAsset?.coinMinimalDenom?.toLowerCase() ||
-              coinMinimalDenom.toLowerCase() ===
-                quoteAsset?.coinMinimalDenom?.toLowerCase()
-          ),
-      }
+  // Read bank balances directly, as the swap tool does. The unpaginated
+  // `assets.getUserAssets` query maps every asset listing and times out.
+  const { data: balances, isFetched: isBalancesFetched } =
+    api.local.balances.getUserBalances.useQuery(
+      { bech32Address: address ?? "" },
+      { enabled: !!address }
     );
 
-  const baseTokenBalance = useMemo(
-    () =>
-      data?.find(
-        ({ coinMinimalDenom }) =>
-          coinMinimalDenom.toLowerCase() ===
-          baseAsset?.coinMinimalDenom.toLowerCase()
-      )?.amount,
-    [data, baseAsset]
-  );
-  const quoteTokenBalance = useMemo(
-    () =>
-      data?.find(
-        ({ coinMinimalDenom }) =>
-          coinMinimalDenom.toLowerCase() ===
-          quoteAsset?.coinMinimalDenom?.toLowerCase()
-      )?.amount,
-    [data, quoteAsset]
-  );
+  const baseTokenBalance = useMemo(() => {
+    if (!baseAsset || !balances) return;
+    const amount = balances.find(
+      ({ denom }) => denom === baseAsset.coinMinimalDenom
+    )?.amount;
+    return new CoinPretty(baseAsset, amount ?? 0);
+  }, [balances, baseAsset]);
+  const quoteTokenBalance = useMemo(() => {
+    if (!quoteAsset || !balances) return;
+    const amount = balances.find(
+      ({ denom }) => denom === quoteAsset.coinMinimalDenom
+    )?.amount;
+    return new CoinPretty(quoteAsset, amount ?? 0);
+  }, [balances, quoteAsset]);
 
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
@@ -536,20 +602,22 @@ export const usePlaceLimit = ({
     if (isMarket) {
       return marketState.tokenOutFiatValue;
     }
-    return orderDirection === "ask"
-      ? new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          quoteAssetPrice?.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0)) ??
-            new Dec(0)
-        )
-      : new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          priceState.price?.mul(
-            expectedTokenAmountOut?.toDec() ?? new Dec(0)
-          ) ?? new Dec(0)
-        );
+    if (orderDirection === "ask") {
+      return new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        quoteAssetPrice?.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0)) ??
+          new Dec(0)
+      );
+    }
+    // A bid's received base asset is valued at spot rather than the limit
+    // price, so the review shows the loss on a bid above market.
+    if (!priceState.spotPrice) return;
+    return new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      priceState.spotPrice.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0))
+    );
   }, [
-    priceState.price,
+    priceState.spotPrice,
     expectedTokenAmountOut,
     orderDirection,
     quoteAssetPrice,
@@ -567,6 +635,10 @@ export const usePlaceLimit = ({
   const error = useMemo(() => {
     if (!isMarket && orderbookError) {
       return orderbookError;
+    }
+
+    if (quotePegStatus === "block") {
+      return "limitOrders.quoteOffPeg";
     }
 
     if (insufficientFunds) {
@@ -605,13 +677,14 @@ export const usePlaceLimit = ({
     orderbookError,
     priceState.priceError,
     paymentFiatValue,
+    quotePegStatus,
   ]);
 
   const shouldEstimateLimitGas = useMemo(() => {
     return (
       !isMarket &&
       !!encodedMsg &&
-      !!account?.address &&
+      !!address &&
       !insufficientFunds &&
       !inAmountInput.isTyping &&
       !marketState.inAmountInput.isTyping
@@ -619,7 +692,7 @@ export const usePlaceLimit = ({
   }, [
     isMarket,
     encodedMsg,
-    account?.address,
+    address,
     insufficientFunds,
     inAmountInput.isTyping,
     marketState.inAmountInput.isTyping,
@@ -630,7 +703,7 @@ export const usePlaceLimit = ({
     isLoading: gasFeeLoading,
     error: limitGasError,
   } = useEstimateTxFees({
-    chainId: accountStore.osmosisChainId,
+    chainId: OsmosisChainInfo.chainId,
     messages: limitMessages,
     enabled: shouldEstimateLimitGas,
   });
@@ -676,6 +749,7 @@ export const usePlaceLimit = ({
     isBalancesFetched,
     insufficientFunds,
     paymentFiatValue,
+    paymentFiatValueAtMarket,
     paymentTokenValue,
     makerFee,
     isMakerFeeLoading,
@@ -684,6 +758,8 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    quotePrice,
+    quotePegStatus,
     baseAssetPrice,
     reset,
     error,
@@ -719,17 +795,32 @@ const useLimitPrice = ({
   const [priceLocked, setPriceLock] = useState(false);
 
   const {
-    data: assetPrice,
+    data: assetPriceData,
     isLoading: loadingSpotPrice,
+    isFetchedAfterMount: isSpotPriceFetched,
+    isError: isSpotPriceError,
     isRefetching: isSpotPriceRefetching,
   } = api.edge.assets.getAssetPrice.useQuery(
     {
       coinMinimalDenom: baseDenom ?? "",
     },
-    { refetchInterval: 5000, enabled: !!baseDenom && !priceLocked }
+    {
+      refetchInterval: 5000,
+      // A locked price stops polling, except while there is no usable price.
+      enabled: (query) =>
+        !!baseDenom &&
+        (!priceLocked ||
+          query.state.data === undefined ||
+          query.state.status === "error"),
+    }
   );
+  // Only a price fetched since mount and not followed by a failure is current:
+  // the persisted cache restores prices up to a day old, and a failed refetch
+  // keeps the last one.
+  const assetPrice =
+    isSpotPriceFetched && !isSpotPriceError ? assetPriceData : undefined;
 
-  const [orderPrice, setOrderPrice] = useState("0");
+  const [orderPrice, setOrderPrice] = useState("");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
 
   const minPrice = useMemo(() => {
@@ -740,20 +831,22 @@ const useLimitPrice = ({
     return new Dec(MAX_TICK_PRICE).quo(normalizationFactor ?? new Dec(1));
   }, [normalizationFactor]);
 
-  // Decimal version of the spot price, defaults to 1
+  // Decimal version of the spot price. Undefined while loading or when the
+  // base asset has no price: unknown, never a stand-in value that the presets
+  // and market checks would treat as real.
   const spotPrice = useMemo(() => {
-    return assetPrice
-      ? new Dec(
-          formatPretty(
-            assetPrice.toDec(),
-            getPriceExtendedFormatOptions(assetPrice.toDec())
-          ).replace(/,/g, "")
-        )
-      : new Dec(1);
+    if (!assetPrice) return;
+    return new Dec(
+      formatPretty(
+        assetPrice.toDec(),
+        getPriceExtendedFormatOptions(assetPrice.toDec())
+      ).replace(/,/g, "")
+    );
   }, [assetPrice]);
 
   const setPriceAsPercentageOfSpotPrice = useCallback(
     (percent: Dec, lockPrice = true, format = true) => {
+      if (!spotPrice) return;
       const percentAdjusted =
         orderDirection === "bid"
           ? // Adjust negatively for bid orders
@@ -777,12 +870,19 @@ const useLimitPrice = ({
 
   // Sets a user based order price, if nothing is input it resets the form (including percentage adjustments)
   const setManualOrderPrice = useCallback(
-    (price: string) => {
+    (rawPrice: string) => {
+      const normalizedPrice = normalizeDecimalSeparator(rawPrice);
+      if (normalizedPrice === null) return;
+      const price = normalizedPrice.startsWith(".")
+        ? "0" + normalizedPrice
+        : normalizedPrice;
       if (countDecimals(price) > 12) {
         return;
       }
 
       if (!isValidNumericalRawInput(price)) return;
+      // The price field isn't shown until there is a market price.
+      if (!spotPrice) return;
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
 
@@ -823,7 +923,10 @@ const useLimitPrice = ({
   // Adjusting the precentage also resets a user based input in order to maintain
   // a percentage related to the current spot price.
   const setManualPercentAdjustedSafe = useCallback(
-    (percentAdjusted: string) => {
+    (rawPercentAdjusted: string) => {
+      const normalized = normalizeDecimalSeparator(rawPercentAdjusted);
+      if (normalized === null) return;
+      let percentAdjusted = normalized;
       if (percentAdjusted.startsWith(".")) {
         percentAdjusted = "0" + percentAdjusted;
       }
@@ -885,6 +988,9 @@ const useLimitPrice = ({
       return new Dec(orderPrice);
     }
 
+    // Placing is blocked without a market price (see `isValidPrice`).
+    if (!spotPrice) return new Dec(0);
+
     const percent =
       manualPercentAdjusted.length > 0
         ? manualPercentAdjusted
@@ -910,13 +1016,16 @@ const useLimitPrice = ({
     () =>
       !!manualPercentAdjusted
         ? new Dec(manualPercentAdjusted).quo(new Dec(100))
-        : price.quo(spotPrice).sub(new Dec(1)),
+        : spotPrice
+          ? price.quo(spotPrice).sub(new Dec(1))
+          : new Dec(0),
     [price, spotPrice, manualPercentAdjusted]
   );
 
   // If the user is inputting a price that crosses over the spot price
   const isBeyondOppositePrice =
-    orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price);
+    !!spotPrice &&
+    (orderDirection === "ask" ? spotPrice.gt(price) : spotPrice.lt(price));
 
   const priceFiat = useMemo(() => {
     return new PricePretty(DEFAULT_VS_CURRENCY, price);
@@ -928,15 +1037,31 @@ const useLimitPrice = ({
     setPriceLock(false);
   }, []);
 
-  useEffect(() => {
+  const [prevResetKey, setPrevResetKey] = useState({
+    orderDirection,
+    baseDenom,
+  });
+  if (
+    prevResetKey.orderDirection !== orderDirection ||
+    prevResetKey.baseDenom !== baseDenom
+  ) {
+    setPrevResetKey({ orderDirection, baseDenom });
     reset();
-  }, [orderDirection, reset, baseDenom]);
+  }
 
+  // A market price is required even for a typed price: the beyond-market
+  // warning and the loss acknowledgement depend on it.
   const isValidPrice =
-    isValidInputPrice ||
-    ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice));
+    Boolean(spotPrice) &&
+    (isValidInputPrice || !orderPrice || new Dec(orderPrice).isZero());
 
   const priceError = useMemo(() => {
+    if (!spotPrice) {
+      return isSpotPriceFetched
+        ? "limitOrders.marketPriceUnavailable"
+        : undefined;
+    }
+
     if (price.lt(minPrice)) {
       return "limitOrders.priceTooLow";
     }
@@ -951,7 +1076,15 @@ const useLimitPrice = ({
     )) {
       return "limitOrders.invalidPrice";
     }
-  }, [price, minPrice, maxPrice, isValidInputPrice, orderPrice, spotPrice]);
+  }, [
+    price,
+    minPrice,
+    maxPrice,
+    isValidInputPrice,
+    orderPrice,
+    spotPrice,
+    isSpotPriceFetched,
+  ]);
 
   return {
     spotPrice,

@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
@@ -8,7 +7,7 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useUserWatchlist } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 
-export const AssetNavigation: FunctionComponent = observer(() => {
+export const AssetNavigation: FunctionComponent = () => {
   const { t } = useTranslation();
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
@@ -56,4 +55,4 @@ export const AssetNavigation: FunctionComponent = observer(() => {
       </div>
     </nav>
   );
-});
+};

@@ -1,10 +1,11 @@
 import { OrderbookPoolCodeIds } from "@osmosis-labs/server";
-import { AccountStoreNoBroadcastErrorEvent } from "@osmosis-labs/stores";
 import { getOsmosisCodec } from "@osmosis-labs/tx";
+import { AccountStoreNoBroadcastErrorEvent } from "@osmosis-labs/utils";
 import { useCallback, useState } from "react";
 
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks/language";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 /** Whether orderbook creation is supported in the current environment (code ID must be known). */
@@ -302,7 +303,7 @@ export function useCreateOrderbook({
   baseDenom: string;
   quoteDenom: string;
 }) {
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
   const { t } = useTranslation();
   const apiUtils = api.useUtils();
   const [isCreating, setIsCreating] = useState(false);
@@ -312,7 +313,7 @@ export function useCreateOrderbook({
    *  mounted, so callers need to drop a stale failure on close. */
   const resetError = useCallback(() => setError(undefined), []);
 
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address, signAndBroadcast } = walletApi;
 
   /** Keep checking, in the background, until the pair is discoverable, then
    *  refetch the client caches; see DISCOVERY_RECONCILE_MAX_MS. */
@@ -433,7 +434,7 @@ export function useCreateOrderbook({
     // the limit tab), which must never happen when nothing was broadcast.
     // They also surface the generic error so the modal never sits open with
     // a cleared spinner and no explanation.
-    if (!account?.address) {
+    if (!address) {
       setError(t("errors.uhOhSomethingWentWrong"));
       throw new Error("Cannot create an orderbook without a connected wallet");
     }
@@ -528,6 +529,17 @@ export function useCreateOrderbook({
 
         const osmosis = await getOsmosisCodec();
 
+        // Read the sender from the live wallet after the awaits above: the
+        // `address` snapshot is from the click, and an account switch since
+        // then would sign with the new key against the old sender.
+        const sender = walletApi.getChainWallet(OsmosisChainInfo.chainId).wallet
+          ?.address;
+        if (!sender || sender !== address) {
+          throw new AccountStoreNoBroadcastErrorEvent(
+            t("errors.uhOhSomethingWentWrong")
+          );
+        }
+
         const instantiateMsgBytes = new TextEncoder().encode(
           JSON.stringify({
             base_denom: baseDenom,
@@ -541,13 +553,12 @@ export function useCreateOrderbook({
             {
               codeId: BigInt(OrderbookPoolCodeIds[0]),
               instantiateMsg: instantiateMsgBytes,
-              sender: account.address,
+              sender,
             }
           ),
         };
 
-        await accountStore.signAndBroadcast(
-          accountStore.osmosisChainId,
+        await signAndBroadcast(
           "createOrderbook",
           [msg],
           undefined,
@@ -791,15 +802,16 @@ export function useCreateOrderbook({
       throw e;
     }
   }, [
-    account?.address,
+    address,
     baseDenom,
     quoteDenom,
-    accountStore,
-    apiUtils,
-    fetchBroadcastedTxOutcome,
+    t,
+    apiUtils.edge.orderbooks.verifyOrderbookCreation,
+    walletApi,
+    signAndBroadcast,
     refreshOrderbookCaches,
     settleAsAlreadyCreated,
-    t,
+    fetchBroadcastedTxOutcome,
   ]);
 
   return {
@@ -809,7 +821,7 @@ export function useCreateOrderbook({
     resetError,
     canCreate:
       IS_ORDERBOOK_CREATION_SUPPORTED &&
-      !!account?.address &&
+      !!address &&
       !!baseDenom &&
       !!quoteDenom,
   };

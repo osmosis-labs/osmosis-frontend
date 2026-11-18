@@ -27,7 +27,7 @@ export const TradeTokens: FunctionComponent<
       {...modalProps}
       isOpen={showModalBase && modalProps.isOpen}
       hideCloseButton
-      className="!w-fit max-w-[512px] overflow-x-hidden !bg-osmoverse-850 !py-0 !px-0"
+      className="!w-fit max-w-[512px] overflow-x-hidden !bg-osmoverse-850 !py-0 !px-0 sm:!mx-4 sm:!w-[calc(100%-2rem)]"
     >
       <div className="flex items-center justify-between p-4">
         <span className="px-4 text-h6">Swap</span>
@@ -38,7 +38,7 @@ export const TradeTokens: FunctionComponent<
           <Icon id="close" width={24} height={24} />
         </div>
       </div>
-      <div className="px-8 pt-0 pb-7">
+      <div className="px-8 pt-0 pb-7 sm:px-4">
         <SwapTool
           fixedWidth
           useQueryParams={false}

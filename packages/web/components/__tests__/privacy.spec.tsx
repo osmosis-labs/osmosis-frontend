@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import React from "react";
 
 import { useUserSettingsStore } from "../../stores/user-settings-store";
 import { PrivateText } from "../privacy";

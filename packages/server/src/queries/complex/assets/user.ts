@@ -18,7 +18,7 @@ import {
 } from "../staking/user";
 import {
   AssetFilter,
-  calcSumCoinsValue,
+  calcSumCoinsValueOrUnknown,
   getAsset,
   getAssetMarketActivity,
   getAssets,
@@ -81,13 +81,17 @@ export async function mapGetAssetsWithUserBalances<
 
   assets = await Promise.all(
     assets.map(async (asset) => {
+      // Liquidity is optional here, so unavailable market data must not fail the
+      // whole query (swap token selector, balances, bridge assets).
       const marketActivity = await getAssetMarketActivity({
         coinMinimalDenom: asset.coinMinimalDenom,
-      });
+      }).catch(() => undefined);
 
       return {
         ...asset,
         liquidity: marketActivity?.liquidity,
+        // only search ranking reads it; attached here to save a second lookup
+        ...(search ? { volume24h: marketActivity?.volume24h } : {}),
       };
     })
   );
@@ -167,13 +171,22 @@ export async function mapGetAssetsWithUserBalances<
   return userAssets;
 }
 
+/** True for a pool share denom (`gamm/pool/<id>`). A looser match would treat other
+ *  denoms that merely contain "gamm" (e.g. a tokenfactory denom) as shares, and a
+ *  failed pool lookup on one would make the whole total unknown. */
+function isGammShareDenom(denom: string) {
+  return /^gamm\/pool\/\d+$/.test(denom);
+}
+
 /** Returns total fiat value of all assets held by a user.
- *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.*/
+ *  Includes assets from bank module, GAMM shares and CL positions aggregated by denom.
+ *  `value` is `undefined` (unknown) when a coin that should have a price can't be priced,
+ *  or when the underlying coins of a GAMM share holding can't be looked up. */
 export async function getUserAssetsTotal(params: {
   assetLists: AssetList[];
   chainList: Chain[];
   userOsmoAddress: string;
-}): Promise<{ value: PricePretty; coins: CoinPretty[] }> {
+}): Promise<{ value: PricePretty | undefined; coins: CoinPretty[] }> {
   // Use Promise.all to send concurrent requests.
   const coins = await Promise.all([
     getUserCoinsFromBank(params),
@@ -183,10 +196,15 @@ export async function getUserAssetsTotal(params: {
     getUserTotalUndelegations(params),
   ]);
 
-  const { underlyingGammShareCoins, available } = coins[0];
+  const {
+    underlyingGammShareCoins,
+    available,
+    shareLookupFailed: bankShareLookupFailed,
+  } = coins[0];
   const bankCoins = [...underlyingGammShareCoins, ...available];
   const clCoins = coins[1];
-  const lockedCoins = coins[2];
+  const { coins: lockedCoins, shareLookupFailed: lockedShareLookupFailed } =
+    coins[2];
   const delegatedCoin = coins[3];
   const undelegatingCoin = coins[4];
 
@@ -198,20 +216,27 @@ export async function getUserAssetsTotal(params: {
     undelegatingCoin,
   ];
 
-  const aggregatedValue = await calcSumCoinsValue({
+  const aggregatedValue = await calcSumCoinsValueOrUnknown({
     ...params,
     coins: allCoins,
   });
 
   return {
-    value: new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue),
+    // A share whose underlying coins couldn't be looked up is missing from the sum,
+    // so the total is unknown rather than understated.
+    value:
+      aggregatedValue && !bankShareLookupFailed && !lockedShareLookupFailed
+        ? new PricePretty(DEFAULT_VS_CURRENCY, aggregatedValue)
+        : undefined,
     coins: allCoins,
   };
 }
 
 /** Lists all of a user's underlying assets in bank module.
  *  Only includes assets in asset list.
- *  Returns breakdown by underlying assets in GAMM pools as well as available assets. */
+ *  Returns breakdown by underlying assets in GAMM pools as well as available assets.
+ *  `shareLookupFailed` is true when the underlying coins of a GAMM share balance
+ *  couldn't be looked up, so `underlyingGammShareCoins` is incomplete. */
 export async function getUserCoinsFromBank(params: {
   assetLists: AssetList[];
   chainList: Chain[];
@@ -219,6 +244,7 @@ export async function getUserCoinsFromBank(params: {
 }): Promise<{
   underlyingGammShareCoins: CoinPretty[];
   available: CoinPretty[];
+  shareLookupFailed: boolean;
 }> {
   // get bank balances
   const { balances } = await queryBalances({
@@ -231,7 +257,7 @@ export async function getUserCoinsFromBank(params: {
 
   // Get available listed assets and GAMM shares
   balances.forEach(({ denom, amount }) => {
-    if (denom.includes("gamm")) {
+    if (isGammShareDenom(denom)) {
       eventualShareCoins.push(
         getGammShareUnderlyingCoins({
           ...params,
@@ -247,36 +273,45 @@ export async function getUserCoinsFromBank(params: {
     }
   });
 
-  const shareCoins = (await Promise.all(eventualShareCoins))
+  const shareCoinResults = await Promise.all(eventualShareCoins);
+  const shareLookupFailed = shareCoinResults.some((coins) => !coins);
+  const shareCoins = shareCoinResults
     .filter((coins) => !!coins)
     .flat() as CoinPretty[];
 
   return {
     underlyingGammShareCoins: aggregateCoinsByDenom(shareCoins),
     available: aggregateCoinsByDenom(availableCoins),
+    shareLookupFailed,
   };
 }
 
 /** Lists all of a user's assets contained within locks. Locked or unlocking.
- *  NOTE: only considers locked GAMM shares. */
+ *  NOTE: only considers locked GAMM shares.
+ *  `shareLookupFailed` is true when a lock's underlying coins couldn't be looked up,
+ *  so `coins` is incomplete. */
 export async function getUserShareUnderlyingCoinsFromLocks(params: {
   assetLists: AssetList[];
   chainList: Chain[];
   userOsmoAddress: string;
-}): Promise<CoinPretty[]> {
+}): Promise<{ coins: CoinPretty[]; shareLookupFailed: boolean }> {
   const lockedCoins = await queryAccountLockedCoins({
     ...params,
     bech32Address: params.userOsmoAddress,
   });
 
   const eventualUserLockedAssets = lockedCoins.coins.map(async (coin) => {
-    if (coin.denom.includes("gamm")) {
+    if (isGammShareDenom(coin.denom)) {
       return await getGammShareUnderlyingCoins({ ...params, ...coin }).catch(
-        (e) => captureErrorAndReturn(e, [])
+        (e) => captureErrorAndReturn(e, undefined)
       );
     }
     return [];
   });
 
-  return (await Promise.all(eventualUserLockedAssets)).flat();
+  const results = await Promise.all(eventualUserLockedAssets);
+  return {
+    coins: results.flat().filter((coin): coin is CoinPretty => !!coin),
+    shareLookupFailed: results.some((coins) => !coins),
+  };
 }

@@ -1,5 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
+import { prepareCreateConcentratedPoolMsg } from "@osmosis-labs/tx";
+import type { PoolType } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useState } from "react";
@@ -8,9 +9,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { IS_TESTNET, SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
-
-type PoolType = ObservableQueryPool["type"];
+import { useWallet } from "~/hooks/use-wallet";
 
 interface PoolTypeConfig {
   imageSrc: string;
@@ -22,10 +21,9 @@ export const SelectType: FunctionComponent<{
   types: PoolType[];
   selectType: (type: PoolType) => void;
 }> = ({ types, selectType }) => {
-  const { chainStore, accountStore } = useStore();
   const { t } = useTranslation();
 
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { walletStatus, signAndBroadcast, transactionContext } = useWallet();
 
   const [selectedType, setSelectedType] = useState<PoolType | null>(null);
 
@@ -56,8 +54,7 @@ export const SelectType: FunctionComponent<{
     [t]
   );
 
-  const disableNext =
-    account?.walletStatus !== WalletStatus.Connected || !selectedType;
+  const disableNext = walletStatus !== WalletStatus.Connected || !selectedType;
 
   // Supercharged is the recommended path: render it on its own row above
   // the others, larger and with a highlighted border + "Recommended" badge.
@@ -160,12 +157,13 @@ export const SelectType: FunctionComponent<{
         <div>
           <Button
             onClick={() => {
-              account?.osmosis.sendCreateConcentratedPoolMsg(
+              prepareCreateConcentratedPoolMsg(
+                transactionContext,
                 "uion",
                 "uosmo",
                 100,
                 0.0001
-              );
+              ).then((prepared) => signAndBroadcast(...prepared));
             }}
           >
             Create test 100 OSMO / 100 ION CL pool (0.01% spread)

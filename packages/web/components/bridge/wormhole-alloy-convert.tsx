@@ -1,13 +1,12 @@
 import { CoinPretty } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { SwapTool } from "~/components/swap-tool";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 /**
@@ -73,10 +72,9 @@ const resolvedConvertAssetsByNetwork: Record<string, ResolvedConvertAsset> =
 export const WormholeAlloyConvert: FunctionComponent<{
   toNetwork?: string;
   token?: string;
-}> = observer(({ toNetwork, token }) => {
-  const { accountStore } = useStore();
+}> = ({ toNetwork, token }) => {
   const { t } = useTranslation();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
 
   // Gate on both the destination network and the page's withdrawal token, so
   // the card only shows for the alloy's own withdrawal (e.g. SOL → solana), not
@@ -90,8 +88,8 @@ export const WormholeAlloyConvert: FunctionComponent<{
   // Use the full balance set (every denom), not the portfolio's top-N
   // allocations — the alloy may be a long-tail holding for the user.
   const { data: userBalances } = api.local.balances.getUserBalances.useQuery(
-    { bech32Address: account?.address ?? "" },
-    { enabled: !!account?.address }
+    { bech32Address: address ?? "" },
+    { enabled: !!address }
   );
 
   const alloyBalance = useMemo<CoinPretty | undefined>(() => {
@@ -145,4 +143,4 @@ export const WormholeAlloyConvert: FunctionComponent<{
       />
     </div>
   );
-});
+};

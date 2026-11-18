@@ -1,3 +1,4 @@
+import type { PoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { timeout } from "@osmosis-labs/utils";
@@ -11,10 +12,9 @@ import {
   SearchType,
   SortType,
 } from "../../../../queries/complex/pools";
-import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
-import { getAsset } from "../../assets";
+import { getAsset, isHoldingValueUnknown } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolIncentiveType, PoolType } from "../index";
@@ -104,6 +104,7 @@ export function getPoolsFromSidecar({
       const pools = sidecarPools.data
         .map((sidecarPool, index) =>
           makePoolFromSidecarPool({
+            assetLists,
             sidecarPool,
             reserveCoins: reserveCoins[index] ?? null,
           })
@@ -130,9 +131,11 @@ export function getPoolsFromSidecar({
 
 /** Converts a single SQS pool model response to the standard and more useful Pool type. */
 function makePoolFromSidecarPool({
+  assetLists,
   sidecarPool,
   reserveCoins,
 }: {
+  assetLists: AssetList[];
   sidecarPool: SidecarPool;
   reserveCoins: CoinPretty[] | null;
 }): Pool | undefined {
@@ -156,8 +159,31 @@ function makePoolFromSidecarPool({
       DEFAULT_VS_CURRENCY,
       sidecarPool.liquidity_cap
     ),
+    tvlUnknown: hasUnpricedReserves(assetLists, sidecarPool),
     ...data,
   };
+}
+
+/** True when a reserve that should have a price has none, so `liquidity_cap` only covers
+ *  the priced reserves and the pool's TVL is unknown. SQS flags every zero-cap reserve,
+ *  which also covers zero balances, dust and assets never priced (unverified, preview,
+ *  unstable); `isHoldingValueUnknown` leaves those out. */
+export function hasUnpricedReserves(
+  assetLists: AssetList[],
+  {
+    liquidity_cap_error,
+    balances,
+  }: Pick<SidecarPool, "liquidity_cap_error" | "balances">
+): boolean {
+  if (!liquidity_cap_error) return false;
+
+  // SQS lists each zero-cap reserve as "zero cap for denom (<denom>)". Look up each held
+  // reserve's exact entry rather than parsing the string.
+  return balances.some(
+    ({ denom, amount }) =>
+      liquidity_cap_error.includes(`zero cap for denom (${denom})`) &&
+      isHoldingValueUnknown({ assetLists, coinMinimalDenom: denom, amount })
+  );
 }
 
 // getMarketIncentivesData is a function that returns the incentives and market data for a pool
@@ -195,7 +221,8 @@ function getMarketIncentivesData(
   const incentiveTypes: PoolIncentiveType[] = [];
   if (superfluidUpper && superfluidLower) incentiveTypes.push("superfluid");
   if (osmosisUpper && osmosisLower) incentiveTypes.push("osmosis");
-  if (boostUpper && osmosisLower) incentiveTypes.push("boost");
+  // OSMO pool incentives ended when minting stopped, so boost must not depend on them.
+  if (boostUpper && boostLower) incentiveTypes.push("boost");
   if (
     !superfluidUpper &&
     !superfluidLower &&
@@ -246,18 +273,23 @@ function getMarketIncentivesData(
       incentiveTypes,
     },
     market: {
-      volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, fees?.volume_24h ?? 0),
-      volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, fees?.volume_7d ?? 0),
-      feesSpent24hUsd: new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        fees?.fees_spent_24h ?? 0
-      ),
-      feesSpent7dUsd: new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        fees?.fees_spent_7d ?? 0
-      ),
+      volume24hUsd: maybeMakeMarketPricePretty(fees, fees?.volume_24h),
+      volume7dUsd: maybeMakeMarketPricePretty(fees, fees?.volume_7d),
+      feesSpent24hUsd: maybeMakeMarketPricePretty(fees, fees?.fees_spent_24h),
+      feesSpent7dUsd: maybeMakeMarketPricePretty(fees, fees?.fees_spent_7d),
     },
   };
+}
+
+/** Volume and fee values are unknown, not zero, when SQS has no fee data for the pool
+ *  (e.g. its fees source is down), so return undefined rather than $0. */
+function maybeMakeMarketPricePretty(
+  fees: SidecarPool["fees_data"],
+  value: number | undefined
+): PricePretty | undefined {
+  if (!fees || fees.is_error || value == null) return;
+
+  return new PricePretty(DEFAULT_VS_CURRENCY, value);
 }
 
 /** Checks explicitly for 0 or null before creating rate display object. */
@@ -377,7 +409,7 @@ function makePoolRawResponseFromChainPool(
  *  Note: Defaults to 6 decimals (standard for most Cosmos tokens). This may cause
  *  display precision issues for tokens with different decimal places, but functionality
  *  remains intact as the chain handles actual token amounts correctly. */
-function makeUnlistedAssetCurrency(denom: string) {
+export function makeUnlistedAssetCurrency(denom: string) {
   return {
     coinDenom: denom,
     coinMinimalDenom: denom,
@@ -550,16 +582,10 @@ export function makePoolFromChainPool({
     reserveCoins,
     totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, 0),
     tvlUnknown: balancesSynthed && !isUninitializedConcentratedPool,
-    // No incentives or market data available from chain
+    // No incentives or market data available from chain, so volume and fees are unknown
     incentives: {
       aprBreakdown: undefined,
       incentiveTypes: ["none"],
-    },
-    market: {
-      volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
-      volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
-      feesSpent24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
-      feesSpent7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
     },
   };
 }

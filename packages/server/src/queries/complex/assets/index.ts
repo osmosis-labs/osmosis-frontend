@@ -13,8 +13,8 @@ import { isAssetInCategories } from "./categories";
 
 export const AssetFilterSchema = z.object({
   search: SearchSchema.optional(),
-  onlyVerified: z.boolean().default(false).optional(),
-  includePreview: z.boolean().default(false).optional(),
+  onlyVerified: z.boolean().optional(),
+  includePreview: z.boolean().optional(),
   categories: z.array(z.string()).optional(),
 });
 /** Params for filtering assets. */
@@ -197,4 +197,5 @@ export * from "./config";
 export * from "./ethereum";
 export * from "./market";
 export * from "./price";
+export * from "./search-rank";
 export * from "./user";

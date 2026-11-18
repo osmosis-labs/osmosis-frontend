@@ -1,12 +1,11 @@
 import { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
-import { useStore } from "~/stores";
 
 export const GetStartedWithOsmosis: FunctionComponent = () => {
-  const { accountStore } = useStore();
   const { t } = useTranslation();
 
   const { onOpenWalletSelect } = useWalletSelect();
@@ -19,7 +18,7 @@ export const GetStartedWithOsmosis: FunctionComponent = () => {
         onClick={() => {
           onOpenWalletSelect({
             walletOptions: [
-              { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+              { walletType: "cosmos", chainId: OsmosisChainInfo.chainId },
             ],
           });
         }}

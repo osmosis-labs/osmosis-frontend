@@ -3,20 +3,20 @@ import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
-import { useStore } from "~/stores";
+import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { api } from "~/utils/trpc";
 
 import { useCoinFiatValue } from "./queries/assets/use-coin-fiat-value";
+import { useWallet } from "./use-wallet";
 
 /** Slippage tolerance for a conversion through a single fixed-ratio pool
- *  (transmuter / alloyed), as a decimal fraction: 0.01%.
+ *  (transmuter / alloyed), as a decimal fraction: 0.1%.
  *
  *  Deliberately not "0". `maxSlippage` sets `tokenOutMinAmount` to
  *  `quoted * (1 - maxSlippage)`, so exact zero demands byte-exact output and one
- *  unit of chain-side truncation reverts the tx. This is small enough to be
- *  economically irrelevant (100 base units on a 1M USDC conversion) while still
- *  absorbing rounding. */
-export const ONE_TO_ONE_MAX_SLIPPAGE = "0.0001";
+ *  unit of chain-side truncation reverts the tx. A fixed-ratio pool never moves
+ *  against the user, so this only ever absorbs rounding, with room to spare. */
+export const ONE_TO_ONE_MAX_SLIPPAGE = "0.001";
 
 /** Slippage tolerance for any conversion that can genuinely move against the
  *  user between quote and execution: splits, multi-hops, and price-moving pools
@@ -28,45 +28,42 @@ export const DEFAULT_CONVERT_MAX_SLIPPAGE = "0.05";
  *
  * Takes either an AssetVariant object directly or a coin minimal denom string.
  * If a string is provided, the variant will be looked up from the user's portfolio assets.
- *
- * NOTE: wrap with observer to so account store can be accessed.
  */
 export function useConvertVariant(
   givenVariantOrCoinMinimalDenom?: AssetVariant | string,
   enabled = true
 ) {
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const {
+    wallet: account,
+    address,
+    txTypeInProgress,
+    signAndBroadcast,
+  } = useWallet();
   const transactionIdentifier = "convertVariant";
 
   // If the variant is not provided, we will fetch from user's list of variants
   const {
-    data: portfolioAssetsData,
+    assetVariants,
     isError: isPortfolioAssetsError,
     isLoading: isPortfolioAssetsLoading,
-  } = api.local.portfolio.getPortfolioAssets.useQuery(
-    {
-      address: account?.address ?? "",
-    },
-    {
-      enabled:
-        enabled &&
-        !!account?.address &&
-        typeof givenVariantOrCoinMinimalDenom === "string" &&
-        Boolean(givenVariantOrCoinMinimalDenom),
-    }
-  );
+  } = useConvertibleAssetVariants({
+    address,
+    enabled:
+      enabled &&
+      typeof givenVariantOrCoinMinimalDenom === "string" &&
+      Boolean(givenVariantOrCoinMinimalDenom),
+  });
 
   const variant = useMemo(() => {
     if (typeof givenVariantOrCoinMinimalDenom !== "string")
       return givenVariantOrCoinMinimalDenom;
 
-    return portfolioAssetsData?.assetVariants.find(
+    return assetVariants?.find(
       (variant) =>
         variant.amount.currency.coinMinimalDenom ===
         givenVariantOrCoinMinimalDenom
     );
-  }, [givenVariantOrCoinMinimalDenom, portfolioAssetsData]);
+  }, [givenVariantOrCoinMinimalDenom, assetVariants]);
 
   const variantTransactionIdentifier = `${transactionIdentifier}-${variant?.amount.currency.coinMinimalDenom}`;
 
@@ -122,28 +119,25 @@ export function useConvertVariant(
           return reject(messages);
         }
 
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            variantTransactionIdentifier,
-            messages,
-            undefined,
-            undefined,
-            undefined,
-            {
-              onFulfill: (tx) => {
-                if (tx.code) return reject(tx.code);
-                resolve();
-              },
-              onBroadcastFailed: reject,
-            }
-          )
-          .catch((e) => {
-            console.error("Error broadcasting convert variant tx", e);
-            reject(e);
-          });
+        signAndBroadcast(
+          variantTransactionIdentifier,
+          messages,
+          undefined,
+          undefined,
+          undefined,
+          {
+            onFulfill: (tx) => {
+              if (tx.code) return reject(tx.code);
+              resolve();
+            },
+            onBroadcastFailed: reject,
+          }
+        ).catch((e) => {
+          console.error("Error broadcasting convert variant tx", e);
+          reject(e);
+        });
       }),
-    [variant, account, quote, accountStore, variantTransactionIdentifier]
+    [variant, account, quote, signAndBroadcast, variantTransactionIdentifier]
   );
 
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
@@ -158,17 +152,18 @@ export function useConvertVariant(
   return {
     onConvert,
     quote,
+    /** Undefined until priced, and always for a variant with no price; the
+     *  fee rate is shown either way. */
     convertFee: feeFiatValue,
     variant,
     isLoading: isQuoteLoading || isPortfolioAssetsLoading,
     isError: isLargeAmountDiff || isQuoteError || isPortfolioAssetsError,
     /** Is any conversion in progress. */
     isConvertingVariant: Boolean(
-      account?.txTypeInProgress.startsWith(transactionIdentifier)
+      txTypeInProgress.startsWith(transactionIdentifier)
     ),
     /** Is this specific variant conversion in progress. */
-    isConvertingThisVariant:
-      account?.txTypeInProgress === variantTransactionIdentifier,
+    isConvertingThisVariant: txTypeInProgress === variantTransactionIdentifier,
   };
 }
 
@@ -205,9 +200,9 @@ export async function getConvertVariantMessages(
   //
   // Not exactly zero: `maxSlippage` becomes `tokenOutMinAmount` via
   // `quoted * (1 - maxSlippage)`, so "0" demands byte-exact output and a single
-  // unit of chain-side truncation reverts the tx. ONE_TO_ONE_MAX_SLIPPAGE is the
-  // smallest tolerance that absorbs rounding while still capping loss at 0.01%
-  // (100 base units on a 1M USDC conversion, against 50,000 under the old 5%).
+  // unit of chain-side truncation reverts the tx. ONE_TO_ONE_MAX_SLIPPAGE
+  // absorbs rounding while still capping loss at 0.1% (1,000 USDC on a 1M USDC
+  // conversion, against 50,000 under the old 5%).
   //
   // Not every variant conversion is an alloy conversion: `variantGroupKey` also
   // groups non-alloy canonical assets, whose conversions route through ordinary
