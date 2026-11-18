@@ -204,10 +204,9 @@ const config = {
       )
     );
 
-    // Wallet SDKs are browser-only. Server builds swap these modules for their `.server.ts`
-    // stand-ins (no EVM connectors, Cosmos wallet installers that reject), which keeps the SDKs
-    // and their dependencies out of the server bundle. See config/wagmi-connectors.ts and
-    // config/wallet-installers.ts.
+    // Server builds swap browser-only loaders for their `.server.ts` stand-ins:
+    // no EVM connectors, unavailable wallet installers, and English-only translations.
+    // This keeps wallet SDKs and dynamically imported locale catalogs out of the Worker.
     if (isServer) {
       // Bundle @keplr-wallet/crypto on the server instead of loading it from node_modules, so the
       // starknet stub above applies there too. Nothing server-side uses its Starknet key methods.
@@ -227,7 +226,7 @@ const config = {
 
       config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(
-          /config[\\/](wagmi-connectors|wallet-installers)$/,
+          /config[\\/](wagmi-connectors|wallet-installers|language-loader)$/,
           (resource) => {
             const name = path.basename(resource.request);
             resource.request = path.resolve(

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+import { loadLanguage } from "~/config/language-loader";
 import { useTranslation } from "~/hooks";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 
@@ -11,10 +12,7 @@ export function useCurrentLanguage() {
   useEffect(() => {
     if (currentLanguage) {
       const load = async () => {
-        const language = await import(
-          `../../localizations/${currentLanguage}.json`
-        );
-        await import(`../../localizations/dayjs-locale-${currentLanguage}.js`);
+        const language = await loadLanguage(currentLanguage);
 
         changeTranslations({
           [currentLanguage]: { ...language },
