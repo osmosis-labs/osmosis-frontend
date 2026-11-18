@@ -1,9 +1,14 @@
 import classNames from "classnames";
-import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
-import AutosizeInput from "react-input-autosize";
+import {
+  FunctionComponent,
+  HTMLInputTypeAttribute,
+  useId,
+  useState,
+} from "react";
 import { Optional } from "utility-types";
 
 import { ButtonProps } from "~/components/buttons/types";
+import { AutosizeInput } from "~/components/input/autosize-input";
 import { CustomClasses, Disableable, InputProps } from "~/components/types";
 import { useControllableState } from "~/hooks/use-controllable-state";
 
@@ -76,6 +81,7 @@ export const InputBox: FunctionComponent<Props> = ({
   onClick,
   inputMode,
 }) => {
+  const inputId = useId();
   const [inputFocused, setInputFocused] = useState(false);
   const [inputValue, setValue] = useControllableState({
     value: currentValue,
@@ -119,23 +125,29 @@ export const InputBox: FunctionComponent<Props> = ({
           classes?.label
         )}
         style={styles?.label}
-        htmlFor="text-input"
+        htmlFor={inputId}
       >
         {isAutosize ? (
+          // `type` is intentionally not forwarded: autosize inputs have always
+          // rendered as text, and `type="number"` reports "" for partial entries.
           <AutosizeInput
             key={inputKey}
-            inputRef={(ref) => {
-              if (inputRef) {
-                inputRef.current = ref;
-              }
-            }}
+            inputRef={inputRef}
+            id={inputId}
+            placeholder={placeholder ?? ""}
+            autoComplete="off"
+            inputMode={inputMode}
+            disabled={disabled}
             onWheel={(e) => (e.target as HTMLInputElement).blur()}
             inputClassName={inputClassName_}
             minWidth={0}
-            value={inputValue}
-            onInput={(e: any) => setValue(e.target.value)}
-            onBlur={onBlur}
-            onFocus={(e: any) => {
+            value={inputValue ?? ""}
+            onInput={(e) => setValue(e.currentTarget.value)}
+            onBlur={(e) => {
+              setInputFocused(false);
+              onBlur && onBlur(e);
+            }}
+            onFocus={(e) => {
               setInputFocused(true);
               onFocus && onFocus(e);
             }}
@@ -146,7 +158,7 @@ export const InputBox: FunctionComponent<Props> = ({
           <input
             key={inputKey}
             ref={inputRef}
-            id="text-input"
+            id={inputId}
             className={inputClassName_}
             value={currentValue}
             placeholder={placeholder ?? ""}

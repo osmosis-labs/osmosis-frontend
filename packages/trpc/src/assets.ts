@@ -16,26 +16,24 @@ import {
   getAssetWithUserBalance,
   getAssetWithVariants,
   getBridgeAsset,
+  getCategoryImageSamples,
   getCoinGeckoCoinMarketChart,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
   getUpcomingAssets,
   getUserAssetsTotal,
-  IS_TESTNET,
+  isMarketDataAvailable,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
   maybeCachePaginatedItems,
+  sortAssetSearchResults,
   TimeDuration,
   TimeFrame,
+  withSqsPriceFallback,
 } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
-import {
-  compareCommon,
-  getAllBtcMinimalDenom,
-  getnBTCMinimalDenom,
-  isNil,
-  sort,
-} from "@osmosis-labs/utils";
+import { compareCommon, isNil, sort } from "@osmosis-labs/utils";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -43,6 +41,11 @@ import { UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteAssetsInputSchema =
   CursorPaginationSchema.merge(AssetFilterSchema);
+
+/** Symbols (`coinDenom`) the user has watchlisted; ranks them up in search results. */
+const WatchListDenomsSchema = z.object({
+  watchListDenoms: z.array(z.string()).optional(),
+});
 
 export const assetsRouter = createTRPCRouter({
   getUserAsset: publicProcedure
@@ -69,12 +72,14 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          // Optional poolId to filter assets by pool
-          poolId: z.string().optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            // Optional poolId to filter assets by pool
+            poolId: z.string().optional(),
+          })
+        )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       async ({
@@ -87,12 +92,13 @@ export const assetsRouter = createTRPCRouter({
           includePreview,
           categories,
           poolId,
+          watchListDenoms,
         },
         ctx,
       }) =>
         maybeCachePaginatedItems({
-          getFreshItems: () =>
-            mapGetAssetsWithUserBalances({
+          getFreshItems: async () => {
+            const assets = await mapGetAssetsWithUserBalances({
               ...ctx,
               search,
               userOsmoAddress,
@@ -101,7 +107,12 @@ export const assetsRouter = createTRPCRouter({
               includePreview,
               categories,
               poolId,
-            }),
+            });
+
+            return search
+              ? sortAssetSearchResults(assets, { search, watchListDenoms })
+              : assets;
+          },
           cacheKey: JSON.stringify({
             search,
             userOsmoAddress,
@@ -109,6 +120,8 @@ export const assetsRouter = createTRPCRouter({
             includePreview,
             categories,
             poolId,
+            // only affects ordering while searching
+            watchListDenoms: search ? watchListDenoms : undefined,
           }),
           cursor,
           limit,
@@ -122,44 +135,6 @@ export const assetsRouter = createTRPCRouter({
         ...ctx,
         anyDenom: findMinDenomOrSymbol,
       });
-
-      /**
-       * Manually include Nomic and BTC assets in the list.
-       * These assets are not variants of each other and cannot be automatically linked
-       * from our asset list. We do this to display them in the receive asset dropdown
-       * and enable conversion to alloy or native.
-       */
-      if (
-        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
-        getnBTCMinimalDenom({
-          env: IS_TESTNET ? "testnet" : "mainnet",
-        }).toLowerCase()
-      ) {
-        const allBtcAsset = getAsset({
-          ...ctx,
-          anyDenom:
-            getAllBtcMinimalDenom({
-              env: IS_TESTNET ? "testnet" : "mainnet",
-            }) ?? "",
-        });
-        if (allBtcAsset) canonicalAssetWithVariants.push(allBtcAsset);
-      }
-
-      if (
-        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
-        (
-          getAllBtcMinimalDenom({ env: IS_TESTNET ? "testnet" : "mainnet" }) ??
-          ""
-        ).toLowerCase()
-      ) {
-        const nBTCAsset = getAsset({
-          ...ctx,
-          anyDenom: getnBTCMinimalDenom({
-            env: IS_TESTNET ? "testnet" : "mainnet",
-          }),
-        });
-        if (nBTCAsset) canonicalAssetWithVariants.push(nBTCAsset);
-      }
 
       return canonicalAssetWithVariants;
     }),
@@ -176,6 +151,32 @@ export const assetsRouter = createTRPCRouter({
       });
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
+    }),
+  getAssetPrices: publicProcedure
+    .input(
+      z.object({
+        coinMinimalDenoms: z.array(z.string()).max(100),
+      })
+    )
+    .query(async ({ input: { coinMinimalDenoms }, ctx }) => {
+      const uniqueDenoms = Array.from(new Set(coinMinimalDenoms));
+      // A single asset without a price must not fail the whole batch.
+      const results = await Promise.allSettled(
+        uniqueDenoms.map((coinMinimalDenom) =>
+          getAssetPrice({ ...ctx, asset: { coinMinimalDenom } })
+        )
+      );
+
+      const prices: Record<string, PricePretty> = {};
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") {
+          prices[uniqueDenoms[index]] = new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            result.value
+          );
+        }
+      });
+      return prices;
     }),
   getAssetWithPrice: publicProcedure
     .input(
@@ -275,7 +276,7 @@ export const assetsRouter = createTRPCRouter({
       )
     )
     .query(
-      ({
+      async ({
         input: {
           search,
           onlyVerified,
@@ -292,10 +293,28 @@ export const assetsRouter = createTRPCRouter({
           maxPriceChange24h,
         },
         ctx,
-      }) =>
-        maybeCachePaginatedItems({
+      }) => {
+        const page = await maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const assets = await mapGetMarketAssets({
+            // Without market data the liquidity and volume filters drop every asset, so
+            // the list would come back empty; report an outage with its own code so the
+            // client can tell it apart from other errors. A search with no such filter
+            // doesn't depend on market data: its rows carry unknown market fields and
+            // prices fall back to SQS.
+            const dependsOnMarketData = !(
+              search &&
+              minLiquidity === 0 &&
+              minVolume24h === undefined
+            );
+            const marketDataAvailable = await isMarketDataAvailable();
+            if (dependsOnMarketData && !marketDataAvailable) {
+              throw new TRPCError({
+                code: "SERVICE_UNAVAILABLE",
+                message: "Market data is unavailable",
+              });
+            }
+
+            const marketAssets = await mapGetMarketAssets({
               ...ctx,
               search,
               onlyVerified,
@@ -306,13 +325,28 @@ export const assetsRouter = createTRPCRouter({
               minLiquidity,
               minVolume24h,
               maxPriceChange24h,
+              // during an outage no row has a price; only the returned page is priced
+              sqsPriceFallback: marketDataAvailable,
             });
+            // A search served during an outage shows no outage state, so the stale
+            // volume the data keeps is shown as unknown instead.
+            const assets = marketDataAvailable
+              ? marketAssets
+              : marketAssets.map((asset) => ({
+                  ...asset,
+                  volume24h: undefined,
+                }));
 
             // sorting
             if (sortInput) {
               // user sorting
 
               return sort(assets, sortInput.keyPath, sortInput.direction);
+            } else if (search) {
+              return sortAssetSearchResults(assets, {
+                search,
+                watchListDenoms,
+              });
             } else {
               // default sorting, maybe with watchlist
 
@@ -352,7 +386,16 @@ export const assetsRouter = createTRPCRouter({
           }),
           cursor,
           limit,
-        })
+        });
+
+        if (await isMarketDataAvailable()) return page;
+        return {
+          ...page,
+          items: await Promise.all(
+            page.items.map((asset) => withSqsPriceFallback({ ...ctx, asset }))
+          ),
+        };
+      }
     ),
   getCoingeckoCoin: publicProcedure
     .input(
@@ -389,15 +432,17 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserBridgeAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          sort: createSortSchema([
-            "currentPrice",
-            "priceChange24h",
-            "usdValue",
-          ] as const).optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            sort: createSortSchema([
+              "currentPrice",
+              "priceChange24h",
+              "usdValue",
+            ] as const).optional(),
+          })
+        )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       ({
@@ -410,70 +455,96 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
           includePreview,
+          watchListDenoms,
         },
         ctx,
-      }) =>
-        maybeCachePaginatedItems({
-          getFreshItems: async () => {
-            let assets = await mapGetAssetsWithUserBalances({
-              ...ctx,
-              search,
-              categories,
-              userOsmoAddress,
-              includePreview,
-            });
+      }) => {
+        const getUserAssets = async () => {
+          const assets = await mapGetAssetsWithUserBalances({
+            ...ctx,
+            search,
+            categories,
+            userOsmoAddress,
+            includePreview,
+          });
 
-            if (!search)
-              assets = assets.filter((asset) =>
-                asset.amount?.toDec().isPositive()
-              );
+          if (search) return assets;
+          return assets.filter((asset) => asset.amount?.toDec().isPositive());
+        };
 
-            let priceAssets = await Promise.all(
-              assets.map(async (asset) => {
-                const [currentPrice, priceChange24h] = await Promise.all([
-                  getAssetPrice({ ...ctx, asset })
-                    .then(
-                      (price) => new PricePretty(DEFAULT_VS_CURRENCY, price)
-                    )
-                    .catch((e) => captureErrorAndReturn(e, undefined)),
-                  getAssetMarketActivity(asset).then(
-                    (activity) => activity?.price24hChange
-                  ),
-                ]);
+        const withPrices = (
+          assets: Awaited<ReturnType<typeof getUserAssets>>
+        ) =>
+          Promise.all(
+            assets.map(async (asset) => {
+              const [currentPrice, priceChange24h] = await Promise.all([
+                getAssetPrice({ ...ctx, asset })
+                  .then((price) => new PricePretty(DEFAULT_VS_CURRENCY, price))
+                  .catch((e) => captureErrorAndReturn(e, undefined)),
+                // Unavailable market data leaves the change unknown instead of
+                // failing the user's balances.
+                getAssetMarketActivity(asset)
+                  .then((activity) => activity?.price24hChange)
+                  .catch((e) => captureErrorAndReturn(e, undefined)),
+              ]);
 
-                return {
-                  ...asset,
-                  currentPrice,
-                  priceChange24h,
-                };
-              })
-            );
+              return getBridgeAsset(ctx.assetLists, {
+                ...asset,
+                currentPrice,
+                priceChange24h,
+              });
+            })
+          );
 
-            if (sortInput) {
-              priceAssets = sort(
-                priceAssets,
+        const cacheKey = JSON.stringify({
+          search,
+          onlyVerified,
+          userOsmoAddress,
+          sort: sortInput,
+          categories,
+          includePreview,
+          // only affects ordering while searching without a column sort
+          watchListDenoms: search && !sortInput ? watchListDenoms : undefined,
+        });
+
+        // Sorting by a price field needs every row priced first.
+        if (
+          sortInput?.keyPath === "currentPrice" ||
+          sortInput?.keyPath === "priceChange24h"
+        ) {
+          return maybeCachePaginatedItems({
+            getFreshItems: async () =>
+              sort(
+                await withPrices(await getUserAssets()),
                 sortInput.keyPath,
                 sortInput.direction
-              );
-            }
+              ),
+            cacheKey,
+            cursor,
+            limit,
+          });
+        }
 
-            const bridgeAssets = priceAssets.map((asset) =>
-              getBridgeAsset(ctx.assetLists, asset)
-            );
-
-            return bridgeAssets;
+        // Otherwise price only the returned page. A search matches every
+        // listed asset, held or not (a one-letter query matches hundreds),
+        // and pricing them all at once floods SQS with parallel requests.
+        return maybeCachePaginatedItems({
+          getFreshItems: async () => {
+            const assets = await getUserAssets();
+            if (sortInput)
+              return sort(assets, sortInput.keyPath, sortInput.direction);
+            return search
+              ? sortAssetSearchResults(assets, { search, watchListDenoms })
+              : assets;
           },
-          cacheKey: JSON.stringify({
-            search,
-            onlyVerified,
-            userOsmoAddress,
-            sort: sortInput,
-            categories,
-            includePreview,
-          }),
+          cacheKey,
           cursor,
           limit,
-        })
+        }).then(async ({ items, nextCursor }) => ({
+          items: await withPrices(items),
+          nextCursor,
+        }));
+      }
     ),
   getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
@@ -497,19 +568,24 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(({ input: { coinMinimalDenom, timeFrame, realtime } }) => {
+      // An empty chart lets the asset page fall back to CoinGecko history. Realtime
+      // callers (the TradingView feed) get the error instead, so it isn't shown as "no data".
+      const onError = (e: Error) =>
+        realtime ? Promise.reject(e) : captureErrorAndReturn(e, []);
+
       if (typeof timeFrame === "string") {
         return getAssetHistoricalPrice({
           coinMinimalDenom,
           timeFrame,
           realtime,
-        }).catch((e) => captureErrorAndReturn(e, []));
+        }).catch(onError);
       } else {
         return getAssetHistoricalPrice({
           coinMinimalDenom,
           timeFrame: timeFrame.custom.timeFrame as TimeFrame,
           numRecentFrames: timeFrame.custom.numRecentFrames,
           realtime,
-        }).catch((e) => captureErrorAndReturn(e, []));
+        }).catch(onError);
       }
     }),
   /**
@@ -602,7 +678,13 @@ export const assetsRouter = createTRPCRouter({
           baseCoinMinimalDenom,
           timeDuration: timeDuration as TimeDuration,
         }).catch((e) =>
-          captureErrorAndReturn(e, { prices: [], min: 0, max: 0 })
+          // Same shape as an empty result: 0/0 would read as a real price range
+          // and seed the add-liquidity "moderate" range with it.
+          captureErrorAndReturn(e, {
+            prices: [],
+            min: Infinity,
+            max: -Infinity,
+          })
         )
     ),
   getTopNewAssets: publicProcedure
@@ -646,10 +728,18 @@ export const assetsRouter = createTRPCRouter({
       );
 
       return sort(
-        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
+        // `sort` keeps rows without a listing date (last); this list excludes them.
+        marketAssets.filter(
+          (asset) =>
+            asset.priceChange24h !== undefined &&
+            asset.listingDate !== undefined
+        ),
         "listingDate"
       ).slice(0, topN);
     }),
+  getCategorySamples: publicProcedure.query(({ ctx }) =>
+    getCategoryImageSamples(ctx)
+  ),
   getTopGainerAssets: publicProcedure
     .input(
       z.object({
@@ -749,6 +839,7 @@ export const assetsRouter = createTRPCRouter({
             type: z.union([z.literal("deposit"), z.literal("withdraw")]),
           })
         )
+        .merge(WatchListDenomsSchema)
     )
     .query(
       ({
@@ -762,6 +853,7 @@ export const assetsRouter = createTRPCRouter({
           prioritizedDenoms,
           deprioritizedDenoms,
           type,
+          watchListDenoms,
         },
         ctx,
       }) =>
@@ -813,17 +905,21 @@ export const assetsRouter = createTRPCRouter({
                   .then((marketAsset) => ({
                     ...asset,
                     volume24h: marketAsset ? marketAsset.volume24h : 0,
-                    liquidity: marketAsset ? marketAsset.liquidity : 0,
+                    liquidity: marketAsset?.liquidity ?? 0,
                   }))
               )
             );
 
-            // avoid sorting while searching
+            // rank search results the same way as other asset searches
             if (search)
-              return marketAssets.filter(({ liquidity, isVerified }) =>
-                liquidity instanceof PricePretty
-                  ? liquidity.toDec().isPositive()
-                  : liquidity > 0 || isVerified
+              return sortAssetSearchResults(
+                marketAssets.filter(
+                  ({ liquidity, isVerified }) =>
+                    (liquidity instanceof PricePretty
+                      ? liquidity.toDec().isPositive()
+                      : liquidity > 0) || isVerified
+                ),
+                { search, watchListDenoms }
               );
 
             // Sort by volume 24h desc
@@ -875,6 +971,10 @@ export const assetsRouter = createTRPCRouter({
             includePreview,
             variantsToBeExcluded: variantsNotToBeExcluded,
             prioritizedDenoms,
+            deprioritizedDenoms,
+            type,
+            // only affects ordering while searching
+            watchListDenoms: search ? watchListDenoms : undefined,
           }),
           cursor,
           limit,

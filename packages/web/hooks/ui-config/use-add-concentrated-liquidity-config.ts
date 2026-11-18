@@ -1,119 +1,620 @@
-import { AmountConfig } from "@osmosis-labs/keplr-hooks";
-import {
-  ChainGetter,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@osmosis-labs/keplr-stores";
 import {
   BigDec,
-  calcAmount0,
-  calcAmount1,
   calcMarginalPriceImpact,
+  calcZapInCostFraction,
   calcZapInPositionMinima,
-  calcZapInSwapAmount,
   estimateSqrtPriceAfterSwapIn,
-  maxSpotPrice,
-  maxTick,
-  minSpotPrice,
-  minTick,
-  priceToTick,
-  roundPriceToNearestTick,
-  roundToNearestDivisible,
-  tickToSqrtPrice,
 } from "@osmosis-labs/math";
-import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
+import type { Pool } from "@osmosis-labs/server";
 import {
-  FakeFeeConfig,
-  IPriceStore,
-  OsmosisQueries,
-  PriceConfig,
-} from "@osmosis-labs/stores";
+  prepareAddToConcentratedLiquidityPositionMsg,
+  prepareCreateConcentratedLiquidityPositionMsg,
+  prepareZapInToConcentratedPositionMsg,
+} from "@osmosis-labs/tx";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import {
+  AppCurrency,
   CoinPretty,
   Dec,
-  DecUtils,
   Int,
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import {
-  action,
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  reaction,
-} from "mobx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import {
-  getTokenInFeeAmountFiatValue,
-  getTokenOutFiatValue,
-} from "~/hooks/fiat-getters";
+import { getChainInfo } from "~/config/chain";
 import { usePrice } from "~/hooks/queries/assets/use-price";
-import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
+import { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { ClZapQuote, useClZapQuote } from "~/hooks/use-cl-zap-quote";
+import {
+  useSwapSlippage,
+  useSwapSlippageConfig,
+} from "~/hooks/use-swap-slippage";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
-import { useStore } from "~/stores";
+import type { SlippageSource } from "~/utils/slippage";
 import { api } from "~/utils/trpc";
 
-/** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
- *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.
- *
- *  Provides memoized callbacks for sending common messages associated with adding concentrated liquidity.
+import { useWallet } from "../use-wallet";
+import {
+  AddConcentratedLiquidityAction,
+  addConcentratedLiquidityReducer,
+  calcDepositPercentages,
+  ConcentratedPoolParams,
+  CounterpartyPlan,
+  counterpartyPlanToActions,
+  DepositSide,
+  deriveRangeView,
+  deriveSingleAssetInputState,
+  deriveSingleAssetSwap,
+  getQuoteOverBaseMultiplier,
+  INITIAL_ADD_CL_STATE,
+  InvalidRangeError,
+  isInactiveConcentratedPool,
+  planCounterpartyUpdate,
+  RangeView,
+  SingleAssetInputState,
+  SingleAssetSwap,
+} from "./add-concentrated-liquidity-state";
+import {
+  calcHighGasFee,
+  CL_CREATE_POSITION_GAS,
+  ConcentratedDepositAmount,
+  createConcentratedDepositAmount,
+} from "./concentrated-deposit-amount";
+
+export { InvalidRangeError };
+
+/** Drops the non-serializable `coin` so React Query's structural sharing keeps
+ *  the array reference stable across refetches with unchanged balances. */
+const selectRawBalances = (
+  balances: { denom: string; amount: string }[]
+): { denom: string; amount: string }[] =>
+  balances.map(({ denom, amount }) => ({ denom, amount }));
+
+/** User input config for eventually sending a valid add concentrated liquidity msg.
+ *  A snapshot: it changes identity whenever any value in it changes. Setters are stable.
+ */
+export interface AddConcentratedLiquidityConfig extends Omit<
+  RangeView,
+  "range"
+> {
+  readonly poolId: string;
+  /** Concentrated pool info (tick spacing, current sqrt price, currencies) from the pools query. Null until loaded. */
+  readonly pool: ConcentratedPoolParams | null;
+  /** True when the pool has TVL but no in-range liquidity at the current price. */
+  readonly isInactivePool: boolean;
+  readonly baseDenom: string;
+  readonly quoteDenom: string;
+  readonly fullRange: boolean;
+  /** Flag indicating that the user prefers superfluid staking for this full range position. */
+  readonly shouldBeSuperfluidStaked: boolean;
+  readonly depositPercentages: [RatePretty, RatePretty];
+  readonly baseDepositAmountIn: ConcentratedDepositAmount;
+  readonly quoteDepositAmountIn: ConcentratedDepositAmount;
+  readonly error: Error | undefined;
+  /** Single-asset deposit (zap-in): one side is provided and part of it swapped. */
+  readonly singleAssetMode: boolean;
+  readonly singleAssetSide: DepositSide;
+  /** The deposit input of the provided side in single-asset mode. */
+  readonly singleAssetDepositAmountIn: ConcentratedDepositAmount;
+  /** The swap leg in single-asset mode; undefined outside it or before a
+   *  positive amount is entered. `swapInAmount` zero means a one-sided range. */
+  readonly requiredSwap: SingleAssetSwap | undefined;
+  /** Submit state in single-asset mode; undefined outside it or before the pool loads. */
+  readonly singleAssetInputState: SingleAssetInputState | undefined;
+  readonly setSingleAssetMode: (enabled: boolean) => void;
+  readonly setSingleAssetSide: (side: DepositSide) => void;
+  readonly setMinRange: (min: string) => void;
+  readonly setMaxRange: (max: string) => void;
+  readonly setFullRange: (isFullRange: boolean) => void;
+  readonly setAnchorAsset: (anchor: DepositSide) => void;
+  readonly setBaseDepositAmountMax: () => void;
+  readonly setQuoteDepositAmountMax: () => void;
+  readonly setElectSuperfluidStaking: (elected: boolean) => void;
+}
+
+/** Returns the previous currency object while its identity (denom, decimals, display) is unchanged,
+ *  since pool refetches hand out new currency objects every time. */
+function useStableCurrency(
+  currency: AppCurrency | undefined
+): AppCurrency | undefined {
+  /* eslint-disable react-hooks/exhaustive-deps */
+  return useMemo(
+    () => currency,
+    [
+      currency?.coinMinimalDenom,
+      currency?.coinDenom,
+      currency?.coinDecimals,
+      currency?.coinImageUrl,
+    ]
+  );
+  /* eslint-enable react-hooks/exhaustive-deps */
+}
+
+export interface AddConcentratedLiquidityInputs {
+  poolId: string;
+  /** Currency used until the pool is loaded, and the chain's fee and stake currencies. */
+  chain: {
+    placeholderCurrency: AppCurrency;
+    feeCurrency: Parameters<typeof calcHighGasFee>[0];
+    stakeCurrency: AppCurrency;
+  };
+  pool: Pool | undefined;
+  /** Raw user balances (base units). Undefined (loading or no account) reads as zero balances. */
+  balances: readonly { denom: string; amount: string }[] | undefined;
+  baseDepositPrice: PricePretty | undefined;
+  quoteDepositPrice: PricePretty | undefined;
+  /** Historical prices with currency decimals; `Infinity` means no data. */
+  historicalPriceMinMax: { min: number; max: number } | undefined;
+  /** Single-asset mode on first render (the persisted per-pool preference). */
+  initialSingleAssetMode?: boolean;
+}
+
+/** State and derived values of the add concentrated liquidity config, with no queries or tx sending. */
+export function useAddConcentratedLiquidityState({
+  poolId,
+  chain,
+  pool,
+  balances,
+  baseDepositPrice,
+  quoteDepositPrice,
+  historicalPriceMinMax,
+  initialSingleAssetMode = false,
+}: AddConcentratedLiquidityInputs): AddConcentratedLiquidityConfig {
+  const [state, dispatch] = useReducer(
+    addConcentratedLiquidityReducer,
+    INITIAL_ADD_CL_STATE,
+    (initial) => ({ ...initial, singleAssetMode: initialSingleAssetMode })
+  );
+
+  // pool
+  const concentratedPool = pool?.type === "concentrated" ? pool : null;
+  const rawPool = concentratedPool?.raw as
+    ConcentratedPoolRawResponse | undefined;
+  const currentSqrtPriceStr = rawPool?.current_sqrt_price;
+  const tickSpacing = rawPool ? Number(rawPool.tick_spacing) : undefined;
+  const poolBaseCurrency = useStableCurrency(
+    concentratedPool?.reserveCoins[0].currency
+  );
+  const poolQuoteCurrency = useStableCurrency(
+    concentratedPool?.reserveCoins[1].currency
+  );
+  const isInactivePool = isInactiveConcentratedPool(pool);
+
+  const poolParams = useMemo<ConcentratedPoolParams | null>(() => {
+    if (
+      currentSqrtPriceStr === undefined ||
+      tickSpacing === undefined ||
+      !poolBaseCurrency ||
+      !poolQuoteCurrency
+    )
+      return null;
+    return {
+      baseCurrency: poolBaseCurrency,
+      quoteCurrency: poolQuoteCurrency,
+      currentSqrtPrice: new BigDec(currentSqrtPriceStr),
+      tickSpacing,
+    };
+  }, [currentSqrtPriceStr, tickSpacing, poolBaseCurrency, poolQuoteCurrency]);
+
+  // setters of the range are no-ops until the pool is available
+  const hasPoolRef = useRef(false);
+  useEffect(() => {
+    hasPoolRef.current = poolParams !== null;
+  }, [poolParams]);
+
+  const baseCurrency = poolParams?.baseCurrency ?? chain.placeholderCurrency;
+  const quoteCurrency = poolParams?.quoteCurrency ?? chain.placeholderCurrency;
+
+  // historical prices
+  const minHistoricalPrice =
+    historicalPriceMinMax && historicalPriceMinMax.min !== Infinity
+      ? historicalPriceMinMax.min
+      : null;
+  const maxHistoricalPrice =
+    historicalPriceMinMax && historicalPriceMinMax.max !== Infinity
+      ? historicalPriceMinMax.max
+      : null;
+
+  const prices = useMemo(
+    () =>
+      baseDepositPrice && quoteDepositPrice
+        ? { base: baseDepositPrice, quote: quoteDepositPrice }
+        : null,
+    [baseDepositPrice, quoteDepositPrice]
+  );
+
+  const rangeView = useMemo(
+    () =>
+      deriveRangeView({
+        fullRange: state.fullRange,
+        minInput: state.minInput,
+        maxInput: state.maxInput,
+        baseCurrency,
+        quoteCurrency,
+        pool: poolParams,
+        minHistoricalPrice,
+        maxHistoricalPrice,
+      }),
+    [
+      state.fullRange,
+      state.minInput,
+      state.maxInput,
+      baseCurrency,
+      quoteCurrency,
+      poolParams,
+      minHistoricalPrice,
+      maxHistoricalPrice,
+    ]
+  );
+
+  // stable setters
+  const setMinRange = useCallback((value: string) => {
+    if (!hasPoolRef.current) return;
+    dispatch({ type: "setMinRange", value });
+  }, []);
+  const setMaxRange = useCallback((value: string) => {
+    if (!hasPoolRef.current) return;
+    dispatch({ type: "setMaxRange", value });
+  }, []);
+  const setFullRange = useCallback(
+    (value: boolean) => dispatch({ type: "setFullRange", value }),
+    []
+  );
+  const setAnchorAsset = useCallback(
+    (anchor: DepositSide) => dispatch({ type: "setAnchor", anchor }),
+    []
+  );
+  const setBaseDepositAmountMax = useCallback(
+    () => dispatch({ type: "setMax", side: "base" }),
+    []
+  );
+  const setQuoteDepositAmountMax = useCallback(
+    () => dispatch({ type: "setMax", side: "quote" }),
+    []
+  );
+  const setElectSuperfluidStaking = useCallback(
+    (elected: boolean) => dispatch({ type: "setSuperfluid", elected }),
+    []
+  );
+  const setSingleAssetMode = useCallback(
+    (enabled: boolean) => dispatch({ type: "setSingleAssetMode", enabled }),
+    []
+  );
+  const setSingleAssetSide = useCallback(
+    (side: DepositSide) => dispatch({ type: "setSingleAssetSide", side }),
+    []
+  );
+  const setBaseAmount = useCallback(
+    (amount: string) => dispatch({ type: "setAmount", side: "base", amount }),
+    []
+  );
+  const setQuoteAmount = useCallback(
+    (amount: string) => dispatch({ type: "setAmount", side: "quote", amount }),
+    []
+  );
+  const setBaseFraction = useCallback(
+    (fraction: number | undefined) =>
+      dispatch({ type: "setFraction", side: "base", fraction }),
+    []
+  );
+  const setQuoteFraction = useCallback(
+    (fraction: number | undefined) =>
+      dispatch({ type: "setFraction", side: "quote", fraction }),
+    []
+  );
+
+  // deposit inputs
+  const rawBalances = useMemo(
+    () =>
+      new Map<string, string>(
+        (balances ?? []).map(({ denom, amount }) => [denom, amount])
+      ),
+    [balances]
+  );
+
+  /** Fee deducted from the max amount of the stake currency, for the create position tx. */
+  const createPositionFee = useMemo(
+    () => calcHighGasFee(chain.feeCurrency, CL_CREATE_POSITION_GAS),
+    [chain.feeCurrency]
+  );
+  const stakeDenom = chain.stakeCurrency.coinMinimalDenom;
+  let baseFee: CoinPretty | undefined;
+  let quoteFee: CoinPretty | undefined;
+  if (poolParams) {
+    if (stakeDenom === baseCurrency.coinMinimalDenom) {
+      baseFee = createPositionFee;
+    } else if (stakeDenom === quoteCurrency.coinMinimalDenom) {
+      quoteFee = createPositionFee;
+    }
+  }
+
+  const baseRawBalance = rawBalances.get(baseCurrency.coinMinimalDenom);
+  const quoteRawBalance = rawBalances.get(quoteCurrency.coinMinimalDenom);
+
+  const baseDepositAmountIn = useMemo(
+    () =>
+      createConcentratedDepositAmount({
+        currency: baseCurrency,
+        rawBalance: baseRawBalance,
+        state: state.base,
+        fee: baseFee,
+        setAmount: setBaseAmount,
+        setFraction: setBaseFraction,
+      }),
+    [
+      baseCurrency,
+      baseRawBalance,
+      state.base,
+      baseFee,
+      setBaseAmount,
+      setBaseFraction,
+    ]
+  );
+  const quoteDepositAmountIn = useMemo(
+    () =>
+      createConcentratedDepositAmount({
+        currency: quoteCurrency,
+        rawBalance: quoteRawBalance,
+        state: state.quote,
+        fee: quoteFee,
+        setAmount: setQuoteAmount,
+        setFraction: setQuoteFraction,
+      }),
+    [
+      quoteCurrency,
+      quoteRawBalance,
+      state.quote,
+      quoteFee,
+      setQuoteAmount,
+      setQuoteFraction,
+    ]
+  );
+
+  const { tickRange, baseDepositOnly, quoteDepositOnly, moderatePriceRange } =
+    rangeView;
+
+  const depositPercentages = useMemo(
+    () =>
+      calcDepositPercentages({
+        pool: poolParams,
+        baseCurrency,
+        quoteCurrency,
+        baseDepositPrice: prices?.base ?? null,
+        quoteDepositPrice: prices?.quote ?? null,
+        tickRange,
+        baseDepositOnly,
+        quoteDepositOnly,
+      }),
+    [
+      poolParams,
+      baseCurrency,
+      quoteCurrency,
+      prices,
+      tickRange,
+      baseDepositOnly,
+      quoteDepositOnly,
+    ]
+  );
+
+  // Set the initial range to the moderate range, once, when historical prices load.
+  const { rangeInitialized } = state;
+  useEffect(() => {
+    if (
+      rangeInitialized ||
+      !poolParams ||
+      isInactivePool ||
+      minHistoricalPrice === null ||
+      maxHistoricalPrice === null
+    )
+      return;
+
+    const multiplicationQuoteOverBase = getQuoteOverBaseMultiplier(
+      baseCurrency,
+      quoteCurrency
+    );
+    dispatch({
+      type: "initRange",
+      min: moderatePriceRange[0].mul(multiplicationQuoteOverBase).toString(),
+      max: moderatePriceRange[1].mul(multiplicationQuoteOverBase).toString(),
+    });
+  }, [
+    rangeInitialized,
+    poolParams,
+    isInactivePool,
+    minHistoricalPrice,
+    maxHistoricalPrice,
+    moderatePriceRange,
+    baseCurrency,
+    quoteCurrency,
+  ]);
+
+  // The non-anchor deposit amount follows the anchor one. Suppressed in
+  // single-asset mode, where the counterparty comes from the swap instead.
+  const { singleAssetMode, singleAssetSide } = state;
+  const counterpartyPlan = useMemo<CounterpartyPlan>(
+    () =>
+      singleAssetMode
+        ? { type: "none" }
+        : planCounterpartyUpdate({
+            anchor: state.anchor,
+            base: baseDepositAmountIn,
+            quote: quoteDepositAmountIn,
+            pool: poolParams,
+            isInactivePool,
+            tickRange,
+            baseDepositOnly,
+            quoteDepositOnly,
+            baseDepositPrice: prices?.base ?? null,
+            quoteDepositPrice: prices?.quote ?? null,
+          }),
+    [
+      singleAssetMode,
+      state.anchor,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      poolParams,
+      isInactivePool,
+      tickRange,
+      baseDepositOnly,
+      quoteDepositOnly,
+      prices,
+    ]
+  );
+  useEffect(() => {
+    if (counterpartyPlan.type === "none" && counterpartyPlan.warning) {
+      console.warn(counterpartyPlan.warning);
+    }
+    counterpartyPlanToActions(counterpartyPlan).forEach(
+      (action: AddConcentratedLiquidityAction) => dispatch(action)
+    );
+  }, [counterpartyPlan]);
+
+  const singleAssetDepositAmountIn =
+    singleAssetSide === "base" ? baseDepositAmountIn : quoteDepositAmountIn;
+  const requiredSwap = useMemo(
+    () =>
+      singleAssetMode
+        ? deriveSingleAssetSwap({
+            side: singleAssetSide,
+            input: singleAssetDepositAmountIn,
+            counterpartyCurrency:
+              singleAssetSide === "base" ? quoteCurrency : baseCurrency,
+            pool: poolParams,
+            tickRange,
+          })
+        : undefined,
+    [
+      singleAssetMode,
+      singleAssetSide,
+      singleAssetDepositAmountIn,
+      baseCurrency,
+      quoteCurrency,
+      poolParams,
+      tickRange,
+    ]
+  );
+  const singleAssetInputState =
+    singleAssetMode && poolParams
+      ? deriveSingleAssetInputState(singleAssetDepositAmountIn, requiredSwap)
+      : undefined;
+
+  const { fullRange } = state;
+  const error = useMemo<Error | undefined>(() => {
+    if (!fullRange && rangeView.range[0].gte(rangeView.range[1])) {
+      return new InvalidRangeError(
+        "lower range must be less than upper range."
+      );
+    }
+    // In single-asset mode only the provided side's input is relevant.
+    if (singleAssetMode) return singleAssetDepositAmountIn.error;
+    if (quoteDepositOnly) return quoteDepositAmountIn.error;
+    if (baseDepositOnly) return baseDepositAmountIn.error;
+    return baseDepositAmountIn.error || quoteDepositAmountIn.error;
+  }, [
+    fullRange,
+    rangeView.range,
+    baseDepositOnly,
+    quoteDepositOnly,
+    baseDepositAmountIn,
+    quoteDepositAmountIn,
+    singleAssetMode,
+    singleAssetDepositAmountIn,
+  ]);
+
+  const shouldBeSuperfluidStaked = state.superfluidStakingElected && fullRange;
+
+  return useMemo(
+    () => ({
+      ...rangeView,
+      poolId,
+      pool: poolParams,
+      isInactivePool,
+      baseDenom: poolParams?.baseCurrency.coinDenom ?? "",
+      quoteDenom: poolParams?.quoteCurrency.coinDenom ?? "",
+      fullRange,
+      shouldBeSuperfluidStaked,
+      depositPercentages,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      error,
+      singleAssetMode,
+      singleAssetSide,
+      singleAssetDepositAmountIn,
+      requiredSwap,
+      singleAssetInputState,
+      setSingleAssetMode,
+      setSingleAssetSide,
+      setMinRange,
+      setMaxRange,
+      setFullRange,
+      setAnchorAsset,
+      setBaseDepositAmountMax,
+      setQuoteDepositAmountMax,
+      setElectSuperfluidStaking,
+    }),
+    [
+      rangeView,
+      poolId,
+      isInactivePool,
+      poolParams,
+      fullRange,
+      shouldBeSuperfluidStaked,
+      depositPercentages,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      error,
+      singleAssetMode,
+      singleAssetSide,
+      singleAssetDepositAmountIn,
+      requiredSwap,
+      singleAssetInputState,
+      setSingleAssetMode,
+      setSingleAssetSide,
+      setMinRange,
+      setMaxRange,
+      setFullRange,
+      setAnchorAsset,
+      setBaseDepositAmountMax,
+      setQuoteDepositAmountMax,
+      setElectSuperfluidStaking,
+    ]
+  );
+}
+
+/** Provides the add concentrated liquidity config for a React view, plus memoized callbacks
+ *  for sending common messages associated with adding concentrated liquidity.
  */
 export function useAddConcentratedLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string
 ): {
-  config: ObservableAddConcentratedLiquidityConfig;
+  config: AddConcentratedLiquidityConfig;
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
-  zapInLiquidity: () => Promise<void>;
-  zapQuote: ReturnType<typeof useClZapQuote>;
-  zapSlippageConfig: ReturnType<typeof useSlippageConfig>;
-  /** Fiat value of the full single-asset deposit, or undefined when there is
-   *  no swap / quote yet. Same single-price calculation as
-   *  `zapTotalCostPercent`. */
-  zapValueIn: PricePretty | undefined;
-  /** Fiat value landing in the position (value in minus swap fees and price
-   *  impact on the swapped slice), or undefined when there is no swap / quote
-   *  yet. Same single-price calculation as `zapTotalCostPercent`. */
-  zapValueOut: PricePretty | undefined;
-  /** Combined zap-in cost (price impact + swap fees) as a fraction of value in,
-   *  or undefined when there is no swap / quote yet. For a swap routed through
-   *  the destination pool this uses the POST-swap marginal impact when it is
-   *  worse than the quoted average-fill impact (overstating beats
-   *  understating: the averaging benefit on an own-pool route is clawed back
-   *  from the depositor's own position by arbitrage reversion). */
-  zapTotalCostPercent: RatePretty | undefined;
-  /** True when `zapTotalCostPercent` reaches the high-cost threshold (5%); the
-   *  breakdown styles the cost rust and the submit Confirm gate engages. */
-  zapHighCost: boolean;
-  /** True while the quote routes through the destination pool but the depth
-   *  data for the conservative (marginal) impact hasn't loaded. The modal
-   *  blocks submission on this so the gate never fires on the understated
-   *  average-fill figure. */
-  zapImpactPending: boolean;
-} {
-  const { accountStore, queriesStore, priceStore } = useStore();
+} & ZapInConfig {
   const apiUtils = api.useUtils();
 
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const {
+    address: walletAddress,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(osmosisChainId);
+  const address = walletAddress ?? "";
 
-  // Single-asset zap-in reuses the user's general swap slippage scope.
-  const zapSlippageConfig = useSlippageConfig();
-
-  // Persist the single-asset toggle per-pool (preference, not shareable state).
-  const [persistedSingleAssetMode, setPersistedSingleAssetMode] =
-    useLocalStorageState<boolean>(
-      `cl-add-position-single-asset-mode:${poolId}`,
-      false
-    );
+  const chain = useMemo(() => {
+    const chainInfo = getChainInfo(osmosisChainId);
+    if (chainInfo.currencies.length === 0) {
+      throw new Error("Chain doesn't have the sendable currency informations");
+    }
+    return {
+      placeholderCurrency: chainInfo.currencies[0],
+      feeCurrency: chainInfo.feeCurrencies[0],
+      stakeCurrency: chainInfo.stakeCurrency,
+    };
+  }, [osmosisChainId]);
 
   const { data: pool, isFetched: isPoolFetched } =
     api.local.pools.getPool.useQuery(
@@ -123,61 +624,10 @@ export function useAddConcentratedLiquidityConfig(
       }
     );
 
-  const [config] = useState(
-    () =>
-      new ObservableAddConcentratedLiquidityConfig(
-        chainGetter,
-        osmosisChainId,
-        poolId,
-        address,
-        queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances,
-        priceStore
-      )
+  const { data: balances } = api.local.balances.getUserBalances.useQuery(
+    { bech32Address: address },
+    { enabled: Boolean(address), select: selectRawBalances }
   );
-  // react dev tools will unmount the component so only dispose if
-  // in production environment, where the component will only unmount once
-  useEffect(
-    () => () => {
-      if (process.env.NODE_ENV === "production") {
-        config.dispose();
-      }
-    },
-    [config]
-  );
-
-  // Hydrate the single-asset toggle from the persisted per-pool preference.
-  // Pairs with the persist `reaction` below: hydration writes config <- storage,
-  // the reaction writes storage <- config.
-  //
-  // `useLocalStorageState` returns its default until an effect reads storage, so
-  // `persistedSingleAssetMode` arrives as the default first and the real value
-  // after. We mark hydration "done" only once and gate the persist reaction on
-  // it, so the intermediate default can't be written back over the stored value
-  // for the current pool (the localStorage race on poolId change).
-  const hydratedForPoolRef = useRef<string>();
-  useEffect(() => {
-    config.setSingleAssetMode(persistedSingleAssetMode);
-    hydratedForPoolRef.current = poolId;
-  }, [config, persistedSingleAssetMode, poolId]);
-
-  // Persist subsequent toggles. `reaction` (unlike `autorun`) doesn't fire on
-  // setup; the hydration guard additionally prevents persisting before the
-  // stored value for this pool has been read.
-  useEffect(
-    () =>
-      reaction(
-        () => config.singleAssetMode,
-        (singleAssetMode) => {
-          if (hydratedForPoolRef.current === poolId) {
-            setPersistedSingleAssetMode(singleAssetMode);
-          }
-        }
-      ),
-    [config, poolId, setPersistedSingleAssetMode]
-  );
-
-  if (pool && pool.type === "concentrated") config.setPool(pool);
 
   const { data: baseDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
     coinMinimalDenom: pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
@@ -186,10 +636,6 @@ export function useAddConcentratedLiquidityConfig(
   const { data: quoteDepositPrice } = api.edge.assets.getAssetPrice.useQuery({
     coinMinimalDenom: pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
   });
-
-  if (baseDepositPrice && quoteDepositPrice) {
-    config.setPrices(baseDepositPrice, quoteDepositPrice);
-  }
 
   const { data: historicalPriceData } =
     api.edge.assets.getAssetPairHistoricalPrice.useQuery(
@@ -203,172 +649,86 @@ export function useAddConcentratedLiquidityConfig(
       },
       { enabled: isPoolFetched }
     );
-  if (historicalPriceData)
-    config.setHistoricalPriceMinMax(
-      historicalPriceData.min,
-      historicalPriceData.max
+
+  // Single-asset mode is a per-pool preference, not shareable state.
+  const [persistedSingleAssetMode, setPersistedSingleAssetMode] =
+    useLocalStorageState<boolean>(
+      `cl-add-position-single-asset-mode:${poolId}`,
+      false
     );
 
-  // Quote the single-asset zap-in swap leg. Reactive to `config.requiredSwap`
-  // (the modal consuming this hook is an mobx observer). Disabled outside
-  // single-asset mode and when no swap is needed (range one-sided on the
-  // provided side), so it never queries unnecessarily.
-  const requiredSwap = config.requiredSwap;
-  const zapQuote = useClZapQuote({
-    tokenInAmount: requiredSwap?.swapInAmount.toString() ?? "0",
-    tokenInDenom: requiredSwap?.tokenInCurrency.coinMinimalDenom ?? "",
-    tokenOutDenom: requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
-    enabled: config.singleAssetMode && Boolean(requiredSwap?.needsSwap),
+  const stateConfig = useAddConcentratedLiquidityState({
+    poolId,
+    chain,
+    pool,
+    balances,
+    baseDepositPrice,
+    quoteDepositPrice,
+    historicalPriceMinMax: historicalPriceData,
+    initialSingleAssetMode: persistedSingleAssetMode,
+  });
+  const { setSingleAssetMode: setStateSingleAssetMode } = stateConfig;
+  const setSingleAssetMode = useCallback(
+    (enabled: boolean) => {
+      setStateSingleAssetMode(enabled);
+      setPersistedSingleAssetMode(enabled);
+    },
+    [setStateSingleAssetMode, setPersistedSingleAssetMode]
+  );
+  const config = useMemo(
+    () => ({ ...stateConfig, setSingleAssetMode }),
+    [stateConfig, setSingleAssetMode]
+  );
+
+  const zap = useZapIn({
+    poolId,
+    config,
+    transactionContext,
+    signAndBroadcast,
+    apiUtils,
   });
 
-  // Portion of the quoted swap routed through the DESTINATION pool itself.
-  // In an acyclic route the destination pair pool can only appear as a
-  // direct single-hop route (any other placement revisits a denom), so the
-  // routed amount is known exactly from the split. For that portion the
-  // quote's average-fill impact understates the depositor's true cost:
-  // arbitrage reverts the moved price at the expense of the in-range LPs,
-  // which the depositor is about to become, so the conservative basis is
-  // the POST-swap marginal price. Depths are fetched reactively to compute
-  // it; the same simulation runs authoritatively at submit time for the
-  // position minima.
-  const destinationRoutes = (zapQuote.quote?.split ?? []).filter(
-    (route) => route.pools.length === 1 && route.pools[0].id === poolId
-  );
-  const destinationRoutedInput = destinationRoutes.reduce(
-    (sum, route) => sum.add(route.initialAmount),
-    new Int(0)
-  );
-  const needsMarginalImpact = destinationRoutedInput.gt(new Int(0));
-  const { data: liquidityDepths } =
-    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
-      { poolId },
-      { enabled: needsMarginalImpact }
-    );
-  const marginalImpact: Dec | undefined = (() => {
-    if (!needsMarginalImpact) return undefined;
-    const spotSqrtPrice = config.pool?.currentSqrtPrice;
-    if (
-      !spotSqrtPrice ||
-      spotSqrtPrice.isZero() ||
-      !liquidityDepths ||
-      liquidityDepths.length === 0
-    )
-      return undefined;
-    const spread =
-      destinationRoutes[0].pools[0].spreadFactor?.toDec() ?? new Dec(0);
-    const effectiveIn = new Dec(destinationRoutedInput)
-      .mul(new Dec(1).sub(spread))
-      .truncate();
-    return calcMarginalPriceImpact({
-      currentSqrtPrice: spotSqrtPrice,
-      postSwapSqrtPrice: estimateSqrtPriceAfterSwapIn({
-        tokenInAmount: effectiveIn,
-        inputSide: config.singleAssetSide,
-        currentSqrtPrice: spotSqrtPrice,
-        liquidityDepths,
-      }),
-      inputSide: config.singleAssetSide,
-    });
-  })();
-  // True while the conservative figure is REQUIRED but not yet computable
-  // (depths still loading). The modal blocks submission on this, so the
-  // gate can never be evaluated on the understated average-fill figure.
-  const zapImpactPending = needsMarginalImpact && marginalImpact === undefined;
-
-  // Fiat value in, value out and the total zap-in cost as a fraction of value
-  // in: the combined value lost to price impact AND swap fees on the swapped
-  // slice. This is the single authoritative calculation shared by the
-  // breakdown's value rows, its rust styling and the submit Confirm gate, so
-  // the display and the gate can never diverge. Priced off the single
-  // input-side price so value out can't exceed value in.
-  const { price: zapInputPrice } = usePrice(requiredSwap?.tokenInCurrency);
   const {
-    zapValueIn,
-    zapValueOut,
-    zapTotalCostPercent,
-  }: {
-    zapValueIn?: PricePretty;
-    zapValueOut?: PricePretty;
-    zapTotalCostPercent?: RatePretty;
-  } = (() => {
-    const quote = zapQuote.quote;
-    if (!requiredSwap || !quote || !zapInputPrice) return {};
-    const valueIn = zapInputPrice.mul(
-      new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.inputAmount)
-    );
-    if (!valueIn.toDec().isPositive()) return {};
-    const swapInValue = zapInputPrice.mul(
-      new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.swapInAmount)
-    );
-    const retainedValue = zapInputPrice.mul(
-      new CoinPretty(
-        requiredSwap.tokenInCurrency,
-        requiredSwap.inputAmount.sub(requiredSwap.swapInAmount)
-      )
-    );
-    // Worst of the quoted (average-fill) impact and the destination pool's
-    // marginal impact: overstating beats understating here, because the
-    // averaging benefit on an own-pool route is clawed back from the
-    // depositor's own position when arbitrage reverts the price.
-    const quotedImpact = quote.priceImpactTokenOut?.toDec();
-    const displayImpact =
-      marginalImpact !== undefined &&
-      (quotedImpact === undefined || marginalImpact.lt(quotedImpact))
-        ? marginalImpact
-        : quotedImpact;
-    const valueOut = retainedValue.add(
-      getTokenOutFiatValue(displayImpact, swapInValue.toDec()).sub(
-        getTokenInFeeAmountFiatValue(
-          requiredSwap.tokenInCurrency,
-          quote.tokenInFeeAmount,
-          zapInputPrice
-        )
-      )
-    );
-    const cost = valueIn.toDec().sub(valueOut.toDec());
-    return {
-      zapValueIn: valueIn,
-      zapValueOut: valueOut,
-      zapTotalCostPercent: new RatePretty(cost.quo(valueIn.toDec())),
-    };
-  })();
-
-  // High-cost when the combined loss reaches 5% of value in. Lower and broader
-  // than a price-impact-only check, so a fee-heavy or thin-liquidity pool that
-  // quietly costs several percent is flagged.
-  const zapHighCost = Boolean(
-    config.singleAssetMode &&
-    zapTotalCostPercent &&
-    zapTotalCostPercent.toDec().gte(new Dec(0.05))
-  );
+    baseDepositAmountIn,
+    quoteDepositAmountIn,
+    baseDepositOnly,
+    quoteDepositOnly,
+    tickRange,
+    pool: clPoolParams,
+  } = config;
 
   const addLiquidity = useCallback(
     (superfluidValidatorAddress?: string) => {
       return new Promise<void>(async (resolve, reject) => {
         try {
           const quoteCoin = {
-            currency: config.quoteDepositAmountIn.sendCurrency,
-            amount: config.quoteDepositAmountIn.amount,
+            currency: quoteDepositAmountIn.sendCurrency,
+            amount: quoteDepositAmountIn.amount,
           };
           const baseCoin = {
-            currency: config.baseDepositAmountIn.sendCurrency,
-            amount: config.baseDepositAmountIn.amount,
+            currency: baseDepositAmountIn.sendCurrency,
+            amount: baseDepositAmountIn.amount,
           };
           let quoteDepositValue = undefined;
           let baseDepositValue = undefined;
-          if (config.baseDepositOnly) {
+          if (baseDepositOnly) {
             baseDepositValue = baseCoin;
-          } else if (config.quoteDepositOnly) {
+          } else if (quoteDepositOnly) {
             quoteDepositValue = quoteCoin;
           } else {
             quoteDepositValue = quoteCoin;
             baseDepositValue = baseCoin;
           }
 
-          await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
-            config.poolId,
-            config.tickRange[0],
-            config.tickRange[1],
+          const clPool = clPoolParams;
+          if (!clPool) throw new Error(`Pool #${poolId} not found`);
+
+          await prepareCreateConcentratedLiquidityPositionMsg(
+            transactionContext,
+            poolId,
+            clPool,
+            tickRange[0],
+            tickRange[1],
             superfluidValidatorAddress,
             baseDepositValue,
             quoteDepositValue,
@@ -388,7 +748,7 @@ export function useAddConcentratedLiquidityConfig(
                   .catch(reject);
               }
             }
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e: any) {
           console.error(e);
           reject(e.message);
@@ -396,39 +756,41 @@ export function useAddConcentratedLiquidityConfig(
       });
     },
     [
+      quoteDepositAmountIn.sendCurrency,
+      quoteDepositAmountIn.amount,
+      baseDepositAmountIn.sendCurrency,
+      baseDepositAmountIn.amount,
+      baseDepositOnly,
+      quoteDepositOnly,
+      clPoolParams,
       poolId,
-      account?.osmosis,
+      transactionContext,
+      tickRange,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       apiUtils.local.pools.getPool,
-      config.baseDepositAmountIn.sendCurrency,
-      config.baseDepositAmountIn.amount,
-      config.quoteDepositAmountIn.sendCurrency,
-      config.quoteDepositAmountIn.amount,
-      config.baseDepositOnly,
-      config.quoteDepositOnly,
-      config.tickRange,
-      config.poolId,
+      signAndBroadcast,
     ]
   );
 
   const increaseLiquidity = useCallback(
     (positionId: string) =>
       new Promise<void>(async (resolve, reject) => {
-        const coin0 = config.quoteDepositOnly
+        const coin0 = quoteDepositOnly
           ? {
-              denom: config.baseDepositAmountIn.sendCurrency.coinMinimalDenom,
+              denom: baseDepositAmountIn.sendCurrency.coinMinimalDenom,
               amount: "0",
             }
-          : config.baseDepositAmountIn.getAmountPrimitive();
-        const coin1 = config.baseDepositOnly
+          : baseDepositAmountIn.getAmountPrimitive();
+        const coin1 = baseDepositOnly
           ? {
-              denom: config.quoteDepositAmountIn.sendCurrency.coinMinimalDenom,
+              denom: quoteDepositAmountIn.sendCurrency.coinMinimalDenom,
               amount: "0",
             }
-          : config.quoteDepositAmountIn.getAmountPrimitive();
+          : quoteDepositAmountIn.getAmountPrimitive();
 
         try {
-          await account!.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+          await prepareAddToConcentratedLiquidityPositionMsg(
+            transactionContext,
             positionId,
             coin0,
             coin1,
@@ -448,44 +810,239 @@ export function useAddConcentratedLiquidityConfig(
                   .catch(reject);
               }
             }
-          );
+          ).then((prepared) => signAndBroadcast(...prepared));
         } catch (e: any) {
           console.error(e);
           reject(e.message);
         }
       }),
     [
-      poolId,
+      quoteDepositOnly,
+      baseDepositAmountIn,
+      baseDepositOnly,
+      quoteDepositAmountIn,
+      transactionContext,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       apiUtils.local.pools.getPool,
-      config.baseDepositAmountIn,
-      config.quoteDepositAmountIn,
-      config.baseDepositOnly,
-      config.quoteDepositOnly,
-      account,
+      poolId,
+      signAndBroadcast,
     ]
+  );
+
+  return { config, addLiquidity, increaseLiquidity, ...zap };
+}
+
+/** Total zap-in cost (price impact + swap fees) at which the submit Confirm
+ *  gate engages, as a fraction of value in. */
+const ZAP_HIGH_COST_THRESHOLD = new Dec(0.05);
+
+export interface ZapInConfig {
+  /** Swap + create-position in one atomic tx, for single-asset mode. */
+  zapInLiquidity: () => Promise<void>;
+  zapQuote: ReturnType<typeof useClZapQuote>;
+  /** The swap leg's slippage, resolved like the swap tool's (typed value,
+   *  else the tier picked from the quote, else the default) and held in
+   *  manual mode, so what the input shows is what the transaction signs. */
+  zapSlippageConfig: SlippageConfig;
+  /** The swap leg's guaranteed minimum output (the quote less slippage), as
+   *  displayed and as submitted. */
+  zapMinReceived: CoinPretty | undefined;
+  /** Where the swap leg's slippage came from (typed, auto tier, default). */
+  zapSlippageSource: SlippageSource;
+  /** True when the auto tier was picked without knowing route liquidity. */
+  zapSlippageLiquidityUnknown: boolean;
+  /** Fiat value of the full single-asset deposit; undefined without a quote
+   *  or an input price. */
+  zapValueIn: PricePretty | undefined;
+  /** Fiat value landing in the position: value in less `zapTotalCostPercent`;
+   *  undefined without a quote or an input price. */
+  zapValueOut: PricePretty | undefined;
+  /** Combined zap-in cost (swap fee + adverse price impact on the swapped
+   *  slice) as a fraction of the input, computed without fiat prices so the
+   *  gate also holds for unpriced assets. For a swap routed through the
+   *  destination pool this uses the POST-swap marginal impact when it is
+   *  worse than the quoted average fill: arbitrage reverts the moved price
+   *  against the in-range LPs, which the depositor is about to become. */
+  zapTotalCostPercent: RatePretty | undefined;
+  /** True when `zapTotalCostPercent` reaches the high-cost threshold. */
+  zapHighCost: boolean;
+  /** True while the quote routes through the destination pool but the depth
+   *  data for the marginal impact hasn't loaded; submission blocks on this so
+   *  the gate never evaluates on the understated average-fill figure. */
+  zapImpactPending: boolean;
+}
+
+/** Portion of a quote's swap input routed through the destination pool. In an
+ *  acyclic route the destination pair pool can only appear as a direct
+ *  single-hop route (any other placement revisits a denom), so the amount is
+ *  exact from the split. */
+function destinationRoutedInput(
+  quote: ClZapQuote | undefined,
+  poolId: string
+): { amount: Int; spread: Dec } {
+  const routes = (quote?.split ?? []).filter(
+    (route) => route.pools.length === 1 && route.pools[0].id === poolId
+  );
+  return {
+    amount: routes.reduce(
+      (sum, route) => sum.add(route.initialAmount),
+      new Int(0)
+    ),
+    // The chain charges the spread factor on token-in before the price math.
+    // The un-deducted taker fee overstates the movement slightly, which the
+    // pre/post-swap minima envelope absorbs.
+    spread: routes[0]?.pools[0].spreadFactor?.toDec() ?? new Dec(0),
+  };
+}
+
+function useZapIn({
+  poolId,
+  config,
+  transactionContext,
+  signAndBroadcast,
+  apiUtils,
+}: {
+  poolId: string;
+  config: AddConcentratedLiquidityConfig;
+  transactionContext: ReturnType<typeof useWallet>["transactionContext"];
+  signAndBroadcast: ReturnType<typeof useWallet>["signAndBroadcast"];
+  apiUtils: ReturnType<typeof api.useUtils>;
+}): ZapInConfig {
+  const zapSlippageConfig = useSwapSlippageConfig();
+
+  const {
+    requiredSwap,
+    singleAssetMode,
+    singleAssetSide,
+    singleAssetDepositAmountIn,
+    pool: clPool,
+    tickRange,
+  } = config;
+
+  // Denoms come from the selected side, not `requiredSwap`, so they stay put
+  // while the amount is briefly empty mid-edit and the held quote survives.
+  const sideCurrency =
+    singleAssetSide === "base" ? clPool?.baseCurrency : clPool?.quoteCurrency;
+  const otherCurrency =
+    singleAssetSide === "base" ? clPool?.quoteCurrency : clPool?.baseCurrency;
+  const zapQuote = useClZapQuote({
+    tokenInAmount: requiredSwap?.swapInAmount.toString() ?? "0",
+    tokenInDenom: sideCurrency?.coinMinimalDenom ?? "",
+    tokenOutDenom: otherCurrency?.coinMinimalDenom ?? "",
+    enabled: singleAssetMode && Boolean(requiredSwap?.needsSwap),
+  });
+  const quote = zapQuote.quote;
+
+  // Same resolution as the swap tool: a typed value, else the tier for this
+  // quote's impact and route liquidity, else the default. There is no review
+  // step to latch the tier against, and no fee simulation before submit.
+  const {
+    source: zapSlippageSource,
+    liquidityUnknown: zapSlippageLiquidityUnknown,
+  } = useSwapSlippage({
+    slippageConfig: zapSlippageConfig,
+    quote,
+    quoteType: "out-given-in",
+    feeError: undefined,
+    isReviewOpen: false,
+    isQuoteSettled: !zapQuote.isLoading && !zapQuote.isRefreshing,
+  });
+  const slippage = zapSlippageConfig.slippage.toDec();
+  // The swap leg's floor in micro units, computed once for display and submit.
+  const zapMinOutAmount = quote
+    ? new Dec(quote.amount.toCoin().amount)
+        .mul(new Dec(1).sub(slippage))
+        .truncate()
+    : undefined;
+  const zapMinReceived =
+    quote && zapMinOutAmount
+      ? new CoinPretty(quote.amount.currency, zapMinOutAmount)
+      : undefined;
+
+  // Marginal impact of the destination-routed slice, over the pool's live
+  // tick liquidity. The same simulation runs at submit time for the minima.
+  const destination = destinationRoutedInput(quote, poolId);
+  const needsMarginalImpact = destination.amount.gt(new Int(0));
+  const { data: liquidityDepths } =
+    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
+      { poolId },
+      { enabled: needsMarginalImpact }
+    );
+  let marginalImpact: Dec | undefined;
+  const spotSqrtPrice = clPool?.currentSqrtPrice;
+  if (
+    needsMarginalImpact &&
+    spotSqrtPrice &&
+    !spotSqrtPrice.isZero() &&
+    liquidityDepths &&
+    liquidityDepths.length > 0
+  ) {
+    marginalImpact = calcMarginalPriceImpact({
+      currentSqrtPrice: spotSqrtPrice,
+      postSwapSqrtPrice: estimateSqrtPriceAfterSwapIn({
+        tokenInAmount: new Dec(destination.amount)
+          .mul(new Dec(1).sub(destination.spread))
+          .truncate(),
+        inputSide: singleAssetSide,
+        currentSqrtPrice: spotSqrtPrice,
+        liquidityDepths,
+      }),
+      inputSide: singleAssetSide,
+    });
+  }
+  const zapImpactPending = needsMarginalImpact && marginalImpact === undefined;
+
+  // Total cost: one fiat-free calculation shared by the breakdown rows, the
+  // rust styling and the Confirm gate, so display and gate can't diverge and
+  // an unpriced input still gates. Value in and out are only the fiat view of
+  // the same fraction.
+  let zapTotalCostPercent: RatePretty | undefined;
+  if (requiredSwap?.needsSwap && quote && clPool) {
+    // Worst of the quoted (average-fill) and marginal impacts.
+    const quotedImpact = quote.priceImpactTokenOut?.toDec();
+    const impact =
+      marginalImpact !== undefined &&
+      (quotedImpact === undefined || marginalImpact.lt(quotedImpact))
+        ? marginalImpact
+        : quotedImpact;
+    const costFraction = calcZapInCostFraction({
+      inputAmount: requiredSwap.inputAmount,
+      swapInAmount: requiredSwap.swapInAmount,
+      tokenOutAmount: new Int(quote.amount.toCoin().amount),
+      inputSide: singleAssetSide,
+      currentSqrtPrice: clPool.currentSqrtPrice,
+      swapFee: quote.swapFee?.toDec() ?? new Dec(0),
+      priceImpact: impact,
+      priceImpactUnknown: Boolean(quote.priceImpactUnknown),
+    });
+    if (costFraction) zapTotalCostPercent = new RatePretty(costFraction);
+  }
+  const { price: zapInputPrice } = usePrice(requiredSwap?.tokenInCurrency);
+  let zapValueIn: PricePretty | undefined;
+  let zapValueOut: PricePretty | undefined;
+  if (requiredSwap && zapTotalCostPercent && zapInputPrice) {
+    zapValueIn = zapInputPrice.mul(
+      new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.inputAmount)
+    );
+    zapValueOut = zapValueIn.mul(new Dec(1).sub(zapTotalCostPercent.toDec()));
+  }
+  const zapHighCost = Boolean(
+    singleAssetMode && zapTotalCostPercent?.toDec().gte(ZAP_HIGH_COST_THRESHOLD)
   );
 
   const zapInLiquidity = useCallback(
     () =>
       new Promise<void>(async (resolve, reject) => {
-        // Failures after broadcasting are surfaced by the global tx-event
-        // toast; failures BEFORE it (preflight: stale quote, missing pool
-        // price, unavailable depth data) have no other user-visible surface,
-        // so the catch below toasts them itself.
+        // Broadcast failures are toasted by the tx client. Failures BEFORE it
+        // (stale quote, missing pool price, unavailable depth data) have no
+        // other user-visible surface, so the catch below toasts them.
         let broadcastAttempted = false;
         try {
-          const requiredSwap = config.requiredSwap;
           if (!requiredSwap) throw new Error("No single-asset amount entered");
+          if (!clPool) throw new Error(`Pool #${poolId} not found`);
+          const [lowerTick, upperTick] = tickRange;
 
-          const [lowerTick, upperTick] = config.tickRange;
-          const baseCurrency = config.baseDepositAmountIn.sendCurrency;
-          const quoteCurrency = config.quoteDepositAmountIn.sendCurrency;
-
-          const onFulfill = (tx: {
-            code?: number | string;
-            rawLog?: string;
-          }) => {
+          const onFulfill = (tx: { code?: number; rawLog?: string }) => {
             if (tx.code) reject(tx.rawLog);
             else {
               Promise.all([
@@ -501,172 +1058,101 @@ export function useAddConcentratedLiquidityConfig(
 
           // A two-sided range that needs no swap only because the split
           // truncated to zero (dust input) must not be sent as a one-sided
-          // position — the chain would reject or strand it. Reject early.
+          // position.
           if (!requiredSwap.needsSwap && !requiredSwap.rangeIsOneSided) {
             throw new Error(
               "Deposit amount too small to compute a swap for this range"
             );
           }
 
-          // Range entirely on the provided asset's side: no swap, create a
-          // one-sided position directly with the full provided amount.
+          // Range entirely on the provided side: no swap, create a one-sided
+          // position directly with the full provided amount.
           if (!requiredSwap.needsSwap) {
-            const providedSide =
-              config.singleAssetSide === "base"
-                ? {
-                    base: {
-                      currency: baseCurrency,
-                      amount: config.baseDepositAmountIn.amount,
-                    },
-                    quote: undefined,
-                  }
-                : {
-                    base: undefined,
-                    quote: {
-                      currency: quoteCurrency,
-                      amount: config.quoteDepositAmountIn.amount,
-                    },
-                  };
-
+            const provided = {
+              currency: singleAssetDepositAmountIn.sendCurrency,
+              amount: singleAssetDepositAmountIn.amount,
+            };
             broadcastAttempted = true;
-            await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
-              poolId,
-              lowerTick,
-              upperTick,
-              undefined,
-              providedSide.base,
-              providedSide.quote,
-              undefined,
-              undefined,
-              onFulfill
-            );
+            const prepared =
+              await prepareCreateConcentratedLiquidityPositionMsg(
+                transactionContext,
+                poolId,
+                clPool,
+                lowerTick,
+                upperTick,
+                undefined,
+                singleAssetSide === "base" ? provided : undefined,
+                singleAssetSide === "quote" ? provided : undefined,
+                undefined,
+                undefined,
+                onFulfill
+              );
+            await signAndBroadcast(...prepared);
             return;
           }
 
-          const quote = zapQuote.quote;
-          if (!quote) throw new Error("Swap quote not ready");
+          if (!quote || zapQuote.isRefreshing)
+            throw new Error("Swap quote not ready");
 
-          const slippageMultiplier = new Dec(1).sub(
-            zapSlippageConfig.slippage.toDec()
-          );
+          const routes = quote.split.map((route) => ({
+            pools: route.pools.map((routePool, i: number) => ({
+              id: routePool.id,
+              tokenOutDenom: route.tokenOutDenoms[i],
+            })),
+            tokenInAmount: route.initialAmount.toString(),
+          }));
 
-          // Swap route(s) from the SQS quote, verbatim.
-          const routes = quote.split.map(
-            (route: ClZapQuote["split"][number]) => ({
-              pools: route.pools.map(
-                (routePool: { id: string }, i: number) => ({
-                  id: routePool.id,
-                  tokenOutDenom: route.tokenOutDenoms[i],
-                })
-              ),
-              tokenInAmount: route.initialAmount.toString(),
-            })
-          );
-
-          const outMicro = new Int(quote.amount.toCoin().amount);
-          const tokenOutMinAmount = new Dec(outMicro)
-            .mul(slippageMultiplier)
-            .truncate();
+          const tokenOutMinAmount = zapMinOutAmount ?? new Int(0);
           if (tokenOutMinAmount.lte(new Int(0)))
             throw new Error("Swap output floor rounds to zero");
 
-          // Amounts the position is supplied with (micro). `tokensProvided` is
-          // the MAX the chain pulls from the wallet, so each side must be an
-          // amount the wallet is GUARANTEED to hold after the swap leg, or
-          // create-position underflows and the whole tx reverts ("insufficient
-          // funds"):
-          //  - Provided (un-swapped) side: the exact leftover input. This stays
-          //    in the wallet untouched by the swap, so its full amount is safe.
-          //  - Swapped side: the swap only guarantees `tokenOutMinAmount`
-          //    (expected out x (1 - slip)); the actual fill is typically below
-          //    the expected `outMicro` on any non-trivial market. Supplying the
-          //    expected output would let create-position try to pull more than
-          //    the swap delivered. Use the guaranteed floor instead. Any
-          //    positive-slippage surplus stays as wallet dust rather than
-          //    reverting the position.
+          // `tokensProvided` is the MAX the chain pulls, so each side is an
+          // amount the wallet is GUARANTEED to hold after the swap leg: the
+          // exact un-swapped remainder, and the swap's guaranteed floor (not
+          // the expected output) on the swapped side. A positive-slippage
+          // surplus stays as wallet dust rather than reverting the position.
           const providedRemaining = requiredSwap.inputAmount.sub(
             requiredSwap.swapInAmount
           );
-          const swapFloor = tokenOutMinAmount;
           const baseMicro =
-            config.singleAssetSide === "base" ? providedRemaining : swapFloor;
+            singleAssetSide === "base" ? providedRemaining : tokenOutMinAmount;
           const quoteMicro =
-            config.singleAssetSide === "base" ? swapFloor : providedRemaining;
-
+            singleAssetSide === "base" ? tokenOutMinAmount : providedRemaining;
           const tokensProvided = [
-            { denom: baseCurrency.coinMinimalDenom, amount: baseMicro },
-            { denom: quoteCurrency.coinMinimalDenom, amount: quoteMicro },
-          ]
-            .sort((a, b) => a.denom.localeCompare(b.denom))
-            .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+            { denom: clPool.baseCurrency.coinMinimalDenom, amount: baseMicro },
+            {
+              denom: clPool.quoteCurrency.coinMinimalDenom,
+              amount: quoteMicro,
+            },
+          ].map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
 
-          // token0/token1 minima: a slippage buffer below each side's EXPECTED
-          // consumption, not below its cap. The chain fits the caps to the
-          // position's required ratio at the sqrt price AT EXECUTION — after
-          // the swap leg has settled. Two effects put that price below the
-          // frictionless spot projection the split was solved against:
-          //  - The quoted output embeds spread, fee and impact, so the
-          //    swapped side's cap (its guaranteed floor) sits below the spot
-          //    projection and the ratio-fit consumes proportionally less of
-          //    the provided side.
-          //  - A route through the DESTINATION pool itself moves the pool's
-          //    own sqrt price before MsgCreatePosition runs. In an acyclic
-          //    route the destination pair pool can only appear as a direct
-          //    single-hop route (any other position would revisit a denom),
-          //    so the exact amount routed through it is known from the split.
-          //    Simulate that movement over the pool's live tick liquidity and
-          //    envelope the expected consumption between the pre- and
-          //    post-swap prices (see `calcZapInPositionMinima`).
-          // Deriving minima from the raw caps instead would exceed what the
-          // position can consume and revert on any quoted spread or own-pool
-          // movement. Both legs revert together.
-          const spotSqrtPrice = config.pool?.currentSqrtPrice;
-          if (!spotSqrtPrice) throw new Error("Pool price not loaded");
-
+          // Minima sit one slippage-width below each side's EXPECTED
+          // consumption at the price the position is created at. A route
+          // through the destination pool itself moves that price first, so
+          // simulate the move over the live tick liquidity and envelope the
+          // minima between the pre- and post-swap prices. The depth data is
+          // REQUIRED for that route: fail closed rather than compose spot-only
+          // minima that the moved price would revert.
           let postSwapSqrtPrice: BigDec | undefined;
-          const destinationRoutes = quote.split.filter(
-            (route: ClZapQuote["split"][number]) =>
-              route.pools.length === 1 && route.pools[0].id === poolId
-          );
-          const amountThroughDestination = destinationRoutes.reduce(
-            (sum: Int, route: ClZapQuote["split"][number]) =>
-              sum.add(route.initialAmount),
-            new Int(0)
-          );
-          if (amountThroughDestination.gt(new Int(0))) {
-            // The depth data is REQUIRED to compose safe minima for a route
-            // through the destination pool: falling back to the spot-only fit
-            // would recreate the revert this simulation prevents (a
-            // high-impact own-swap shifts the ratio past the spot-fitted
-            // floors). Fail closed — reject the submission — when it cannot
-            // be loaded, rather than broadcasting with unsafe minima.
+          const submitDestination = destinationRoutedInput(quote, poolId);
+          if (submitDestination.amount.gt(new Int(0))) {
+            const depthsError = new Error(
+              "Pool liquidity data required for this swap route could not be loaded, please try again"
+            );
             const depths =
               await apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
                 .fetch({ poolId })
                 .catch((e) => {
                   console.error(e);
-                  throw new Error(
-                    "Pool liquidity data required for this swap route could not be loaded, please try again"
-                  );
+                  throw depthsError;
                 });
-            if (!depths || depths.length === 0) {
-              throw new Error(
-                "Pool liquidity data required for this swap route could not be loaded, please try again"
-              );
-            }
-            // The chain charges the spread factor (and taker fee) on
-            // token-in before the price math; deduct the spread here. The
-            // un-deducted taker fee overstates the movement slightly, which
-            // the pre/post-swap envelope absorbs.
-            const spread =
-              destinationRoutes[0].pools[0].spreadFactor?.toDec() ?? new Dec(0);
-            const effectiveIn = new Dec(amountThroughDestination)
-              .mul(new Dec(1).sub(spread))
-              .truncate();
+            if (!depths || depths.length === 0) throw depthsError;
             postSwapSqrtPrice = estimateSqrtPriceAfterSwapIn({
-              tokenInAmount: effectiveIn,
-              inputSide: config.singleAssetSide,
-              currentSqrtPrice: spotSqrtPrice,
+              tokenInAmount: new Dec(submitDestination.amount)
+                .mul(new Dec(1).sub(submitDestination.spread))
+                .truncate(),
+              inputSide: singleAssetSide,
+              currentSqrtPrice: clPool.currentSqrtPrice,
               liquidityDepths: depths,
             });
           }
@@ -676,16 +1162,16 @@ export function useAddConcentratedLiquidityConfig(
             cap1: quoteMicro,
             lowerTick,
             upperTick,
-            currentSqrtPrice: spotSqrtPrice,
+            currentSqrtPrice: clPool.currentSqrtPrice,
             postSwapSqrtPrice,
-            slippage: zapSlippageConfig.slippage.toDec(),
+            slippage,
           });
-          const tokenMinAmount0 = minima.tokenMinAmount0.toString();
-          const tokenMinAmount1 = minima.tokenMinAmount1.toString();
 
           broadcastAttempted = true;
-          await account?.osmosis.sendZapInToConcentratedPositionMsg(
+          const prepared = await prepareZapInToConcentratedPositionMsg(
+            transactionContext,
             poolId,
+            clPool,
             lowerTick,
             upperTick,
             {
@@ -695,17 +1181,15 @@ export function useAddConcentratedLiquidityConfig(
               tokenOutMinAmount: tokenOutMinAmount.toString(),
             },
             tokensProvided,
-            tokenMinAmount0,
-            tokenMinAmount1,
+            minima.tokenMinAmount0.toString(),
+            minima.tokenMinAmount1.toString(),
             undefined,
             onFulfill
           );
+          await signAndBroadcast(...prepared);
         } catch (e: unknown) {
           console.error(e);
           const message = e instanceof Error ? e.message : String(e);
-          // Preflight failures never reach the broadcast machinery, so no
-          // tx toast exists for them; surface the cause here. Broadcast
-          // failures are already toasted by the global tx-event handler.
           if (!broadcastAttempted) {
             displayToast(
               {
@@ -719,1193 +1203,34 @@ export function useAddConcentratedLiquidityConfig(
         }
       }),
     [
+      requiredSwap,
+      clPool,
       poolId,
-      account?.osmosis,
+      tickRange,
       apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       apiUtils.local.pools.getPool,
-      config,
-      zapQuote.quote,
-      zapSlippageConfig,
+      singleAssetDepositAmountIn,
+      singleAssetSide,
+      transactionContext,
+      signAndBroadcast,
+      quote,
+      zapQuote.isRefreshing,
+      zapMinOutAmount,
+      slippage,
     ]
   );
 
   return {
-    config,
-    addLiquidity,
-    increaseLiquidity,
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapMinReceived,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
     zapValueIn,
     zapValueOut,
     zapTotalCostPercent,
     zapHighCost,
     zapImpactPending,
   };
-}
-
-const MODERATE_STRATEGY_MULTIPLIER = 0.25;
-const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
-
-/** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
- */
-export class ObservableAddConcentratedLiquidityConfig {
-  @observable
-  protected _sender: string;
-
-  @observable.ref
-  protected _pool: Pool | null = null;
-
-  /*
-	 Used to get current view type of AddConcLiquidity modal
-	 */
-  @observable
-  protected _modalView: "add_manual" = "add_manual";
-
-  /*
-   Used to get min and max range for adding concentrated liquidity
-   */
-  @observable
-  protected _priceRangeInput: [PriceConfig, PriceConfig];
-
-  @observable
-  protected _fullRange: boolean = false;
-
-  /*
-   Used to get base and quote asset deposit for adding concentrated liquidity
-   */
-  @observable
-  protected _baseDepositAmountIn: AmountConfig;
-
-  @observable
-  protected _quoteDepositAmountIn: AmountConfig;
-
-  @observable
-  protected _baseDepositPrice: PricePretty | null = null;
-
-  @observable
-  protected _quoteDepositPrice: PricePretty | null = null;
-
-  @observable
-  protected _anchorAsset: "base" | "quote" = "base";
-
-  /** When true, the user deposits a single asset and the frontend swaps part of
-   *  it (zap-in) to match the position's required ratio. Distinct from
-   *  `_anchorAsset` (which only drives the two-asset counterparty autocalc). */
-  @observable
-  protected _singleAssetMode = false;
-
-  /** Which side the user is providing in single-asset mode. */
-  @observable
-  protected _singleAssetSide: "base" | "quote" = "base";
-
-  @observable
-  protected _superfluidStakingElected = false;
-
-  @observable
-  protected chainId: string;
-
-  @observable
-  protected _minHistoricalPrice: number | null = null;
-
-  @observable
-  protected _maxHistoricalPrice: number | null = null;
-
-  @computed
-  get pool() {
-    if (this._pool?.type !== "concentrated") return null;
-
-    const [base, quote] = this._pool.reserveCoins;
-    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-      (base.currency.coinDecimals ?? 0) - (quote.currency.coinDecimals ?? 0)
-    );
-
-    const pool = {
-      ...this._pool,
-      type: "concentrated",
-      raw: this._pool.raw as ConcentratedPoolRawResponse,
-    };
-
-    const currentSqrtPrice = new BigDec(pool.raw.current_sqrt_price);
-
-    return {
-      ...pool,
-      poolAssetDenoms: [base.currency.coinDenom, quote.currency.coinDenom],
-      currentSqrtPrice,
-      currentPrice: currentSqrtPrice
-        .mul(currentSqrtPrice)
-        .toDec()
-        .mul(multiplicationQuoteOverBase),
-      tickSpacing: Number(pool.raw.tick_spacing),
-    };
-  }
-
-  @computed
-  get isInactivePool(): boolean {
-    if (!this._pool || this._pool.type !== "concentrated") return false;
-
-    // Inactive pool: has TVL but no in-range liquidity at current price
-    // This happens when all liquidity positions are out of range
-    const poolRaw = this._pool.raw as ConcentratedPoolRawResponse;
-    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
-    const isTickLiquidityZero = currentTickLiquidity
-      ? parseFloat(currentTickLiquidity) === 0
-      : false;
-    const hasTVL =
-      this._pool.tvlUnknown ||
-      this._pool.totalFiatValueLocked.toDec().gt(new Dec(0));
-
-    return isTickLiquidityZero && hasTVL;
-  }
-
-  get sender(): string {
-    return this._sender;
-  }
-
-  get modalView(): "add_manual" {
-    return this._modalView;
-  }
-
-  /** Flag indicating that the user prefers superfluid staking for this full range position. */
-  get shouldBeSuperfluidStaked() {
-    return this._superfluidStakingElected && this.fullRange;
-  }
-
-  /** Current price adjusted with base and quote token decimals. */
-  @computed
-  get currentPriceWithDecimals(): Dec {
-    return this.pool?.currentPrice ?? new Dec(0);
-  }
-
-  /** Current price, without currency decimals. */
-  @computed
-  get currentPrice(): Dec {
-    const currentSqrtPrice = this.pool?.currentSqrtPrice;
-    if (!currentSqrtPrice) return new Dec(0);
-    return currentSqrtPrice.mul(currentSqrtPrice).toDec();
-  }
-
-  /** Moderate price range, without currency decimals. */
-  @computed
-  get moderatePriceRange(): [Dec, Dec] {
-    if (
-      !this.pool ||
-      this._minHistoricalPrice === null ||
-      this._maxHistoricalPrice === null
-    )
-      return [new Dec(0.1), new Dec(100)];
-
-    const min = this._minHistoricalPrice;
-    const max = this._maxHistoricalPrice;
-
-    // query returns prices with decimals for display
-    const minPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice7d = this._priceRangeInput[1].removeCurrencyDecimals(max);
-    const priceDiff = maxPrice7d
-      .sub(minPrice7d)
-      .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
-
-    return [
-      roundPriceToNearestTick(
-        minPrice7d.sub(priceDiff).abs(),
-        this.pool.tickSpacing,
-        true
-      ),
-      roundPriceToNearestTick(
-        maxPrice7d.add(priceDiff).abs(),
-        this.pool.tickSpacing,
-        false
-      ),
-    ];
-  }
-
-  @computed
-  get moderateTickRange(): [Int, Int] {
-    return [
-      roundToNearestDivisible(
-        priceToTick(this.moderatePriceRange[0]),
-        this.tickDivisor
-      ),
-      roundToNearestDivisible(
-        priceToTick(this.moderatePriceRange[1]),
-        this.tickDivisor
-      ),
-    ];
-  }
-
-  /** Initial custom price range, without currency decimals. */
-  @computed
-  get initialCustomPriceRange(): [Dec, Dec] {
-    if (!this.pool) return [new Dec(0.1), new Dec(100)];
-
-    return [
-      roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.45)),
-        this.pool.tickSpacing,
-        true
-      ),
-      roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.55)),
-        this.pool.tickSpacing,
-        false
-      ),
-    ];
-  }
-
-  @computed
-  get initialCustomTickRange(): [Int, Int] {
-    return [
-      roundToNearestDivisible(
-        priceToTick(this.initialCustomPriceRange[0]),
-        this.tickDivisor
-      ),
-      roundToNearestDivisible(
-        priceToTick(this.initialCustomPriceRange[1]),
-        this.tickDivisor
-      ),
-    ];
-  }
-
-  /** Aggressive price range, without currency decimals. */
-  @computed
-  get aggressivePriceRange(): [Dec, Dec] {
-    if (
-      !this.pool ||
-      this._minHistoricalPrice === null ||
-      this._maxHistoricalPrice === null
-    )
-      return [new Dec(0.1), new Dec(100)];
-
-    const min = this._minHistoricalPrice;
-    const max = this._maxHistoricalPrice;
-
-    // query returns prices with decimals for display
-    const minPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(min);
-    const maxPrice1Mo = this._priceRangeInput[1].removeCurrencyDecimals(max);
-    const priceDiff = maxPrice1Mo
-      .sub(minPrice1Mo)
-      .mul(new Dec(AGGRESSIVE_STRATEGY_MULTIPLIER));
-
-    return [
-      roundPriceToNearestTick(
-        minPrice1Mo.sub(priceDiff).abs(),
-        this.pool.tickSpacing,
-        true
-      ),
-      roundPriceToNearestTick(
-        maxPrice1Mo.add(priceDiff).abs(),
-        this.pool.tickSpacing,
-        false
-      ),
-    ];
-  }
-
-  @computed
-  get aggressiveTickRange(): [Int, Int] {
-    return [
-      roundToNearestDivisible(
-        priceToTick(this.aggressivePriceRange[0]),
-        this.tickDivisor
-      ),
-      roundToNearestDivisible(
-        priceToTick(this.aggressivePriceRange[1]),
-        this.tickDivisor
-      ),
-    ];
-  }
-
-  /** Used to ensure ticks are cleanly divisible by. */
-  protected get tickDivisor() {
-    return new Int(this.pool?.tickSpacing ?? 100);
-  }
-
-  @computed
-  get depositPercentages(): [RatePretty, RatePretty] {
-    if (!this.pool) return [new RatePretty(0), new RatePretty(0)];
-    if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
-    if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
-
-    // Safety check: if pool has no liquidity (currentSqrtPrice is zero), return equal percentages
-    if (this.pool.currentSqrtPrice.isZero()) {
-      return [new RatePretty(0.5), new RatePretty(0.5)];
-    }
-
-    // Safety check: if prices are not loaded yet, return equal percentages
-    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
-      return [new RatePretty(0.5), new RatePretty(0.5)];
-    }
-
-    try {
-      const amount1 = new Int(1)
-        .toDec()
-        .mul(
-          DecUtils.getTenExponentN(
-            this._quoteDepositAmountIn.sendCurrency.coinDecimals
-          )
-        )
-        .truncate();
-
-      const [lowerTick, upperTick] = this.tickRange;
-
-      // calculate proportional amount of other amount
-      const amount0 = calcAmount0(
-        amount1,
-        lowerTick,
-        upperTick,
-        this.pool.currentSqrtPrice
-      );
-
-      const amount0Value = this._baseDepositPrice.mul(
-        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-      );
-      const amount1Value = this._quoteDepositPrice.mul(
-        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-      );
-
-      const totalValue = amount0Value.toDec().add(amount1Value.toDec());
-
-      if (totalValue.isZero())
-        return [new RatePretty(0.5), new RatePretty(0.5)];
-
-      return [
-        new RatePretty(amount0Value.toDec().quo(totalValue)),
-        new RatePretty(amount1Value.toDec().quo(totalValue)),
-      ];
-    } catch (error) {
-      // Fallback to equal percentages if calculation fails
-      console.error("Error calculating deposit percentages:", error);
-      return [new RatePretty(0.5), new RatePretty(0.5)];
-    }
-  }
-
-  get baseDenom(): string {
-    return this.pool?.poolAssetDenoms[0] ?? "";
-  }
-
-  get quoteDenom(): string {
-    return this.pool?.poolAssetDenoms[1] ?? "";
-  }
-
-  get fullRange(): boolean {
-    return this._fullRange;
-  }
-
-  get baseDepositAmountIn(): AmountConfig {
-    return this._baseDepositAmountIn;
-  }
-
-  get quoteDepositAmountIn(): AmountConfig {
-    return this._quoteDepositAmountIn;
-  }
-
-  get baseDepositPrice(): PricePretty | null {
-    return this._baseDepositPrice;
-  }
-
-  get quoteDepositPrice(): PricePretty | null {
-    return this._quoteDepositPrice;
-  }
-
-  get singleAssetMode(): boolean {
-    return this._singleAssetMode;
-  }
-
-  get singleAssetSide(): "base" | "quote" {
-    return this._singleAssetSide;
-  }
-
-  /** The amount config for the side the user provides in single-asset mode. */
-  @computed
-  get singleAssetDepositAmountIn(): AmountConfig {
-    return this._singleAssetSide === "base"
-      ? this._baseDepositAmountIn
-      : this._quoteDepositAmountIn;
-  }
-
-  /**
-   * In single-asset mode, the swap leg required to convert part of the provided
-   * asset into the counterparty so the post-swap amounts match the position's
-   * required ratio at the chosen range. `undefined` outside single-asset mode or
-   * before a positive amount is entered. When `swapInAmount` is zero the range
-   * is entirely on the provided asset's side and no swap is needed.
-   */
-  @computed
-  get requiredSwap():
-    | {
-        inputAmount: Int;
-        swapInAmount: Int;
-        tokenInCurrency: AmountConfig["sendCurrency"];
-        tokenOutCurrency: AmountConfig["sendCurrency"];
-        needsSwap: boolean;
-        /** True when spot is outside the chosen range, so the position is
-         *  genuinely one-sided and no swap is correct. Distinct from a two-sided
-         *  range whose swap split merely truncated to zero on a dust input. */
-        rangeIsOneSided: boolean;
-      }
-    | undefined {
-    if (!this._singleAssetMode || !this.pool) return undefined;
-    if (this.pool.currentSqrtPrice.isZero()) return undefined;
-
-    const side = this._singleAssetSide;
-    const inputConfig =
-      side === "base" ? this._baseDepositAmountIn : this._quoteDepositAmountIn;
-    const inputAmount = new Int(inputConfig.getAmountPrimitive().amount);
-    if (inputAmount.lte(new Int(0))) return undefined;
-
-    const [lowerTick, upperTick] = this.tickRange;
-    const swapInAmount = calcZapInSwapAmount({
-      inputAmount,
-      inputSide: side,
-      lowerTick,
-      upperTick,
-      currentSqrtPrice: this.pool.currentSqrtPrice,
-    });
-
-    // Classify spot vs range the same way calcZapInSwapAmount does internally,
-    // so the caller can tell a genuinely one-sided range (no swap correct) apart
-    // from a two-sided range whose split truncated to zero on a tiny input.
-    const currentSqrtPrice = this.pool.currentSqrtPrice;
-    const lowerSqrtPrice = new BigDec(tickToSqrtPrice(lowerTick));
-    const upperSqrtPrice = new BigDec(tickToSqrtPrice(upperTick));
-    const rangeIsOneSided =
-      currentSqrtPrice.lte(lowerSqrtPrice) ||
-      currentSqrtPrice.gte(upperSqrtPrice);
-
-    const tokenInCurrency =
-      side === "base"
-        ? this._baseDepositAmountIn.sendCurrency
-        : this._quoteDepositAmountIn.sendCurrency;
-    const tokenOutCurrency =
-      side === "base"
-        ? this._quoteDepositAmountIn.sendCurrency
-        : this._baseDepositAmountIn.sendCurrency;
-
-    return {
-      inputAmount,
-      swapInAmount,
-      tokenInCurrency,
-      tokenOutCurrency,
-      needsSwap: swapInAmount.gt(new Int(0)),
-      rangeIsOneSided,
-    };
-  }
-
-  /**
-   * Authoritative UI/submit state for single-asset mode, so the message, the
-   * quote gating, and the submit button all read one source of truth:
-   * - `undefined`  not in single-asset mode / pool not ready
-   * - `empty`      no positive amount typed yet
-   * - `too-small`  a positive amount was typed but it is below the token's
-   *                precision (rounds to 0 micro) or its swap split rounds to
-   *                zero on a two-sided range — not submittable
-   * - `one-sided`  spot is outside the range; deposit one asset, no swap
-   * - `swap`       a swap is required to reach the position ratio
-   */
-  @computed
-  get singleAssetInputState():
-    undefined | "empty" | "too-small" | "one-sided" | "swap" {
-    if (!this._singleAssetMode || !this.pool) return undefined;
-
-    const inputConfig =
-      this._singleAssetSide === "base"
-        ? this._baseDepositAmountIn
-        : this._quoteDepositAmountIn;
-
-    // Raw typed value (display units) vs the micro amount. A non-empty raw value
-    // that floors to 0 micro is a sub-precision "too small" input, not "empty".
-    const rawAmount = inputConfig.amount?.trim() ?? "";
-    const hasTypedPositive = rawAmount !== "" && Number(rawAmount) > 0;
-    const microAmount = new Int(inputConfig.getAmountPrimitive().amount);
-
-    if (!hasTypedPositive && microAmount.lte(new Int(0))) return "empty";
-    if (microAmount.lte(new Int(0))) return "too-small";
-
-    const swap = this.requiredSwap;
-    if (!swap) return "too-small";
-    if (swap.needsSwap) return "swap";
-    // No swap, but only valid when the range is genuinely one-sided. A two-sided
-    // range whose swap rounds to zero is a dust input.
-    return swap.rangeIsOneSided ? "one-sided" : "too-small";
-  }
-
-  @computed
-  get baseDepositOnly(): boolean {
-    // can be 0 if no positions in pool
-    if (this.currentPrice.isZero()) return false;
-
-    const range0 = this.range[0];
-    const range1 = this.range[1];
-    if (typeof range0 === "string" || typeof range1 === "string") return false;
-
-    return (
-      !this.fullRange &&
-      this.currentPrice.lt(range0) &&
-      this.currentPrice.lt(range1)
-    );
-  }
-
-  @computed
-  get quoteDepositOnly(): boolean {
-    // can be 0 if no positions in pool
-    if (this.currentPrice.isZero()) return false;
-
-    return (
-      !this.fullRange &&
-      this.currentPrice.gt(this.range[0]) &&
-      this.currentPrice.gt(this.range[1])
-    );
-  }
-
-  @computed
-  get currentStrategy(): "passive" | "aggressive" | "moderate" | null {
-    const isRangePassive = this.fullRange;
-    const isRangeAggressive =
-      !isRangePassive &&
-      this.tickRange[0].equals(this.aggressiveTickRange[0]) &&
-      this.tickRange[1].equals(this.aggressiveTickRange[1]);
-    const isRangeModerate =
-      !isRangePassive &&
-      this.tickRange[0].equals(this.moderateTickRange[0]) &&
-      this.tickRange[1].equals(this.moderateTickRange[1]);
-
-    if (isRangePassive) return "passive";
-    if (isRangeModerate) return "moderate";
-    if (isRangeAggressive) return "aggressive";
-    return null;
-  }
-
-  @computed
-  get error(): Error | undefined {
-    if (!this.fullRange && this.range[0].gte(this.range[1])) {
-      return new InvalidRangeError(
-        "lower range must be less than upper range."
-      );
-    }
-
-    // In single-asset mode only the provided side's input is relevant.
-    if (this._singleAssetMode) {
-      return this.singleAssetDepositAmountIn.error;
-    }
-
-    if (this.quoteDepositOnly) {
-      return this._quoteDepositAmountIn.error;
-    }
-
-    if (this.baseDepositOnly) {
-      return this._baseDepositAmountIn.error;
-    }
-
-    return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
-  }
-
-  /** User-selected price range without currency decimals, rounded to nearest tick. Within +/-50x of current tick. */
-  @computed
-  protected get range(): [Dec, Dec] {
-    const input0 = this._priceRangeInput[0].toDec();
-    const input1 = this._priceRangeInput[1].toDec();
-    if (this.fullRange || !this.pool) return [minSpotPrice, maxSpotPrice];
-
-    const inputMinPrice = roundPriceToNearestTick(
-      input0,
-      this.pool.tickSpacing,
-      true
-    );
-    const inputMaxPrice = roundPriceToNearestTick(
-      input1,
-      this.pool.tickSpacing,
-      true
-    );
-
-    const minPrice50x = this.pool.currentSqrtPrice
-      .mul(this.pool.currentSqrtPrice)
-      .toDec()
-      .quo(new Dec(50));
-    const maxPrice50x = this.pool.currentSqrtPrice
-      .mul(this.pool.currentSqrtPrice)
-      .toDec()
-      .mul(new Dec(50));
-
-    return [
-      inputMinPrice.lt(minPrice50x) ? minPrice50x : inputMinPrice,
-      inputMaxPrice.gt(maxPrice50x) ? maxPrice50x : inputMaxPrice,
-    ];
-  }
-
-  /** Price range with decimals adjusted based on currencies. */
-  @computed
-  get rangeWithCurrencyDecimals(): [Dec, Dec] {
-    if (this.fullRange) {
-      return [
-        this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
-        // for display, avoid using max spot price since the price chart would get flattened
-        this.currentPriceWithDecimals.mul(new Dec(2)),
-      ];
-    }
-
-    return [
-      this._priceRangeInput[0].toDecWithCurrencyDecimals(),
-      this._priceRangeInput[1].toDecWithCurrencyDecimals(),
-    ];
-  }
-
-  /** Warning: not adjusted to nearest valid tick or adjusted and **does include** currency decimals. */
-  @computed
-  get rangeRaw(): [string, string] {
-    return [
-      this._priceRangeInput[0].toString(),
-      this._priceRangeInput[1].toString(),
-    ];
-  }
-
-  @computed
-  get tickRange(): [Int, Int] {
-    if (this.fullRange || !this.pool) return [minTick, maxTick];
-    try {
-      // account for precision issues from price <> tick conversion
-      const lowerTick = priceToTick(this.range[0]);
-      const upperTick = priceToTick(this.range[1]);
-
-      let lowerTickRounded = roundToNearestDivisible(
-        lowerTick,
-        this.tickDivisor
-      );
-      let upperTickRounded = roundToNearestDivisible(
-        upperTick,
-        this.tickDivisor
-      );
-
-      // If they rounded to the same value, pad both to respect the
-      // user's desired range.
-      if (lowerTickRounded.equals(upperTickRounded)) {
-        lowerTickRounded = lowerTickRounded.sub(this.tickDivisor);
-        upperTickRounded = upperTickRounded.add(this.tickDivisor);
-      }
-
-      return [
-        lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
-        upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
-      ];
-    } catch (e) {
-      console.error(e);
-      return [minTick, maxTick];
-    }
-  }
-
-  protected _disposers: (() => void)[] = [];
-
-  constructor(
-    protected readonly chainGetter: ChainGetter,
-    initialChainId: string,
-    readonly poolId: string,
-    sender: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly queryBalances: ObservableQueryBalances,
-    protected readonly priceStore: IPriceStore
-  ) {
-    this.chainId = initialChainId;
-
-    this._sender = sender;
-
-    this._baseDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
-    );
-
-    this._quoteDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
-    );
-
-    this._baseDepositAmountIn.setAmount("0");
-    this._quoteDepositAmountIn.setAmount("0");
-
-    this._priceRangeInput = [
-      new PriceConfig(
-        this._baseDepositAmountIn.sendCurrency,
-        this._quoteDepositAmountIn.sendCurrency
-      ),
-      new PriceConfig(
-        this._baseDepositAmountIn.sendCurrency,
-        this._quoteDepositAmountIn.sendCurrency
-      ),
-    ];
-
-    const queryAccountBalances =
-      this.queryBalances.getQueryBech32Address(sender);
-
-    let initialized = false;
-
-    // Set the initial range to be the initial custom range
-    this._disposers.push(
-      autorun(() => {
-        if (
-          this.pool &&
-          !this.isInactivePool &&
-          this._baseDepositAmountIn.sendCurrency &&
-          this._quoteDepositAmountIn.sendCurrency &&
-          this._minHistoricalPrice !== null &&
-          this._maxHistoricalPrice !== null &&
-          !initialized
-        ) {
-          const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-            (this._baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
-              (this._quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
-          );
-
-          // Set the initial range to be the moderate range
-          this.setMinRange(
-            this.moderatePriceRange[0]
-              .mul(multiplicationQuoteOverBase)
-              .toString()
-          );
-          this.setMaxRange(
-            this.moderatePriceRange[1]
-              .mul(multiplicationQuoteOverBase)
-              .toString()
-          );
-
-          initialized = true;
-        }
-      })
-    );
-
-    // Calculate quote amount when base amount is input and anchor is base
-    // Calculate an amount1 given an amount0
-    this._disposers.push(
-      autorun(() => {
-        const baseAmountRaw =
-          this.baseDepositAmountIn.getAmountPrimitive().amount;
-        const amount0 = new Int(baseAmountRaw);
-        const anchor = this._anchorAsset;
-
-        // In single-asset mode the counterparty comes from the swap quote, not
-        // the two-asset autocalc — suppress this autorun so it doesn't fight the
-        // zap-in by double-writing the counterparty amount.
-        if (this._singleAssetMode) return;
-
-        // TODO: check counterparty balance and subtract to not exceed that
-        // potential approach: subtract from to meet counterparty balance max amount then let effect set the max balance
-
-        if (anchor !== "base" || amount0.lte(new Int(0))) return;
-
-        // Special handling for inactive pools when Max is clicked
-        if (this.isInactivePool && this._baseDepositAmountIn.isMax) {
-          this.calculateInactivePoolCounterpartyAmount("base");
-          return;
-        }
-
-        // special case: inactive pools (no in-range liquidity) are handled above
-        // for active pools with no liquidity, return early - cannot calculate proportional amounts
-        if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
-          return;
-        }
-
-        if (amount0.isZero()) this._quoteDepositAmountIn.setAmount("0");
-
-        const [lowerTick, upperTick] = this.tickRange;
-
-        // calculate proportional amount of other amount
-        const amount1 = calcAmount1(
-          amount0,
-          lowerTick,
-          upperTick,
-          this.pool.currentSqrtPrice
-        );
-        // include decimals, as is displayed to user
-        const quoteCoin = new CoinPretty(
-          this._quoteDepositAmountIn.sendCurrency,
-          amount1
-        );
-
-        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._quoteDepositAmountIn.sendCurrency
-        );
-
-        // set max: if quote coin higher than quote balance, set to quote balance
-        if (
-          this._baseDepositAmountIn.isMax &&
-          quoteCoin.toDec().gt(quoteBalance.toDec())
-        ) {
-          this.setQuoteDepositAmountMax();
-        } else {
-          this._quoteDepositAmountIn.setAmount(
-            quoteCoin.hideDenom(true).locale(false).trim(true).toString()
-          );
-        }
-      })
-    );
-
-    // Calculate base amount when quote amount is input and anchor is quote
-    // calculate amount0 given an amount1
-    this._disposers.push(
-      autorun(() => {
-        const quoteAmountRaw =
-          this.quoteDepositAmountIn.getAmountPrimitive().amount;
-        const amount1 = new Int(quoteAmountRaw);
-        const anchor = this._anchorAsset;
-
-        // Suppressed in single-asset mode (see the base autorun above).
-        if (this._singleAssetMode) return;
-
-        if (anchor !== "quote" || amount1.lte(new Int(0))) return;
-
-        // Special handling for inactive pools when Max is clicked
-        if (this.isInactivePool && this._quoteDepositAmountIn.isMax) {
-          this.calculateInactivePoolCounterpartyAmount("quote");
-          return;
-        }
-
-        // special case: inactive pools (no in-range liquidity) are handled above
-        // for active pools with no liquidity, return early - cannot calculate proportional amounts
-        if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
-          return;
-        }
-
-        if (amount1.isZero()) this._baseDepositAmountIn.setAmount("0");
-
-        const [lowerTick, upperTick] = this.tickRange;
-
-        // calculate proportional amount of other amount
-        const amount0 = calcAmount0(
-          amount1,
-          lowerTick,
-          upperTick,
-          this.pool.currentSqrtPrice
-        );
-        // include decimals, as is displayed to user
-        const baseCoin = new CoinPretty(
-          this._baseDepositAmountIn.sendCurrency,
-          amount0
-        );
-
-        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._baseDepositAmountIn.sendCurrency
-        );
-
-        // set max: if base coin higher than base balance, set to base balance
-        if (
-          this._quoteDepositAmountIn.isMax &&
-          baseCoin.toDec().gt(baseBalance.toDec())
-        ) {
-          this.setBaseDepositAmountMax();
-        } else {
-          this._baseDepositAmountIn.setAmount(
-            baseCoin.hideDenom(true).locale(false).trim(true).toString()
-          );
-        }
-      })
-    );
-
-    makeObservable(this);
-  }
-
-  dispose() {
-    this._disposers.forEach((dispose) => dispose());
-  }
-
-  @action
-  setPool(pool: Pool) {
-    if (pool.type !== "concentrated") throw new Error("Wrong pool type");
-
-    this._pool = pool;
-
-    const [baseCurrency, quoteCurrency] = pool.reserveCoins.map(
-      (coin) => coin.currency
-    );
-
-    this._baseDepositAmountIn.setSendCurrency(baseCurrency);
-    this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
-    this._priceRangeInput[0].setBaseCurrency(baseCurrency);
-    this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
-    this._priceRangeInput[1].setBaseCurrency(baseCurrency);
-    this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
-
-    // subtract CL create pos tx gas when setting max amount of stake currency
-    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-    const createPosGasConfig = new FakeFeeConfig(
-      this.chainGetter,
-      this.chainId,
-      3_000_000 //osmosisMsgOpts.clCreatePosition.gas
-    );
-    if (stakeCurrency.coinMinimalDenom === baseCurrency.coinMinimalDenom) {
-      this._baseDepositAmountIn.setFeeConfig(createPosGasConfig);
-    } else if (
-      stakeCurrency.coinMinimalDenom === quoteCurrency.coinMinimalDenom
-    ) {
-      this._quoteDepositAmountIn.setFeeConfig(createPosGasConfig);
-    }
-  }
-
-  @action
-  readonly setElectSuperfluidStaking = (elected: boolean) => {
-    this._superfluidStakingElected = elected;
-  };
-
-  @action
-  setSender(sender: string) {
-    this._sender = sender;
-  }
-
-  @action
-  readonly setModalView = (viewType: "add_manual") => {
-    this._modalView = viewType;
-  };
-
-  @action
-  readonly setAnchorAsset = (anchor: "base" | "quote") => {
-    this._anchorAsset = anchor;
-  };
-
-  @action
-  readonly setSingleAssetMode = (enabled: boolean) => {
-    this._singleAssetMode = enabled;
-    if (enabled) {
-      // The counterparty is derived from the swap quote in single-asset mode;
-      // clear any amount the two-asset autocalc previously wrote so it isn't
-      // sent as a deposit.
-      const counterparty =
-        this._singleAssetSide === "base"
-          ? this._quoteDepositAmountIn
-          : this._baseDepositAmountIn;
-      counterparty.setIsMax(false);
-      counterparty.setAmount("0");
-    }
-  };
-
-  @action
-  readonly setSingleAssetSide = (side: "base" | "quote") => {
-    this._singleAssetSide = side;
-    this._anchorAsset = side;
-    this._baseDepositAmountIn.setIsMax(false);
-    this._quoteDepositAmountIn.setIsMax(false);
-    // zero the counterparty so the previously-provided side doesn't linger
-    const counterparty =
-      side === "base" ? this._quoteDepositAmountIn : this._baseDepositAmountIn;
-    counterparty.setAmount("0");
-  };
-
-  @action
-  readonly setBaseDepositAmountMax = () => {
-    this.setAnchorAsset("base");
-    this.quoteDepositAmountIn.setIsMax(false);
-    this.baseDepositAmountIn.setIsMax(true);
-  };
-
-  @action
-  readonly setQuoteDepositAmountMax = () => {
-    this.setAnchorAsset("quote");
-    this.baseDepositAmountIn.setIsMax(false);
-    this.quoteDepositAmountIn.setIsMax(true);
-  };
-
-  @action
-  protected calculateInactivePoolCounterpartyAmount(
-    anchorAsset: "base" | "quote"
-  ) {
-    // Safety check: ensure prices are loaded and valid
-    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
-      console.warn("Prices not loaded for inactive pool calculation");
-      return;
-    }
-
-    // Safety check: ensure prices are not zero (cannot calculate dollar value)
-    if (
-      this._baseDepositPrice.toDec().isZero() ||
-      this._quoteDepositPrice.toDec().isZero()
-    ) {
-      console.warn(
-        "One or both asset prices are zero - cannot calculate equal dollar value"
-      );
-      return;
-    }
-
-    const queryAccountBalances = this.queryBalances.getQueryBech32Address(
-      this.sender
-    );
-
-    if (anchorAsset === "base") {
-      // Base is max — calculate the quote amount that matches its dollar value.
-      const baseAmountRaw =
-        this.baseDepositAmountIn.getAmountPrimitive().amount;
-      const baseCoin = new CoinPretty(
-        this._baseDepositAmountIn.sendCurrency,
-        new Int(baseAmountRaw)
-      );
-
-      const baseValue = this._baseDepositPrice.mul(baseCoin);
-      const quoteAmount = baseValue
-        .toDec()
-        .quo(this._quoteDepositPrice.toDec());
-
-      const quoteCoin = new CoinPretty(
-        this._quoteDepositAmountIn.sendCurrency,
-        quoteAmount
-          .mul(
-            DecUtils.getTenExponentN(
-              this._quoteDepositAmountIn.sendCurrency.coinDecimals
-            )
-          )
-          .truncate()
-      );
-
-      const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-        this._quoteDepositAmountIn.sendCurrency
-      );
-
-      if (quoteCoin.toDec().gt(quoteBalance.toDec())) {
-        // Quote overflows. Pre-check whether flipping to quote-as-anchor would also overflow
-        // base. MobX defers autorun reactions until after the current @action completes, so a
-        // simple boolean flag reset in `finally` cannot guard against the re-entrant call —
-        // the flag is always false by the time the deferred reaction fires. Instead, resolve
-        // the both-overflow case entirely within this action without flipping the anchor.
-        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._baseDepositAmountIn.sendCurrency
-        );
-        const baseValueFromQuoteMax = this._quoteDepositPrice.mul(quoteBalance);
-        const baseCoinFromQuoteMax = new CoinPretty(
-          this._baseDepositAmountIn.sendCurrency,
-          baseValueFromQuoteMax
-            .toDec()
-            .quo(this._baseDepositPrice.toDec())
-            .mul(
-              DecUtils.getTenExponentN(
-                this._baseDepositAmountIn.sendCurrency.coinDecimals
-              )
-            )
-            .truncate()
-        );
-
-        if (baseCoinFromQuoteMax.toDec().gt(baseBalance.toDec())) {
-          // Both assets overflow each other — cap both to their balances in one action.
-          this._baseDepositAmountIn.setAmount(
-            baseBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-          this._quoteDepositAmountIn.setAmount(
-            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-        } else {
-          // Only quote overflows — flip anchor to quote; the autorun will correctly
-          // calculate the reduced base amount from the quote max balance.
-          this.setQuoteDepositAmountMax();
-        }
-      } else {
-        this._quoteDepositAmountIn.setAmount(
-          quoteCoin.hideDenom(true).locale(false).trim(true).toString()
-        );
-      }
-    } else {
-      // Quote is max — calculate the base amount that matches its dollar value.
-      const quoteAmountRaw =
-        this.quoteDepositAmountIn.getAmountPrimitive().amount;
-      const quoteCoin = new CoinPretty(
-        this._quoteDepositAmountIn.sendCurrency,
-        new Int(quoteAmountRaw)
-      );
-
-      const quoteValue = this._quoteDepositPrice.mul(quoteCoin);
-      const baseAmount = quoteValue.toDec().quo(this._baseDepositPrice.toDec());
-
-      const baseCoin = new CoinPretty(
-        this._baseDepositAmountIn.sendCurrency,
-        baseAmount
-          .mul(
-            DecUtils.getTenExponentN(
-              this._baseDepositAmountIn.sendCurrency.coinDecimals
-            )
-          )
-          .truncate()
-      );
-
-      const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-        this._baseDepositAmountIn.sendCurrency
-      );
-
-      if (baseCoin.toDec().gt(baseBalance.toDec())) {
-        // Base overflows. Same pre-check as above for the symmetric case.
-        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._quoteDepositAmountIn.sendCurrency
-        );
-        const quoteValueFromBaseMax = this._baseDepositPrice.mul(baseBalance);
-        const quoteCoinFromBaseMax = new CoinPretty(
-          this._quoteDepositAmountIn.sendCurrency,
-          quoteValueFromBaseMax
-            .toDec()
-            .quo(this._quoteDepositPrice.toDec())
-            .mul(
-              DecUtils.getTenExponentN(
-                this._quoteDepositAmountIn.sendCurrency.coinDecimals
-              )
-            )
-            .truncate()
-        );
-
-        if (quoteCoinFromBaseMax.toDec().gt(quoteBalance.toDec())) {
-          // Both assets overflow each other — cap both to their balances in one action.
-          this._quoteDepositAmountIn.setAmount(
-            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-          this._baseDepositAmountIn.setAmount(
-            baseBalance.trim(true).hideDenom(true).locale(false).toString()
-          );
-        } else {
-          // Only base overflows — flip anchor to base; the autorun will correctly
-          // calculate the reduced quote amount from the base max balance.
-          this.setBaseDepositAmountMax();
-        }
-      } else {
-        this._baseDepositAmountIn.setAmount(
-          baseCoin.hideDenom(true).locale(false).trim(true).toString()
-        );
-      }
-    }
-  }
-
-  @action
-  readonly setHistoricalPriceMinMax = (min: number, max: number) => {
-    if (min !== Infinity) this._minHistoricalPrice = min;
-    if (max !== Infinity) this._maxHistoricalPrice = max;
-  };
-
-  @action
-  readonly setPrices = (
-    baseDepositPrice: PricePretty,
-    quoteDepositPrice: PricePretty
-  ) => {
-    this._baseDepositPrice = baseDepositPrice;
-    this._quoteDepositPrice = quoteDepositPrice;
-  };
-
-  @action
-  readonly setMinRange = (min: string) => {
-    if (!this.pool) return;
-
-    this._fullRange = false;
-    this._priceRangeInput[0].input(min);
-  };
-
-  @action
-  readonly setMaxRange = (max: string) => {
-    if (!this.pool) return;
-
-    this._fullRange = false;
-    this._priceRangeInput[1].input(max);
-  };
-
-  @action
-  readonly setFullRange = (isFullRange: boolean) => {
-    this._fullRange = isFullRange;
-  };
-}
-
-export class InvalidRangeError extends Error {
-  constructor(m: string) {
-    super(m);
-    Object.setPrototypeOf(this, InvalidRangeError.prototype);
-  }
 }

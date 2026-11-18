@@ -149,7 +149,7 @@ const PoolRow: FunctionComponent<{
         </span>
         <span className="caption text-osmoverse-300">
           {t("pools.createPool.duplicateCheck.tvlLabel")}:{" "}
-          {pool.totalFiatValueLocked.toString()}
+          {pool.tvlUnknown ? "–" : pool.totalFiatValueLocked.toString()}
           {" · "}
           {t("pools.createPool.duplicateCheck.feeLabel")}: {fee}
         </span>

@@ -1,5 +1,5 @@
 import { queryRPCStatus, queryTx } from "@osmosis-labs/server";
-import { TxTracer } from "@osmosis-labs/tx";
+import { TxTracer, TxTraceTimeoutError } from "@osmosis-labs/tx";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { MockChains } from "../../__tests__/mock-chains";
@@ -403,8 +403,10 @@ describe("IbcTransferStatusProvider", () => {
     expect(TxTracer).toHaveBeenCalledTimes(2);
   });
 
-  it("should handle unexpected errors", async () => {
-    (queryTx as jest.Mock).mockRejectedValue(new Error("Network error"));
+  it("should keep looking up a source tx that isn't indexed yet", async () => {
+    (queryTx as jest.Mock)
+      .mockRejectedValueOnce(new Error("tx not found"))
+      .mockResolvedValueOnce({ tx_response: { code: 1 } });
 
     const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
@@ -422,14 +424,50 @@ describe("IbcTransferStatusProvider", () => {
 
     await provider.trackTxStatus(snapshot);
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "Unexpected failure when tracing IBC transfer status",
-      new Error("Network error")
-    );
+    expect(queryTx).toHaveBeenCalledTimes(2);
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledTimes(1);
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
       snapshot.sendTxHash,
-      "connection-error"
+      "failed"
     );
+  });
+
+  it("should leave a timed out transfer pending if its refund isn't seen in time", async () => {
+    (queryTx as jest.Mock).mockResolvedValue({
+      tx_response: {
+        code: 0,
+        raw_log: "",
+        events: [
+          {
+            type: "send_packet",
+            attributes: [
+              { key: "packet_src_channel", value: "channel-0" },
+              { key: "packet_dst_channel", value: "channel-1" },
+              { key: "packet_sequence", value: "1" },
+              { key: "packet_timeout_height", value: "1-100" },
+            ],
+          },
+        ],
+      },
+    });
+    (queryRPCStatus as jest.Mock).mockResolvedValueOnce(
+      makeRpcStatusResponse("110")
+    );
+    const traceTx = jest
+      .fn()
+      .mockReturnValueOnce(new Promise((resolve) => setTimeout(resolve, 1500)))
+      .mockRejectedValueOnce(new TxTraceTimeoutError(1000));
+    (TxTracer as jest.Mock).mockImplementation(() => ({
+      traceTx,
+      close: jest.fn(),
+    }));
+
+    await provider.trackTxStatus(createTxSnapshot());
+
+    expect(traceTx).toHaveBeenLastCalledWith(expect.anything(), {
+      timeoutMs: 60 * 1000 * 3,
+    });
+    expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
 
   it("should generate correct explorer url", () => {

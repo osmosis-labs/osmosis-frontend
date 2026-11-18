@@ -15,7 +15,7 @@ import {
 } from "~/components/screen-manager";
 import { useTranslation } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   addCommasToNumber,
   removeCommasFromNumber,
@@ -53,7 +53,6 @@ export const SpendLimitScreen = ({
   subtitle,
 }: SpendLimitScreenProps) => {
   const { t } = useTranslation();
-  const { accountStore, chainStore } = useStore();
   const [selectedView, setSelectedView] =
     useState<SpendLimitViews>("fixed-amount");
 
@@ -74,14 +73,14 @@ export const SpendLimitScreen = ({
 
   const isManualShareOfBalance = shareOfBalance.id === "manual";
 
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { address } = useWallet();
   const { data: userAssetsTotal, isLoading: isLoadingUserAssetsTotal } =
     api.edge.assets.getUserAssetsTotal.useQuery(
       {
-        userOsmoAddress: account?.address as string,
+        userOsmoAddress: address as string,
       },
       {
-        enabled: Boolean(account) && Boolean(account?.address),
+        enabled: Boolean(address),
         trpc: {
           context: {
             skipBatch: true,
@@ -123,13 +122,17 @@ export const SpendLimitScreen = ({
               };
             }
 
+            // A share of an unknown (unpriced or not yet loaded) balance is unknown, so
+            // keep the current limit rather than saving a zero one.
+            if (!userAssetsTotal?.value) return previousParams;
+
             return {
               ...previousParams,
               spendLimit: new PricePretty(
                 DEFAULT_VS_CURRENCY,
                 new Dec(!shareOfBalance?.value ? 0 : shareOfBalance.value)
                   .quo(new Dec(100))
-                  .mul(userAssetsTotal?.value.toDec() ?? new Dec(0))
+                  .mul(userAssetsTotal.value.toDec())
               ),
             };
           });
@@ -155,7 +158,7 @@ export const SpendLimitScreen = ({
             "oneClickTrading.settings.spendLimitScreen.spendLimitSubDescription"
           )}
         </p>
-        {!!account?.address && (
+        {!!address && (
           <MenuToggle
             options={
               [
@@ -308,15 +311,19 @@ export const SpendLimitScreen = ({
                 isLoaded={!isLoadingUserAssetsTotal}
               >
                 <span className="subtitle1 text-osmoverse-100">
-                  ~
-                  {userAssetsTotal?.value
-                    .mul(
-                      new Dec(
-                        !shareOfBalance?.value ? 0 : shareOfBalance.value
-                      ).quo(new Dec(100))
-                    )
-                    .toString() ??
-                    new PricePretty(DEFAULT_VS_CURRENCY, 0).toString()}
+                  {userAssetsTotal && !userAssetsTotal.value
+                    ? // the balance couldn't be priced, so its share is unknown
+                      "–"
+                    : `~${
+                        userAssetsTotal?.value
+                          ?.mul(
+                            new Dec(
+                              !shareOfBalance?.value ? 0 : shareOfBalance.value
+                            ).quo(new Dec(100))
+                          )
+                          .toString() ??
+                        new PricePretty(DEFAULT_VS_CURRENCY, 0).toString()
+                      }`}
                 </span>
               </SkeletonLoader>
             </p>

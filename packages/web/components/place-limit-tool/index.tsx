@@ -1,13 +1,16 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  InsufficientBalanceForFeeError,
+  isValidNumericalRawInput,
+  normalizeDecimalSeparator,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   FunctionComponent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -28,6 +31,7 @@ import {
 import {
   ATOM_BASE_DENOM,
   deferQueryCorrection,
+  getAllowedQuoteDenom,
   TRADE_PAIR_QUERY_OPTIONS,
   USDC_BASE_DENOM,
   USDT_BASE_DENOM,
@@ -43,6 +47,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
+import { OsmosisChainInfo } from "~/config/chain";
 import { DefaultSlippage } from "~/config/swap";
 import {
   useDisclosure,
@@ -57,9 +62,9 @@ import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,
 } from "~/hooks/use-swap";
+import { useWallet } from "~/hooks/use-wallet";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
-import { useStore } from "~/stores";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
@@ -137,14 +142,13 @@ const NON_DISPLAY_ERRORS = [
   "limitOrders.priceTooHigh",
 ];
 
-export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
+export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
   ({
     initialBaseDenom = ATOM_BASE_DENOM,
     initialQuoteDenom = USDC_BASE_DENOM,
     onOrderSuccess,
   }: PlaceLimitToolProps) => {
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
-    const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const {
@@ -222,12 +226,20 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       selectedIndex: quoteType === "in-given-out" ? 0 : 0,
     });
 
+    // The price selector resets a quote that is not on the allowlist, but
+    // that lands a task later; never price or place an order against one in
+    // the meantime.
+    const allowedQuote = useMemo(
+      () => getAllowedQuoteDenom(quote, tab) ?? USDC_BASE_DENOM,
+      [quote, tab]
+    );
+
     const swapState = usePlaceLimit({
-      osmosisChainId: accountStore.osmosisChainId,
+      osmosisChainId: OsmosisChainInfo.chainId,
       orderDirection,
       useQueryParams: false,
       baseDenom: from,
-      quoteDenom: quote,
+      quoteDenom: allowedQuote,
       type,
       maxSlippage: slippageConfig.slippage.toDec(),
       quoteType,
@@ -271,7 +283,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
     }, [swapState.priceState, type]);
 
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { isWalletConnected } = useWallet();
 
     // const isSwapToolLoading = false;
     const hasFunds = useMemo(
@@ -324,6 +336,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         rounding: boolean = false
       ) => {
         const isFocused = focused === amountType;
+        const normalizedValue =
+          value === undefined ? value : normalizeDecimalSeparator(value);
+        // Ambiguous or malformed comma input is rejected, not guessed.
+        if (normalizedValue === null) return;
+        value = normalizedValue;
         // Derived-field synchronization must not reset the user's slippage or
         // quote direction; only edits to the active field should do that.
         if (isFocused) resetSlippage();
@@ -481,6 +498,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       if (
         focused !== "token" ||
         !swapState.priceState.price ||
+        swapState.priceState.price.isZero() ||
         type === "market"
       )
         return;
@@ -501,6 +519,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       if (
         focused !== "fiat" ||
         !swapState.priceState.price ||
+        swapState.priceState.price.isZero() ||
         type === "market"
       )
         return;
@@ -609,8 +628,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         );
       }
 
-      return Boolean(swapState.error) || !swapState.isBalancesFetched;
+      return (
+        Boolean(swapState.error) ||
+        !swapState.isBalancesFetched ||
+        // Also covers the moment before the market price has loaded.
+        !swapState.priceState.isValidPrice
+      );
     }, [
+      swapState.priceState.isValidPrice,
       swapState.error,
       swapState.isBalancesFetched,
       swapState.isMarket,
@@ -627,10 +652,37 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       return !swapState.isBalancesFetched;
     }, [swapState.isBalancesFetched]);
 
+    // Limit prices assume 1 quote = $1. Off by 5% or more blocks the order
+    // (see `swapState.error`); between 1% and 5% warns; unknown is noted on
+    // the review only.
+    const quotePegNote = useMemo(() => {
+      const denom = swapState.quoteAsset?.coinDenom ?? "";
+      if (swapState.quotePegStatus === "warn" && swapState.quotePrice) {
+        return t("limitOrders.quoteOffPegWarning", {
+          denom,
+          price: formatPretty(
+            new PricePretty(DEFAULT_VS_CURRENCY, swapState.quotePrice),
+            { maxDecimals: 4 }
+          ),
+        });
+      }
+      if (swapState.quotePegStatus === "unknown") {
+        return t("limitOrders.quotePegUnverified", { denom });
+      }
+      if (swapState.quotePegStatus === "block") {
+        return t("limitOrders.quoteOffPeg");
+      }
+    }, [
+      swapState.quoteAsset?.coinDenom,
+      swapState.quotePegStatus,
+      swapState.quotePrice,
+      t,
+    ]);
+
     const errorDisplay = useMemo(() => {
       if (
         swapState.error === "limitOrders.insufficientFunds" &&
-        !account?.isWalletConnected
+        !isWalletConnected
       ) {
         return;
       }
@@ -665,7 +717,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.isMarket,
       swapState.marketState.networkFeeError,
       swapState.marketState.isSlippageOverBalance,
-      account?.isWalletConnected,
+      isWalletConnected,
       t,
     ]);
 
@@ -980,6 +1032,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               orderDirection={orderDirection}
             />
           )}
+          {swapState.quotePegStatus === "warn" && (
+            <p className="caption pb-2 text-rust-400">{quotePegNote}</p>
+          )}
           {hasInsufficientFeeTokens && (
             <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-3">
               <Icon
@@ -999,14 +1054,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             </div>
           )}
           <div className="flex w-full flex-col py-3">
-            {!account?.isWalletConnected ? (
+            {!isWalletConnected ? (
               <Button
                 onClick={() =>
                   onOpenWalletSelect({
                     walletOptions: [
                       {
                         walletType: "cosmos",
-                        chainId: accountStore.osmosisChainId,
+                        chainId: OsmosisChainInfo.chainId,
                       },
                     ],
                   })
@@ -1033,7 +1088,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
             priceOverride={
-              type === "limit"
+              type === "limit" && swapState.priceState.spotPrice
                 ? new PricePretty(
                     DEFAULT_VS_CURRENCY,
                     swapState.priceState.spotPrice
@@ -1045,9 +1100,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           orderType={type}
-          confirmAction={async () => {
+          confirmAction={async (opts) => {
             setIsSendingTx(true);
-            await swapState.placeLimit();
+            await swapState.placeLimit(opts?.warnFlags);
             swapState.reset();
             setAmountSafe("fiat", "");
             setReviewOpen(false);
@@ -1063,8 +1118,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           isConfirmationDisabled={
             isSendingTx ||
             swapState.isLoadingOneClickMessages ||
-            hasInsufficientFeeTokens
+            hasInsufficientFeeTokens ||
+            // The peg and market price are re-polled while the review is open.
+            swapState.quotePegStatus === "block" ||
+            (type === "limit" && !swapState.priceState.isValidPrice)
           }
+          isAwaitingSignature={isSendingTx}
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
           expectedOutput={swapState.expectedTokenAmountOut}
@@ -1078,11 +1137,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           gasError={swapState.gas.error}
           limitSetPriceLock={swapState.priceState.setPriceLock}
           inAmountToken={swapState.paymentTokenValue}
-          inAmountFiat={swapState.paymentFiatValue}
+          inAmountFiat={swapState.paymentFiatValueAtMarket}
           fromAsset={swapState.marketState.fromAsset}
           toAsset={swapState.marketState.toAsset}
           isBeyondOppositePrice={swapState.priceState.isBeyondOppositePrice}
+          limitQuotePegNote={quotePegNote}
           quoteType={swapState.marketState.quoteType}
+          priceImpactTokenOut={swapState.marketState.quote?.priceImpactTokenOut}
+          priceImpactUnknown={swapState.marketState.quote?.priceImpactUnknown}
+          quoteAmount={swapState.marketState.quote?.amount.toDec()}
+          outAssetPrice={swapState.marketState.outAmountInput.price}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

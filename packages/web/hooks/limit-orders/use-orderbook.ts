@@ -1,14 +1,15 @@
-import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
+import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
+import type { CoinPrimitive } from "@osmosis-labs/types";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { getAssetFromAssetList, type SortDirection } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useSwapAsset } from "~/hooks/use-swap";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
 
 /**
@@ -137,13 +138,12 @@ export const useOrderbook = ({
   baseDenom: string;
   quoteDenom: string;
 }) => {
-  const { accountStore } = useStore();
+  const { address } = useWallet();
   const { orderbooks, isLoading: isOrderbookLoading } = useOrderbooks();
   const { data: selectableAssetPages } =
     api.edge.assets.getUserAssets.useInfiniteQuery(
       {
-        userOsmoAddress: accountStore.getWallet(accountStore.osmosisChainId)
-          ?.address,
+        userOsmoAddress: address,
         includePreview: false,
         limit: 50, // items per page
       },
@@ -257,6 +257,8 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   };
 };
 
+export type OrderSortKey = "placedAt" | "lastActivity";
+
 /**
  * Queries for all active orders for a given user.
  * Swaps between using SQS passthrough and a direct node query based on feature flag.
@@ -266,11 +268,14 @@ const useOrdersQuery = ({
   pageSize = 10,
   refetchInterval = 10000,
   filter,
+  sort,
 }: {
   userAddress: string;
   pageSize?: number;
   refetchInterval?: number;
   filter?: "active" | "filled" | "historical" | "open";
+  /** Sorts within each status group, across all pages. */
+  sort?: { keyPath: OrderSortKey; direction: SortDirection };
 }) => {
   const { sqsActiveOrders } = useFeatureFlags();
   const { orderbooks } = useOrderbooks();
@@ -278,6 +283,7 @@ const useOrdersQuery = ({
   const {
     data: sqsOrders,
     isLoading: isSQSOrdersLoading,
+    isError: isSQSOrdersError,
     fetchNextPage: fetchSQSOrdersNextPage,
     isFetching: isSQSOrdersFetching,
     isFetchingNextPage: isSQSOrdersFetchingNextPage,
@@ -289,6 +295,7 @@ const useOrdersQuery = ({
       userOsmoAddress: userAddress,
       limit: pageSize,
       filter,
+      sort,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -310,6 +317,7 @@ const useOrdersQuery = ({
   const {
     data: nodeOrders,
     isLoading: isNodeOrdersLoading,
+    isError: isNodeOrdersError,
     fetchNextPage: fetchNodeOrdersNextPage,
     isFetching: isNodeOrdersFetching,
     isFetchingNextPage: isNodeOrdersFetchingNextPage,
@@ -320,6 +328,7 @@ const useOrdersQuery = ({
     {
       userOsmoAddress: userAddress,
       limit: pageSize,
+      sort,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -338,9 +347,15 @@ const useOrdersQuery = ({
     }
   );
 
+  const orders = sqsActiveOrders ? sqsOrders : nodeOrders;
+
   return {
-    data: sqsActiveOrders ? sqsOrders : nodeOrders,
+    data: orders,
+    /** True when the closed orders couldn't be loaded, so the list holds only open orders. */
+    historyUnavailable:
+      orders?.pages.some((page) => page.historyUnavailable) ?? false,
     isLoading: sqsActiveOrders ? isSQSOrdersLoading : isNodeOrdersLoading,
+    isError: sqsActiveOrders ? isSQSOrdersError : isNodeOrdersError,
     fetchNextPage: sqsActiveOrders
       ? fetchSQSOrdersNextPage
       : fetchNodeOrdersNextPage,
@@ -361,22 +376,26 @@ export const useOrderbookOrders = ({
   pageSize = 10,
   refetchInterval = 10000,
   filter,
+  sort,
 }: {
   userAddress: string;
   pageSize?: number;
   refetchInterval?: number;
   filter?: "active" | "filled" | "historical" | "open";
+  sort?: { keyPath: OrderSortKey; direction: SortDirection };
 }) => {
   const {
     data: orders,
+    historyUnavailable,
     isLoading,
+    isError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
     hasNextPage,
     refetch,
     isRefetching,
-  } = useOrdersQuery({ userAddress, pageSize, refetchInterval, filter });
+  } = useOrdersQuery({ userAddress, pageSize, refetchInterval, filter, sort });
 
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
@@ -389,7 +408,11 @@ export const useOrderbookOrders = ({
 
   return {
     orders: allOrders,
+    /** True when the closed orders couldn't be loaded, so `orders` holds only open orders. */
+    historyUnavailable,
     isLoading,
+    /** True when the orders couldn't be loaded, so an empty list is unknown, not "no orders". */
+    isError,
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
@@ -481,8 +504,7 @@ export const useOrderbookClaimableOrders = ({
   refetchInterval?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
   const { data: orders, isLoading } = useClaimableOrdersQuery({
     userAddress,
@@ -517,10 +539,14 @@ export const useOrderbookClaimableOrders = ({
     }[];
 
     if (msgs.length > 0) {
-      await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
+      await prepareMultiExecuteContractMsg(
+        transactionContext,
+        "executeWasm",
+        msgs
+      ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
     }
-  }, [orders, account, addresses]);
+  }, [account, orders, addresses, transactionContext, signAndBroadcast]);
 
   return {
     orders: orders ?? [],

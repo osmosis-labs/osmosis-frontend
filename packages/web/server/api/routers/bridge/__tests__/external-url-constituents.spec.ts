@@ -88,7 +88,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         coinMinimalDenom: "ibc/NBTC",
         isAlloyed: false,
         variantGroupKey: ALL_BTC,
-        transferMethods: [externalInterface("Nomic")],
+        transferMethods: [externalInterface("Alpha Bridge")],
       }),
     ];
 
@@ -101,7 +101,10 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
 
     // Order is incidental (asset-list iteration order); assert membership, not
     // sequence, since the helper makes no ordering guarantee.
-    expect(result.map((m) => m.name).sort()).toEqual(["Nomic", "WBTC Bridge"]);
+    expect(result.map((m) => m.name).sort()).toEqual([
+      "Alpha Bridge",
+      "WBTC Bridge",
+    ]);
     expect(result.every((m) => m.type === "external_interface")).toBe(true);
   });
 
@@ -309,7 +312,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         variantGroupKey: ALL_BTC,
         haltWithdrawals: true,
         unstable: true,
-        transferMethods: [externalInterface("Nitro Router")],
+        transferMethods: [externalInterface("Beta Bridge")],
       });
       const liveVariant = asset({
         coinMinimalDenom: "ibc/CKBTC",
@@ -336,8 +339,8 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         haltWithdrawals: true,
         haltDeposits: false,
         transferMethods: [
-          externalInterface("Nitro Router", {
-            depositUrl: "https://nitro.example/deposit",
+          externalInterface("Beta Bridge", {
+            depositUrl: "https://beta.example/deposit",
           }),
         ],
       });
@@ -349,7 +352,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         memberDenoms: allMembers([alloy, withdrawHalted]),
       });
 
-      expect(result.map((m) => m.name)).toEqual(["Nitro Router"]);
+      expect(result.map((m) => m.name)).toEqual(["Beta Bridge"]);
     });
 
     it("skips a deposit-halted constituent on a deposit", () => {
@@ -377,7 +380,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         isAlloyed: false,
         variantGroupKey: ALL_BTC,
         disabled: true,
-        transferMethods: [externalInterface("Nomic")],
+        transferMethods: [externalInterface("Alpha Bridge")],
       });
 
       const result = getAlloyConstituentExternalInterfaceMethods({
@@ -387,7 +390,7 @@ describe("getAlloyConstituentExternalInterfaceMethods", () => {
         memberDenoms: allMembers([alloy, disabledVariant]),
       });
 
-      expect(result.map((m) => m.name)).toEqual(["Nomic"]);
+      expect(result.map((m) => m.name)).toEqual(["Alpha Bridge"]);
     });
 
     it("keeps an unstable (warning-only) constituent", () => {

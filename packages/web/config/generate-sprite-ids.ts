@@ -1,8 +1,7 @@
 import fs from "fs";
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { JSDOM } from "jsdom";
 import path from "path";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
 /**

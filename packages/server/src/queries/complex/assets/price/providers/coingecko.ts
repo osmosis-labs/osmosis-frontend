@@ -19,9 +19,11 @@ async function batchFetchCoingeckoPrices(
   ]);
 
   return coinGeckoIds.map((key) => {
-    if (pricesObject[key][currency]) {
+    // CoinGecko leaves unknown ids out of the response; fail only that id.
+    const price = pricesObject[key]?.[currency];
+    if (price) {
       return {
-        price: pricesObject[key][currency]!,
+        price,
         volume24h: pricesObject[key].usd_24h_vol,
       };
     }
@@ -38,9 +40,13 @@ export async function getCoinGeckoPricesBatchLoader({
   return cachified({
     cache: coinGeckoCache,
     key: `prices-batch-loader-${currency}`,
+    // Only the lifetime of the DataLoader instance, to prevent long-running batch loaders.
+    ttl: 1000 * 60 * 10, // 10 minutes
     getFreshValue: async () => {
-      return new EdgeDataLoader((ids: readonly string[]) =>
-        batchFetchCoingeckoPrices(ids, currency)
+      // Batch only, so prices are cached only by `getCoingeckoPrice` (1 minute).
+      return new EdgeDataLoader(
+        (ids: readonly string[]) => batchFetchCoingeckoPrices(ids, currency),
+        { cache: false }
       );
     },
   });

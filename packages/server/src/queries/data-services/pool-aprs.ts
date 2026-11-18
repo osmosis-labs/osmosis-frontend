@@ -11,12 +11,6 @@ type PoolApr<T = number> = {
   total_apr: T;
 };
 
-/** Queries numia for a breakdown of APRs per pool. */
-export function queryPoolAprs(): Promise<PoolApr[]> {
-  const url = new URL("/pools_apr", HISTORICAL_DATA_URL);
-  return apiClient(url.toString());
-}
-
 export type PoolDataRange<T = number> = {
   lower: T;
   upper: T;

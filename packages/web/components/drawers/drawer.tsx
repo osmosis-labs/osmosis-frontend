@@ -1,13 +1,12 @@
 import { Transition } from "@headlessui/react";
 import { runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import FocusTrap from "focus-trap-react";
+import { FocusTrap } from "focus-trap-react";
 import {
   Fragment,
   FunctionComponent,
   HTMLProps,
   PropsWithChildren,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -40,9 +39,11 @@ export const Drawer: FunctionComponent<{
   });
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (!isOpen) setIsAnimationComplete(false);
-  }, [isOpen]);
+  }
 
   const context = useMemo<DrawerContext>(
     () => ({

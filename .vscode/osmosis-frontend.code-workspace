@@ -1,49 +1,40 @@
 {
   "folders": [
     {
-      "path": "../packages/keplr-hooks/"
+      "path": "../packages/math/",
     },
     {
-      "path": "../packages/keplr-stores/"
+      "path": "../packages/pools/",
     },
     {
-      "path": "../packages/math/"
+      "path": "../packages/proto-codecs/",
     },
     {
-      "path": "../packages/pools/"
+      "path": "../packages/types/",
     },
     {
-      "path": "../packages/proto-codecs/"
+      "path": "../packages/tx/",
     },
     {
-      "path": "../packages/types/"
+      "path": "../packages/trpc/",
     },
     {
-      "path": "../packages/tx/"
+      "path": "../packages/utils/",
     },
     {
-      "path": "../packages/trpc/"
+      "path": "../packages/bridge/",
     },
     {
-      "path": "../packages/utils/"
+      "path": "../packages/server/",
     },
     {
-      "path": "../packages/bridge/"
+      "path": "../packages/web/",
     },
-    {
-      "path": "../packages/stores/"
-    },
-    {
-      "path": "../packages/server/"
-    },
-    {
-      "path": "../packages/web/"
-    }
   ],
   "settings": {
     "jest.jestCommandLine": "yarn test",
     "jest.disabledWorkspaceFolders": ["proto-codecs"],
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "githubPullRequests.ignoredPullRequestBranches": ["stage"]
-  }
+    "githubPullRequests.ignoredPullRequestBranches": ["stage"],
+  },
 }

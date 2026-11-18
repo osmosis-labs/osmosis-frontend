@@ -1,3 +1,4 @@
+import type { PoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { z } from "zod";
@@ -6,7 +7,7 @@ import { IS_TESTNET } from "../../../env";
 import { CursorPaginationSchema } from "../../../utils/pagination";
 import { SearchSchema } from "../../../utils/search";
 import { SortSchema } from "../../../utils/sort";
-import { PoolRawResponse, queryPoolChain } from "../../osmosis";
+import { queryPoolChain } from "../../osmosis";
 import { PoolIncentives } from "./incentives";
 import { getPoolsFromSidecar, makePoolFromChainPool } from "./providers";
 

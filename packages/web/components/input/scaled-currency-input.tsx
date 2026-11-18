@@ -1,4 +1,4 @@
-import { isNumeric } from "@osmosis-labs/utils";
+import { isNumeric, normalizeDecimalSeparator } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { useEffect, useRef } from "react";
 
@@ -12,7 +12,7 @@ interface ScaledCurrencyInputProps {
   onChange?: (value: string) => void;
   classes?: Partial<Record<"input" | "ticker", string>>;
   placeholder?: string;
-  inputRef?: React.RefObject<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 export function ScaledCurrencyInput({
@@ -103,7 +103,11 @@ export function ScaledCurrencyInput({
                 fontSize: "inherit",
               }}
               onChange={(e) => {
-                let nextValue = e.target.value;
+                const normalizedValue = normalizeDecimalSeparator(
+                  e.target.value
+                );
+                if (normalizedValue === null) return;
+                let nextValue = normalizedValue;
                 if (nextValue === ".") nextValue = "0.";
                 if (nextValue !== "" && !isNumeric(nextValue)) return;
                 setInputValue(nextValue);

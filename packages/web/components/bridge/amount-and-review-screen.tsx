@@ -1,17 +1,18 @@
 import type { Bridge, BridgeSupportedAsset } from "@osmosis-labs/bridge";
 import { CoinPretty } from "@osmosis-labs/unit";
 import { isNil, noop } from "@osmosis-labs/utils";
-import { observer } from "mobx-react-lite";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen, useScreenManager } from "~/components/screen-manager";
+import { OsmosisChainInfo } from "~/config/chain";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
+import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { refetchUserQueries, useStore } from "~/stores";
+import { refetchUserQueries } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { AmountScreen } from "./amount-screen";
@@ -27,7 +28,6 @@ export type SupportedBridgeInfo = {
   allBridges: Bridge[];
   quoteBridges: Bridge[];
   externalUrlBridges: Bridge[];
-  depositAddressBridges: Bridge[];
 };
 
 interface AmountAndConfirmationScreenProps {
@@ -36,18 +36,22 @@ interface AmountAndConfirmationScreenProps {
   onClose: () => void;
 }
 
-export const AmountAndReviewScreen = observer(
+export const AmountAndReviewScreen = memo(
   ({
     direction,
     selectedAssetDenom,
     onClose,
   }: AmountAndConfirmationScreenProps) => {
-    const { accountStore } = useStore();
     const apiUtils = api.useUtils();
     const { setCurrentScreen } = useScreenManager();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
+    // True once the user deliberately picks a variant from the receive
+    // dropdown, which stops the amount screen re-pointing `toAsset` to the
+    // recommended variant. It lives here because the amount screen unmounts
+    // while the review screen shows, and the pick must survive going back.
+    const userHasPickedToAssetRef = useRef(false);
     const [fromChain, setFromChain] = useState<BridgeChainWithDisplayInfo>();
     const [toChain, setToChain] = useState<BridgeChainWithDisplayInfo>();
 
@@ -60,15 +64,31 @@ export const AmountAndReviewScreen = observer(
     const { address: evmAddress, connector: evmConnector } =
       useEvmWalletAccount();
 
-    const fromChainCosmosAccount =
+    const fromCosmosChainId =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
-        ? accountStore.getWallet(fromChain.chainId)
+        ? fromChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: fromCosmosWallet, address: fromCosmosWalletAddress } =
+      useWallet(fromCosmosChainId);
+    const fromChainCosmosAccount = fromCosmosChainId
+      ? fromCosmosWallet
+      : undefined;
+    const fromChainCosmosAddress = fromCosmosChainId
+      ? fromCosmosWalletAddress
+      : undefined;
 
-    const toChainCosmosAccount =
+    const toCosmosChainId =
       !isNil(toChain) && toChain.chainType === "cosmos"
-        ? accountStore.getWallet(toChain.chainId)
+        ? toChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: toCosmosWallet, address: toCosmosWalletAddress } =
+      useWallet(toCosmosChainId);
+    const toChainCosmosAccount = toCosmosChainId ? toCosmosWallet : undefined;
+    const toChainCosmosAddress = toCosmosChainId
+      ? toCosmosWalletAddress
+      : undefined;
 
     const featureFlags = useFeatureFlags();
     const { address: phantomAddress } = usePhantomWallet({
@@ -80,12 +100,12 @@ export const AmountAndReviewScreen = observer(
         ? evmAddress
         : fromChain?.chainType === "solana"
           ? phantomAddress
-          : fromChainCosmosAccount?.address;
+          : fromChainCosmosAddress;
     const toAddress = !isNil(manualToAddress)
       ? manualToAddress
       : toChain?.chainType === "evm"
         ? evmAddress
-        : toChainCosmosAccount?.address;
+        : toChainCosmosAddress;
 
     const fromWalletIcon =
       fromChain?.chainType === "evm"
@@ -131,7 +151,7 @@ export const AmountAndReviewScreen = observer(
       // selected variant on withdraw.
       variantAssets: assetsInOsmosis,
       chain: {
-        chainId: accountStore.osmosisChainId,
+        chainId: OsmosisChainInfo.chainId,
         chainType: "cosmos",
       },
       direction,
@@ -150,12 +170,10 @@ export const AmountAndReviewScreen = observer(
           allBridges: [],
           quoteBridges: [],
           externalUrlBridges: [],
-          depositAddressBridges: [],
         };
 
       const bridgeInfo = {
         allBridges: new Set<Bridge>(),
-        depositAddressBridges: new Set<Bridge>(),
         quoteBridges: new Set<Bridge>(),
         externalUrlBridges: new Set<Bridge>(),
       };
@@ -170,15 +188,16 @@ export const AmountAndReviewScreen = observer(
         if (variants.includes("external-url")) {
           bridgeInfo.externalUrlBridges.add(bridge as Bridge);
         }
-        if (variants.includes("deposit-address")) {
-          bridgeInfo.depositAddressBridges.add(bridge as Bridge);
-        }
         bridgeInfo.allBridges.add(bridge as Bridge);
       };
 
       if (direction === "deposit") {
-        Object.entries(fromAsset.supportedVariants[toAsset.address]).forEach(
-          ([bridge, variants]) => addToBridgeInfo(bridge as Bridge, variants)
+        // A refreshed source asset can drop the selected variant for one
+        // render, until the amount screen's deposit effect realigns `toAsset`.
+        Object.entries(
+          fromAsset.supportedVariants[toAsset.address] ?? {}
+        ).forEach(([bridge, variants]) =>
+          addToBridgeInfo(bridge as Bridge, variants)
         );
       } else if (direction === "withdraw") {
         const counterpartyAssets =
@@ -197,7 +216,6 @@ export const AmountAndReviewScreen = observer(
         allBridges: Array.from(bridgeInfo.allBridges),
         quoteBridges: Array.from(bridgeInfo.quoteBridges),
         externalUrlBridges: Array.from(bridgeInfo.externalUrlBridges),
-        depositAddressBridges: Array.from(bridgeInfo.depositAddressBridges),
       };
     }, [
       direction,
@@ -299,6 +317,7 @@ export const AmountAndReviewScreen = observer(
               setFromAsset={setFromAsset}
               toAsset={toAsset}
               setToAsset={setToAsset}
+              userHasPickedToAssetRef={userHasPickedToAssetRef}
               cryptoAmount={cryptoAmount}
               setCryptoAmount={setCryptoAmount}
               fiatAmount={fiatAmount}

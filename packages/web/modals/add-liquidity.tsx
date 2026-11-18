@@ -1,11 +1,6 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
-import {
-  NotInitializedError,
-  ObservableAddLiquidityConfig,
-} from "@osmosis-labs/stores";
-import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
-import { FunctionComponent } from "react";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
+import { NotInitializedError } from "@osmosis-labs/utils";
+import { FunctionComponent, memo, useState } from "react";
 
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
@@ -14,14 +9,18 @@ import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import type { PoolType } from "~/components/complex/pools-table";
 import { Spinner } from "~/components/loaders";
 import { tError } from "~/components/localization";
-import { useTranslation } from "~/hooks";
+import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
+import { OsmosisChainInfo } from "~/config/chain";
+import { HighSlippageToleranceGate } from "~/config/trade-warnings";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
+  useTranslation,
+  useWindowSize,
 } from "~/hooks";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
+import { ModalBase, ModalBaseProps, ModalCloseButton } from "~/modals/base";
 import { api } from "~/utils/trpc";
 
 import { SuperfluidValidatorModal } from "./superfluid-validator";
@@ -38,29 +37,22 @@ export const AddLiquidityModal: FunctionComponent<
     poolType?: PoolType;
     onAddLiquidity?: (result: Promise<void>) => void;
   } & ModalBaseProps
-> = observer((props) => {
+> = memo((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore } = useStore();
   const { t } = useTranslation();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const { chainId } = OsmosisChainInfo;
+  const { wallet, txTypeInProgress } = useWallet(chainId);
+  const isSendingMsg = !wallet || txTypeInProgress !== "";
+  const { isMobile } = useWindowSize();
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
-    chainStore,
     chainId,
-    poolId,
-    queriesStore
+    poolId
   );
 
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorModal] =
     useState(false);
-
-  // High price-impact acknowledgement for the single-asset zap-in. Mirrors the
-  // swap confirmation modal's high-loss treatment: the user must explicitly
-  // confirm before a high-impact deposit can be submitted.
-  const [zapCostAcknowledged, setZapCostAcknowledged] = useState(false);
 
   const {
     config: addConliqConfig,
@@ -68,29 +60,47 @@ export const AddLiquidityModal: FunctionComponent<
     zapInLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapMinReceived,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
     zapValueIn,
     zapValueOut,
     zapTotalCostPercent,
     zapHighCost,
     zapImpactPending,
-  } = useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
+  } = useAddConcentratedLiquidityConfig(chainId, poolId);
 
-  // Reset the acknowledgement when the trade context changes, so a stale
-  // "confirmed" can't carry over to a different high-impact trade. Keyed on the
-  // full trade context: swap direction (in/out denoms — the amount alone can
-  // survive a side switch in a symmetric range), the projected swap amount and
-  // tick range (which change when the user edits amount / side / range, NOT on
-  // the 5s quote refetch), and whether the warning is currently showing.
-  // Deliberately not keyed on the live quote output, which would uncheck the box
-  // on every refetch tick.
-  const zapCostContextKey = `${
+  // High total-cost acknowledgement for the single-asset zap-in, on the
+  // shared frozen-basis model: the identity is the trade the user set (swap
+  // direction, entered amount, tick range), so editing any of them re-arms the
+  // checkbox; the total cost re-arms it when it worsens past tolerance, and
+  // raising the slippage re-arms it too. The derived swap amount is left out:
+  // it moves with the pool price on every refetch.
+  // The same tolerance gate as the swap review: a high slippage tolerance
+  // needs the tick too, whatever the total cost.
+  const zapSlippageHigh = zapSlippageConfig.slippage
+    .toDec()
+    .gte(HighSlippageToleranceGate);
+  const zapCostIdentity = `${
     addConliqConfig.requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
   }>${addConliqConfig.requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
-    addConliqConfig.requiredSwap?.swapInAmount.toString() ?? ""
-  }:${addConliqConfig.tickRange[0].toString()}:${addConliqConfig.tickRange[1].toString()}:${zapHighCost}`;
-  useEffect(() => {
-    setZapCostAcknowledged(false);
-  }, [zapCostContextKey]);
+    addConliqConfig.requiredSwap?.inputAmount.toString() ?? ""
+  }:${addConliqConfig.tickRange[0].toString()}:${addConliqConfig.tickRange[1].toString()}`;
+  const {
+    hasAcknowledgedLoss: zapCostAcknowledged,
+    setLossAcknowledged: setZapCostAcknowledged,
+    warningNeedsAcknowledgement: zapCostNeedsAcknowledgement,
+  } = useLossAcknowledgement(
+    zapTotalCostPercent
+      ? {
+          identityKey: zapCostIdentity,
+          slippage: zapSlippageConfig.slippage.toDec(),
+          priceImpact: zapTotalCostPercent.toDec(),
+          warnSlippage: zapSlippageHigh,
+          warnPriceImpact: zapHighCost,
+        }
+      : undefined
+  );
 
   // initialize pool data stores once root pool store is loaded
   const { data: pool, isLoading: isPoolLoading } =
@@ -121,6 +131,9 @@ export const AddLiquidityModal: FunctionComponent<
     Boolean(addConliqConfig.requiredSwap?.needsSwap) &&
     (zapQuote.isLoading ||
       !zapQuote.quote ||
+      // Held quote for a previous swap amount: its route amounts don't match
+      // the current split.
+      zapQuote.isRefreshing ||
       zapQuote.isError ||
       Boolean(zapQuote.routerError) ||
       // The swap routes through this pool and the depth data for the
@@ -144,7 +157,7 @@ export const AddLiquidityModal: FunctionComponent<
         isSendingMsg ||
         zapNotReady ||
         zapInputInvalid ||
-        (zapHighCost && !zapCostAcknowledged),
+        zapCostNeedsAcknowledgement,
       onClick: () => {
         // Single-asset zap-in (CL only): swap + create position in one tx.
         // Superfluid staking is full-range two-asset only, so it never applies
@@ -176,6 +189,9 @@ export const AddLiquidityModal: FunctionComponent<
 
         if (!isConcentrated && props.onAddLiquidity) {
           props.onAddLiquidity(addLiquidityResult);
+        } else {
+          // Broadcast failures are toasted by the tx client; keep the modal open.
+          addLiquidityResult.catch(() => {});
         }
       },
       isLoading: config.error && config.error instanceof NotInitializedError,
@@ -300,7 +316,10 @@ export const AddLiquidityModal: FunctionComponent<
               isOpen={true}
               onRequestClose={() => setShowSuperfluidValidatorModal(false)}
               onSelectValidator={(address) =>
-                addConLiquidity(address).then(() => props.onRequestClose())
+                addConLiquidity(address)
+                  .then(() => props.onRequestClose())
+                  // Broadcast failures are toasted by the tx client.
+                  .catch(() => {})
               }
               ctaLabel={t("addConcentratedLiquidity.buttonCreateAndStake")}
             />
@@ -313,16 +332,27 @@ export const AddLiquidityModal: FunctionComponent<
           hideCloseButton
           className="max-h-[98vh] !max-w-[57.5rem] overflow-auto"
         >
+          {/* The desktop header shows a "prices shown in" caption where the
+              close button would sit, so the button is hidden there and the
+              backdrop closes the modal. On mobile the modal fills the screen,
+              leaving no backdrop to tap, and the caption is hidden. */}
+          {isMobile && <ModalCloseButton onClick={props.onRequestClose} />}
           <AddConcLiquidity
             addLiquidityConfig={addConliqConfig}
-            zapQuote={zapQuote}
-            zapSlippageConfig={zapSlippageConfig}
-            zapValueIn={zapValueIn}
-            zapValueOut={zapValueOut}
-            zapTotalCostPercent={zapTotalCostPercent}
-            zapHighCost={zapHighCost}
-            zapCostAcknowledged={zapCostAcknowledged}
-            onZapCostAcknowledgedChange={setZapCostAcknowledged}
+            zap={{
+              zapQuote,
+              zapSlippageConfig,
+              zapMinReceived,
+              zapSlippageSource,
+              zapSlippageLiquidityUnknown,
+              zapValueIn,
+              zapValueOut,
+              zapTotalCostPercent,
+              zapHighCost,
+              slippageHigh: zapSlippageHigh,
+              costAcknowledged: zapCostAcknowledged,
+              onCostAcknowledgedChange: setZapCostAcknowledged,
+            }}
             actionButton={accountActionButton}
             onRequestClose={props.onRequestClose}
           />
@@ -350,7 +380,7 @@ export const AddLiquidityModal: FunctionComponent<
     >
       <AddLiquidity
         className="pt-4"
-        addLiquidityConfig={config as ObservableAddLiquidityConfig}
+        addLiquidityConfig={addLiquidityConfig}
         actionButton={accountActionButton}
       />
     </ModalBase>

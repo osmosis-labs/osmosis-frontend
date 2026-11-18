@@ -1,12 +1,12 @@
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks";
-import { useStore } from "~/stores";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { formatPretty } from "~/utils/formatter";
 
 const PriceCaption: FunctionComponent<{
@@ -27,17 +27,18 @@ const PriceCaption: FunctionComponent<{
 
 export const EstimatedEarningCard: FunctionComponent<{
   stakeAmount?: CoinPretty;
-  stakingAPR: Dec;
-}> = observer(({ stakeAmount, stakingAPR }) => {
+  /** Undefined when the APR is unavailable: earnings show as unknown, not zero. */
+  stakingAPR: Dec | undefined;
+}> = ({ stakeAmount, stakingAPR }) => {
   const { t } = useTranslation();
-  const { chainStore, priceStore } = useStore();
 
-  const osmo = chainStore.osmosis.stakeCurrency;
+  const osmo = OsmosisChainInfo.stakeCurrency;
 
-  const calculatedInflationAmountPerYear = stakeAmount
-    ?.moveDecimalPointRight(osmo.coinDecimals)
-    .toDec()
-    .mul(stakingAPR.quo(new Dec(100)));
+  // stakeAmount is already a CoinPretty in OSMO. Shifting by coinDecimals
+  // here treated that amount as uosmo and scaled earnings by 10^6.
+  const calculatedInflationAmountPerYear = stakingAPR
+    ? stakeAmount?.toDec().mul(stakingAPR.quo(new Dec(100)))
+    : undefined;
 
   const perDayCalculation = calculatedInflationAmountPerYear?.quo(new Dec(365));
   const perMonthCalculation = calculatedInflationAmountPerYear?.quo(
@@ -54,12 +55,12 @@ export const EstimatedEarningCard: FunctionComponent<{
     perMonthCalculation || new Dec(0)
   ).moveDecimalPointRight(osmo.coinDecimals);
 
-  const calculatedDailyPrice = prettifiedDailyAmount
-    ? priceStore.calculatePrice(prettifiedDailyAmount)
-    : 0;
-  const calculatedMonthlyPrice = prettifiedMonthlyAmount
-    ? priceStore.calculatePrice(prettifiedMonthlyAmount)
-    : 0;
+  const { fiatValue: calculatedDailyPrice } = useCoinFiatValue(
+    prettifiedDailyAmount
+  );
+  const { fiatValue: calculatedMonthlyPrice } = useCoinFiatValue(
+    prettifiedMonthlyAmount
+  );
 
   return (
     <OsmoverseCard containerClasses="bg-opacity-50">
@@ -72,21 +73,29 @@ export const EstimatedEarningCard: FunctionComponent<{
         </span>
         <div className="mb-2 mt-5 flex items-center gap-2">
           <PriceCaption
-            price={calculatedDailyPrice?.toString()}
+            price={stakingAPR ? calculatedDailyPrice?.toString() : "–"}
             term={t("stake.day")}
-            osmoPrice={formatPretty(prettifiedDailyAmount, {
-              maxDecimals: 2,
-            })?.toString()}
+            osmoPrice={
+              stakingAPR
+                ? formatPretty(prettifiedDailyAmount, {
+                    maxDecimals: 2,
+                  })?.toString()
+                : "–"
+            }
           />
           <PriceCaption
-            price={calculatedMonthlyPrice?.toString()}
+            price={stakingAPR ? calculatedMonthlyPrice?.toString() : "–"}
             term={t("stake.month")}
-            osmoPrice={formatPretty(prettifiedMonthlyAmount, {
-              maxDecimals: 2,
-            })?.toString()}
+            osmoPrice={
+              stakingAPR
+                ? formatPretty(prettifiedMonthlyAmount, {
+                    maxDecimals: 2,
+                  })?.toString()
+                : "–"
+            }
           />
         </div>
       </div>
     </OsmoverseCard>
   );
-});
+};

@@ -11,7 +11,6 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -38,13 +37,14 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
+import { useConvertibleAssetVariants } from "~/hooks/use-convertible-asset-variants";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
 import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
-import { useStore } from "~/stores";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -72,17 +72,16 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   tableTopPadding?: number;
   hideDust: boolean;
   setHideDust: (value: boolean) => void;
-}> = observer(({ tableTopPadding = 0, hideDust, setHideDust }) => {
+}> = ({ tableTopPadding = 0, hideDust, setHideDust }) => {
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const { accountStore } = useStore();
   const showUnverifiedAssetsFromStore = useUserSettingsStore(
     (state) => state.showUnverifiedAssets
   );
   const setShowUnverifiedAssets = useUserSettingsStore(
     (state) => state.setShowUnverifiedAssets
   );
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { address } = useWallet();
   const { isLoading: isLoadingWallet } = useWalletSelect();
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
@@ -135,15 +134,17 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     fetchNextPage,
   } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
     {
-      userOsmoAddress: account?.address,
+      userOsmoAddress: address,
       limit: 50,
       search: searchQuery,
+      // ranks watchlisted assets up in search results
+      watchListDenoms: searchQuery ? watchListDenoms : undefined,
       onlyVerified: !searchQuery && showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
       sort,
     },
     {
-      enabled: !isLoadingWallet && Boolean(account?.address),
+      enabled: !isLoadingWallet && Boolean(address),
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       placeholderData: keepPreviousData,
@@ -169,6 +170,8 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   );
 
   const filteredAssetsData = useMemo(() => {
+    // search results are already ranked (watchlist included) by the server
+    if (searchQuery) return dustFilteredAssetsData;
     return dustFilteredAssetsData.sort((a, b) => {
       const aIsFavorite = watchListDenoms.includes(a.coinDenom);
       const bIsFavorite = watchListDenoms.includes(b.coinDenom);
@@ -176,7 +179,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       if (!aIsFavorite && bIsFavorite) return 1;
       return 0;
     });
-  }, [dustFilteredAssetsData, watchListDenoms]);
+  }, [dustFilteredAssetsData, watchListDenoms, searchQuery]);
 
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 
@@ -260,6 +263,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
+  // eslint-disable-next-line hooks-compat/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: filteredAssetsData,
     columns: collapsedColumns,
@@ -474,7 +478,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       )}
     </div>
   );
-});
+};
 
 // table cells
 
@@ -586,7 +590,21 @@ const AssetActionsCell: AssetCellComponent<{
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
   const needsConversion = coinMinimalDenom !== variantGroupKey;
-  const showConvertButton = featureFlags.alloyedAssets && needsConversion;
+
+  // Only variants that convert 1:1 (members of an active alloy) come back as
+  // asset variants, so the button never opens a modal with nothing in it.
+  const { address } = useWallet();
+  const { assetVariants } = useConvertibleAssetVariants({
+    address,
+    enabled: Boolean(featureFlags.alloyedAssets) && needsConversion,
+  });
+  const isConvertible = Boolean(
+    assetVariants?.some(
+      (variant) => variant.amount.currency.coinMinimalDenom === coinMinimalDenom
+    )
+  );
+  const showConvertButton =
+    featureFlags.alloyedAssets && needsConversion && isConvertible;
 
   const actionOptions = getActionOptions(
     t,

@@ -92,24 +92,54 @@ describe("sort function", () => {
     expect(result).toEqual(list);
   });
 
-  it("should filter nil elements at the key path from sorting", () => {
+  it("should keep nil elements at the key path, sorted last", () => {
     const list = [
       { name: "John", age: 30 },
+      { name: "NoAgeNull", age: null },
       { name: "Alice", age: 20 },
+      { name: "NoAgeUndefined", age: undefined },
       { name: "Bob", age: 25 },
-      // these two should get filtered
-      { name: "Bob", age: null },
-      { name: "Bob", age: undefined },
-      { name: "Bob", age: 0 },
+      { name: "Zero", age: 0 },
     ];
-    const result = sort(list, "age", "asc");
-    expect(result).toEqual([
-      // 0 is not nil, and should still be included with numeric values
-      { name: "Bob", age: 0 },
-      { name: "Alice", age: 20 },
-      { name: "Bob", age: 25 },
-      { name: "John", age: 30 },
+
+    // nil rows stay in their original relative order, after every known value,
+    // in both directions. 0 is not nil and sorts with the numeric values.
+    expect(sort(list, "age", "asc").map((i) => i.name)).toEqual([
+      "Zero",
+      "Alice",
+      "Bob",
+      "John",
+      "NoAgeNull",
+      "NoAgeUndefined",
     ]);
+    expect(sort(list, "age", "desc").map((i) => i.name)).toEqual([
+      "John",
+      "Bob",
+      "Alice",
+      "Zero",
+      "NoAgeNull",
+      "NoAgeUndefined",
+    ]);
+  });
+
+  it("should sort when the first element's value is nil or 0", () => {
+    const list = [
+      { name: "Unknown", volume24h: undefined },
+      { name: "Zero", volume24h: 0 },
+      { name: "High", volume24h: 100 },
+    ];
+
+    expect(sort(list, "volume24h").map((i) => i.name)).toEqual([
+      "High",
+      "Zero",
+      "Unknown",
+    ]);
+  });
+
+  it("should not mutate the given list", () => {
+    const list = [{ age: 1 }, { age: 2 }];
+    sort(list, "age");
+    expect(list).toEqual([{ age: 1 }, { age: 2 }]);
   });
 });
 

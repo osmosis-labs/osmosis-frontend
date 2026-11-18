@@ -1,21 +1,20 @@
-import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
+import type { Pool } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { Fragment, FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { AssetBreakdownChart } from "~/components/chart";
-import { Button } from "~/components/ui/button";
-import { Button as UIButton } from "~/components/ui/button";
+import { Button, Button as UIButton } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { IncentivizePoolModal } from "~/modals";
 
 export const BasePoolDetails: FunctionComponent<{
   pool: Pool;
-}> = observer(({ pool }) => {
+}> = ({ pool }) => {
   const { t } = useTranslation();
   const { incentivizePool } = useFeatureFlags();
 
@@ -107,7 +106,7 @@ export const BasePoolDetails: FunctionComponent<{
                     {t("pool.liquidity")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {poolValue?.toString() ?? ""}
+                    {pool.tvlUnknown ? "–" : (poolValue?.toString() ?? "")}
                   </h4>
                 </div>
                 <div className="space-y-2">
@@ -173,4 +172,4 @@ export const BasePoolDetails: FunctionComponent<{
       )}
     </main>
   );
-});
+};

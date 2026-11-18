@@ -1,5 +1,10 @@
 const nextJest = require("next/jest");
-// eslint-disable-next-line import/no-extraneous-dependencies
+
+// Run in UTC like CI. Date tests build offsets relative to the local zone
+// (e.g. `utcOffset(now.utcOffset() - 60)`), which degenerate in some zones:
+// at UTC+1 that offset is 0, dayjs switches to UTC mode and drops it.
+process.env.TZ = "UTC";
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 const { pathsToModuleNameMapper } = require("ts-jest");
 
 const { compilerOptions } = require("./tsconfig");
@@ -30,6 +35,15 @@ const config = {
     customExportConditions: [""],
   },
   testPathIgnorePatterns: ["e2e"],
+  // Build outputs hold copies of the workspace packages (`.next/standalone`,
+  // OpenNext's `.open-next`). Left in the haste map they either collide
+  // ("several different files provide @osmosis-labs/server") or, with a single
+  // copy, silently resolve workspace imports to the stale build.
+  modulePathIgnorePatterns: [
+    "<rootDir>/.next/",
+    "<rootDir>/.open-next/",
+    "<rootDir>/.wrangler/",
+  ],
 };
 
 const esmModules = [
@@ -38,7 +52,6 @@ const esmModules = [
   "@dao-dao/cosmiframe", // nests its own uuid@9 (ESM), which the "uuid" entry cannot reach
   "uuid",
   "@keplr-wallet/unit",
-  "@osmosis-labs/stores",
   "@osmosis-labs/utils",
   "wagmi",
   "@wagmi",
@@ -55,6 +68,27 @@ const esmModules = [
   "msw",
   "@mswjs",
   "@open-draft",
+  // react-markdown 10 and its unified pipeline publish ESM only.
+  "react-markdown",
+  "(remark|rehype|mdast|hast|micromark|unist)(-.*)?",
+  "unified",
+  "vfile(-.*)?",
+  "devlop",
+  "bail",
+  "trough",
+  "is-plain-obj",
+  "zwitch",
+  "(comma|space)-separated-tokens",
+  "(decode-named-character-reference|character-entities.*)",
+  "(parse|stringify)-entities",
+  "character-reference-invalid",
+  "is-(alphanumerical|alphabetical|decimal|hexadecimal)",
+  "estree-util-is-identifier-name",
+  "property-information",
+  "html-url-attributes",
+  "ccount",
+  "longest-streak",
+  "trim-lines",
 ];
 
 module.exports = async () => ({

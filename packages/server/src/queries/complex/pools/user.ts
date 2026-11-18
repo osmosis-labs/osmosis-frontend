@@ -1,21 +1,18 @@
+import type {
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
+import { Dec, IntPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
 
 import {
-  calcSumCoinsValue,
+  calcSumCoinsValueOrUnknown,
   mapRawCoinToPretty,
 } from "../../../queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
-import {
-  getCachedPoolIncentivesMap,
-  PoolIncentives,
-} from "../../../queries/complex/pools/incentives";
+import { getCachedPoolIncentivesMap } from "../../../queries/complex/pools/incentives";
 import { queryBalances } from "../../../queries/cosmos";
-import {
-  StablePoolRawResponse,
-  WeightedPoolRawResponse,
-} from "../../../queries/osmosis";
 import {
   LiquidityPosition,
   queryAccountPositions,
@@ -44,14 +41,12 @@ export async function getUserPools(params: {
         10_000, // 10 seconds
         "queryCLPositions"
       )().catch(() => [] as LiquidityPosition[]),
+      // Undefined when the APRs are unavailable, so they aren't shown as 0%.
       timeout(
-        () =>
-          getCachedPoolIncentivesMap().catch(
-            () => new Map<string, PoolIncentives>()
-          ),
+        () => getCachedPoolIncentivesMap().catch(() => undefined),
         10_000, // 10 seconds
         "getCachedPoolIncentivesMap"
-      )().catch(() => new Map<string, PoolIncentives>()),
+      )().catch(() => undefined),
       timeout(
         () => getSuperfluidPoolIds(params).catch(() => [] as string[]),
         10_000, // 10 seconds
@@ -73,11 +68,14 @@ export async function getUserPools(params: {
 
   return await Promise.all(
     pools.items?.map(async (pool) => {
-      const { id, reserveCoins, totalFiatValueLocked, type } = pool;
+      const { id, reserveCoins, totalFiatValueLocked, type, tvlUnknown } = pool;
       let userValue: PricePretty = new PricePretty(
         DEFAULT_VS_CURRENCY,
         new Dec(0)
       );
+      // Set when a price behind the user's value is unavailable, so the value isn't
+      // understated (or hidden as dust) as if the funds were missing.
+      let userValueUnknown = false;
 
       if (type === "concentrated") {
         const positions = accountPositions.filter(
@@ -98,10 +96,12 @@ export async function getUserPools(params: {
           aggregatedRawCoins
         );
 
-        userValue = new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          await calcSumCoinsValue({ ...params, coins: coinsToCalculateValue })
-        );
+        const value = await calcSumCoinsValueOrUnknown({
+          ...params,
+          coins: coinsToCalculateValue,
+        });
+        userValueUnknown = value === undefined;
+        userValue = new PricePretty(DEFAULT_VS_CURRENCY, value ?? new Dec(0));
       } else if (type === "weighted" || type === "stable") {
         const totalShareAmount = new Dec(
           (pool.raw as WeightedPoolRawResponse | StablePoolRawResponse)
@@ -130,8 +130,19 @@ export async function getUserPools(params: {
         id,
         type,
         reserveCoins,
-        apr: poolIncentives.get(id)?.aprBreakdown?.total,
-        poolLiquidity: totalFiatValueLocked,
+        // A pool missing from a loaded map has no APR; an unavailable map means unknown.
+        apr: poolIncentives
+          ? (poolIncentives.get(id)?.aprBreakdown?.total ?? {
+              lower: new RatePretty(0),
+              upper: new RatePretty(0),
+            })
+          : undefined,
+        // Undefined when a reserve has no price: the TVL is unknown, not the partial sum.
+        poolLiquidity: tvlUnknown ? undefined : totalFiatValueLocked,
+        /** True when the user's value can't be priced: a coin's price or the pool TVL is unavailable. */
+        userValueUnknown:
+          userValueUnknown ||
+          Boolean(tvlUnknown && (type === "weighted" || type === "stable")),
         isSuperfluid: superfluidPoolIds.some(
           (superfluidPoolId) => superfluidPoolId === id
         ),
@@ -198,55 +209,74 @@ export async function getUserSharePools(params: {
     const totalShares = total ? makeShareCoin(total) : null;
 
     // underlying assets behind all shares
-    // when catching: likely shares balance is too small for precision
+    // a failure here (pool not found, unexpected pool type) comes back as undefined;
+    // shares too small for token precision resolve to an empty list instead
     const [
-      underlyingAvailableCoins,
-      underlyingLockedCoins,
-      underlyingUnlockingCoins,
-      totalCoins,
+      underlyingAvailableCoinsOrFailed,
+      underlyingLockedCoinsOrFailed,
+      underlyingUnlockingCoinsOrFailed,
+      totalCoinsOrFailed,
     ] = await Promise.all([
       available
         ? getGammShareUnderlyingCoins({ ...params, ...available }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
       locked
         ? getGammShareUnderlyingCoins({ ...params, ...locked }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
       unlocking
         ? getGammShareUnderlyingCoins({ ...params, ...unlocking }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
       total
         ? getGammShareUnderlyingCoins({ ...params, ...total }).catch((e) =>
-            captureErrorAndReturn(e, [])
+            captureErrorAndReturn(e, undefined)
           )
         : Promise.resolve([]),
     ]);
 
-    // value of all shares
+    // A failed lookup (pool not found, unexpected pool type) is not an empty position:
+    // it leaves the value unknown instead of $0.
+    const shareLookupFailed = [
+      underlyingAvailableCoinsOrFailed,
+      underlyingLockedCoinsOrFailed,
+      underlyingUnlockingCoinsOrFailed,
+      totalCoinsOrFailed,
+    ].some((coins) => coins === undefined);
+    const underlyingAvailableCoins = underlyingAvailableCoinsOrFailed ?? [];
+    const underlyingLockedCoins = underlyingLockedCoinsOrFailed ?? [];
+    const underlyingUnlockingCoins = underlyingUnlockingCoinsOrFailed ?? [];
+    const totalCoins = totalCoinsOrFailed ?? [];
+
+    // value of all shares; undefined when a coin that should have a price has none
     const [availableValue, lockedValue, unlockingValue, totalValue] =
       await Promise.all([
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: underlyingAvailableCoins,
         }),
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: underlyingLockedCoins,
         }),
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: underlyingUnlockingCoins,
         }),
-        calcSumCoinsValue({
+        calcSumCoinsValueOrUnknown({
           ...params,
           coins: totalCoins,
         }),
       ]);
+    const valueUnknown =
+      shareLookupFailed ||
+      [availableValue, lockedValue, unlockingValue, totalValue].some(
+        (value) => value === undefined
+      );
 
     // get locks containing this pool's shares
     const lockedLocks = userLocks.filter(
@@ -288,6 +318,9 @@ export async function getUserSharePools(params: {
       totalShares,
       totalCoins,
       totalValue: new PricePretty(DEFAULT_VS_CURRENCY, totalValue ?? 0),
+      /** True when a share value couldn't be priced; the values above are then unknown,
+       *  not zero. Check it before showing, summing or sorting them. */
+      valueUnknown,
     };
   });
 

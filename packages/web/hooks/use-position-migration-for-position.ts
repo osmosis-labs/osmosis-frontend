@@ -1,4 +1,4 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { MultiEndpointClient } from "@osmosis-labs/utils";
 import { useCallback } from "react";
@@ -12,10 +12,11 @@ import {
   queryLatestPositionMigrations,
   usePositionMigrations,
 } from "~/hooks/use-position-migrations";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import {
   ChainConcentratedPoolResponse,
   ChainPositionResponse,
+  DivergenceTier,
   findMigration,
   getMigrationEligibility,
   MigrationEligibility,
@@ -36,7 +37,7 @@ import { api } from "~/utils/trpc";
  * empty endpoint set, which must read as "cannot check", not as a crash.
  */
 let lcdClient: MultiEndpointClient | undefined;
-const getLcdClient = () => {
+export const getLcdClient = () => {
   if (lcdClient) return lcdClient;
   const endpoints = (ChainList[0].apis?.rest ?? []).map(({ address }) => ({
     address: address.replace(/\/+$/, ""),
@@ -114,6 +115,7 @@ export const usePositionMigrationForPosition = ({
   isUnbonding,
   isSuperfluidStaked,
   isSuperfluidUnstaking,
+  maxDivergencePercentOverride,
 }: {
   poolId: string;
   /**
@@ -140,13 +142,25 @@ export const usePositionMigrationForPosition = ({
   isUnbonding: boolean;
   isSuperfluidStaked: boolean;
   isSuperfluidUnstaking: boolean;
+  /**
+   * Replaces the size-tiered divergence tolerances with one flat tolerance,
+   * in percent. Only for forced migrations, where moving at a worse price
+   * beats holding the old asset past its deadline.
+   */
+  maxDivergencePercentOverride?: number;
 }) => {
-  const { migrations, priceDivergenceTiers, minAmountTolerance } =
-    usePositionMigrations();
+  const {
+    migrations,
+    priceDivergenceTiers: cmsPriceDivergenceTiers,
+    minAmountTolerance,
+  } = usePositionMigrations();
+  const priceDivergenceTiers = withDivergenceOverride(
+    cmsPriceDivergenceTiers,
+    maxDivergencePercentOverride
+  );
   const apiUtils = api.useUtils();
-  const { accountStore, chainStore } = useStore();
-  const userOsmoAddress =
-    accountStore.getWallet(chainStore.osmosis.chainId)?.address ?? "";
+  const { address } = useWallet();
+  const userOsmoAddress = address ?? "";
 
   // Destructured to scalars so the object literals callers pass each render
   // do not churn the revalidate callback's identity.
@@ -215,7 +229,10 @@ export const usePositionMigrationForPosition = ({
 
     const eligibility: MigrationEligibility = getMigrationEligibility({
       migrations: freshConfig.migrations,
-      priceDivergenceTiers: freshConfig.priceDivergenceTiers,
+      priceDivergenceTiers: withDivergenceOverride(
+        freshConfig.priceDivergenceTiers,
+        maxDivergencePercentOverride
+      ),
       /* Tiered by size, so the tier must follow the amounts just read rather
          than the render-time snapshot; unusable inputs rescale to 0, which
          the tier lookup treats as the strictest tier. */
@@ -250,6 +267,7 @@ export const usePositionMigrationForPosition = ({
     poolId,
     userOsmoAddress,
     apiUtils,
+    maxDivergencePercentOverride,
   ]);
 
   /* Poll while a mapped position's card is expanded, so the displayed
@@ -334,6 +352,16 @@ export const usePositionMigrationForPosition = ({
     isPoolDataRefetching,
   };
 };
+
+/** The CMS tiers, or one flat tier when an override is given. Unset CMS
+ *  tiers stay unset: the map still has to load before anything is offered. */
+const withDivergenceOverride = (
+  tiers: DivergenceTier[] | undefined,
+  overridePercent: number | undefined
+): DivergenceTier[] | undefined =>
+  tiers && overridePercent !== undefined
+    ? [{ tolerancePercent: overridePercent }]
+    : tiers;
 
 /**
  * Narrows a pool to the fields the eligibility checks need, or `undefined`

@@ -2,13 +2,14 @@ FROM node:24.21.0 as build
 
 WORKDIR /app
 
-COPY turbo.json lerna.json package.json tsconfig.json yarn.lock /app/
+COPY turbo.json package.json tsconfig.json yarn.lock /app/
 COPY packages /app/packages/
 
 RUN yarn
 RUN yarn build
 
-FROM node:24.21.0-alpine
+# The local API Worker uses workerd, which requires glibc.
+FROM node:24.21.0-slim
 
 WORKDIR /app
 COPY --from=build /app .

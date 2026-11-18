@@ -1,17 +1,18 @@
-import React, { FunctionComponent } from "react";
-import ReactMarkdown from "react-markdown";
 import {
   ComponentPropsWithoutRef,
   ComponentType,
-  ReactMarkdownProps,
-} from "react-markdown/lib/ast-to-react";
+  ElementType,
+  FunctionComponent,
+} from "react";
+import ReactMarkdown, { ExtraProps } from "react-markdown";
 
 interface MarkdownProps {
   children?: string;
 }
 
-type NormalMarkdownComponent<TagName extends React.ElementType<any>> =
-  ComponentType<ComponentPropsWithoutRef<TagName> & ReactMarkdownProps>;
+type NormalMarkdownComponent<TagName extends ElementType> = ComponentType<
+  ComponentPropsWithoutRef<TagName> & ExtraProps
+>;
 
 const MarkdownLink: NormalMarkdownComponent<"a"> = ({ node, ...props }) => {
   return <a {...props} className="text-white-high"></a>;

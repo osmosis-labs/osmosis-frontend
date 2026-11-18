@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { CSSProperties } from "react";
@@ -46,8 +45,12 @@ const Home = () => {
             className="absolute bottom-0 max-h-[720px] w-full"
           />
         </div>
+        {/* Viewport-fixed above xl, so it clears the navbar and banner stack
+            itself. At xl and below the wrapper is static and `main` already
+            sits under the navbar and its in-flow banner spacer, so only the
+            32px gap applies; adding either height again double-counts it. */}
         <div
-          className="absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center md:top-0"
+          className="absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center xl:top-8 md:top-0"
           style={
             {
               "--visible-banner-height": `${visibleBannerHeight}px`,
@@ -76,9 +79,14 @@ const TopGainers = () => {
   const router = useRouter();
 
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
-    api.edge.assets.getTopGainerAssets.useQuery({
-      topN: 4,
-    });
+    api.edge.assets.getTopGainerAssets.useQuery(
+      { topN: 4 },
+      // A failing server times out after about 12 s; one retry is enough.
+      { retry: 1 }
+    );
+
+  // Hidden when it has nothing to show, e.g. while market data is unavailable.
+  if (!isTopGainerAssetsLoading && !topGainerAssets?.length) return null;
 
   return (
     <AssetHighlights
@@ -94,7 +102,7 @@ const TopGainers = () => {
   );
 };
 
-const SwapAdsBanner = observer(() => {
+const SwapAdsBanner = () => {
   const { data, isLoading } = api.local.cms.getSwapAdBanners.useQuery(
     undefined,
     {
@@ -119,6 +127,6 @@ const SwapAdsBanner = observer(() => {
       <AdBanners ads={data.banners} localization={data.localization} />
     </ErrorBoundary>
   );
-});
+};
 
-export default observer(Home);
+export default Home;

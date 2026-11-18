@@ -1,10 +1,11 @@
 "use client";
 
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { CheckIcon, MinusIcon } from "@radix-ui/react-icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import * as React from "react";
+
+import { CheckIcon, MinusIcon } from "~/components/ui/icons";
 
 const checkboxVariants = cva(
   "focus-visible:ring-ring peer h-6 w-6 shrink-0 rounded-lg border-2 border-osmoverse-300 shadow focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-osmoverse-300 data-[state=checked]:text-primary-foreground",

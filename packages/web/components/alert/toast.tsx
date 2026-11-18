@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import {
   Id,
   toast,
@@ -11,7 +11,6 @@ import { Alert, AlloyedAssetsAlert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
 import { shouldPersistDismissalOnClose } from "~/hooks/alloyed-assets-toast-policy";
 import { useAlloyedAssetsToastDismissal } from "~/hooks/use-alloyed-assets-toast-dismissal";
@@ -152,7 +151,8 @@ const LoadingToast: FunctionComponent<Alert> = ({
       )}
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
-          target="__blank"
+          target="_blank"
+          rel="noopener noreferrer"
           href={learnMoreUrl}
           className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
         >
@@ -170,6 +170,8 @@ const ErrorToast: FunctionComponent<Alert> = ({
   titleTranslationKey,
   captionTranslationKey,
   captionElement,
+  learnMoreUrl,
+  learnMoreUrlCaption,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
@@ -184,6 +186,19 @@ const ErrorToast: FunctionComponent<Alert> = ({
             ? t(captionTranslationKey)
             : t(...captionTranslationKey)}
         </p>
+      )}
+      {learnMoreUrl && learnMoreUrlCaption && (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={learnMoreUrl}
+          className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
+        >
+          {t(learnMoreUrlCaption ?? "Learn more")}
+          <div className="mb-0.75 ml-2 inline-block">
+            <Icon aria-label="link" id="external-link" height={12} width={12} />
+          </div>
+        </a>
       )}
     </div>
   </div>
@@ -212,7 +227,8 @@ const SuccessToast: FunctionComponent<Alert> = ({
       )}
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
-          target="__blank"
+          target="_blank"
+          rel="noopener noreferrer"
           href={learnMoreUrl}
           className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
         >
@@ -262,15 +278,6 @@ const AlloyedAssetsToast: FunctionComponent<
   variantGroupKeys,
   closeToast,
 }) => {
-  const { isMobile } = useWindowSize();
-  // should close toast if screen size changes to mobile while shown
-  useEffect(() => {
-    if (isMobile) {
-      // Use timeout to avoid the maximum update depth exceeded error
-      setTimeout(closeToast, 0);
-    }
-  }, [isMobile, closeToast]);
-
   const { setIsOpen } = useAssetVariantsModalStore();
 
   const { dismissGroups } = useAlloyedAssetsToastDismissal();

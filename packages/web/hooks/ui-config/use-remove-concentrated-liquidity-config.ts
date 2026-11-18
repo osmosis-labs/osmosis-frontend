@@ -1,26 +1,51 @@
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import {
   BigDec,
   calcZapOutRouteDegradation,
   calcZapOutSwapAmount,
   combineImpactWithDegradation,
 } from "@osmosis-labs/math";
-import type {
-  ConcentratedPoolRawResponse,
-  UserPosition,
-} from "@osmosis-labs/server";
-import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
+import type { UserPosition } from "@osmosis-labs/server";
+import {
+  prepareWithdrawConcentratedLiquidityPositionMsg,
+  prepareZapOutOfConcentratedPositionMsg,
+} from "@osmosis-labs/tx";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
-import { useEffect } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useZapOutQuote } from "~/hooks/use-zap-out-quote";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
+
+import { useWallet } from "../use-wallet";
+import {
+  getEffectiveLiquidity,
+  getEffectiveLiquidityAmounts,
+  getRemoveConcentratedLiquidityError,
+} from "./remove-concentrated-liquidity";
+
+export type RemoveConcentratedLiquidityConfig = {
+  /** Fraction (0 to 1) of the position's liquidity to remove. */
+  readonly percentage: number;
+  readonly effectiveLiquidity: Dec | undefined;
+  readonly effectiveLiquidityAmounts:
+    { base: CoinPretty; quote: CoinPretty } | undefined;
+  readonly error: Error | undefined;
+  /** Target fraction of the withdrawn *value* to end holding in base (token0),
+   *  in `[0, 1]`, or `undefined` for the explicit no-swap state (withdraw at
+   *  the position's current ratio). `undefined` is the default and the only
+   *  no-swap signal: the consumer never seeds a numeric value and never
+   *  compares a fraction against the current split, so there is no lossy
+   *  default and no float-equality. A swap is computed only for a real value. */
+  readonly targetBaseValueFraction: number | undefined;
+  setPercentage: (percentage: number) => void;
+  /** Set a real target value-split (a user-chosen mix), or `undefined` to
+   *  return to the no-swap state (withdraw at the current ratio). */
+  setTargetBaseValueFraction: (fraction: number | undefined) => void;
+};
 
 /** The swap leg a single-asset (zap-out) exit requires to reach the target
  *  value split, plus the input-state classification used by the modal/submit. */
@@ -34,12 +59,11 @@ export interface ZapOutRequiredSwap {
 }
 
 export function useRemoveConcentratedLiquidityConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
   position: UserPosition
 ): {
-  config: ObservableRemoveConcentratedLiquidityConfig;
+  config: RemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
   zapOutLiquidity: () => Promise<void>;
   zapQuote: ReturnType<typeof useZapOutQuote>;
@@ -81,35 +105,36 @@ export function useRemoveConcentratedLiquidityConfig(
    *  a never-resolving query can't trap the user with no path to withdraw. */
   isPoolLoading: boolean;
 } {
-  const { accountStore } = useStore();
   const apiUtils = api.useUtils();
 
-  const account = accountStore.getWallet(osmosisChainId);
+  const {
+    wallet: account,
+    signAndBroadcast,
+    transactionContext,
+  } = useWallet(osmosisChainId);
 
   // Single-asset exit reuses the user's general swap slippage scope.
   const zapSlippageConfig = useSlippageConfig();
 
-  const [config] = useState(
-    () =>
-      new ObservableRemoveConcentratedLiquidityConfig(
-        chainGetter,
-        osmosisChainId,
-        poolId,
-        {
-          baseAsset: position.currentCoins[0],
-          quoteAsset: position.currentCoins[1],
-          liquidity: position.liquidity,
-        }
-      )
-  );
+  const [percentage, setPercentage] = useState(1);
+  const [targetBaseValueFraction, setTargetBaseValueFraction] = useState<
+    number | undefined
+  >(undefined);
 
-  useEffect(() => {
-    config.setPosition({
-      baseAsset: position.currentCoins[0],
-      quoteAsset: position.currentCoins[1],
-      liquidity: position.liquidity,
-    });
-  }, [config, position]);
+  const { liquidity, currentCoins } = position;
+  const [baseAsset, quoteAsset] = currentCoins;
+  const config = useMemo<RemoveConcentratedLiquidityConfig>(() => {
+    const pos = { baseAsset, quoteAsset, liquidity };
+    return {
+      percentage,
+      effectiveLiquidity: getEffectiveLiquidity(pos, percentage),
+      effectiveLiquidityAmounts: getEffectiveLiquidityAmounts(pos, percentage),
+      error: getRemoveConcentratedLiquidityError(percentage),
+      targetBaseValueFraction,
+      setPercentage,
+      setTargetBaseValueFraction,
+    };
+  }, [baseAsset, quoteAsset, liquidity, percentage, targetBaseValueFraction]);
 
   // The pool's current sqrt price (micro basis) is what the swap executes
   // against, so the value-rebalance math uses it rather than fiat oracle prices.
@@ -375,28 +400,37 @@ export function useRemoveConcentratedLiquidityConfig(
             return Promise.reject("No account");
           }
 
-          account.osmosis
-            .sendWithdrawConcentratedLiquidityPositionMsg(
-              position.id,
-              liquidity,
-              undefined,
-              (tx) => {
-                if (tx.code) {
-                  reject(tx.rawLog);
-                } else {
-                  // refresh tick data
-                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                    .invalidate({ poolId })
-                    .finally(() => resolve());
-                }
+          prepareWithdrawConcentratedLiquidityPositionMsg(
+            transactionContext,
+            position.id,
+            liquidity,
+            undefined,
+            (tx) => {
+              if (tx.code) {
+                reject(tx.rawLog);
+              } else {
+                // refresh tick data
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
+                  .finally(() => resolve());
               }
-            )
+            }
+          )
+            .then((prepared) => signAndBroadcast(...prepared))
             .catch(reject);
         } catch (e: any) {
           reject(e);
         }
       }),
-    [config.effectiveLiquidity, account, poolId, position.id, apiUtils]
+    [
+      config.effectiveLiquidity,
+      account,
+      transactionContext,
+      position.id,
+      apiUtils,
+      poolId,
+      signAndBroadcast,
+    ]
   );
 
   const zapOutLiquidity = useCallback(
@@ -434,7 +468,7 @@ export function useRemoveConcentratedLiquidityConfig(
           // swap spends from the account balance, so beyond-tolerance drift
           // can draw on a pre-existing sold-denom balance, covering some or
           // all of the shortfall instead of guaranteeing a revert (see
-          // sendZapOutOfConcentratedPositionMsg's doc).
+          // prepareZapOutOfConcentratedPositionMsg's doc).
           const swapInLowerBound = new Dec(quotedSwap.swapInAmount)
             .mul(slippageMultiplier)
             .truncate();
@@ -443,8 +477,8 @@ export function useRemoveConcentratedLiquidityConfig(
           if (tokenOutMinAmount.lte(new Int(0)))
             return rejectPreflight("Swap output floor rounds to zero");
 
-          broadcastAttempted = true;
-          await account.osmosis.sendZapOutOfConcentratedPositionMsg(
+          const prepared = await prepareZapOutOfConcentratedPositionMsg(
+            transactionContext,
             position.id,
             liquidity.toString(),
             {
@@ -462,6 +496,8 @@ export function useRemoveConcentratedLiquidityConfig(
               }
             }
           );
+          broadcastAttempted = true;
+          await signAndBroadcast(...prepared);
         } catch (e: unknown) {
           console.error(e);
           const message = e instanceof Error ? e.message : String(e);
@@ -472,11 +508,12 @@ export function useRemoveConcentratedLiquidityConfig(
       }),
     [
       config.effectiveLiquidity,
-      config.percentage,
       account,
       quotedSwap,
       swapExecution,
       slippageMultiplier,
+      transactionContext,
+      signAndBroadcast,
       poolId,
       position.id,
       apiUtils,

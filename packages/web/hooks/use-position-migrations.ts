@@ -9,7 +9,7 @@ import {
 
 /** The fe-content file the migration map lives in; also read fresh at
  * confirm time by the revalidation path. */
-export const POSITION_MIGRATIONS_FILE_PATH = "cms/position-migrations.json";
+const POSITION_MIGRATIONS_FILE_PATH = "cms/position-migrations.json";
 
 /**
  * Reads the migration safety config from live `main`, deliberately bypassing

@@ -1,7 +1,0 @@
-build/*
-types/*
-
-.prettierignore
-.eslintignore
-localnet
-*.sh

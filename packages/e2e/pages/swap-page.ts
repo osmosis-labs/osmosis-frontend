@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-compat/no-extraneous-dependencies */
 import {
   type BrowserContext,
   type Locator,
@@ -58,7 +58,6 @@ export class SwapPage extends BasePage {
   async enterAmount(amount: string) {
     // Just enter an amount for the swap and wait for a quote
     await this.swapInput.fill(amount, { timeout: 2000 })
-    await this.page.waitForTimeout(2000)
     await expect(this.swapInput).toHaveValue(amount, { timeout: 3000 })
     const exchangeRate = await this.getExchangeRate()
     console.log(`Swap ${amount} with rate: ${exchangeRate}`)
@@ -208,7 +207,7 @@ export class SwapPage extends BasePage {
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Price Impact"]/..//span[@class="text-bullish-400"]',
+      '//span[.="Price Impact"]/..//span[@class="text-bullish-400" or @class="text-osmoverse-100" or @class="text-rust-400"]',
     )
     return await priceInpactSpan.textContent()
   }

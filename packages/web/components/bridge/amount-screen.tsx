@@ -8,23 +8,22 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import {
   Dispatch,
   FunctionComponent,
+  memo,
   ReactNode,
+  RefObject,
   SetStateAction,
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
-import { useMeasure, useUnmount } from "react-use";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { BridgeReceiveAssetDropdown } from "~/components/bridge/bridge-receive-asset-dropdown";
-import { DepositAddressScreen } from "~/components/bridge/deposit-address-screen";
 import { CryptoFiatInput } from "~/components/control/crypto-fiat-input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import {
@@ -34,6 +33,7 @@ import {
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
+import { OsmosisChainInfo } from "~/config/chain";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
   useConnectWalletModalRedirect,
@@ -41,12 +41,12 @@ import {
   useFeatureFlags,
   useTranslation,
 } from "~/hooks";
-import { BridgeScreen, useBridgeStore } from "~/hooks/bridge";
+import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
+import { useWallet } from "~/hooks/use-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
-import { useStore } from "~/stores";
 import {
   depositHaltReasonKey,
   withdrawalHaltReasonKey,
@@ -77,6 +77,7 @@ import {
   NetworkFeeRow,
   ProviderFeesRow,
   TotalFeesRow,
+  TransferSpeedToggle,
 } from "./quote-detail";
 import { BridgeQuote } from "./use-bridge-quotes";
 import {
@@ -105,6 +106,7 @@ interface AmountScreenProps {
   setFromAsset: (asset: SupportedAssetWithAmount | undefined) => void;
   toAsset: SupportedAsset | undefined;
   setToAsset: (asset: SupportedAsset | undefined) => void;
+  userHasPickedToAssetRef: RefObject<boolean>;
 
   manualToAddress: string | undefined;
   setManualToAddress: (address: string | undefined) => void;
@@ -121,7 +123,7 @@ interface AmountScreenProps {
   onConfirm: () => void;
 }
 
-export const AmountScreen = observer(
+export const AmountScreen = memo(
   ({
     direction,
     selectedDenom,
@@ -146,6 +148,7 @@ export const AmountScreen = observer(
     setFromAsset,
     toAsset,
     setToAsset,
+    userHasPickedToAssetRef,
 
     manualToAddress,
     setManualToAddress,
@@ -162,7 +165,7 @@ export const AmountScreen = observer(
     onConfirm,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
-    const { accountStore } = useStore();
+    const walletApi = useWallet();
     const { t } = useTranslation();
     const featureFlags = useFeatureFlags();
 
@@ -183,15 +186,6 @@ export const AmountScreen = observer(
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
 
-    // True once the user deliberately picks a withdraw variant from the receive
-    // dropdown. While true, the realign effect won't re-point `toAsset` to the
-    // provider list's current index 0, so a later provider settle or a
-    // background refetch that cosmetically reorders index 0 can't swap the asset
-    // out from under a deliberate choice. Self-resets whenever `toAsset` returns
-    // to nil (chain switch resetAssets(), or the parent's onTransfer reset) —
-    // see the realign effect, which is the single reset point.
-    const userHasPickedToAssetRef = useRef(false);
-
     const {
       isOpen: isBridgeWalletSelectOpen,
       onClose: onCloseBridgeWalletSelect,
@@ -199,7 +193,7 @@ export const AmountScreen = observer(
     } = useDisclosure();
 
     // Wallets
-    const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
+    const { wallet: osmosisAccount } = walletApi;
     const {
       address: evmAddress,
       connector: evmConnector,
@@ -212,10 +206,19 @@ export const AmountScreen = observer(
       restoreSession: featureFlags.solanaSkipRoutes === true,
     });
 
-    const fromCosmosCounterpartyAccount =
+    const fromCosmosChainId =
       !isNil(fromChain) && fromChain.chainType === "cosmos"
-        ? accountStore.getWallet(fromChain.chainId)
+        ? fromChain.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { wallet: fromCosmosWallet, address: fromCosmosWalletAddress } =
+      useWallet(fromCosmosChainId);
+    const fromCosmosCounterpartyAccount = fromCosmosChainId
+      ? fromCosmosWallet
+      : undefined;
+    const fromCosmosCounterpartyAddress = fromCosmosChainId
+      ? fromCosmosWalletAddress
+      : undefined;
 
     const chainThatNeedsWalletConnection =
       direction === "deposit" ? fromChain : toChain;
@@ -227,11 +230,18 @@ export const AmountScreen = observer(
       );
     }, [chainThatNeedsWalletConnection]);
 
-    const cosmosAccountRequiringConnection =
+    const cosmosChainIdRequiringConnection =
       !isNil(chainThatNeedsWalletConnection) &&
       chainThatNeedsWalletConnection.chainType === "cosmos"
-        ? accountStore.getWallet(chainThatNeedsWalletConnection.chainId)
+        ? chainThatNeedsWalletConnection.chainId
         : undefined;
+    // falls back to Osmosis when there is no cosmos chain; ignored in that case
+    const { address: cosmosWalletAddressRequiringConnection } = useWallet(
+      cosmosChainIdRequiringConnection
+    );
+    const cosmosAddressRequiringConnection = cosmosChainIdRequiringConnection
+      ? cosmosWalletAddressRequiringConnection
+      : undefined;
     const isWalletNeededConnected = useMemo(() => {
       if (isNil(chainThatNeedsWalletConnection)) return false;
 
@@ -255,9 +265,9 @@ export const AmountScreen = observer(
         return !isNil(manualToAddress);
       }
 
-      return !!cosmosAccountRequiringConnection?.address;
+      return !!cosmosAddressRequiringConnection;
     }, [
-      cosmosAccountRequiringConnection?.address,
+      cosmosAddressRequiringConnection,
       chainThatNeedsWalletConnection,
       direction,
       isEvmWalletConnected,
@@ -268,7 +278,7 @@ export const AmountScreen = observer(
 
     const { data: osmosisChain } = api.edge.chains.getCosmosChain.useQuery(
       {
-        findChainNameOrId: accountStore.osmosisChainId,
+        findChainNameOrId: OsmosisChainInfo.chainId,
       },
       {
         throwOnError: true,
@@ -301,6 +311,7 @@ export const AmountScreen = observer(
 
       // Default to crypto mode when price is not available
       if (!canonicalAssetPrice && inputUnit === "fiat") {
+        // eslint-disable-next-line hooks-compat/set-state-in-effect -- falls back to crypto once the price query settles with no price; the user can still switch units afterwards
         setInputUnit("crypto");
       }
     }, [
@@ -364,8 +375,8 @@ export const AmountScreen = observer(
             onOpenBridgeWalletSelect();
           }
         } else if (chain.chainType === "cosmos") {
-          const account = accountStore.getWallet(chain.chainId);
-          const accountRepo = accountStore.getWalletRepo(chain.chainId);
+          const account = walletApi.getChainWallet(chain.chainId).wallet;
+          const accountRepo = walletApi.getChainWallet(chain.chainId);
 
           if (
             // If the account is already connected
@@ -390,7 +401,7 @@ export const AmountScreen = observer(
         }
       },
       [
-        accountStore,
+        walletApi,
         direction,
         evmWalletCurrentChainId,
         fromChain,
@@ -473,7 +484,7 @@ export const AmountScreen = observer(
               SupportedAsset,
               { chainType: "cosmos" }
             >[],
-            userCosmosAddress: fromCosmosCounterpartyAccount?.address,
+            userCosmosAddress: fromCosmosCounterpartyAddress,
           };
         case "bitcoin":
           return {
@@ -551,6 +562,8 @@ export const AmountScreen = observer(
       data: assetsBalances,
       isLoading: isLoadingAssetsBalance,
       isError: hasBalanceError,
+      isFetching: isFetchingAssetsBalance,
+      refetch: refetchAssetsBalance,
     } = api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
       { source: balanceSource! },
       {
@@ -596,6 +609,9 @@ export const AmountScreen = observer(
               // keep showing the previous account's spendable amount. Look
               // up the unfiltered data: a now-empty balance is filtered out
               // of `nextData` but must still replace the stale one.
+              // Also take a changed variant list: it grows as each bridge's
+              // lookup finishes, and the deposit destination follows its
+              // first entry.
               const refreshed = data?.find(
                 (asset) =>
                   asset.address === fromAsset.address &&
@@ -603,7 +619,9 @@ export const AmountScreen = observer(
               );
               if (
                 refreshed &&
-                !refreshed.amount.toDec().equals(fromAsset.amount.toDec())
+                (!refreshed.amount.toDec().equals(fromAsset.amount.toDec()) ||
+                  Object.keys(refreshed.supportedVariants).join() !==
+                    Object.keys(fromAsset.supportedVariants).join())
               ) {
                 setFromAsset(refreshed);
               }
@@ -615,26 +633,66 @@ export const AmountScreen = observer(
       }
     );
 
+    /** The deposit variants offered for the source asset, first one
+     *  recommended. Halted variants can't receive a deposit, so they are left
+     *  out. */
+    const depositVariants = useMemo(
+      () =>
+        Object.keys(fromAsset?.supportedVariants ?? {}).filter(
+          (variant) =>
+            !assetsInOsmosis?.find((a) => a.coinMinimalDenom === variant)
+              ?.areDepositsHalted
+        ),
+      [assetsInOsmosis, fromAsset]
+    );
+
     /**
      * Deposit
-     * Set the initial destination asset based on the source asset.
+     * Set and maintain the destination asset based on the source asset.
+     *
+     * The source asset's variants grow as each bridge's lookup finishes, so
+     * the first variant can change after the first pick, e.g. a working
+     * variant answering after halted ones (MTN-522). Follow the first deposit
+     * variant until the user picks a receive asset, as the withdraw effect
+     * below does. A halted variant is only picked while no other is known, so
+     * the halt banner explains why.
+     *
+     * A picked variant is kept only while it can still receive the deposit. A
+     * refresh can drop it from the source asset's variants, or mark it halted
+     * while another variant works (the halt view has no dropdown to leave it).
      */
     useEffect(() => {
       if (
         direction === "deposit" &&
         !isNil(fromAsset) &&
-        !isNil(assetsInOsmosis) &&
-        isNil(toAsset)
+        !isNil(assetsInOsmosis)
       ) {
+        if (isNil(toAsset)) {
+          userHasPickedToAssetRef.current = false;
+        }
+
+        const recommendedAddress =
+          depositVariants[0] ?? Object.keys(fromAsset.supportedVariants)[0];
+        const shouldSeed = isNil(toAsset);
+        const isPickUnavailable =
+          !isNil(toAsset) &&
+          (depositVariants.length > 0
+            ? !depositVariants.includes(toAsset.address)
+            : !(toAsset.address in fromAsset.supportedVariants));
+        const shouldRealign =
+          !isNil(toAsset) &&
+          toAsset.address !== recommendedAddress &&
+          (!userHasPickedToAssetRef.current || isPickUnavailable);
+        if (!shouldSeed && !shouldRealign) return;
+
         const destinationAsset = assetsInOsmosis.find(
-          (a) =>
-            a.coinMinimalDenom === Object.keys(fromAsset.supportedVariants)[0]
+          (a) => a.coinMinimalDenom === recommendedAddress
         )!;
 
         setToAsset({
           address: destinationAsset.coinMinimalDenom,
           decimals: destinationAsset.coinDecimals,
-          chainId: accountStore.osmosisChainId,
+          chainId: OsmosisChainInfo.chainId,
           chainType: "cosmos",
           denom: destinationAsset.coinDenom,
           // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
@@ -643,12 +701,13 @@ export const AmountScreen = observer(
         });
       }
     }, [
-      accountStore.osmosisChainId,
       assetsInOsmosis,
       toAsset,
       direction,
       setToAsset,
       fromAsset,
+      depositVariants,
+      userHasPickedToAssetRef,
     ]);
 
     /**
@@ -672,8 +731,9 @@ export const AmountScreen = observer(
      *   deliberate pick — so neither a late provider settle nor a background
      *   refetch swaps the asset out from under a deliberate choice.
      *
-     * The pick flag self-resets here whenever `toAsset` is nil, so user intent
-     * is cleared on every reset path without threading anything into the parent.
+     * The pick flag self-resets here (and in the deposit effect) whenever
+     * `toAsset` is nil, so user intent is cleared on every reset path: chain
+     * switch resetAssets(), or the parent's onTransfer reset.
      */
     useEffect(() => {
       if (
@@ -712,6 +772,7 @@ export const AmountScreen = observer(
       setToAsset,
       toAsset,
       toChain,
+      userHasPickedToAssetRef,
     ]);
 
     /**
@@ -769,10 +830,6 @@ export const AmountScreen = observer(
       toChain,
     ]);
 
-    useUnmount(() => {
-      useBridgeStore.getState().setType("quote");
-    });
-
     /** If an asset is disabled */
     const areAssetTransfersDisabled = useMemo(() => {
       return direction === "withdraw"
@@ -829,9 +886,10 @@ export const AmountScreen = observer(
       selectedDenom,
     ]);
 
+    const fromDecimals = fromAsset?.decimals;
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
-        if (isNil(fromAsset?.decimals)) return;
+        if (isNil(fromDecimals)) return;
 
         setCryptoAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -839,16 +897,17 @@ export const AmountScreen = observer(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(fromAsset.decimals)
+                .maxDecimals(fromDecimals)
                 .toString()
         );
       },
-      [fromAsset?.decimals, setCryptoAmount]
+      [fromDecimals, setCryptoAmount]
     );
 
+    const fiatMaxDecimals = canonicalAssetPrice?.fiatCurrency.maxDecimals;
     const onChangeFiatInput = useCallback(
       (amount: string) => {
-        if (isNil(canonicalAssetPrice?.fiatCurrency.maxDecimals)) return;
+        if (isNil(fiatMaxDecimals)) return;
 
         setFiatAmount(
           amount.endsWith(".") || amount.endsWith("0") || amount === ""
@@ -856,11 +915,11 @@ export const AmountScreen = observer(
             : new IntPretty(amount)
                 .locale(false)
                 .trim(true)
-                .maxDecimals(canonicalAssetPrice.fiatCurrency.maxDecimals)
+                .maxDecimals(fiatMaxDecimals)
                 .toString()
         );
       },
-      [canonicalAssetPrice?.fiatCurrency.maxDecimals, setFiatAmount]
+      [fiatMaxDecimals, setFiatAmount]
     );
 
     const isLoading =
@@ -890,11 +949,15 @@ export const AmountScreen = observer(
 
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
-        ? !isNil(fromAsset) &&
-            Object.keys(fromAsset.supportedVariants).length > 1
+        ? depositVariants.length > 1
         : !isNil(toAsset) &&
             counterpartySupportedAssetsByChainId[toAsset.chainId]?.length > 1;
-    }, [counterpartySupportedAssetsByChainId, direction, fromAsset, toAsset]);
+    }, [
+      counterpartySupportedAssetsByChainId,
+      direction,
+      depositVariants,
+      toAsset,
+    ]);
 
     const resetAssets = () => {
       setFromAsset(undefined);
@@ -906,7 +969,7 @@ export const AmountScreen = observer(
         userHasPickedToAssetRef.current = true;
         setToAsset(asset);
       },
-      [setToAsset]
+      [setToAsset, userHasPickedToAssetRef]
     );
 
     const resetInput = () => {
@@ -1009,40 +1072,13 @@ export const AmountScreen = observer(
           toAsset={toAsset}
           setToAsset={setToAsset}
           onUserSelectAsset={onUserSelectToAsset}
+          depositVariants={depositVariants}
           assetsInOsmosis={assetsInOsmosis}
           counterpartySupportedAssetsByChainId={
             counterpartySupportedAssetsByChainId
           }
         />
       );
-
-    if (
-      featureFlags.bridgeDepositAddress &&
-      !quote.enabled &&
-      fromAsset &&
-      supportedBridgeInfo.depositAddressBridges.length > 0 &&
-      direction === "deposit" &&
-      canonicalAsset &&
-      fromChain &&
-      toChain &&
-      toAsset &&
-      !haltState.halted
-    ) {
-      useBridgeStore.getState().setType("deposit-address");
-      return (
-        <DepositAddressScreen
-          canonicalAsset={canonicalAsset}
-          direction={direction}
-          chainSelection={chainSelection}
-          assetDropdown={assetDropdown}
-          fromChain={fromChain}
-          toChain={toChain}
-          fromAsset={fromAsset}
-          toAsset={toAsset}
-          bridge={supportedBridgeInfo.depositAddressBridges[0]} // For now, only one bridge provider is supported
-        />
-      );
-    }
 
     /**
      * This condition will be met if:
@@ -1051,7 +1087,10 @@ export const AmountScreen = observer(
      * - Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
      */
     if (
-      !isLoading &&
+      // A failed balance lookup must end the loading state: on deposits
+      // `isLoading` waits for the destination asset, which is derived from a
+      // source asset that only a successful balance lookup sets.
+      (!isLoading || hasBalanceError) &&
       (!hasSupportedChains ||
         areAssetTransfersDisabled ||
         haltState.halted ||
@@ -1075,7 +1114,7 @@ export const AmountScreen = observer(
           }
         : undefined;
       const osmosisChainFallback: BridgeChainWithDisplayInfo = {
-        chainId: accountStore.osmosisChainId,
+        chainId: OsmosisChainInfo.chainId,
         chainType: "cosmos" as const,
         bech32Prefix: "osmo",
         prettyName: "Osmosis",
@@ -1199,6 +1238,36 @@ export const AmountScreen = observer(
                 </div>
               )
             )}
+            {/* A failed balance lookup must be visible: without this the
+                user only sees the options button and assumes a zero balance. */}
+            {!haltState.halted && hasBalanceError && fromChain && (
+              <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+                <Icon
+                  id="alert-triangle"
+                  className="h-6 w-6 shrink-0 text-rust-600"
+                />
+                <div className="flex flex-col items-start gap-2">
+                  <h1 className="body2">
+                    {t("transfer.balanceUnavailable", {
+                      chain: fromChain.prettyName,
+                    })}
+                  </h1>
+                  <p className="body2 text-osmoverse-300">
+                    {t("transfer.balanceUnavailableDescription", {
+                      chain: fromChain.prettyName,
+                    })}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="xsm"
+                    onClick={() => refetchAssetsBalance()}
+                    isLoading={isFetchingAssetsBalance}
+                  >
+                    {t("transfer.retryBalance")}
+                  </Button>
+                </div>
+              </div>
+            )}
             {!haltState.halted && (
               <>
                 <Button
@@ -1230,8 +1299,6 @@ export const AmountScreen = observer(
         </>
       );
     }
-
-    useBridgeStore.getState().setType("quote");
 
     /**
      * This will trigger an error boundary
@@ -1499,6 +1566,15 @@ export const AmountScreen = observer(
           )}
 
           {assetDropdown}
+
+          {/* Outside the collapsed details, so the faster option is seen
+              without opening them. */}
+          {fromChain && !isLoadingBridgeQuote && quote.fastTransfer && (
+            <TransferSpeedToggle
+              fastTransfer={quote.fastTransfer}
+              disabled={quote.isTxPending}
+            />
+          )}
 
           {fromChain && (
             <TransferDetails

@@ -10,6 +10,7 @@ import { useMeasure } from "react-use";
 import { FallbackImg, Icon } from "~/components/assets";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
+import { PrivateText } from "~/components/privacy";
 import { useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { formatPretty } from "~/utils/formatter";
 
@@ -76,14 +77,17 @@ export const BondCard: FunctionComponent<
             </span>
             <div className="flex grow flex-col text-osmoverse-100">
               <h4 className="text-osmoverse-100">
-                {userLockedShareValue.toString()}
+                <PrivateText text={userLockedShareValue?.toString() ?? "–"} />
               </h4>
               <span className="subtitle1 text-osmoverse-300">
-                {t("pool.sharesAmount", {
-                  shares: formatPretty(userShares.hideDenom(true).trim(true), {
-                    maxDecimals: 4,
-                  }),
-                })}
+                <PrivateText
+                  text={t("pool.sharesAmount", {
+                    shares: formatPretty(
+                      userShares.hideDenom(true).trim(true),
+                      { maxDecimals: 4 }
+                    ),
+                  })}
+                />
               </span>
             </div>
           </div>
@@ -98,13 +102,15 @@ export const BondCard: FunctionComponent<
           <div className="flex w-fit flex-wrap items-center gap-1 rounded-lg bg-osmoverse-900 p-3 md:p-1.5">
             <span className="text-subtitle1 font-subtitle1">
               ~
-              {t("pool.sharesAmount", {
-                shares: userUnlockingShares.shares
-                  .hideDenom(true)
-                  .trim(true)
-                  .maxDecimals(6)
-                  .toString(),
-              })}
+              <PrivateText
+                text={t("pool.sharesAmount", {
+                  shares: userUnlockingShares.shares
+                    .hideDenom(true)
+                    .trim(true)
+                    .maxDecimals(6)
+                    .toString(),
+                })}
+              />
             </span>
             <span className="flex items-center gap-1 text-subtitle1 font-subtitle1 text-osmoverse-400">
               {userUnlockingShares.endTime ? (
@@ -129,7 +135,7 @@ export const BondCard: FunctionComponent<
             <div className="w-full rounded-md bg-osmoverse-800 p-3 md:p-2">
               <span className="text-superfluid-gradient">
                 {t("pool.superfluidEarnMore", {
-                  rate: superfluid.apr.maxDecimals(0).toString(),
+                  rate: superfluid.apr?.maxDecimals(0).toString() ?? "–",
                 })}
               </span>
             </div>
@@ -163,8 +169,9 @@ export const BondCard: FunctionComponent<
 
 const Drawer: FunctionComponent<{
   duration: Duration;
-  aggregateApr: RatePretty;
-  swapFeeApr: RatePretty;
+  /** Undefined while pool APRs are unavailable. */
+  aggregateApr?: RatePretty;
+  swapFeeApr?: RatePretty;
   userShares: CoinPretty;
   incentivesBreakdown: BondDuration["incentivesBreakdown"];
   superfluid: BondDuration["superfluid"];
@@ -207,7 +214,8 @@ const Drawer: FunctionComponent<{
                 superfluid ? "text-superfluid-gradient" : "text-bullish-400"
               )}
             >
-              {formatPretty(aggregateApr.maxDecimals(0))} {t("pool.APR")}
+              {aggregateApr ? formatPretty(aggregateApr.maxDecimals(0)) : "–"}{" "}
+              {t("pool.APR")}
             </h5>
           </div>
         </div>
@@ -251,7 +259,7 @@ const Drawer: FunctionComponent<{
           {incentivesBreakdown.map((breakdown, index) => (
             <IncentiveBreakdownRow key={index} {...breakdown} />
           ))}
-          <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />
+          {swapFeeApr && <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />}
         </div>
         <DrawerRewardCaption />
       </div>
@@ -286,7 +294,7 @@ const SuperfluidBreakdownRow = ({
       <div className="flex place-content-between items-start text-right">
         <div className="flex items-center gap-2">
           <span className="subtitle1 text-superfluid-gradient bg-clip-text text-transparent">
-            +{apr.maxDecimals(0).toString()}
+            {apr ? `+${apr.maxDecimals(0).toString()}` : "–"}
           </span>
           <FallbackImg
             className="rounded-full"

@@ -1,17 +1,17 @@
+import { FloatingDelayGroup } from "@floating-ui/react";
 import { AppCurrency, Currency, RatePretty } from "@osmosis-labs/unit";
-import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
+import { FunctionComponent, memo } from "react";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { EntityImage } from "~/components/ui/entity-image";
+import { findOsmosisCurrency } from "~/config/chain";
 import { useTranslation, useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
 import { getLogoURIs } from "~/utils/logo-uri";
 import type { RouterOutputs } from "~/utils/trpc";
 
@@ -28,20 +28,25 @@ type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
 
 export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
-}> = observer(({ route }) => {
-  const { chainStore } = useStore();
-  const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
-
-  const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
-    ? osmosisChain.findCurrency((route as RouteOutGivenIn).tokenInDenom)
-    : osmosisChain.findCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
-  const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
-    ? osmosisChain.findCurrency((route as RouteInGivenOut).tokenOutDenom)
-    : osmosisChain.findCurrency(
-        (route as RouteOutGivenIn).tokenOutDenoms[
-          (route as RouteOutGivenIn).tokenOutDenoms.length - 1
-        ]
-      );
+}> = memo(({ route }) => {
+  // The route's own hop currencies come from the asset list, as the pool
+  // tooltips use them. The static chain config is only a fallback: it misses
+  // assets (PHOTON) and carries short symbols (USDC.noble as "USDC.n") that
+  // don't map to an icon.
+  const sendCurrency =
+    route.pools[0]?.inCurrency ??
+    ((route as RouteOutGivenIn).tokenInDenom
+      ? findOsmosisCurrency((route as RouteOutGivenIn).tokenInDenom)
+      : findOsmosisCurrency((route as RouteInGivenOut).tokenInDenoms[0]));
+  const lastOutCurrency =
+    route.pools[route.pools.length - 1]?.outCurrency ??
+    ((route as RouteInGivenOut).tokenOutDenom
+      ? findOsmosisCurrency((route as RouteInGivenOut).tokenOutDenom)
+      : findOsmosisCurrency(
+          (route as RouteOutGivenIn).tokenOutDenoms[
+            (route as RouteOutGivenIn).tokenOutDenoms.length - 1
+          ]
+        ));
 
   if (!sendCurrency || !lastOutCurrency) return null;
 
@@ -85,21 +90,15 @@ const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
   />
 );
 
-const Pools: FunctionComponent<Route> = observer(({ pools }) => {
+const Pools: FunctionComponent<Route> = memo(({ pools }) => {
   const { isMobile } = useWindowSize();
   const router = useRouter();
 
   const { t } = useTranslation();
-  /** Share same tippy instance to handle animation */
-  const [source, target] = useSingleton();
 
   return (
-    <>
-      <Tooltip
-        singleton={source}
-        moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
-        content=""
-      />
+    // Only one pool tooltip is open at a time while hovering across the route.
+    <FloatingDelayGroup delay={0}>
       <div className="absolute flex w-full justify-evenly">
         {pools.map(
           (
@@ -115,7 +114,9 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           ) => (
             <Tooltip
               key={`${id}${index}`}
-              singleton={target}
+              // Taps open the tooltip on mobile, where the chip itself doesn't
+              // navigate, so the pool id link inside it must be tappable.
+              interactive={isMobile}
               content={
                 <div className="space-y-3">
                   {inCurrency && outCurrency && (
@@ -138,9 +139,18 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                   )}
 
                   <div className="flex justify-center space-x-1 text-center text-xs font-medium">
-                    <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
-                      {t("swap.pool", { id })}
-                    </p>
+                    {isMobile ? (
+                      <Link
+                        href={"/pool/" + id}
+                        className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5 text-wosmongton-300 underline"
+                      >
+                        {t("swap.pool", { id })}
+                      </Link>
+                    ) : (
+                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
+                        {t("swap.pool", { id })}
+                      </p>
+                    )}
 
                     {spreadFactor && (
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
@@ -226,7 +236,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
           )
         )}
       </div>
-    </>
+    </FloatingDelayGroup>
   );
 });
 

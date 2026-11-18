@@ -41,6 +41,8 @@ export type SplitTokenInQuote = {
   tokenInFeeAmount?: Int;
   swapFee?: Dec;
   priceImpactTokenOut?: Dec;
+  /** True when SQS could not compute the impact, so `priceImpactTokenOut` is undefined. */
+  priceImpactUnknown?: boolean;
   liquidityCap?: string;
   liquidityCapOverflow?: boolean;
   tokens?: {
@@ -55,6 +57,8 @@ export type SplitTokenOutQuote = {
   tokenInFeeAmount?: Int;
   swapFee?: Dec;
   priceImpactTokenOut?: Dec;
+  /** True when SQS could not compute the impact, so `priceImpactTokenOut` is undefined. */
+  priceImpactUnknown?: boolean;
   tokens?: {
     denom: string;
     liquidity_cap: string;

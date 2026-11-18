@@ -130,17 +130,6 @@
       "chainHalted": "Osmosis chain is halted, transactions are temporarily disabled."
     }
   },
-  "store": {
-    "headerTitle": "Supercharge your experience",
-    "headerSubtitle": "Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond.",
-    "featured": "Featured",
-    "searchPlaceholder": "Search",
-    "getFeatured": "Get Featured",
-    "featuredDescription": "Launch on the app store and get access to thousands of users. If you want to get listed or featured, reach out and we’ll be in touch.",
-    "applyButton": "Apply",
-    "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
-    "allAppsHeader": "All Apps"
-  },
   "createFirstPositionCta": {
     "title": "Create your first Supercharged position",
     "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
@@ -155,6 +144,7 @@
       }
     },
     "table": {
+      "marketDataUnavailable": "Market data is unavailable right now. Please try again in a moment.",
       "depositButton": "Deposit",
       "search": "Search",
       "withdrawButton": "Withdraw",
@@ -216,6 +206,11 @@
   "portfolio": {
     "buy": "Buy",
     "sell": "Sell",
+    "chartTemporarilyUnavailable": "Chart unavailable right now",
+    "pricesUnavailable": "Prices unavailable",
+    "unpricedAssets": "+ {count} asset without a price",
+    "unpricedAssets_plural": "+ {count} assets without a price",
+    "unpricedAssetsTooltip": "Not included in the total: {assets}",
     "yourBalances": "Your balances",
     "yourPositions": "Your positions",
     "searchBalances": "Search balances",
@@ -289,6 +284,7 @@
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
     "depositNoBalance": "You have no assets to deposit",
+    "amountTooSmall": "Amount is too small",
     "emptyAmount": "Amount is empty",
     "generic": "Error",
     "highSwapFee": "Swap fee too high",
@@ -311,6 +307,7 @@
     "notInitialized": "Loading...",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
+    "scalingFactorNotInteger": "Scaling factor must be a whole number",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
     "fallbackText1": "An error occurred",
@@ -324,6 +321,7 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
+    "walletRequestTimedOut": "{wallet} did not respond in time. Nothing was signed or sent, please try again.",
     "insufficientFeeTokens": {
       "title": "No fee tokens with sufficient balance",
       "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
@@ -407,14 +405,13 @@
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
-    "store": "Apps",
     "vote": "Vote",
     "featureRequests": "Feature Requests",
-    "more": "More",
-    "new": "NEW",
     "settings": "Settings"
   },
   "oneClickTrading": {
+    "spendLimitPerDay": "{amount} per day",
+    "spendLimitLeftToday": "{amount} left today",
     "toast": {
       "oneClickTradingActive": "1-Click Trading active",
       "oneClickTradingDisabled": "1-Click Trading disabled",
@@ -434,20 +431,20 @@
       "introducingSubtitle": "Make quicker, easier trades without the hassle of multiple wallet approvals.",
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
-      "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
+      "defaultParameters": "Default settings are set to 7 days with a $5,000 USD daily spending limit.",
       "changeButton": "Edit settings"
     },
     "reviewOrder": {
       "recapRowTitle": "1-Click Trading limit",
       "enableTitle": "Start 1-Click Trading",
       "enableDescription": "Quicker, easier trading",
-      "paramsDescription": "{sessionLength} session with {spendLimit} loss protection limit",
+      "paramsDescription": "{sessionLength} session with {spendLimit} daily spending limit",
       "defaultSpendLimit": "$5,000 USD",
       "change": "Change",
       "edit": "Edit",
       "exceeded": "Exceeded",
       "exceededTooltip": {
-        "title": "Exceeds current loss-protection limit",
+        "title": "Exceeds your daily spending limit",
         "body": "You will have to manually approve this transaction in your wallet."
       }
     },
@@ -461,7 +458,7 @@
       "header": "1-Click Trading",
       "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
       "enableTitle": "Enable 1-Click Trading",
-      "spendLimitTitle": "Loss protection limit",
+      "spendLimitTitle": "Daily spending limit",
       "sessionPeriodTitle": "Session period",
       "startButton": "Start 1-Click Trading",
       "editSessionButton": "Save changes",
@@ -506,6 +503,7 @@
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
+    "24hVolume": "24h volume",
     "amountDaysUnbonding": "{numDays} day unbonding",
     "amountDaysUnbonding_plural": "{numDays} days unbonding",
     "APR": "APR",
@@ -657,6 +655,8 @@
     "title": "Remove Liquidity"
   },
   "requestRejected": "Request rejected",
+  "waitingForWallet": "Waiting for your wallet...",
+  "signInMobileWallet": "Sign in your mobile wallet...",
   "settings": {
     "filterDust": "Filter Dust",
     "selectLanguage": "Select language",
@@ -706,7 +706,22 @@
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
     "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
-    "isVotingPowerTooHighTooltip": "This is a validator with high voting power, consider selecting a different validator to help promote decentralization.",
+    "inactiveValidators": {
+      "title": "Inactive Validators Detected",
+      "squadDescription": "These validators have left the active set and no longer earn rewards. Redelegate to active validators to start earning again. Redelegation is instant, with no unbonding period.",
+      "statusInactive": "Outside the active set",
+      "statusInactiveShortfall": "Inactive: ~{amount} short of the active set",
+      "statusJailed": "Jailed: not earning rewards",
+      "redelegate": "Redelegate",
+      "stakeWarning": "Your stake squad includes inactive validators. Part of any new stake would go to them and earn nothing.",
+      "editSquad": "Edit stake squad",
+      "redelegateDescription": "Select validators to redelegate {amount} to. It's split evenly between them; the rest of your stake is unchanged.",
+      "topThirdHidden": "The largest validators, together holding a third of all stake, are hidden by default to help keep Osmosis decentralized.",
+      "topThirdShown": "These are the largest validators, together holding a third of all stake. Choosing smaller validators helps keep Osmosis decentralized.",
+      "alertDescription": "Some of your validators have left the active set, so the OSMO staked with them isn't earning rewards. Redelegate from the Stake page to start earning again.",
+      "dismiss": "Dismiss",
+      "goToStake": "Go to Stake"
+    },
     "learnMore": {
       "step1": {
         "title": "What is staking?",
@@ -734,7 +749,7 @@
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
-      "button2": "Set Squad and Stake",
+      "button2": "Set Squad and Stake {amount}",
       "noResults": "No results found",
       "column": {
         "validator": "Validator",
@@ -798,7 +813,12 @@
     "noRoutes": "No routes found",
     "route": "route",
     "routes": "routes",
-    "slippageOverBalance": "Insufficient funds to cover slippage"
+    "slippageOverBalance": "Insufficient funds to cover slippage",
+    "amountTooSmallForSlippage": "Amount too small to swap with this slippage. Increase the amount or reduce slippage.",
+    "slippageAutoAdjustedTitle": "Slippage auto-adjusted",
+    "slippageAutoAdjustedBody": "This trade's default slippage has been raised due to high price impact or low liquidity.",
+    "routeLiquidityUnknown": "Couldn't verify this route's liquidity. Check the \"Receive at least\" amount before confirming.",
+    "slippageAutoAdjustedHigh": "Slippage was raised automatically for this trade's high price impact or low liquidity. Check the \"Receive at least\" amount before confirming."
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",
@@ -854,6 +874,8 @@
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
   "transactionFailed": "Transaction Failed",
+  "transactionStatusUnknown": "Transaction Status Unknown",
+  "transactionStatusUnknownCaption": "Submitted, but we couldn't confirm it. Check the explorer before trying again.",
   "transactionSuccessful": "Transaction Successful",
   "transfer": {
     "deposit": "Deposit",
@@ -895,11 +917,13 @@
     "free": "Free",
     "cheapest": "Cheapest",
     "fastest": "Fastest",
+    "transferSpeed": "Transfer speed",
+    "standardSpeed": "Standard",
+    "fastSpeed": "Fast",
     "stepLabels": {
       "asset": "Asset",
       "amount": "Amount",
-      "review": "Review",
-      "deposit": "Deposit"
+      "review": "Review"
     },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
@@ -1007,10 +1031,10 @@
     "insufficientFundsForFees": "Insufficient funds for fees",
     "youNeedFundsToPay": "You need funds to pay network and bridging fees on {chain}.",
     "youNeedFundsToPayWithFee": "The amount you are trying to transfer is too low to cover the bridging fee of {feeAmount} {feeCurrency} on {chain}. Please try a larger amount.",
-    "transferAmountTooLowValueLoss": "Transfer amount too low",
-    "valueLossTooHighToBridge": "The transfer amount is too low after fees. Value loss would be too high to bridge successfully. Please try a larger amount.",
     "assetsDepositsUnavailable": "{asset} deposits are unavailable",
-    "assetWithdrawalsUnavailable": "{asset} withdrawals are unavailable",
+    "assetWithdrawalsToChainUnavailable": "{asset} withdrawals to {chain} are unavailable",
+    "routeLiquidityTooLow": "Not enough liquidity for this route",
+    "routeLiquidityTooLowBody": "There isn't enough liquidity to route this transfer at a fair price right now. Try a different network or token, or try again later.",
     "noAvailableDeposits": "Currently no available routes or providers can be found. Please try again later or use an alternative application to transfer your funds to Osmosis.",
     "noAvailableWithdrawals": "Currently no available routes or providers can be found. Please try again later or set an alternative application to transfer your funds from Osmosis.",
     "somethingIsntWorking": "Something isn’t working…",
@@ -1019,43 +1043,13 @@
     "transferWillLikelyTakeLonger": "Transfers will likely take longer than usual or may fail entirely. Proceed at your own risk.",
     "ibcConnectionDown": "Native IBC connection unavailable",
     "ibcConnectionDownDescription": "The direct IBC route for {asset} is currently down. The options below may offer an alternative path, but may also be affected.",
+    "balanceUnavailable": "Couldn't load your {chain} balance",
+    "balanceUnavailableDescription": "We couldn't reach {chain} to check your balance, so it may show as 0. Your funds are not affected. Retry, or use the options below.",
+    "retryBalance": "Retry",
     "depositsHalted": "{asset} deposits are halted",
     "withdrawalsHalted": "{asset} withdrawals are halted",
     "noNativeTransfers": "Native transfers unavailable for {asset}",
     "noNativeTransfersDescription": "Please use one of the alternative providers below.",
-    "sendFromWalletOrExchange": "Send from your wallet or exchange",
-    "scanWithMobileWallet": "Scan with your mobile wallet",
-    "or": "or",
-    "copied": "Copied",
-    "copyToClipboard": "Copy to clipboard",
-    "showQrCode": "Show QR code",
-    "yourDepositAddress": "Your {denom} deposit address",
-    "copyAddressToClipboard": "Copy address to clipboard",
-    "copyAddress": "Copy address",
-    "receiveOnlyAsset": "This address can only receive {denom} from {network} network. Sending any other assets may result in permanent loss.",
-    "minimumDeposit": "Minimum deposit",
-    "nomic": {
-      "estimatedTime": "1-8 hr",
-      "awaitingBtc": "Awaiting BTC",
-      "transferringYourBtc": "Transferring your BTC",
-      "depositStatus": "Deposit status",
-      "depositSuccess": "Deposit successful",
-      "pendingDeposit": "Pending deposit",
-      "estimatedAboutTime": "Estimated about {time}",
-      "from": "From",
-      "to": "To",
-      "asset": "Asset",
-      "amountBtc": "Amount BTC",
-      "totalValue": "Total value",
-      "transactionHash": "Transaction hash",
-      "viewOnExplorer": "View on explorer",
-      "totalFees": "Total fees"
-    },
-    "doNotSendFundsToThisAddress": "Do not send funds to this address.",
-    "addressExpired": "This deposit address has expired. Please request a new deposit address now.",
-    "addressAboutToExpire": "This address is about to expire. Please request a new address to avoid losing funds.",
-    "createNewDepositAddress": "Create new deposit address",
-    "transactionDetails": "Transaction details",
     "confirmAmount": "Confirm Amount",
     "enterChainAddress": "Enter {chain} address",
     "wormholeRedeem": {
@@ -1159,10 +1153,6 @@
       "title": "Trade on Osmosis Zone",
       "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
     },
-    "apps": {
-      "title": "Osmosis App Store",
-      "description": "Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond"
-    },
     "disclaimer": {
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
@@ -1258,6 +1248,7 @@
     "recentShownHere": "Recent swaps, deposits and withdrawals will appear here.",
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
+    "historyLoadError": "Couldn't load your full history. Please try again in a moment.",
     "connectToSee": "Connect to see your transaction history",
     "connectWallet": "Connect wallet",
     "title": "Transactions",
@@ -1272,7 +1263,7 @@
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
-    "launchAlert": "Currently only trade and transfer history is displayed. Support for more transaction types coming soon.",
+    "launchAlert": "Showing your swaps, deposits and withdrawals.",
     "history": "History",
     "orders": "Orders",
     "historyTable": {
@@ -1290,7 +1281,17 @@
       "providerFee": "Provider fee",
       "provider": "Provider",
       "networkFee": "Network fee"
-    }
+    },
+    "filter": {
+      "type": "Transaction types",
+      "swap": "Swaps",
+      "deposit": "Deposits",
+      "withdraw": "Withdrawals",
+      "search": "Search asset, chain, amount or address",
+      "noMatches": "No matching transactions",
+      "pageHint": "Filters only apply to the transactions on this page. Try the next page or adjust your filters."
+    },
+    "unknownAddressTooltip": "We couldn't determine this address from the bridge's data. It may appear later; you can also find it in the explorer."
   },
   "date": {
     "earlierToday": "Earlier today",
@@ -1315,7 +1316,12 @@
         "subtitle": "Your trade order history will appear here.",
         "connectTitle": "Connect your wallet to see your order history",
         "connectSubtitle": "Your past limit orders on Osmosis will appear here."
-      }
+      },
+      "errorState": {
+        "title": "Couldn't load your orders",
+        "subtitle": "Please try again in a moment."
+      },
+      "historyUnavailable": "Order history is unavailable right now. Your open orders are shown."
     },
     "aboveMarket": {
       "title": "Limit price above market price",
@@ -1346,6 +1352,7 @@
     "cancel": "Cancel",
     "daysAgo": "{days}d ago",
     "hoursAgo": "{hours}h ago",
+    "minutesAgo": "{minutes}m ago",
     "buyWith": "Buy with {coinA} or {coinB}",
     "orderHistory": "Order history",
     "tradeAnotherAssetOr": "Trade another asset for {coinA} or {coinB}",
@@ -1364,6 +1371,11 @@
     "lowerSlippageToleranceRecommended": "A lower slippage tolerance is recommended.",
     "tryHigherSlippage": "Try a higher maximum slippage tolerance.",
     "reviewTrade": "Review trade",
+    "highPriceImpact": {
+      "title": "Price impact is high",
+      "description": "This trade moves the market price by {impact}, so you may receive far less than the amount shown."
+    },
+    "lossAcknowledgement": "Yes, I understand this trade may lose a significant amount of value and I wish to proceed.",
     "errors": {
       "noAssetAvailable": "You don’t have any {coinName} funds on Osmosis to trade with. Choose an option to continue.",
       "tradeMayResultInLossOfValue": "Your trade may result in significant loss of value",
@@ -1403,6 +1415,10 @@
     "invalidPrice": "Invalid price",
     "priceTooLow": "Price too low",
     "priceTooHigh": "Price too high",
+    "marketPriceUnavailable": "Market price unavailable",
+    "quoteOffPeg": "Quote asset is too far from $1",
+    "quoteOffPegWarning": "{denom} is trading at {price}. Limit prices assume 1 {denom} = $1.",
+    "quotePegUnverified": "Couldn't check {denom} against $1. Limit prices assume 1 {denom} = $1.",
     "unavailable": "Unavailable for {denom}",
     "orderHistoryHeaders": {
       "past": "Past",
@@ -1417,7 +1433,18 @@
     "clickToCreateOrderbook": "Click to create an orderbook for this pair.",
     "creationInProgress": "An orderbook creation for this pair is already in progress in another tab",
     "creationAwaitingConfirmation": "A previous orderbook creation for this pair is still awaiting confirmation onchain. Try again in a few minutes.",
-    "createOrderbookDescription": "Creating an orderbook pool allows limit orders to be placed for this trading pair on Osmosis."
+    "createOrderbookDescription": "Creating an orderbook pool allows limit orders to be placed for this trading pair on Osmosis.",
+    "returned": "Returned",
+    "filledPercent": "{percent}% filled",
+    "returnedUnfilled": "Returned (unfilled)",
+    "alreadyReceived": "Already received",
+    "paidOut": "Paid out",
+    "placed": "Placed",
+    "activity": "Activity",
+    "howPayoutsWork": "How do payouts work?",
+    "payoutNote": "Once an order is almost fully filled, the filled amount is usually paid into your wallet automatically, sometimes in more than one payout. Until then, it stays in the order. Cancelling pays out anything filled that hasn't been paid yet and returns the unfilled amount. If an order shows Claim, part of the filled amount hasn't been paid yet.",
+    "buyLimitOrder": "Buy Limit Order",
+    "sellLimitOrder": "Sell Limit Order"
   },
   "tradeDetails": {
     "priceImpact": {
@@ -1454,6 +1481,32 @@
     "dontShowAgain": "Don't show again",
     "dismiss": "Dismiss",
     "convert": "Convert"
+  },
+  "forcedMigration": {
+    "remindMeLater": "Remind me later",
+    "deadline": "Deadline: {date}",
+    "heldElsewhere": "You also hold {symbols} in liquidity pools.",
+    "heldUnconvertible": "You hold {symbols}, but converting it isn't available right now. Check back soon.",
+    "viewPortfolio": "View portfolio",
+    "poolPosition": "Pool #{poolId}",
+    "holdingsTitle": "Holdings",
+    "liquidityPoolsTitle": "Liquidity pools",
+    "limitOrdersTitle": "Limit orders",
+    "bonded": "Bonded",
+    "superfluidStaked": "Superfluid staked",
+    "unlocking": "Unlocking",
+    "unlockingUntil": "Unlocking until {date}",
+    "unlockEndsAfterDeadline": "Unlock finishes after {deadline}.",
+    "withdraw": "Withdraw",
+    "migratePosition": "Migrate",
+    "migratedAmountsNote": "Part of this is deposited as liquidity in the new pool; the rest is returned to your wallet.",
+    "migrateUnavailable": "Migration unavailable right now",
+    "unlock": "Unlock",
+    "cancelOrder": "Cancel order",
+    "claim": "Claim",
+    "claimAndCancel": "Claim and cancel",
+    "conversionUnavailable": "Converting this isn't available right now, so withdrawing is paused.",
+    "positionMoved": "The position's value moved too far since this opened. Try again."
   },
   "assetVariantsConversion": {
     "title": "Standardize Assets",

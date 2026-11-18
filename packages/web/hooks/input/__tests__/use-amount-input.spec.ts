@@ -1,12 +1,14 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  AmountTooSmallError,
+  isValidNumericalRawInput,
+} from "@osmosis-labs/utils";
 import { act, waitFor } from "@testing-library/react";
 
 import { server, trpcQuery } from "~/__tests__/msw";
 import {
-  cleanupTestWallets,
   connectTestWallet,
   renderHookWithProviders,
 } from "~/__tests__/test-utils";
@@ -22,7 +24,6 @@ describe("useAmountInput", () => {
   };
 
   beforeEach(() => {
-    cleanupTestWallets();
     server.use(
       trpcQuery(
         "edge.assets.getAssetPrice",
@@ -76,6 +77,44 @@ describe("useAmountInput", () => {
     );
   });
 
+  it("caps the input at the asset's decimals, not a fixed 6", async () => {
+    const { result, rerender } = renderHookWithProviders(
+      (props: { currency: Currency }) =>
+        useAmountInput({ currency: props.currency }),
+      { initialProps: { currency: osmoMockCurrency } }
+    );
+
+    act(() => result.current.setAmount("1,123456"));
+    await waitFor(() => expect(result.current.inputAmount).toBe("1.123456"));
+    act(() => result.current.setAmount("1.1234567"));
+    expect(result.current.inputAmount).toBe("1.123456");
+
+    const eighteen: Currency = { ...osmoMockCurrency, coinDecimals: 18 };
+    rerender({ currency: eighteen });
+    act(() => result.current.setAmount("0.123456789012345678"));
+    await waitFor(() =>
+      expect(result.current.inputAmount).toBe("0.123456789012345678")
+    );
+  });
+
+  it("reports an amount below one base unit as too small, not empty", async () => {
+    const eighteen: Currency = { ...osmoMockCurrency, coinDecimals: 18 };
+    const { result, rerender } = renderHookWithProviders(
+      (props: { currency: Currency }) =>
+        useAmountInput({ currency: props.currency }),
+      { initialProps: { currency: eighteen } }
+    );
+
+    act(() => result.current.setAmount("0.0000001"));
+    await waitFor(() => expect(result.current.inputAmount).toBe("0.0000001"));
+    expect(result.current.error).not.toBeInstanceOf(AmountTooSmallError);
+
+    rerender({ currency: osmoMockCurrency });
+    await waitFor(() =>
+      expect(result.current.error).toBeInstanceOf(AmountTooSmallError)
+    );
+  });
+
   it("handles invalid input", async () => {
     const { result } = renderHookWithProviders(() =>
       useAmountInput({ currency: osmoMockCurrency })
@@ -116,7 +155,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -177,7 +216,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -206,7 +245,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -250,7 +289,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -293,7 +332,7 @@ describe("useAmountInput", () => {
     });
 
     await connectTestWallet({
-      accountStore: rootStore.accountStore,
+      walletRuntime: rootStore.walletRuntime,
       chainId: ChainList[0].chain_id,
     });
 
@@ -419,6 +458,51 @@ describe("useAmountInput", () => {
       expect(result.current.amount).toBeUndefined();
       expect(result.current.debouncedInAmount).toBeNull();
     });
+  });
+
+  it("uses the balance override instead of the wallet balance", async () => {
+    const { result, rootStore } = renderHookWithProviders(() =>
+      useAmountInput({
+        currency: osmoMockCurrency,
+        balanceOverride: { amount: "40000000", isFetched: true },
+      })
+    );
+
+    await connectTestWallet({
+      walletRuntime: rootStore.walletRuntime,
+      chainId: ChainList[0].chain_id,
+    });
+
+    act(() => {
+      result.current.toggleMax();
+    });
+
+    await waitFor(() => {
+      expect(result.current.balance?.toCoin().amount).toBe("40000000");
+      expect(result.current.inputAmount).toBe("40");
+    });
+
+    act(() => {
+      result.current.setAmount("41");
+    });
+
+    await waitFor(() => {
+      expect(result.current.error).toEqual(new Error("Insufficient balance"));
+    });
+  });
+
+  it("has no balance while the override loads", async () => {
+    const { result } = renderHookWithProviders(() =>
+      useAmountInput({
+        currency: osmoMockCurrency,
+        balanceOverride: { amount: undefined, isFetched: false },
+      })
+    );
+
+    await waitFor(() => {
+      expect(result.current.inputAmount).toBe("");
+    });
+    expect(result.current.balance).toBeUndefined();
   });
 });
 

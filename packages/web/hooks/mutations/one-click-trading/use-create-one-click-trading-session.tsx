@@ -1,6 +1,6 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto/build/key";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import type { DeliverTxResponse } from "@osmosis-labs/tx";
 import {
   makeAddAuthenticatorMsg,
   makeRemoveAuthenticatorMsg,
@@ -25,8 +25,9 @@ import dayjs from "dayjs";
 import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-trading-toast";
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useTranslation } from "~/hooks/language";
-import { useStore } from "~/stores";
+import { useWallet } from "~/hooks/use-wallet";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
@@ -175,7 +176,7 @@ export async function onAdd1CTSession({
   tx,
   userOsmoAddress,
   fallbackGetAuthenticatorId,
-  accountStore,
+  walletApi,
   allowedMessages,
   sessionPeriod,
   spendLimitTokenDecimals,
@@ -189,7 +190,10 @@ export async function onAdd1CTSession({
   fallbackGetAuthenticatorId: Parameters<
     typeof getAuthenticatorIdFromTx
   >[0]["fallbackGetAuthenticatorId"];
-  accountStore: ReturnType<typeof useStore>["accountStore"];
+  walletApi: Pick<
+    ReturnType<typeof useWallet>,
+    "setOneClickTradingInfo" | "setShouldUseOneClickTrading"
+  >;
   allowedMessages: AvailableOneClickTradingMessages[];
   sessionPeriod: OneClickTradingTimeLimit;
   spendLimitTokenDecimals: number;
@@ -206,7 +210,7 @@ export async function onAdd1CTSession({
     publicKey,
   });
 
-  accountStore.setOneClickTradingInfo({
+  await walletApi.setOneClickTradingInfo({
     authenticatorId,
     publicKey,
     sessionKey: toBase64(privateKey.toBytes()),
@@ -224,7 +228,7 @@ export async function onAdd1CTSession({
   });
 
   localStorage.setItem(OneClickFloatingBannerDoNotShowKey, "true");
-  accountStore.setShouldUseOneClickTrading({ nextValue: true });
+  await walletApi.setShouldUseOneClickTrading({ nextValue: true });
 
   const sessionEndDate = dayjs.unix(
     unixNanoSecondsToSeconds(sessionPeriod.end)
@@ -241,6 +245,32 @@ export async function onAdd1CTSession({
     },
     ToastType.ONE_CLICK_TRADING
   );
+}
+
+/**
+ * Runs the session update that rides along with a trade. The trade has already
+ * landed, so a failure here is reported as a 1-Click Trading error rather than
+ * a failed trade.
+ */
+export async function update1CTSessionAfterTrade(
+  update: () => Promise<void>,
+  type: "create-1ct-session" | "remove-1ct-session"
+) {
+  try {
+    await update();
+  } catch (e) {
+    console.error("Failed to update the 1-Click Trading session", e);
+    displayToast(
+      {
+        titleTranslationKey:
+          type === "create-1ct-session"
+            ? "oneClickTrading.toast.currentlyUnavailable"
+            : "oneClickTrading.toast.errorEndingSession",
+        captionTranslationKey: "oneClickTrading.toast.pleaseTryAgain",
+      },
+      ToastType.ERROR
+    );
+  }
 }
 
 export async function makeCreate1CTSessionMessage({
@@ -387,7 +417,8 @@ export const useCreateOneClickTradingSession = ({
     "mutationFn"
   >;
 } = {}) => {
-  const { accountStore } = useStore();
+  const walletApi = useWallet();
+  const { signAndBroadcast, getChainWallet } = walletApi;
 
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
@@ -403,9 +434,7 @@ export const useCreateOneClickTradingSession = ({
       spendLimitTokenDecimals: number | undefined;
       additionalAuthenticatorsToRemove?: bigint[];
     }) => {
-      const userOsmoAddress = accountStore.getWallet(
-        accountStore.osmosisChainId
-      )?.address;
+      const userOsmoAddress = getChainWallet(OsmosisChainInfo.chainId).address;
 
       if (!userOsmoAddress) {
         throw new CreateOneClickSessionError("Osmosis account not found");
@@ -433,37 +462,34 @@ export const useCreateOneClickTradingSession = ({
         });
 
       const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
-        accountStore
-          .signAndBroadcast(
-            accountStore.osmosisChainId,
-            "addOrRemoveAuthenticators",
-            msgs,
-            "",
-            undefined,
-            undefined,
-            {
-              onBroadcasted,
-              onFulfill: (tx) => {
-                if (tx.code === 0) {
-                  resolve(tx);
-                } else {
-                  reject(new Error("Transaction failed"));
-                }
-              },
-            }
-          )
-          .catch((error) => {
-            reject(error);
-          });
+        signAndBroadcast(
+          "addOrRemoveAuthenticators",
+          msgs,
+          "",
+          undefined,
+          undefined,
+          {
+            onBroadcasted,
+            onFulfill: (tx) => {
+              if (tx.code === 0) {
+                resolve(tx);
+              } else {
+                reject(new Error("Transaction failed"));
+              }
+            },
+          }
+        ).catch((error) => {
+          reject(error);
+        });
       });
 
-      onAdd1CTSession({
+      await onAdd1CTSession({
         privateKey: key,
         tx,
         userOsmoAddress,
         fallbackGetAuthenticatorId:
           apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-        accountStore,
+        walletApi,
         allowedMessages,
         sessionPeriod,
         spendLimitTokenDecimals,

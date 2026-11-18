@@ -1,5 +1,5 @@
-import type { Chain } from "@osmosis-labs/types";
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import type { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
 import cachified, { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -9,13 +9,22 @@ import { z } from "zod";
 
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import {
+  DATA_SERVICES_APR_MAX_AGE,
+  DEFAULT_LRU_OPTIONS,
+} from "../../../utils/cache";
 import {
   type PoolDataRange,
   queryPoolAprsRange,
 } from "../../data-services/pool-aprs";
-import { type Gauge, queryGauges } from "../../osmosis";
+import {
+  type Gauge,
+  queryEpochProvisions,
+  queryGauges,
+  queryPoolGaugeIds,
+} from "../../osmosis";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
+import { getAsset } from "../assets";
 import { getEpochs } from "../osmosis";
 import type { Epoch } from "../osmosis/epochs";
 
@@ -65,6 +74,7 @@ export function getCachedPoolIncentivesMap(): Promise<
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
     ttl: 1000 * 30, // 30 seconds
+    staleWhileRevalidate: DATA_SERVICES_APR_MAX_AGE - 1000 * 30,
     getFreshValue: async () => {
       const aprs = await queryPoolAprsRange();
 
@@ -103,7 +113,8 @@ export function getCachedPoolIncentivesMap(): Promise<
         if (superfluidUpper && superfluidLower)
           incentiveTypes.push("superfluid");
         if (osmosisUpper && osmosisLower) incentiveTypes.push("osmosis");
-        if (boostUpper && osmosisLower) incentiveTypes.push("boost");
+        // OSMO pool incentives ended when minting stopped, so boost must not depend on them.
+        if (boostUpper && boostLower) incentiveTypes.push("boost");
         if (
           !superfluidUpper &&
           !superfluidLower &&
@@ -160,6 +171,13 @@ export function getCachedPoolIncentivesMap(): Promise<
 }
 
 const aprCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Ranges whose APR response was invalid (NaN). cachified doesn't keep failures, so
+ *  without this a range that never had a good value would re-query the data service on
+ *  every call. Only the failure is kept, never a value. */
+const invalidAprRanges = new LRUCache<string, Error>({
+  max: 1_000,
+  ttl: 30 * 1000, // 30 seconds
+});
 
 export function getConcentratedRangePoolApr({
   poolId,
@@ -170,18 +188,28 @@ export function getConcentratedRangePoolApr({
   lowerTick: string;
   upperTick: string;
 }): Promise<RatePretty | undefined> {
+  const key = `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`;
   return cachified({
     cache: aprCache,
-    key: `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`,
+    key,
     ttl: 30 * 1000, // 30 seconds
+    staleWhileRevalidate: DATA_SERVICES_APR_MAX_AGE - 30 * 1000,
     getFreshValue: async () => {
+      const invalid = invalidAprRanges.get(key);
+      if (invalid) throw invalid;
+
       const { APR } = await queryPriceRangeApr({
         lowerTickIndex: lowerTick,
         upperTickIndex: upperTick,
         poolId: poolId,
       });
       const apr = APR / 100;
-      if (isNaN(apr)) return;
+      // Throw rather than cache an unknown APR, so a bad response keeps the last good one.
+      if (isNaN(apr)) {
+        const error = new Error(`Invalid range APR for pool ${poolId}`);
+        invalidAprRanges.set(key, error);
+        throw error;
+      }
       return new RatePretty(apr);
     },
   });
@@ -211,6 +239,60 @@ export function getLockableDurations() {
     .sort((v1, v2) => {
       return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
     });
+}
+
+/** Share of each epoch's provisions that is routed to pool incentives (0% on mainnet). */
+const POOL_INCENTIVES_PROVISIONS_SHARE = new Dec(0);
+
+/**
+ * Gets the daily OSMO emission of a pool's internal incentive gauge: epoch
+ * provisions × pool incentives share × the gauge's incentive percentage.
+ * Returns `null` when the pool receives no internal incentives.
+ */
+export function getPoolGaugeIncentives({
+  poolId,
+  chainList,
+  assetLists,
+}: {
+  poolId: string;
+  chainList: Chain[];
+  assetLists: AssetList[];
+}): Promise<{ coinPerDay: CoinPretty } | null> {
+  return cachified({
+    cache: incentivesCache,
+    key: `pool-gauge-incentives-${poolId}`,
+    ttl: 1000 * 60 * 10, // 10 mins
+    getFreshValue: async () => {
+      const [{ epoch_provisions }, { gauge_ids_with_duration }] =
+        await Promise.all([
+          queryEpochProvisions({ chainList }),
+          queryPoolGaugeIds({ chainList, poolId }),
+        ]);
+
+      // all gauges emit the same denom, so the last one with a share wins
+      const gauge = gauge_ids_with_duration
+        .filter(
+          ({ gauge_incentive_percentage }) =>
+            !new Dec(gauge_incentive_percentage).isZero()
+        )
+        .pop();
+      if (!gauge) return null;
+
+      const asset = getAsset({
+        assetLists,
+        anyDenom: chainList[0].stakeCurrency!.coinMinimalDenom,
+      });
+
+      return {
+        coinPerDay: new CoinPretty(
+          asset,
+          new Dec(epoch_provisions)
+            .mul(POOL_INCENTIVES_PROVISIONS_SHARE)
+            .mul(new Dec(gauge.gauge_incentive_percentage).quo(new Dec(100)))
+        ),
+      };
+    },
+  });
 }
 
 /** Gets internally incentivized pools with gauges that distribute minted staking tokens. */

@@ -12,6 +12,7 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { LossAcknowledgementCheckbox } from "~/components/loss-acknowledgement/checkbox";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -21,7 +22,6 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-import { LossAcknowledgementCheckbox } from "./loss-acknowledgement-checkbox";
 import { QueryRemainingTime } from "./query-remaining-time";
 import {
   BridgeProviderDropdownRow,
@@ -29,6 +29,7 @@ import {
   ExpandDetailsControlContent,
   NetworkFeeRow,
   ProviderFeesRow,
+  QuoteDetailRow,
   TotalFeesRow,
 } from "./quote-detail";
 import { BridgeQuote } from "./use-bridge-quotes";
@@ -230,6 +231,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
           {hasLossWarning && (
             <LossAcknowledgementCheckbox
+              label={t("transfer.lossAcknowledgement")}
               checked={quote.hasAcknowledgedLoss}
               onCheckedChange={quote.setLossAcknowledged}
             />
@@ -463,6 +465,14 @@ const TransferDetails: FunctionComponent<
 
   const { estimatedTime } = selectedQuote;
   const estTime = estimatedTime.humanize();
+  // The speed is picked on the amount screen; review only shows the choice.
+  const speedLabel = quote.fastTransfer
+    ? t(
+        quote.fastTransfer.isFastSelected
+          ? "transfer.fastSpeed"
+          : "transfer.standardSpeed"
+      )
+    : undefined;
   const collapsedHeight = isMobile ? 46 : 74;
   const expandedPadding = isMobile ? 10 : 0;
 
@@ -498,7 +508,10 @@ const TransferDetails: FunctionComponent<
                 )}
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p className="first-letter:capitalize">{estTime}</p>
+                  <p className="first-letter:capitalize">
+                    {estTime}
+                    {speedLabel && ` · ${speedLabel}`}
+                  </p>
                 </div>
               </div>
             )}
@@ -525,6 +538,14 @@ const TransferDetails: FunctionComponent<
               isRefetchingQuote={quote.isRefetchingQuote}
               selectedQuote={selectedQuote}
             />
+            {speedLabel && (
+              <QuoteDetailRow
+                label={t("transfer.transferSpeed")}
+                isLoading={quote.isRefetchingQuote}
+              >
+                <p className="text-osmoverse-100">{speedLabel}</p>
+              </QuoteDetailRow>
+            )}
             <EstimatedTimeRow
               isRefetchingQuote={quote.isRefetchingQuote}
               selectedQuote={selectedQuote}

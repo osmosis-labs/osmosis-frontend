@@ -1,3 +1,9 @@
+import type {
+  ConcentratedPoolRawResponse,
+  CosmwasmPoolRawResponse,
+  StablePoolRawResponse,
+  WeightedPoolRawResponse,
+} from "@osmosis-labs/types";
 import { apiClient } from "@osmosis-labs/utils";
 
 import { IS_TESTNET, SIDECAR_BASE_URL } from "../../env";
@@ -6,12 +12,6 @@ import {
   SearchType,
   SortType,
 } from "../../queries/complex/pools";
-import {
-  ConcentratedPoolRawResponse,
-  CosmwasmPoolRawResponse,
-  StablePoolRawResponse,
-  WeightedPoolRawResponse,
-} from "../osmosis";
 
 // overwrite types from node pool type
 
@@ -83,6 +83,10 @@ export type SQSPoolFeesData = {
   fees_spent_24h?: number;
   fees_spent_7d?: number;
   fees_percentage?: string;
+  /** Set when SQS has no fee data for the pool: the zero values are unknown, not zero. */
+  is_error?: boolean;
+  /** Set when SQS serves the last fee data it fetched because recent refreshes failed. */
+  is_stale?: boolean;
 };
 
 export type SQSMetaResponse = {
@@ -103,8 +107,10 @@ export type SqsPool = {
     amount: string;
   }[];
   spread_factor: string;
-  /** Int: capitalization in USD. Will be `"0"` if liquidity_cap_error is present. */
+  /** Int: capitalization in USD of the reserves that have a price. */
   liquidity_cap: string;
+  /** Lists each reserve denom with zero capitalization, as "zero cap for denom (<denom>)".
+   *  That is either a zero balance or a missing price. */
   liquidity_cap_error: string;
 
   apr_data?: SQSAprData;

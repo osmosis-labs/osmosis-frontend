@@ -1,7 +1,7 @@
 import type { Transaction, VersionedTransaction } from "@solana/web3.js";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
-export const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
+const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
 
 /** Minimal surface of the injected Phantom (window.phantom.solana)
  *  provider that this app uses. */
@@ -25,6 +25,16 @@ export const getPhantomProvider = (): PhantomProvider | undefined =>
         ?.solana ??
       (window as unknown as { solana?: PhantomProvider }).solana ??
       undefined);
+
+const subscribeToNothing = () => () => {};
+
+/** Whether the Phantom extension is injected. `false` during SSR and hydration. */
+export const usePhantomDetected = () =>
+  useSyncExternalStore(
+    subscribeToNothing,
+    () => Boolean(getPhantomProvider()),
+    () => false
+  );
 
 // Module-level connection state so every consumer (amount screen, wallet
 // select modal, quote flow) observes the same Phantom session.

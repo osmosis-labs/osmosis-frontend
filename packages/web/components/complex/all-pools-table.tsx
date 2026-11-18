@@ -137,7 +137,7 @@ const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
   );
 
   const filterAndCreate = (
-    <div className="flex flex-none items-center gap-3">
+    <div className="flex max-w-full flex-none flex-wrap items-center gap-3">
       <CheckboxSelect
         label={t("components.pool.title")}
         selectedOptionIds={filters.poolTypesFilter}
@@ -208,7 +208,9 @@ const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
 
   return (
     <div className="flex w-full flex-col gap-3">
-      <div className="flex w-full items-center gap-5">
+      {/* On narrow phones the filter and Create New Pool wrap under the title
+          instead of pushing the page wider than the screen. */}
+      <div className="flex w-full flex-wrap items-center gap-x-5 gap-y-3">
         <h5 className="mr-auto">{t("pools.allPools.title")}</h5>
         {filterAndCreate}
       </div>

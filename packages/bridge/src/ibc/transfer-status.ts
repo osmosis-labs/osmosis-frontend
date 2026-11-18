@@ -1,7 +1,11 @@
 import { queryTx, Tx, TxEvent } from "@osmosis-labs/server";
-import { PollingStatusSubscription, TxTracer } from "@osmosis-labs/tx";
+import {
+  PollingStatusSubscription,
+  TxTracer,
+  TxTraceTimeoutError,
+} from "@osmosis-labs/tx";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { ChainIdHelper, MultiEndpointClient } from "@osmosis-labs/utils";
+import { ChainIdHelper, MultiEndpointClient, poll } from "@osmosis-labs/utils";
 
 import {
   TransferStatus,
@@ -54,12 +58,17 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
         );
       }
 
-      // Get initiating IBC tx to extract event info for tracing
-      const { tx_response } = await queryTx({
-        chainId: fromChainId,
-        chainList: this.chainList,
-        txHash: sendTxHash,
-      });
+      // Get initiating IBC tx to extract event info for tracing. A tx whose
+      // broadcast result was unknown may not be indexed yet, so keep trying.
+      const { tx_response } = (await poll({
+        fn: () =>
+          queryTx({
+            chainId: fromChainId,
+            chainList: this.chainList,
+            txHash: sendTxHash,
+          }).catch(() => undefined),
+        validate: Boolean,
+      })) as Tx;
 
       if (tx_response.code) {
         console.error("IBC transfer status: initial tx failed:", sendTxHash);
@@ -212,12 +221,23 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.
     const timeoutTracer = new TxTracer(this.getChainRpcUrls(sourceChainId));
-    await timeoutTracer
-      .traceTx({
-        "timeout_packet.packet_src_channel": sourceChannelId,
-        "timeout_packet.packet_sequence": sequence,
-      })
-      .finally(() => timeoutTracer.close());
+    try {
+      await timeoutTracer.traceTx(
+        {
+          "timeout_packet.packet_src_channel": sourceChannelId,
+          "timeout_packet.packet_sequence": sequence,
+        },
+        { timeoutMs: this.connectionTimeoutMs }
+      );
+    } catch (e) {
+      // The refund is due but no relayer has delivered it yet. Leave the
+      // transfer pending, to be traced again on reload, instead of polling
+      // the source chain indefinitely.
+      if (e instanceof TxTraceTimeoutError) return;
+      throw e;
+    } finally {
+      timeoutTracer.close();
+    }
 
     this.pushNewStatus(sendTxHash, "refunded");
   }

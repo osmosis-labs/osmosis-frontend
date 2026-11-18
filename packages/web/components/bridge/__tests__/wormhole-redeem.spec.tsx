@@ -33,13 +33,16 @@ jest.mock("~/utils/formatter", () => ({
 jest.mock("@osmosis-labs/utils", () => ({
   apiClient: jest.fn(),
   EthereumChainInfo: [{ id: 1, rpcUrls: { default: { http: [] } } }],
-  getEvmRpcTransport: jest.fn(),
   shorten: jest.fn((s: string) =>
     s.length > 13 ? `${s.slice(0, 6)}...${s.slice(-5)}` : s
   ),
   getSolanaExplorerUrl: jest.fn(
     ({ hash }: { hash: string }) => `https://solscan.io/tx/${hash}`
   ),
+}));
+
+jest.mock("~/utils/evm-rpc", () => ({
+  getClientEvmRpcTransport: jest.fn(),
 }));
 
 // `@mysten/wallet-standard` ships as ESM-only and isn't run through Jest's

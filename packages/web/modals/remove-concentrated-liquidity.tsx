@@ -13,18 +13,17 @@ import {
   RatePretty,
 } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import React, {
+import {
   FunctionComponent,
+  memo,
   ReactNode,
   useCallback,
-  useEffect,
   useState,
 } from "react";
-import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
+import { AutosizeInput } from "~/components/input/autosize-input";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
 import { RouteLane } from "~/components/swap-tool/split-route";
@@ -32,6 +31,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Slider } from "~/components/ui/slider";
+import { OsmosisChainInfo } from "~/config/chain";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import {
   getTokenInFeeAmountFiatValue,
@@ -39,8 +39,8 @@ import {
 } from "~/hooks/fiat-getters";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
+import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
@@ -50,7 +50,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     status: UserPositionDetails["status"];
     claimableRewardCoins: PositionHistoricalPerformance["claimableRewardCoins"];
   } & ModalBaseProps
-> = observer((props) => {
+> = memo((props) => {
   const {
     poolId,
     status,
@@ -61,11 +61,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   } = props;
 
   const { t } = useTranslation();
-  const { chainStore, accountStore } = useStore();
 
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const { chainId } = OsmosisChainInfo;
+  const { wallet: account, txTypeInProgress } = useWallet(chainId);
+  const isSendingMsg = !account || txTypeInProgress !== "";
 
   const {
     config,
@@ -83,12 +82,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     swapEffectiveImpact,
     zapOutBlockedReason,
     isPoolLoading,
-  } = useRemoveConcentratedLiquidityConfig(
-    chainStore,
-    chainId,
-    poolId,
-    props.position
-  );
+  } = useRemoveConcentratedLiquidityConfig(chainId, poolId, props.position);
 
   const baseAsset = config.effectiveLiquidityAmounts?.base;
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
@@ -263,11 +257,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
 
   // High price-impact guard, mirroring the zap-in: a large-loss swap requires an
   // explicit Confirm before it can be submitted.
-  const [costAcknowledged, setCostAcknowledged] = useState(false);
   const highCost = Boolean(needsSwap && effectiveImpact?.lt(new Dec(-0.1)));
 
-  // Reset the acknowledgement when the trade context changes, so a prior
-  // confirm can't carry over to a different high-impact swap. Keyed on the
+  // The acknowledgement holds only for the trade context it was given in, so a
+  // prior confirm can't carry over to a different high-impact swap. Keyed on the
   // swap direction (the sold denom — dragging across the no-swap point flips
   // it, and the amount alone can coincide across the flip) and the live swap
   // amount (changes when the user moves the mix, not on the 5s refetch), plus
@@ -277,9 +270,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   }>${requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
     requiredSwap?.swapInAmount.toString() ?? ""
   }:${highCost}`;
-  useEffect(() => {
-    setCostAcknowledged(false);
-  }, [costContextKey]);
+  const [acknowledgedCostContext, setAcknowledgedCostContext] = useState<
+    string | null
+  >(null);
+  const costAcknowledged = acknowledgedCostContext === costContextKey;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -518,7 +512,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                       className="shrink-0"
                       checked={costAcknowledged}
                       onCheckedChange={(checked) =>
-                        setCostAcknowledged(checked === true)
+                        setAcknowledgedCostContext(
+                          checked === true ? costContextKey : null
+                        )
                       }
                     />
                   </div>
@@ -572,7 +568,7 @@ const ZapOutBreakdown: FunctionComponent<{
   zapSlippageConfig: ReturnType<
     typeof useRemoveConcentratedLiquidityConfig
   >["zapSlippageConfig"];
-}> = observer((props) => {
+}> = memo((props) => {
   const {
     quote,
     valueOut,
@@ -682,7 +678,7 @@ const ZapOutBreakdownSkeleton: FunctionComponent<{
   zapSlippageConfig: ReturnType<
     typeof useRemoveConcentratedLiquidityConfig
   >["zapSlippageConfig"];
-}> = observer(({ zapSlippageConfig }) => {
+}> = memo(({ zapSlippageConfig }) => {
   const { t } = useTranslation();
 
   return (
@@ -724,7 +720,7 @@ const SlippageInput: FunctionComponent<{
   slippageConfig: ReturnType<
     typeof useRemoveConcentratedLiquidityConfig
   >["zapSlippageConfig"];
-}> = observer(({ slippageConfig }) => {
+}> = memo(({ slippageConfig }) => {
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 

@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-compat/no-extraneous-dependencies */
 import * as fs from "node:fs";
 
 import { ProtoStore } from "@cosmology/proto-parser";

@@ -1,6 +1,7 @@
-import decompress from "decompress";
-import path from "node:path";
 import fs from "node:fs";
+import path from "node:path";
+
+import decompress from "@xhmikosr/decompress";
 
 export class UnzipExtension {
   async getPathToExtension() {

@@ -85,7 +85,6 @@ describe("shouldDisplayAlloyedAssetsToast", () => {
   const base = {
     variantGroupKeys: [ALL_USDC],
     isAlloyedAssetsEnabled: true,
-    isMobile: false,
     areAllGroupsDismissed: () => false,
   };
 
@@ -100,12 +99,6 @@ describe("shouldDisplayAlloyedAssetsToast", () => {
         isAlloyedAssetsEnabled: false,
       })
     ).toBe(false);
-  });
-
-  it("does not show on mobile", () => {
-    expect(shouldDisplayAlloyedAssetsToast({ ...base, isMobile: true })).toBe(
-      false
-    );
   });
 
   it("does not show when there are no eligible groups", () => {
