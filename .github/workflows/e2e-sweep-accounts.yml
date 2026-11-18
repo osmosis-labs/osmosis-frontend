@@ -38,6 +38,8 @@ permissions:
 
 jobs:
   sweep:
+    # The topup key is a secret of the e2e-funds environment (stage only).
+    environment: e2e-funds
     name: "Sweep surplus — all accounts"
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -53,6 +55,7 @@ jobs:
             /.yarnrc.yml
             /.yarn-4.18.1.cjs
             /packages/*/package.json
+            /packages/web/etc/
             /packages/e2e/
 
       - name: Setup Node.js

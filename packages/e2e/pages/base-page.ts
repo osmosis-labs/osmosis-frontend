@@ -40,6 +40,9 @@ export class BasePage {
    */
   async connectWallet() {
     await this.fitWindowToMacRunnerDisplay()
+    // Keplr places its popup from the last focused window, which after setup
+    // can be the wallet's own register tab rather than the app.
+    await this.page.bringToFront()
     await this.connectWalletBtn.click()
     await this.kepltWalletBtn.click()
     await waitForKeplrApproval(this.page.context())

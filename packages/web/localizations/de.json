@@ -904,6 +904,9 @@
     "free": "Frei",
     "cheapest": "Am billigsten",
     "fastest": "Am schnellsten",
+    "transferSpeed": "Übertragungsgeschwindigkeit",
+    "standardSpeed": "Standard",
+    "fastSpeed": "Schnell",
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
@@ -1336,6 +1339,7 @@
     "cancel": "Stornieren",
     "daysAgo": "vor {days} Tagen",
     "hoursAgo": "vor {hours} Stunden",
+    "minutesAgo": "vor {minutes} Minuten",
     "buyWith": "Kaufen mit {coinA} oder {coinB}",
     "orderHistory": "Orderverlauf",
     "tradeAnotherAssetOr": "Tauschen Sie einen anderen Vermögenswert gegen {coinA} oder {coinB}",
@@ -1418,12 +1422,16 @@
     "creationAwaitingConfirmation": "Eine frühere Orderbuch-Erstellung für dieses Paar wartet noch auf die Bestätigung onchain. Versuche es in ein paar Minuten erneut.",
     "createOrderbookDescription": "Das Erstellen eines Orderbuch-Pools ermöglicht es, Limit-Orders für dieses Handelspaar auf Osmosis zu platzieren.",
     "returned": "Zurückerstattet",
-    "partlyFilled": "Teilweise ausgeführt",
+    "filledPercent": "{percent}% ausgeführt",
     "returnedUnfilled": "Zurückerstattet (nicht ausgeführt)",
     "alreadyReceived": "Bereits erhalten",
+    "paidOut": "Ausgezahlt",
+    "placed": "Platziert",
+    "activity": "Aktivität",
     "howPayoutsWork": "Wie funktionieren Auszahlungen?",
-    "payoutNote": "Ausgeführte Beträge werden in der Regel automatisch an Ihre Wallet ausgezahlt, oft in mehreren Auszahlungen, während die Order ausgeführt wird, und können Stunden oder Tage vor einer Stornierung eingehen. Wenn bei einer Order „Beanspruchen“ angezeigt wird, wurde ein Teil des ausgeführten Betrags noch nicht ausgezahlt. Eine Stornierung erstattet nur den nicht ausgeführten Betrag.",
-    "limitOrder": "Limit-Order"
+    "payoutNote": "Sobald eine Order fast vollständig ausgeführt ist, wird der ausgeführte Betrag in der Regel automatisch an Ihre Wallet ausgezahlt, manchmal in mehreren Auszahlungen. Bis dahin verbleibt er in der Order. Eine Stornierung zahlt alles Ausgeführte aus, das noch nicht ausgezahlt wurde, und erstattet den nicht ausgeführten Betrag. Wenn bei einer Order „Beanspruchen“ angezeigt wird, wurde ein Teil des ausgeführten Betrags noch nicht ausgezahlt.",
+    "buyLimitOrder": "Limit-Kauforder",
+    "sellLimitOrder": "Limit-Verkaufsorder"
   },
   "tradeDetails": {
     "priceImpact": {

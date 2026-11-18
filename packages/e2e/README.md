@@ -48,16 +48,15 @@ Run specific test suites from the `packages/e2e` directory:
 ```bash
 npx playwright test swap.osmo.wallet          # Swap OSMO tests
 npx playwright test trade                      # Trade / limit order tests
-npx playwright test monitoring --timeout 180000 # Monitoring tests
 ```
 
 PR runs check one representative case per path. Tests tagged `@full` (the
-other swap pairs, tokens and order types) are left out unless `E2E_FULL=true`,
+OSMO round trip, other tokens and order types) are left out unless `E2E_FULL=true`,
 which the full suite (`full-e2e-tests.yml`) sets to run the whole matrix
 against stage, with the claim tests, on every release PR and on demand:
 
 ```bash
-E2E_FULL=true npx playwright test swap.usdc.wallet  # include @full tests
+E2E_FULL=true npx playwright test trade.wallet  # include @full tests
 ```
 
 The swap tests are round trips: the return leg sends back the amount the

@@ -1,5 +1,5 @@
 import { CoinPretty, Dec } from "@osmosis-labs/unit";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";

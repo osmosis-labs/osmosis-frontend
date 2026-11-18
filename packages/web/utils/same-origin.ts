@@ -6,7 +6,7 @@
  */
 
 /** The origins this request could legitimately have come from: the scheme
- *  the browser used (forwarded by the CDN and Vercel) with the request's own
+ *  the browser used (forwarded by the CDN) with the request's own
  *  host, including the public host in `x-forwarded-host`. Localhost also
  *  accepts plain http for development. */
 function trustedOrigins(req: Request): Set<string> {

@@ -904,6 +904,9 @@
     "free": "Bezpłatny",
     "cheapest": "Najtańszy",
     "fastest": "Najszybszy",
+    "transferSpeed": "Szybkość transferu",
+    "standardSpeed": "Standardowy",
+    "fastSpeed": "Szybki",
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",
@@ -1336,6 +1339,7 @@
     "cancel": "Anuluj",
     "daysAgo": "{days} d temu",
     "hoursAgo": "{hours} godz. temu",
+    "minutesAgo": "{minutes} min temu",
     "buyWith": "Kupuj za pomocą {coinA} lub {coinB}",
     "orderHistory": "Historia zleceń",
     "tradeAnotherAssetOr": "Zamień inny zasób na {coinA} lub {coinB}",
@@ -1418,12 +1422,16 @@
     "creationAwaitingConfirmation": "Poprzednie tworzenie księgi zleceń dla tej pary nadal czeka na potwierdzenie onchain. Spróbuj ponownie za kilka minut.",
     "createOrderbookDescription": "Utworzenie orderbook pool umożliwia składanie limit orders dla tej pary handlowej na Osmosis.",
     "returned": "Zwrócono",
-    "partlyFilled": "Częściowo zrealizowane",
+    "filledPercent": "Zrealizowane w {percent}%",
     "returnedUnfilled": "Zwrócono (niezrealizowane)",
     "alreadyReceived": "Już otrzymano",
+    "paidOut": "Wypłacono",
+    "placed": "Złożono",
+    "activity": "Aktywność",
     "howPayoutsWork": "Jak działają wypłaty?",
-    "payoutNote": "Zrealizowane kwoty są zwykle wypłacane automatycznie na Twój portfel, często w kilku wypłatach w miarę realizacji zlecenia, i mogą dotrzeć kilka godzin lub dni przed anulowaniem. Jeśli przy zleceniu widać „Odbierz”, część zrealizowanej kwoty nie została jeszcze wypłacona. Anulowanie zwraca tylko niezrealizowaną kwotę.",
-    "limitOrder": "Zlecenie z limitem"
+    "payoutNote": "Gdy zlecenie zostanie prawie w całości zrealizowane, zrealizowana kwota jest zwykle wypłacana automatycznie na Twój portfel, czasem w kilku wypłatach. Do tego czasu pozostaje w zleceniu. Anulowanie wypłaca zrealizowaną kwotę, która nie została jeszcze wypłacona, i zwraca niezrealizowaną kwotę. Jeśli przy zleceniu widać „Odbierz”, część zrealizowanej kwoty nie została jeszcze wypłacona.",
+    "buyLimitOrder": "Zlecenie kupna z limitem",
+    "sellLimitOrder": "Zlecenie sprzedaży z limitem"
   },
   "tradeDetails": {
     "priceImpact": {

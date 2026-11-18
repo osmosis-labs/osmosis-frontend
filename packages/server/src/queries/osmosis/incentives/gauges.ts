@@ -22,6 +22,9 @@ export declare type Gauge = {
   }[];
 };
 
+/** Every gauge on chain in one response (over 15 MB). The download takes about as long as
+ *  the default 3 s per-attempt timeout, so it gets the whole request budget instead. */
 export const queryGauges = createNodeQuery<{ data: Gauge[] }>({
   path: "/osmosis/incentives/v1beta1/gauges?pagination.limit=100000",
+  timeout: 8000,
 });

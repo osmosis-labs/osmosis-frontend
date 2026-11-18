@@ -3,7 +3,7 @@ import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Link from "next/link";
-import React, { FunctionComponent, ReactNode, useMemo, useState } from "react";
+import { FunctionComponent, ReactNode, useMemo, useState } from "react";
 
 import { getAlloyBackingHistoryUrl } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";

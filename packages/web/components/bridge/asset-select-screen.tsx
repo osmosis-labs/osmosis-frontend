@@ -2,7 +2,7 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
-import React, { FunctionComponent, useMemo, useRef, useState } from "react";
+import { FunctionComponent, useMemo, useRef, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { NoSearchResultsSplash, SearchBox } from "~/components/input";

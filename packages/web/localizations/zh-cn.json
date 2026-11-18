@@ -904,6 +904,9 @@
     "free": "自由的",
     "cheapest": "最便宜的",
     "fastest": "最快的",
+    "transferSpeed": "转账速度",
+    "standardSpeed": "标准",
+    "fastSpeed": "快速",
     "stepLabels": {
       "asset": "资产",
       "amount": "数量",
@@ -1336,6 +1339,7 @@
     "cancel": "取消",
     "daysAgo": "{days}天前",
     "hoursAgo": "{hours}小时前",
+    "minutesAgo": "{minutes}分钟前",
     "buyWith": "使用{coinA}或{coinB}购买",
     "orderHistory": "订单历史",
     "tradeAnotherAssetOr": "用其他资产换取{coinA}或{coinB}",
@@ -1418,12 +1422,16 @@
     "creationAwaitingConfirmation": "此交易对之前的订单簿创建仍在等待链上确认。请几分钟后重试。",
     "createOrderbookDescription": "创建 orderbook pool 可在 Osmosis 上为此交易对下 limit orders。",
     "returned": "已退回",
-    "partlyFilled": "部分成交",
+    "filledPercent": "已成交 {percent}%",
     "returnedUnfilled": "已退回（未成交）",
     "alreadyReceived": "已收到",
+    "paidOut": "已付款",
+    "placed": "已下单",
+    "activity": "记录",
     "howPayoutsWork": "付款如何进行？",
-    "payoutNote": "已成交的金额通常会自动支付到您的钱包，往往随着订单成交分多次支付，并且可能在您取消前数小时或数天就已到账。如果订单显示“领取”，说明部分已成交金额尚未支付。取消只会退回未成交的金额。",
-    "limitOrder": "限价单"
+    "payoutNote": "订单几乎全部成交后，已成交的金额通常会自动支付到您的钱包，有时会分多次支付。在此之前，这部分金额会留在订单中。取消时会支付尚未支付的已成交金额，并退回未成交的金额。如果订单显示“领取”，说明部分已成交金额尚未支付。",
+    "buyLimitOrder": "限价买单",
+    "sellLimitOrder": "限价卖单"
   },
   "tradeDetails": {
     "priceImpact": {
