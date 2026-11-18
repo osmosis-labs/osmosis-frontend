@@ -8,9 +8,9 @@ import { getTxReceivedAmount } from "../utils/tx-confirm";
 import { deriveAddress } from "../utils/wallet-utils";
 
 // Round trips from USDC: each return leg sends back exactly what its outbound
-// leg received, so the wallet only pays fees and spread. One pair: more tokens
-// exercise the same swap path, and the fake-wallet suite checks the signed
-// message for each swap without spending funds.
+// leg received, so the wallet only pays fees and spread. One pair: other
+// tokens exercise the same swap path. INJ and AKT have no swap test with real
+// funds; ATOM is swapped in the OSMO round trip and the trade tests.
 const ROUND_TRIPS = [{ token: "TIA", usdcAmount: "0.1" }] as const;
 
 test.describe("Test Swap to/from USDC feature", () => {
@@ -26,7 +26,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     context = await new SetupKeplr().setupWallet(privateKey);
 
     ({ address } = await deriveAddress(privateKey));
-    await ensureBalances(address, [{ token: "USDC", amount: 0.2 }]);
+    await ensureBalances(address, [{ token: "USDC", amount: 0.1 }]);
 
     // Switch to Application
     tradePage = new TradePage(context.pages()[0]);
