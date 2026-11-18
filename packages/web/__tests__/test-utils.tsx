@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import-compat/no-extraneous-dependencies */
 import { WalletManager, WalletStatus } from "@cosmos-kit/core";
 import { superjson } from "@osmosis-labs/server";
 import type { AvailableFlags } from "@osmosis-labs/types";

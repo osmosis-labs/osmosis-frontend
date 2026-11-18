@@ -20,9 +20,6 @@ export type AddLiquidityPoolData = {
   };
 };
 
-/** Raw user balance in base units. */
-export type AddLiquidityBalance = { denom: string; amount: string };
-
 export interface CreatePoolConfigOpts {
   minAssetsCount: number;
   maxAssetsCount: number;

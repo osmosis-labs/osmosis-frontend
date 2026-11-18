@@ -32,9 +32,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 
@@ -47,5 +44,7 @@ robots.txt
 sitemap-*.xml
 sitemap.xml
 
-# Cloudflare Wrangler
+# Cloudflare / OpenNext
+.open-next
 .wrangler
+.dev.vars

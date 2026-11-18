@@ -51,6 +51,7 @@ import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
+import { useWalletPrompt } from "~/hooks/use-wallet-prompt";
 import { ModalBase } from "~/modals";
 import {
   formatFiatPrice,
@@ -75,6 +76,9 @@ interface ReviewOrderProps {
    */
   confirmAction: (opts?: { warnFlags?: TxFeMemoFlags }) => void;
   isConfirmationDisabled: boolean;
+  /** True from the confirm click until the transaction attempt settles, i.e.
+   *  while a wallet prompt may be open. */
+  isAwaitingSignature?: boolean;
   slippageConfig?: SlippageConfig;
   amountWithSlippage?: IntPretty;
   fiatAmountWithSlippage?: PricePretty;
@@ -96,11 +100,16 @@ interface ReviewOrderProps {
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
+  /** Note that the limit order's quote asset is off its $1 peg, or that its
+   *  peg couldn't be checked. */
+  limitQuotePegNote?: string;
   /**
    * Price impact for the quote being reviewed, as the router reports it (sign
    * included). Optional because this modal is shared by all three tabs.
    */
   priceImpactTokenOut?: RatePretty;
+  /** SQS could not compute the quote's price impact. */
+  priceImpactUnknown?: boolean;
   /**
    * The quote's amount in display units, before slippage: the output for
    * exact-in, the input for exact-out. Undefined while there is no quote.
@@ -120,6 +129,11 @@ interface ReviewOrderProps {
   /** True when an automatic slippage was chosen without knowing the route's
    *  liquidity. */
   slippageLiquidityUnknown?: boolean;
+  /** The quote's swap (taker) fee rate. Undefined when the quote does not
+   *  report one; the market fee row is then hidden rather than shown as 0. */
+  swapFee?: RatePretty;
+  /** Fiat value of the swap fee, charged on the input token. */
+  swapFeeFiat?: PricePretty;
 }
 
 export function ReviewOrder({
@@ -127,6 +141,7 @@ export function ReviewOrder({
   onClose: onCloseProp,
   confirmAction,
   isConfirmationDisabled,
+  isAwaitingSignature = false,
   slippageConfig,
   amountWithSlippage,
   fiatAmountWithSlippage,
@@ -147,7 +162,9 @@ export function ReviewOrder({
   toAsset,
   fromAsset,
   isBeyondOppositePrice = false,
+  limitQuotePegNote,
   priceImpactTokenOut,
+  priceImpactUnknown,
   quoteAmount,
   outAssetPrice,
   quoteType,
@@ -155,6 +172,8 @@ export function ReviewOrder({
   orderType: orderTypeProp,
   slippageSource,
   slippageLiquidityUnknown = false,
+  swapFee,
+  swapFeeFiat,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const [manualSlippage, setManualSlippage] = useState("");
@@ -200,6 +219,19 @@ export function ReviewOrder({
     parseAsString.withDefault("market")
   );
   const orderType = orderTypeProp ?? queryOrderType;
+
+  /** An active session with unchanged settings signs locally, so there is no
+   *  wallet prompt to wait on. Changing the settings sends a session tx that
+   *  the wallet does sign, and limit orders are always signed by the wallet. */
+  const signsWithOneClickSession =
+    show1CT &&
+    is1CTEnabled &&
+    !transaction1CTParamsChanges?.length &&
+    orderType !== "limit";
+  const walletPrompt = useWalletPrompt({
+    isLoading: isAwaitingSignature,
+    signsLocally: signsWithOneClickSession,
+  });
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
   /**
@@ -340,6 +372,7 @@ export function ReviewOrder({
       ].join("|"),
       ...getTradeWarnings({
         priceImpactTokenOut,
+        priceImpactUnknown,
         slippage: slippageConfig?.slippage.toDec(),
         isBeyondOppositePrice,
         percentAdjusted,
@@ -355,6 +388,7 @@ export function ReviewOrder({
       quoteType,
       limitPriceFiat,
       priceImpactTokenOut,
+      priceImpactUnknown,
       slippageConfig?.slippage,
       isBeyondOppositePrice,
       percentAdjusted,
@@ -742,11 +776,16 @@ export function ReviewOrder({
                             ? "text-rust-400"
                             : "text-osmoverse-300"
                         )}
-                      >{`${
-                        outputDifference.toDec().isPositive() ? "-" : "+"
-                      }${new RatePretty(
-                        outputDifference.toDec().abs()
-                      )}`}</span>
+                      >
+                        <GenericDisclaimer
+                          title={t("tradeDetails.outputDifference.header")}
+                          body={t("tradeDetails.outputDifference.content")}
+                        >{`${
+                          outputDifference.toDec().isPositive() ? "-" : "+"
+                        }${new RatePretty(
+                          outputDifference.toDec().abs()
+                        )}`}</GenericDisclaimer>
+                      </span>
                     )}
                     <span className="sm:subtitle2">
                       {formatFiatPrice(
@@ -987,6 +1026,47 @@ export function ReviewOrder({
                     }
                   />
                 )}
+                {orderType === "market" && swapFee && (
+                  <RecapRow
+                    left={
+                      <GenericDisclaimer
+                        title={t("tradeDetails.swapFees.header")}
+                        body={t("tradeDetails.swapFees.content")}
+                      >
+                        {t("pools.aprBreakdown.swapFees")}
+                      </GenericDisclaimer>
+                    }
+                    right={
+                      swapFee.toDec().isZero() ? (
+                        <span className="sm:caption text-bullish-400">
+                          {t("transfer.free")}
+                        </span>
+                      ) : (
+                        <span className="sm:caption">
+                          {swapFeeFiat &&
+                            swapFeeFiat.toDec().gt(new Dec(0)) && (
+                              <span className="text-osmoverse-100">
+                                {swapFeeFiat.toDec().lte(new Dec(0.01)) ? (
+                                  <>&lt;$0.01</>
+                                ) : (
+                                  <>
+                                    ~
+                                    {formatPretty(swapFeeFiat, {
+                                      maxDecimals: 3,
+                                      maximumSignificantDigits: 4,
+                                    })}
+                                  </>
+                                )}{" "}
+                              </span>
+                            )}
+                          <span className="text-osmoverse-500">
+                            ({swapFee.toString()})
+                          </span>
+                        </span>
+                      )
+                    }
+                  />
+                )}
                 <RecapRow
                   left={t("swap.gas.additionalNetworkFee")}
                   right={
@@ -999,6 +1079,11 @@ export function ReviewOrder({
                   }
                 />
               </div>
+              {limitQuotePegNote && (
+                <p className="caption px-2 text-osmoverse-300">
+                  {limitQuotePegNote}
+                </p>
+              )}
               {isBeyondOppositePrice && orderType === "limit" && (
                 <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                   <Icon
@@ -1035,9 +1120,9 @@ export function ReviewOrder({
                       {t("limitOrders.highPriceImpact.description", {
                         // Same rounding as the memo's `pi=`, so the figure the
                         // user is shown is the figure the tx records.
-                        impact: `${formatWarnPct(
-                          currentLossFigures.priceImpact
-                        )}%`,
+                        impact: priceImpactUnknown
+                          ? t("transfer.unknown")
+                          : `${formatWarnPct(currentLossFigures.priceImpact)}%`,
                       })}
                     </span>
                   </div>
@@ -1114,10 +1199,21 @@ export function ReviewOrder({
                         isSlippageBoundZeroOnChain ||
                         warningNeedsAcknowledgement
                       }
+                      isLoading={isAwaitingSignature}
+                      loadingText={walletPrompt.label}
                       className="body2 sm:caption !rounded-2xl"
                     >
                       <h6>{t("limitOrders.confirm")}</h6>
                     </Button>
+                    {walletPrompt.onCancel && (
+                      <Button
+                        mode="secondary"
+                        onClick={walletPrompt.onCancel}
+                        className="body2 sm:caption w-fit !rounded-2xl"
+                      >
+                        <h6>{t("limitOrders.cancel")}</h6>
+                      </Button>
+                    )}
                   </div>
                 </>
               )}
@@ -1265,14 +1361,25 @@ const OneClickTradingActiveSessionParamsEdit = ({
       onClick={onClick}
     >
       <span className="body1 text-wosmongton-200 whitespace-nowrap">
-        {changes.includes("spendLimit") ? (
-          <span className="text-bullish-400">
-            {transactionParams?.spendLimit.toString()}
+        {changes.includes("spendLimit") || !remainingSpendLimit ? (
+          <span
+            className={
+              changes.includes("spendLimit") ? "text-bullish-400" : undefined
+            }
+          >
+            {t("oneClickTrading.spendLimitPerDay", {
+              amount: transactionParams?.spendLimit.toString() ?? "",
+            })}
           </span>
         ) : (
-          <span> {remainingSpendLimit} </span>
+          <span>
+            {" "}
+            {t("oneClickTrading.spendLimitLeftToday", {
+              amount: remainingSpendLimit,
+            })}{" "}
+          </span>
         )}
-        {" / "}
+        {" · "}
         {changes.includes("sessionPeriod") &&
         transactionParams?.sessionPeriod.end ? (
           <span className="text-bullish-400">

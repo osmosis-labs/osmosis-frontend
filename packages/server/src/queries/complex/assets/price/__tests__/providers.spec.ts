@@ -7,7 +7,7 @@ import { querySimplePrice } from "../../../../coingecko";
 import { queryPrices, QUOTE_COIN_MINIMAL_DENOM } from "../../../../sidecar";
 import { getAssetPrice } from "..";
 import { getCoingeckoPrice } from "../providers/coingecko";
-import { getPriceFromSidecar } from "../providers/sidecar";
+import { getPriceFromSidecar, NoSqsPriceError } from "../providers/sidecar";
 
 jest.mock("../../../../sidecar/prices", () => ({
   ...jest.requireActual("../../../../sidecar/prices"),
@@ -92,10 +92,12 @@ describe("getCoingeckoPrice", () => {
 });
 
 describe("getAssetPrice", () => {
-  it("keeps a failed price briefly instead of re-querying on every call", async () => {
+  it("keeps a 'no price' answer briefly instead of re-querying on every call", async () => {
     const priceProvider = jest
       .fn()
-      .mockRejectedValue(new Error("No SQS price result for uion and USDC"));
+      .mockRejectedValue(
+        new NoSqsPriceError("No SQS price result for uion and USDC")
+      );
     const params = {
       assetLists,
       chainList,
@@ -107,5 +109,23 @@ describe("getAssetPrice", () => {
     await expect(getAssetPrice(params)).rejects.toThrow("No SQS price result");
 
     expect(priceProvider).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries a transient failure at once instead of keeping it", async () => {
+    const priceProvider = jest
+      .fn()
+      .mockRejectedValueOnce(new Error("SQS price batch expired while queued"))
+      .mockResolvedValue(new Dec(2));
+    const params = {
+      assetLists,
+      chainList,
+      asset: { coinMinimalDenom: "uosmo" },
+      priceProvider,
+    };
+
+    await expect(getAssetPrice(params)).rejects.toThrow("expired");
+    await expect(getAssetPrice(params)).resolves.toEqual(new Dec(2));
+
+    expect(priceProvider).toHaveBeenCalledTimes(2);
   });
 });

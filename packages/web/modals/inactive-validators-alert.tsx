@@ -6,6 +6,7 @@ import { InactiveDelegationsList } from "~/components/stake/inactive-delegations
 import { Button } from "~/components/ui/button";
 import { OsmosisChainInfo } from "~/config/chain";
 import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useForcedMigrations } from "~/hooks/use-forced-migrations";
 import { useInactiveDelegations } from "~/hooks/use-inactive-delegations";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase } from "~/modals/base";
@@ -96,8 +97,15 @@ export const InactiveValidatorsAlertModal = () => {
     router.push(STAKE_PATHNAME);
   }, [dismiss, router]);
 
+  // One prompt at a time: a migration with a deadline goes first, and this
+  // alert follows once it is snoozed or done.
+  const { visibleMigrations, isSettled: areForcedMigrationsSettled } =
+    useForcedMigrations();
+
   const isOpen =
     isLoaded &&
+    areForcedMigrationsSettled &&
+    visibleMigrations.length === 0 &&
     router.pathname !== STAKE_PATHNAME &&
     delegationsToAlert.length > 0;
 

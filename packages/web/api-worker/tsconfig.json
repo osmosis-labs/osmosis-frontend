@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "~/*": ["../*"]
+    }
+  },
+  "include": ["./**/*.ts", "../**/*.ts", "../**/*.tsx"],
+  "exclude": ["../node_modules", "../.open-next", "../.wrangler", "../.next"]
+}

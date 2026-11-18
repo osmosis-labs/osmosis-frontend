@@ -1,6 +1,6 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { setupServer } from "msw/node";
 
 import { SIDECAR_BASE_URL } from "../../../../../env";

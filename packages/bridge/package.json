@@ -21,8 +21,8 @@
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
-    "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint": "oxlint src && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint:fix": "oxlint --fix src && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
@@ -34,26 +34,24 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
-    "base-x": "^5.0.0",
     "cachified": "^3.5.4",
     "launchdarkly-node-client-sdk": "^3.4.3",
     "long": "^5.2.3",
     "lru-cache": "^10.0.1",
-    "nomic-bitcoin": "^5.0.0-pre.0",
     "viem": "~2.41.2",
-    "zod": "^3.22.4"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
-    "eslint": "^9.39.5",
     "jest": "^30.5.2",
+    "oxlint": "^1.90.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
     "typescript": "6.0.3"
   },
   "lint-staged": {
     "*": [
-      "eslint",
-      "prettier --check"
+      "oxlint --no-error-on-unmatched-pattern",
+      "prettier --check --ignore-unknown"
     ]
   }
 }

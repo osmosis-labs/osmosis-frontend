@@ -1,33 +1,53 @@
 // @ts-check
 const path = require("path");
 
+const { securityHeaders } = require("./config/security-headers");
+
 /**
  * @type {import('next').NextConfig}
  **/
 const config = {
   reactStrictMode: true,
+  // Keep framework startup from creating or changing repository agent instructions.
+  agentRules: false,
+  reactCompiler: true,
   experimental: {
-    reactCompiler: true,
+    // `yarn cf:build:profile` keeps Next's server chunks unminified so Cloudflare CPU/heap
+    // profiles show their function names (Wrangler's source map stops at OpenNext's handler.mjs).
+    // Regular builds minify: it saves ~260KB gzip of the Worker.
+    serverMinification: process.env.CF_PROFILE !== "true",
   },
   env: {
     // Chain ids with a keyed EVM RPC provider (`EVM_RPC_URL_<chainId>`), so
     // the browser routes those chains through /api/evm-rpc. Only the ids are
-    // exposed; the URLs carry API keys and stay server-side.
-    NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: Object.keys(process.env)
-      .map((name) => /^EVM_RPC_URL_(\d+)$/.exec(name))
-      .filter((match) => match && process.env[match[0]]?.trim())
-      .map((match) => match?.[1])
-      .join(","),
+    // exposed; the URLs carry API keys and stay server-side. An explicit list
+    // is merged in, for builds (Cloudflare CI) whose RPC URLs are Worker
+    // secrets only; a set EVM_RPC_URL_<id> is never dropped by a stale list.
+    NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS: [
+      ...new Set([
+        ...(process.env.NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS ?? "")
+          .split(",")
+          .map((id) => id.trim())
+          .filter((id) => /^\d+$/.test(id)),
+        ...Object.keys(process.env)
+          .map((name) => /^EVM_RPC_URL_(\d+)$/.exec(name))
+          .filter((match) => match && process.env[match[0]]?.trim())
+          .map((match) => match?.[1] ?? ""),
+      ]),
+    ].join(","),
   },
-  // CI lints (lint-and-check-format.yml) and type-checks (`yarn typecheck`) every push,
-  // so skip both here to save ~40s on each Vercel build.
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // CI type-checks (`yarn typecheck`) every push, including tests that Next does not check.
   typescript: {
     ignoreBuildErrors: true,
   },
+  // isows and uncrypto resolve to a different entry under the Cloudflare `workerd` export condition
+  // than under Node, so Next's file tracing only copies their Node entrypoints. Keeping them external
+  // lets OpenNext copy the whole package and rewrite the exports for `workerd`.
+  serverExternalPackages: ["isows", "uncrypto"],
   images: {
+    // Preserve the Next 15 cache interval and 16px icons across the default changes in Next 16.
+    minimumCacheTTL: 60,
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: "https",
@@ -39,8 +59,44 @@ const config = {
       },
     ],
   },
+  // Node development/start uses the local API Worker. Deployed Cloudflare requests
+  // reach the API service binding in worker.ts before OpenNext handles rewrites.
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://127.0.0.1:8787/api/:path*",
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: "/apps",
+        destination: "/",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
+      // Each response must match exactly one of these two rules: a second CSP
+      // header would be enforced alongside the first, not instead of it.
+      {
+        source: "/:path((?!wormhole$).*)",
+        headers: securityHeaders({
+          mode: process.env.CSP_MODE || undefined,
+          isDev: process.env.NODE_ENV === "development",
+        }),
+      },
+      {
+        source: "/wormhole",
+        headers: securityHeaders({
+          mode: process.env.CSP_MODE || undefined,
+          isDev: process.env.NODE_ENV === "development",
+          wormholeConnect: true,
+        }),
+      },
       {
         source: "/favicon.ico",
         headers: [
@@ -52,7 +108,32 @@ const config = {
       },
     ];
   },
-  webpack(config, { webpack, isServer }) {
+  webpack(config, { isServer, webpack }) {
+    /**
+     * Split the generated asset and chain lists (~3MB raw) out of the _app chunk into their own
+     * chunks. Their content hash then only changes when the lists are regenerated with new data,
+     * so returning visitors keep them cached across deploys that only touch app code.
+     */
+    if (!isServer && config.optimization.splitChunks) {
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        assetLists: {
+          test: /[\\/]config[\\/]generated[\\/]asset-lists\.ts$/,
+          name: "asset-lists",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+        chainList: {
+          test: /[\\/]config[\\/]generated[\\/]chain-list\.ts$/,
+          name: "chain-list",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+      };
+    }
+
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
      */
@@ -79,7 +160,7 @@ const config = {
     // argon2i and ed25519, both functionalities which in the context of Cosmos would only get used within
     // an extension wallet. Libsodium is ~190kb gzipped, 500kb parsed, so this meaningfully reduces client load.
     // Our CosmJS (>=0.36) no longer uses libsodium, but the CosmJS 0.31 copies pulled in by
-    // @0xsquid/sdk and nomic-bitcoin still do.
+    // @0xsquid/sdk still does.
     //
     // It should never be getting used. This is copied from what Keplr does:
     // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104
@@ -123,10 +204,9 @@ const config = {
       )
     );
 
-    // Wallet SDKs are browser-only. Server builds swap these modules for their `.server.ts`
-    // stand-ins (no EVM connectors, Cosmos wallet installers that reject), which keeps the SDKs
-    // and their dependencies out of the server bundle. See config/wagmi-connectors.ts and
-    // config/wallet-installers.ts.
+    // Server builds swap browser-only loaders for their `.server.ts` stand-ins:
+    // no EVM connectors, unavailable wallet installers, and English-only translations.
+    // This keeps wallet SDKs and dynamically imported locale catalogs out of the Worker.
     if (isServer) {
       // Bundle @keplr-wallet/crypto on the server instead of loading it from node_modules, so the
       // starknet stub above applies there too. Nothing server-side uses its Starknet key methods.
@@ -146,7 +226,7 @@ const config = {
 
       config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(
-          /config[\\/](wagmi-connectors|wallet-installers)$/,
+          /config[\\/](wagmi-connectors|wallet-installers|language-loader)$/,
           (resource) => {
             const name = path.basename(resource.request);
             resource.request = path.resolve(
@@ -165,6 +245,7 @@ const config = {
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
+  openAnalyzer: process.env.CI !== "true",
 });
 
 module.exports = withBundleAnalyzer(config);

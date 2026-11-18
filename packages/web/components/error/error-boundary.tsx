@@ -1,4 +1,4 @@
-import React, { ErrorInfo, FunctionComponent } from "react";
+import { ErrorInfo, FunctionComponent } from "react";
 import {
   ErrorBoundary as ReactErrorBoundary,
   ErrorBoundaryProps,

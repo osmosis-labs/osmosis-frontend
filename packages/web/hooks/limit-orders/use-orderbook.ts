@@ -3,7 +3,7 @@ import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import type { CoinPrimitive } from "@osmosis-labs/types";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { getAssetFromAssetList, type SortDirection } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -257,6 +257,8 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
   };
 };
 
+export type OrderSortKey = "placedAt" | "lastActivity";
+
 /**
  * Queries for all active orders for a given user.
  * Swaps between using SQS passthrough and a direct node query based on feature flag.
@@ -266,11 +268,14 @@ const useOrdersQuery = ({
   pageSize = 10,
   refetchInterval = 10000,
   filter,
+  sort,
 }: {
   userAddress: string;
   pageSize?: number;
   refetchInterval?: number;
   filter?: "active" | "filled" | "historical" | "open";
+  /** Sorts within each status group, across all pages. */
+  sort?: { keyPath: OrderSortKey; direction: SortDirection };
 }) => {
   const { sqsActiveOrders } = useFeatureFlags();
   const { orderbooks } = useOrderbooks();
@@ -290,6 +295,7 @@ const useOrdersQuery = ({
       userOsmoAddress: userAddress,
       limit: pageSize,
       filter,
+      sort,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -322,6 +328,7 @@ const useOrdersQuery = ({
     {
       userOsmoAddress: userAddress,
       limit: pageSize,
+      sort,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -340,8 +347,13 @@ const useOrdersQuery = ({
     }
   );
 
+  const orders = sqsActiveOrders ? sqsOrders : nodeOrders;
+
   return {
-    data: sqsActiveOrders ? sqsOrders : nodeOrders,
+    data: orders,
+    /** True when the closed orders couldn't be loaded, so the list holds only open orders. */
+    historyUnavailable:
+      orders?.pages.some((page) => page.historyUnavailable) ?? false,
     isLoading: sqsActiveOrders ? isSQSOrdersLoading : isNodeOrdersLoading,
     isError: sqsActiveOrders ? isSQSOrdersError : isNodeOrdersError,
     fetchNextPage: sqsActiveOrders
@@ -364,14 +376,17 @@ export const useOrderbookOrders = ({
   pageSize = 10,
   refetchInterval = 10000,
   filter,
+  sort,
 }: {
   userAddress: string;
   pageSize?: number;
   refetchInterval?: number;
   filter?: "active" | "filled" | "historical" | "open";
+  sort?: { keyPath: OrderSortKey; direction: SortDirection };
 }) => {
   const {
     data: orders,
+    historyUnavailable,
     isLoading,
     isError,
     fetchNextPage,
@@ -380,7 +395,7 @@ export const useOrderbookOrders = ({
     hasNextPage,
     refetch,
     isRefetching,
-  } = useOrdersQuery({ userAddress, pageSize, refetchInterval, filter });
+  } = useOrdersQuery({ userAddress, pageSize, refetchInterval, filter, sort });
 
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
@@ -393,6 +408,8 @@ export const useOrderbookOrders = ({
 
   return {
     orders: allOrders,
+    /** True when the closed orders couldn't be loaded, so `orders` holds only open orders. */
+    historyUnavailable,
     isLoading,
     /** True when the orders couldn't be loaded, so an empty list is unknown, not "no orders". */
     isError,

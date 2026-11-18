@@ -9,16 +9,19 @@ export const useTransactionModal = ({
 }: {
   transactions: HistoryTransaction[];
 }) => {
-  const { isLargeDesktop } = useWindowSize();
+  // The slideover needs room for the sidebar, the page content and itself, which
+  // only fits from about 1715px, so it starts at xxxl (1792px). Below that, the
+  // details open in a modal.
+  const { isExtraLargeDesktop: showSlideover } = useWindowSize();
   const [open, setOpen] = useState(false);
   const [selectedTransactionHash, setSelectedTransactionHash] = useState<
     string | undefined
   >(undefined);
 
-  // edge case - Close the slide over when the screen size changes to large desktop, reduces bugginess with transition
-  const [prevIsLargeDesktop, setPrevIsLargeDesktop] = useState(isLargeDesktop);
-  if (isLargeDesktop !== prevIsLargeDesktop) {
-    setPrevIsLargeDesktop(isLargeDesktop);
+  // edge case - Close the slide over when the screen size crosses the slideover breakpoint, reduces bugginess with transition
+  const [prevShowSlideover, setPrevShowSlideover] = useState(showSlideover);
+  if (showSlideover !== prevShowSlideover) {
+    setPrevShowSlideover(showSlideover);
     setOpen(false);
   }
 
@@ -45,6 +48,6 @@ export const useTransactionModal = ({
     setSelectedTransactionHash,
     onRequestClose,
     selectedTransaction,
-    isLargeDesktop,
+    showSlideover,
   };
 };

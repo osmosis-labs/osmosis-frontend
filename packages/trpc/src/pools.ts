@@ -36,8 +36,6 @@ const marketIncentivePoolsSortKeys = [
   "market.volume24hUsd",
   "incentives.aprBreakdown.total.upper",
 ] as const;
-export type MarketIncentivePoolSortKey =
-  (typeof marketIncentivePoolsSortKeys)[number];
 
 export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
@@ -90,7 +88,7 @@ export const poolsRouter = createTRPCRouter({
     .input(
       GetInfinitePoolsSchema.merge(
         z.object({
-          sort: createSortSchema(marketIncentivePoolsSortKeys).default({
+          sort: createSortSchema(marketIncentivePoolsSortKeys).prefault({
             keyPath: "totalFiatValueLocked",
           }),
         })

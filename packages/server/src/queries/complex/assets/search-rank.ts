@@ -1,10 +1,8 @@
 import type { MinimalAsset } from "@osmosis-labs/types";
 import type { PricePretty } from "@osmosis-labs/unit";
-import { compareCommon, isNil } from "@osmosis-labs/utils";
+import { compareCommon } from "@osmosis-labs/utils";
 
-import { captureErrorAndReturn } from "../../../utils/error";
 import type { Search } from "../../../utils/search";
-import { getAssetMarketActivity } from "./market";
 
 /** Shortest query that promotes an exact symbol match above prefix matches.
  *  Below this, one-letter symbols (e.g. "A", "W") would take the top slot of
@@ -17,9 +15,9 @@ const MIN_EXACT_MATCH_QUERY_LENGTH = 2;
  *  3. Everything else the fuzzy search matched.
  *  Within each tier, watchlisted assets come first, then 24h volume descending.
  *
- *  The sort is stable, so ties keep the incoming fuzzy-match order. Volume
- *  already attached to an asset is used as is; otherwise it's read from the
- *  cached market activity map, so this adds no new requests.
+ *  The sort is stable, so ties keep the incoming fuzzy-match order. Only the volume
+ *  already attached to an asset is used, so this adds no market data lookups: callers
+ *  attach it when they map the assets, and an unknown volume ranks last.
  *  Watchlist entries are symbols (`coinDenom`), matching how the client stores them. */
 export async function sortAssetSearchResults<
   TAsset extends MinimalAsset & { volume24h?: PricePretty | number },
@@ -42,20 +40,12 @@ export async function sortAssetSearchResults<
     return 2;
   };
 
-  const ranked = await Promise.all(
-    assets.map(async (asset) => ({
-      asset,
-      matchTier: getMatchTier(asset.coinDenom.toUpperCase()),
-      isWatched: watchListDenoms.includes(asset.coinDenom),
-      volume24h: !isNil(asset.volume24h)
-        ? asset.volume24h
-        : (
-            await getAssetMarketActivity(asset).catch((e) =>
-              captureErrorAndReturn(e, undefined)
-            )
-          )?.volume24h,
-    }))
-  );
+  const ranked = assets.map((asset) => ({
+    asset,
+    matchTier: getMatchTier(asset.coinDenom.toUpperCase()),
+    isWatched: watchListDenoms.includes(asset.coinDenom),
+    volume24h: asset.volume24h,
+  }));
 
   return ranked
     .sort((a, b) => {

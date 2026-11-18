@@ -8,7 +8,7 @@ import {
   Time,
   TimeChartOptions,
 } from "lightweight-charts";
-import React, {
+import {
   memo,
   PropsWithChildren,
   useCallback,
@@ -38,6 +38,23 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
     window.removeEventListener("resize", callback);
   };
 }
+
+export const defaultLocalization: DeepPartial<
+  TimeChartOptions["localization"]
+> = {
+  priceFormatter,
+  timeFormatter: (timePoint: Time) => {
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+
+    return timepointToString(timePoint, formatOptions, "en-US");
+  },
+};
 
 const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
@@ -92,20 +109,7 @@ const defaultOptions: DeepPartial<TimeChartOptions> = {
     touch: false,
     mouse: false,
   },
-  localization: {
-    priceFormatter,
-    timeFormatter: (timePoint: Time) => {
-      const formatOptions: Intl.DateTimeFormatOptions = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      };
-
-      return timepointToString(timePoint, formatOptions, "en-US");
-    },
-  },
+  localization: defaultLocalization,
   timeScale: {
     timeVisible: true,
     secondsVisible: false,

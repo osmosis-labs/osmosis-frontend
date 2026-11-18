@@ -1,7 +1,10 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  AmountTooSmallError,
+  isValidNumericalRawInput,
+} from "@osmosis-labs/utils";
 import { act, waitFor } from "@testing-library/react";
 
 import { server, trpcQuery } from "~/__tests__/msw";
@@ -71,6 +74,44 @@ describe("useAmountInput", () => {
     expect(result.current.amount).toBeInstanceOf(CoinPretty);
     expect(result.current.amount?.toDec().toString()).toEqual(
       "10.000000000000000000"
+    );
+  });
+
+  it("caps the input at the asset's decimals, not a fixed 6", async () => {
+    const { result, rerender } = renderHookWithProviders(
+      (props: { currency: Currency }) =>
+        useAmountInput({ currency: props.currency }),
+      { initialProps: { currency: osmoMockCurrency } }
+    );
+
+    act(() => result.current.setAmount("1,123456"));
+    await waitFor(() => expect(result.current.inputAmount).toBe("1.123456"));
+    act(() => result.current.setAmount("1.1234567"));
+    expect(result.current.inputAmount).toBe("1.123456");
+
+    const eighteen: Currency = { ...osmoMockCurrency, coinDecimals: 18 };
+    rerender({ currency: eighteen });
+    act(() => result.current.setAmount("0.123456789012345678"));
+    await waitFor(() =>
+      expect(result.current.inputAmount).toBe("0.123456789012345678")
+    );
+  });
+
+  it("reports an amount below one base unit as too small, not empty", async () => {
+    const eighteen: Currency = { ...osmoMockCurrency, coinDecimals: 18 };
+    const { result, rerender } = renderHookWithProviders(
+      (props: { currency: Currency }) =>
+        useAmountInput({ currency: props.currency }),
+      { initialProps: { currency: eighteen } }
+    );
+
+    act(() => result.current.setAmount("0.0000001"));
+    await waitFor(() => expect(result.current.inputAmount).toBe("0.0000001"));
+    expect(result.current.error).not.toBeInstanceOf(AmountTooSmallError);
+
+    rerender({ currency: osmoMockCurrency });
+    await waitFor(() =>
+      expect(result.current.error).toBeInstanceOf(AmountTooSmallError)
     );
   });
 

@@ -69,12 +69,14 @@ export const TradeDetails = memo(
     // icon and the checkbox can never disagree about what counts as high impact
     // — including at the boundary, which a `lt(gate.neg())` form would get
     // wrong by one tick.
+    const priceImpactUnknown = Boolean(swapState?.quote?.priceImpactUnknown);
     const isPriceImpactHigh = useMemo(
       () =>
-        priceImpact
+        priceImpactUnknown ||
+        (priceImpact
           ? priceImpactLoss(priceImpact.toDec()).gte(HighPriceImpactGate)
-          : undefined,
-      [priceImpact]
+          : undefined),
+      [priceImpact, priceImpactUnknown]
     );
 
     // Green is reserved for an impact genuinely in the user's favour. A
@@ -189,7 +191,9 @@ export const TradeDetails = memo(
                   {type === "market" ? (
                     <RecapRow
                       className={classNames({
-                        hidden: getShouldHideSlippage(priceImpact),
+                        hidden:
+                          !priceImpactUnknown &&
+                          getShouldHideSlippage(priceImpact),
                       })}
                       left={
                         <GenericDisclaimer
@@ -222,7 +226,9 @@ export const TradeDetails = memo(
                                   !isPriceImpactHigh && !isPriceImpactPositive,
                               })}
                             >
-                              {formatPretty(priceImpact ?? new Dec(0))}
+                              {priceImpactUnknown
+                                ? t("transfer.unknown")
+                                : formatPretty(priceImpact ?? new Dec(0))}
                             </span>
                           </div>
                         </GenericDisclaimer>

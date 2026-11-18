@@ -6,7 +6,7 @@ import type {
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import React, { FunctionComponent, memo, ReactNode } from "react";
+import { FunctionComponent, memo, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";

@@ -1,7 +1,7 @@
 import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { parseAsString, useQueryState } from "nuqs";
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -62,6 +62,8 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
 
   // Adjust order price as spot price changes until user inputs a price
   useEffect(() => {
+    if (!priceState.spotPrice) return;
+
     if (inputMode === InputMode.Price && !priceState.priceLocked) {
       const formattedPrice = formatPretty(
         priceState.spotPrice,

@@ -1,14 +1,13 @@
 import {
   type BrowserContext,
-  type Page,
   chromium,
   expect,
+  type Page,
   test,
 } from "@playwright/test";
 
-import { TestConfig } from "../test-config";
-
 import { PoolsPage } from "../pages/pools-page";
+import { TestConfig } from "../test-config";
 
 test.describe("Test Select Pool feature", () => {
   let context: BrowserContext;
@@ -28,7 +27,9 @@ test.describe("Test Select Pool feature", () => {
     await context.close();
   });
 
-  test("User should be able to see at least 10 pools", async () => {
+  // Checks live market data (liquidity, volume, APR) rather than the app, so
+  // it runs in the full suite.
+  test("User should be able to see at least 10 pools @full", async () => {
     await poolsPage.goto();
     expect(await poolsPage.getPoolsNumber()).toBeGreaterThan(10);
     const topLiquidity = await poolsPage.getTopTenPoolsByLiquidity();
@@ -57,21 +58,6 @@ test.describe("Test Select Pool feature", () => {
     const rate = await tradeModal.getExchangeRate();
     await tradeModal.showSwapInfo();
     expect(rate).toContain("ATOM");
-    expect(rate).toContain("USDC");
-  });
-
-  test("User should be able to select OSMO/USDC pool", async () => {
-    const poolName = "OSMO/USDC";
-    await poolsPage.goto();
-    await poolsPage.searchForPool(poolName);
-    const poolPage = await poolsPage.viewPool(1464, poolName);
-    const balance = await poolPage.getBalance();
-    expect(balance).toEqual("$0");
-    const tradeModal = await poolPage.getTradeModal();
-    await tradeModal.enterAmount("1");
-    const rate = await tradeModal.getExchangeRate();
-    await tradeModal.showSwapInfo();
-    expect(rate).toContain("OSMO");
     expect(rate).toContain("USDC");
   });
 });

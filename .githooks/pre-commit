@@ -1,0 +1,8 @@
+#!/bin/sh
+# Wired up by `yarn hooks:install` (runs on postinstall), which sets
+# core.hooksPath to this directory. The path is relative, so each git worktree
+# runs its own checkout's copy and node_modules.
+#
+# Fails closed: if yarn or lint-staged can't be found the commit is blocked.
+# Bypass deliberately with `git commit --no-verify`.
+exec yarn pre-commit

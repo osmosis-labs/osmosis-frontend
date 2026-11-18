@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { PoolCard } from "~/components/cards";
 import { SectionPlaceholderCard } from "~/components/complex/section-placeholder-card";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { PrivateText } from "~/components/privacy";
 import { ShowMoreButton } from "~/components/ui/button";
 import { useHideDustUserSetting, useTranslation, useWindowSize } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
@@ -137,9 +138,11 @@ export const MyPoolsCardsGrid = () => {
                     value: userValueUnknown ? (
                       "–"
                     ) : isMobile ? (
-                      userValue.toString()
+                      <PrivateText text={userValue.toString()} />
                     ) : (
-                      <h6>{formatPretty(userValue)}</h6>
+                      <h6>
+                        <PrivateText text={formatPretty(userValue)} />
+                      </h6>
                     ),
                   },
                 ];

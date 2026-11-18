@@ -1,4 +1,10 @@
-import { getOrderbookPools, queryTx } from "@osmosis-labs/server";
+import {
+  getOrderbookActiveOrdersSQS,
+  getOrderbookHistoricalOrders,
+  getOrderbookPools,
+  queryTx,
+} from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 
 import {
   createCallerFactory,
@@ -14,6 +20,8 @@ jest.mock("@osmosis-labs/server", () => {
   const mocked = {
     ...actual,
     getOrderbookPools: jest.fn(),
+    getOrderbookActiveOrdersSQS: jest.fn(),
+    getOrderbookHistoricalOrders: jest.fn(),
     queryTx: jest.fn(),
   };
   // Defined separately: a getter inside the spread literal compiles to
@@ -24,6 +32,8 @@ jest.mock("@osmosis-labs/server", () => {
 
 const mockedGetOrderbookPools = jest.mocked(getOrderbookPools);
 const mockedQueryTx = jest.mocked(queryTx);
+const mockedActiveOrdersSQS = jest.mocked(getOrderbookActiveOrdersSQS);
+const mockedHistoricalOrders = jest.mocked(getOrderbookHistoricalOrders);
 
 // ATOM
 const BASE_DENOM =
@@ -219,5 +229,163 @@ describe("orderbookRouter.getCreateOrderbookTxStatus", () => {
       caller.orderbooks.getCreateOrderbookTxStatus({ txHash: "../evil" })
     ).rejects.toThrow();
     expect(mockedQueryTx).not.toHaveBeenCalled();
+  });
+});
+
+describe("orderbookRouter.getAllOrdersSQS", () => {
+  const openOrder = { status: "open" } as Awaited<
+    ReturnType<typeof getOrderbookActiveOrdersSQS>
+  >[number];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it("returns the open orders flagged when the history fails", async () => {
+    mockedActiveOrdersSQS.mockResolvedValue([openOrder]);
+    mockedHistoricalOrders.mockRejectedValue(new Error("history down"));
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const input = { userOsmoAddress: "osmo1historyfail", limit: 20 };
+
+    // concurrent requests share one fetch; both must see that it was incomplete
+    const [first, second] = await Promise.all([
+      makeCaller().orderbooks.getAllOrdersSQS({ ...input, cursor: 0 }),
+      makeCaller().orderbooks.getAllOrdersSQS({ ...input, cursor: 0 }),
+    ]);
+    const third = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 0,
+    });
+
+    expect(first.historyUnavailable).toBe(true);
+    expect(second.historyUnavailable).toBe(true);
+    expect(first.items).toHaveLength(1);
+    // a reload fetches again
+    expect(third.historyUnavailable).toBe(true);
+    expect(mockedHistoricalOrders.mock.calls.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("isn't flagged when the history loads", async () => {
+    mockedActiveOrdersSQS.mockResolvedValue([openOrder]);
+    mockedHistoricalOrders.mockResolvedValue([]);
+
+    const result = await makeCaller().orderbooks.getAllOrdersSQS({
+      userOsmoAddress: "osmo1historyok",
+      limit: 20,
+    });
+
+    expect(result.historyUnavailable).toBe(false);
+    expect(result.items).toHaveLength(1);
+  });
+
+  it("serves later pages from the first page's list, and clears the flag on reload once the history is back", async () => {
+    const filledOrder = { status: "filled" } as typeof openOrder;
+    mockedActiveOrdersSQS.mockResolvedValue([openOrder, openOrder]);
+    mockedHistoricalOrders.mockRejectedValueOnce(new Error("history down"));
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const input = { userOsmoAddress: "osmo1historyrecovers", limit: 1 };
+
+    const first = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 0,
+    });
+    // the history is back, but the next page still comes from the first page's list
+    mockedHistoricalOrders.mockResolvedValue([filledOrder]);
+    const second = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 1,
+    });
+    const reloaded = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      cursor: 0,
+    });
+
+    expect(first.historyUnavailable).toBe(true);
+    expect(second.historyUnavailable).toBe(true);
+    expect(second.items).toEqual([openOrder]);
+    expect(mockedHistoricalOrders).toHaveBeenCalledTimes(2);
+    expect(reloaded.historyUnavailable).toBe(false);
+    expect(reloaded.items).toEqual([filledOrder]);
+  });
+
+  it("doesn't serve one filter's list to another", async () => {
+    const filledOrder = { status: "filled" } as typeof openOrder;
+    mockedActiveOrdersSQS.mockResolvedValue([
+      filledOrder,
+      openOrder,
+      openOrder,
+    ]);
+    mockedHistoricalOrders.mockResolvedValue([]);
+    const userOsmoAddress = "osmo1filters";
+
+    await makeCaller().orderbooks.getAllOrdersSQS({
+      userOsmoAddress,
+      filter: "filled",
+      limit: 1,
+      cursor: 0,
+    });
+    const unfiltered = await makeCaller().orderbooks.getAllOrdersSQS({
+      userOsmoAddress,
+      limit: 1,
+      cursor: 1,
+    });
+
+    expect(unfiltered.items).toEqual([openOrder]);
+    expect(unfiltered.nextCursor).toBe(2);
+  });
+
+  it("sorts within each status group by last activity, using the placed time where it's unknown", async () => {
+    const order = (o: Partial<typeof openOrder>) => o as typeof openOrder;
+    const filled = order({ status: "filled", placed_at: 50 });
+    const open = order({
+      status: "open",
+      placed_at: 100,
+      percentFilled: new Dec(0),
+    });
+    const cancelled = order({
+      status: "cancelled",
+      placed_at: 10,
+      cancelled_at: 400,
+    });
+    const paidOut = order({
+      status: "fullyClaimed",
+      placed_at: 20,
+      claims: [{ tx: "A", claimed_at: 300, amount: new Dec(1) }],
+    });
+    // placed before Numia's payout data starts, so only its placed time is known
+    const noPayoutData = order({ status: "fullyClaimed", placed_at: 350 });
+    mockedActiveOrdersSQS.mockResolvedValue([open, filled]);
+    mockedHistoricalOrders.mockResolvedValue([
+      paidOut,
+      cancelled,
+      noPayoutData,
+    ]);
+    const input = { userOsmoAddress: "osmo1sorted", limit: 20, cursor: 0 };
+
+    const newest = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      sort: { keyPath: "lastActivity", direction: "desc" },
+    });
+    const oldest = await makeCaller().orderbooks.getAllOrdersSQS({
+      ...input,
+      sort: { keyPath: "lastActivity", direction: "asc" },
+    });
+
+    expect(newest.items).toEqual([
+      filled,
+      open,
+      cancelled,
+      noPayoutData,
+      paidOut,
+    ]);
+    expect(oldest.items).toEqual([
+      filled,
+      open,
+      paidOut,
+      noPayoutData,
+      cancelled,
+    ]);
   });
 });

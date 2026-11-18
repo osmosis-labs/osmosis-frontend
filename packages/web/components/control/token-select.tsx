@@ -100,13 +100,16 @@ export const TokenSelect: FunctionComponent<{
       return 0;
     });
 
+  // Chain name is weighted low: most tokens resolve to "Osmosis", so a chain
+  // match must not outrank a symbol match.
   const [searchValue, setTokenSearch, searchedTokens] = useFilteredData(
     dropdownTokens,
     [
       "token.denom",
+      "token.coinDenom",
       "token.currency.originCurrency.coinMinimalDenom",
       "token.originCurrency.coinMinimalDenom",
-      "chainName",
+      { name: "chainName", weight: 0.1 },
       "token.currency.originCurrency.pegMechanism",
     ]
   );

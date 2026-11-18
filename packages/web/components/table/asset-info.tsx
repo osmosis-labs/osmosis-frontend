@@ -243,7 +243,11 @@ export const AssetsInfoTable: FunctionComponent<{
     if (isMarketDataUnavailable) return [];
     const assets = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
     if (selectedCategory === "topGainers") {
-      return assets.slice(undefined, 10);
+      // The server sort keeps rows with an unknown 24h change (last); they are not
+      // gainers, so leave them out rather than show blank change cells.
+      return assets
+        .filter((asset) => asset.priceChange24h !== undefined)
+        .slice(undefined, 10);
     }
     return assets;
   }, [isMarketDataUnavailable, selectedCategory, assetPagesData]);
@@ -440,7 +444,7 @@ export const AssetsInfoTable: FunctionComponent<{
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
+  // eslint-disable-next-line hooks-compat/incompatible-library -- TanStack Table v8 is not compiler-compatible; the compiler skips this component, which is the intended behavior.
   const table = useReactTable({
     data: assetsData,
     columns: collapsedColumns,

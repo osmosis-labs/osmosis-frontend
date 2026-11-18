@@ -1,9 +1,4 @@
 import {
-  getActiveCoingeckoCoins,
-  getAssetMarketActivity,
-} from "@osmosis-labs/server";
-import { sort } from "@osmosis-labs/utils";
-import {
   GetStaticPathsResult,
   GetStaticPropsContext,
   InferGetStaticPropsType,
@@ -35,7 +30,6 @@ import {
 } from "~/components/place-limit-tool/defaults";
 import { SwapToolProps } from "~/components/swap-tool";
 import { TradeTool } from "~/components/trade-tool";
-import { AssetLists } from "~/config/generated/asset-lists";
 import {
   useAssetInfoConfig,
   useFeatureFlags,
@@ -265,53 +259,40 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
 
 export default AssetInfoPage;
 
-/** Number of assets, sorted by volume, to generate static paths for. */
-const TOP_VOLUME_ASSETS_COUNT = 50;
-
 /**
- * Prerender important denoms. See function body for what we consider "important".
+ * Asset page paths prerendered at build: those with 200+ weekly views on
+ * app.osmosis.zone (Cloudflare analytics, 7 days to 2026-11-02). Pages are cached by path, so a
+ * symbol and its denom (`OSMO`, `uosmo`) are separate entries.
+ *
+ * The list is fixed so the build makes no network calls and renders the same
+ * pages every time. Rendering them also fails the build if this page breaks.
+ * Every other path renders on its first request (`fallback: "blocking"`). An
+ * entry that leaves the asset list still renders; it just has no prefetched asset.
  */
-export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
-  const assets = AssetLists.flatMap((list) => list.assets);
-  const activeCoinGeckoIds = await getActiveCoingeckoCoins();
+const BUILD_TIME_ASSET_PATHS = [
+  "ibc/BC26A7A805ECD6822719472BCB7842A48EF09DF206182F8F259B2593EB5D23FB", // ATONE
+  "ibc/B9E0A1A524E98BB407D3CED8720EFEFD186002F90C1B1B7964811DD0CCC12228", // HUAHUA
+  "ibc/CE5BFF1D9BADA03BB5CCA5F56939392A761B53A10FBD03B37506669C3218D3B2", // HASH
+  "uosmo",
+  "ibc/F16FDC11A7662B86BC0B9CE61871CBACF7C20606F95E86260FD38915184B75B4", // L1
+  "ATONE",
+  "BTC",
+  "HASH",
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", // ATOM
+  "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC",
+  "OSMO",
+  // ETH, below the cutoff (48-82 weekly views) but kept alongside BTC.
+  "ETH",
+  "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+  "WETH",
+];
 
-  const importantAssets = assets.filter(
-    (asset) =>
-      asset.verified &&
-      !asset.unstable &&
-      !asset.preview &&
-      // Prevent repeated "coin not found" errors from CoinGecko coin query downsteram
-      asset.coingeckoId &&
-      activeCoinGeckoIds.has(asset.coingeckoId)
-  );
-
-  const marketAssets = (
-    await Promise.all(
-      importantAssets.map((asset) =>
-        getAssetMarketActivity(asset).then((activity) => ({
-          ...activity,
-          ...asset,
-        }))
-      )
-    )
-  ).filter((asset): asset is NonNullable<typeof asset> => asset !== undefined);
-
-  const topVolumeAssets = sort(marketAssets, "volume7d").slice(
-    0,
-    TOP_VOLUME_ASSETS_COUNT
-  );
-
-  /**
-   * Add cache for all available currencies
-   */
-  const paths = topVolumeAssets.map((asset) => ({
-    params: {
-      denom: asset.coinMinimalDenom.split("/"),
-    },
-  })) as { params: { denom: string[] } }[];
-
-  return { paths, fallback: "blocking" };
-};
+export const getStaticPaths = async (): Promise<GetStaticPathsResult> => ({
+  paths: BUILD_TIME_ASSET_PATHS.map((path) => ({
+    params: { denom: path.split("/") },
+  })),
+  fallback: "blocking",
+});
 
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const denom = params?.denom as string[];

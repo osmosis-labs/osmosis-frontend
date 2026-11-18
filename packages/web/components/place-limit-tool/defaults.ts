@@ -12,6 +12,12 @@ export const USDC_NOBLE_BASE_DENOM =
 export const USDT_BASE_DENOM =
   "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT";
 
+/**
+ * Every quote in the lists below must be a USD-pegged, non-rebasing
+ * stablecoin. Limit order pricing treats 1 quote as $1 (`usePlaceLimit`),
+ * guarded only by a peg check. Any other quote first needs prices in quote
+ * units.
+ */
 export const UI_DEFAULT_QUOTES: string[] = [USDC_BASE_DENOM, USDT_BASE_DENOM];
 
 /**

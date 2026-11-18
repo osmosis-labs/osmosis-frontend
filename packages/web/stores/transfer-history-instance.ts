@@ -1,7 +1,6 @@
 import type { TxSnapshot } from "@osmosis-labs/bridge";
 import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
 import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3face/transfer-status";
-import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
 import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
 import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
 import { makeIndexedKVStore } from "@osmosis-labs/utils";
@@ -11,6 +10,7 @@ import { useStore } from "zustand";
 import { IS_TESTNET } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
+import { checkEvmReceiptOutcome } from "~/utils/evm-rpc";
 import { checkSolanaSignatureOutcome } from "~/utils/solana";
 
 import {
@@ -37,7 +37,10 @@ export function getTransferHistoryStore(): TransferHistoryStore {
     new SquidTransferStatusProvider(
       process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
       network,
-      ChainList
+      ChainList,
+      // Settles EVM transfers from their receipt: a reverted tx is only a
+      // 404 to Squid, and so is one not mined or indexed yet.
+      checkEvmReceiptOutcome
     ),
     new SkipTransferStatusProvider(
       network,
@@ -70,10 +73,11 @@ export function getTransferHistoryStore(): TransferHistoryStore {
       },
       // Resolves Solana-signed transfers from the chain: a tx that never
       // landed is invisible to Skip, including after a reload.
-      checkSolanaSignatureOutcome
+      checkSolanaSignatureOutcome,
+      // Same for EVM transfers: a reverted tx never reaches Skip.
+      checkEvmReceiptOutcome
     ),
     new IbcTransferStatusProvider(ChainList, AssetLists),
-    new NomicTransferStatusProvider(ChainList, network),
     // Kept after the Int3face bridge provider's removal so past int3face
     // transfers still render in transfer history; see the note on the class.
     new Int3faceTransferStatusProvider(ChainList, network),

@@ -152,8 +152,8 @@ describe("deriveCosmosAddress", () => {
 
 describe("camelToKebabCase", () => {
   it("should convert camelCase to kebab-case", () => {
-    expect(camelToKebabCase("nomicWithdrawAmount")).toBe(
-      "nomic-withdraw-amount"
+    expect(camelToKebabCase("swapToolSimulateFee")).toBe(
+      "swap-tool-simulate-fee"
     );
     expect(camelToKebabCase("camelCase")).toBe("camel-case");
     expect(camelToKebabCase("thisIsALongString")).toBe("this-is-a-long-string");

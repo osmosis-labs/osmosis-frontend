@@ -11,6 +11,16 @@ import {
 import { EdgeDataLoader } from "../../../../../utils/batching";
 import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
 
+/** SQS answered but has no usable price for the denom (as opposed to a transport or
+ *  timeout failure of the request). Not fully definite: SQS also reports a zero price
+ *  when its own route search for the denom fails or times out. */
+export class NoSqsPriceError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NoSqsPriceError";
+  }
+}
+
 const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
 
 /** SQS route-searches every denom it has no cached price for, so hundreds of
@@ -78,7 +88,7 @@ function getBatchLoader() {
                 const price = getQuotePrice(priceMap[baseCoinMinimalDenom]);
 
                 if (isNil(price)) {
-                  return new Error(
+                  return new NoSqsPriceError(
                     `No SQS price result for ${baseCoinMinimalDenom} and USDC`
                   );
                 }
@@ -87,18 +97,18 @@ function getBatchLoader() {
                 const p = price.replace(/(\.\d{18})\d*/, "$1");
 
                 if (isNil(p)) {
-                  return new Error(
+                  return new NoSqsPriceError(
                     `No SQS price result for ${baseCoinMinimalDenom} and USDC`
                   );
                 }
 
                 if (new Dec(p).isZero())
-                  return new Error(
+                  return new NoSqsPriceError(
                     `No SQS price result for ${baseCoinMinimalDenom} and USDC`
                   );
                 else return p;
               } catch (e) {
-                return new Error(
+                return new NoSqsPriceError(
                   `No SQS price result for ${baseCoinMinimalDenom} and USDC`
                 );
               }

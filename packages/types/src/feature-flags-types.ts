@@ -18,12 +18,13 @@ export type AvailableFlags =
   | "alloyedAssets"
   | "assetAlerts"
   | "incentivizePool"
-  | "bridgeDepositAddress"
-  | "nomicWithdrawAmount"
   | "swapToolTopGainers"
   | "swapped"
   | "onrampmoney"
   | "multiTxBridgeRoutes"
   | "positionMigration"
   | "solanaSkipRoutes"
-  | "inactiveValidatorAlerts";
+  | "fastBridgeTransfers"
+  | "fastBridgeTransfersNonEvmSources"
+  | "inactiveValidatorAlerts"
+  | "forcedMigrations";

@@ -6,6 +6,26 @@ export function isNumeric(value: any) {
   return value != null && value - parseFloat(value) + 1 >= 0;
 }
 
+/**
+ * Normalises a typed or pasted amount so a comma decimal separator ("1,5")
+ * becomes a dot ("1.5"). Returns null when the input is ambiguous or malformed
+ * and must be rejected rather than guessed at.
+ *
+ * A single comma with no dot is a decimal separator, except when it follows a
+ * non-zero integer part and is followed by exactly three digits ("1,000",
+ * "12,345"): that reads equally as a thousands separator, so it is rejected.
+ * Multiple commas, or a comma together with a dot ("1,000.5", "1.000,5"), are
+ * rejected. Input without a comma is returned unchanged.
+ */
+export function normalizeDecimalSeparator(input: string): string | null {
+  if (!input.includes(",")) return input;
+  const trimmed = input.trim();
+  if (!/^\d*,\d*$/.test(trimmed)) return null;
+  const [integer, fraction] = trimmed.split(",");
+  if (/^\d{3}$/.test(fraction) && /[1-9]/.test(integer)) return null;
+  return `${integer}.${fraction}`;
+}
+
 export function isValidNumericalRawInput(input: string): boolean {
   // Normalize whitespace
   input = input.trim();

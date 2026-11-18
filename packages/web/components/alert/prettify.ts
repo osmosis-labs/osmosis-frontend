@@ -23,6 +23,8 @@ const regexFailedSwapSlippage =
 
 const regexRejectedTx = /Request rejected/;
 
+const regexWalletRequestTimedOut = /^(.+) did not respond in time\./;
+
 const regexOverspendError =
   /Spend limit error: Overspend: (\d+) has been spent but limit is (\d+)/;
 
@@ -147,6 +149,16 @@ export function prettifyTxError(
 
     if (isRejectedTxErrorMessage({ message })) {
       return ["requestRejected"];
+    }
+
+    const matchWalletRequestTimedOut = message.match(
+      regexWalletRequestTimedOut
+    );
+    if (matchWalletRequestTimedOut) {
+      return [
+        "errors.walletRequestTimedOut",
+        { wallet: matchWalletRequestTimedOut[1] },
+      ];
     }
 
     const currencyMap: Record<string, AppCurrency> = {};

@@ -51,7 +51,7 @@ const ClaimAndCloseButton = ({
    * and the button will be disabled even when the order_id has changed.
    */
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
+    // eslint-disable-next-line hooks-compat/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
     setClaiming(false);
   }, [order.order_id]);
 
@@ -105,7 +105,11 @@ const ClaimAndCloseButton = ({
   return (
     <button
       className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
-      onClick={claimAndClose}
+      onClick={(e) => {
+        // The row opens the order modal on click.
+        e.stopPropagation();
+        claimAndClose();
+      }}
       disabled={claiming}
     >
       <span className="body2 flex items-center text-wosmongton-200">
@@ -136,7 +140,7 @@ const CancelButton = ({
    * and the button will be disabled even when the order_id has changed.
    */
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
+    // eslint-disable-next-line hooks-compat/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
     setCancelling(false);
   }, [order.order_id]);
 
@@ -177,7 +181,11 @@ const CancelButton = ({
   return (
     <button
       className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
-      onClick={cancel}
+      onClick={(e) => {
+        // The row opens the order modal on click.
+        e.stopPropagation();
+        cancel();
+      }}
       disabled={cancelling}
     >
       <span className="body2 flex items-center whitespace-nowrap text-wosmongton-200">

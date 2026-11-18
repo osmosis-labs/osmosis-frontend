@@ -6,6 +6,10 @@ import { prettifyTxError } from "~/components/alert/prettify";
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 import { OsmosisChainInfo, StaticChainGetter } from "~/config/chain";
+import {
+  isWalletSigned,
+  resetWalletSigned,
+} from "~/integrations/core-walletconnect/pending-request";
 
 import { RootStore } from "../root";
 
@@ -57,7 +61,7 @@ describe("RootStore static chain wiring", () => {
     expect(() => StaticChainGetter.getChain("unknown-chain")).toThrow();
   });
 
-  it("runs caller callbacks before transaction toasts and preserves explorer links", () => {
+  it("runs caller callbacks before transaction toasts and preserves explorer links", async () => {
     const txEvents = {
       onBroadcastFailed: jest.fn(),
       onBroadcasted: jest.fn(),
@@ -106,6 +110,10 @@ describe("RootStore static chain wiring", () => {
     expect(txEvents.onFulfill.mock.invocationCallOrder[0]).toBeLessThan(
       jest.mocked(displayToast).mock.invocationCallOrder[2]
     );
-    expect(events.onSign).toBe(txEvents.onSign);
+
+    await events.onSign!();
+    expect(txEvents.onSign).toHaveBeenCalled();
+    expect(isWalletSigned()).toBe(true);
+    resetWalletSigned();
   });
 });

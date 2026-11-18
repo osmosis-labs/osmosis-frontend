@@ -77,13 +77,17 @@ export async function getSharePoolBondDurations({
   poolId: string;
   bech32Address?: string;
 }): Promise<BondDuration[]> {
-  const activeGaugesPromise = getActiveGauges(params).then((activeGauges) =>
-    activeGauges.filter(
-      (gauge) =>
-        gauge.distribute_to.lock_query_type === "ByDuration" &&
-        getShareDenomPoolId(gauge.distribute_to.denom) === poolId
+  // External gauges only add durations to bond to. If they can't be loaded, those
+  // durations are left out; the user's own locks must still be returned.
+  const activeGaugesPromise = getActiveGauges(params)
+    .then((activeGauges) =>
+      activeGauges.filter(
+        (gauge) =>
+          gauge.distribute_to.lock_query_type === "ByDuration" &&
+          getShareDenomPoolId(gauge.distribute_to.denom) === poolId
+      )
     )
-  );
+    .catch((e) => captureErrorAndReturn(e, []));
   // Pool APRs come from the data services. When they're unavailable the durations are
   // still returned, with their APRs unknown rather than 0%.
   let aprsUnavailable = false;
@@ -193,11 +197,14 @@ export async function getSharePoolBondDurations({
           const underlyingCoins = await getGammShareUnderlyingCoins({
             ...params,
             ...userShares.toCoin(),
-          }).catch((e) => captureErrorAndReturn(e, []));
-          const userSharesValue = await calcSumCoinsValueOrUnknown({
-            ...params,
-            coins: underlyingCoins,
-          });
+          }).catch((e) => captureErrorAndReturn(e, undefined));
+          // a failed lookup is an unknown value, not an empty position worth $0
+          const userSharesValue = underlyingCoins
+            ? await calcSumCoinsValueOrUnknown({
+                ...params,
+                coins: underlyingCoins,
+              })
+            : undefined;
           userLockedShareValue = userSharesValue
             ? new PricePretty(DEFAULT_VS_CURRENCY, userSharesValue)
             : undefined;

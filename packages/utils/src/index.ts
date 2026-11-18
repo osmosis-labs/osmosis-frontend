@@ -17,7 +17,6 @@ export * from "./dogecoin";
 export * from "./ethereum";
 export * from "./function";
 export * from "./gas-utils";
-export * from "./ibc-utils";
 export * from "./kv-store";
 export * from "./kv-store-factories";
 export * from "./liquidity";

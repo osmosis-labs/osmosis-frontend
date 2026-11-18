@@ -9,7 +9,7 @@ import { promisify } from "node:util";
 
 const exec = promisify(execFile);
 const binary = process.env.OSMOSISD_BINARY ?? "osmosisd";
-const expectedVersion = "31.0.1";
+const expectedVersion = "32.0.0";
 const directory = await mkdtemp(join(tmpdir(), "wallet-local-chain-"));
 const chainHome = join(directory, "chain");
 const chainId = "wallet-ci";

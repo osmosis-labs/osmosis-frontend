@@ -45,8 +45,12 @@ const Home = () => {
             className="absolute bottom-0 max-h-[720px] w-full"
           />
         </div>
+        {/* Viewport-fixed above xl, so it clears the navbar and banner stack
+            itself. At xl and below the wrapper is static and `main` already
+            sits under the navbar and its in-flow banner spacer, so only the
+            32px gap applies; adding either height again double-counts it. */}
         <div
-          className="absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center md:top-0"
+          className="absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center xl:top-8 md:top-0"
           style={
             {
               "--visible-banner-height": `${visibleBannerHeight}px`,

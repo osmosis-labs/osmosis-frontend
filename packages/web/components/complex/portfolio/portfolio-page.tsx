@@ -62,6 +62,7 @@ export const PortfolioPage: FunctionComponent = () => {
               <AssetsOverview
                 totalValue={totalCap}
                 isTotalValueUnknown={allocation?.totalCapUnknown}
+                unpricedAssets={allocation?.unpricedAssets}
                 isTotalValueFetched={isFetchedAllocation}
               />
             </section>

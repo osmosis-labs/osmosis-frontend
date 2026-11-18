@@ -86,12 +86,6 @@ class MyBridgeProvider implements BridgeProvider {
   ): Promise<(BridgeChain & BridgeAsset)[]> {
     // Implement logic to get supported assets
   }
-
-  getDepositAddress?(
-    params: GetDepositAddressParams
-  ): Promise<BridgeDepositAddress> {
-    // Implement logic to get a deposit address
-  }
 }
 ```
 
@@ -103,7 +97,7 @@ this.bridges = {
     integratorId,
     context
   ),
-  [NomicBridgeProvider.providerName]: new NomicBridgeProvider(context),
+  [SkipBridgeProvider.providerName]: new SkipBridgeProvider(context),
   [MyBridgeProvider.providerName]: new MyBridgeProvider(context),
 };
 ```
@@ -130,9 +124,6 @@ export interface BridgeProvider {
   getSupportedAssets(
     params: GetBridgeSupportedAssetsParams
   ): Promise<(BridgeChain & BridgeAsset)[]>;
-  getDepositAddress?(
-    params: GetDepositAddressParams
-  ): Promise<BridgeDepositAddress>;
 }
 ```
 

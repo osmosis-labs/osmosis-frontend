@@ -191,23 +191,44 @@ export const Staking: React.FC = memo(() => {
 
   const stakeCall = useCallback(() => {
     if (isReadyToSendTx && coin?.amount) {
-      prepareDelegateToValidatorSetMsg(transactionContext, coin, "")
+      prepareDelegateToValidatorSetMsg(transactionContext, coin, "", (tx) => {
+        if (tx.code === 0) stakeTabAmountConfig.reset();
+      })
         .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
+  }, [
+    isReadyToSendTx,
+    coin,
+    signAndBroadcast,
+    transactionContext,
+    stakeTabAmountConfig.reset,
+  ]);
 
   const unstakeCall = useCallback(() => {
     if (isReadyToSendTx && coin?.amount) {
-      prepareUndelegateFromRebalancedValidatorSet(transactionContext, coin, "")
+      prepareUndelegateFromRebalancedValidatorSet(
+        transactionContext,
+        coin,
+        "",
+        (tx) => {
+          if (tx.code === 0) unstakeTabAmountConfig.reset();
+        }
+      )
         .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
-  }, [isReadyToSendTx, coin, signAndBroadcast, transactionContext]);
+  }, [
+    isReadyToSendTx,
+    coin,
+    signAndBroadcast,
+    transactionContext,
+    unstakeTabAmountConfig.reset,
+  ]);
 
   const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
 
@@ -363,7 +384,7 @@ export const Staking: React.FC = memo(() => {
   return (
     <main className="m-auto flex max-w-container flex-col gap-5 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
-        <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
+        <div className="flex w-96 max-w-full shrink-0 flex-col gap-5 xl:mx-auto">
           <SkeletonLoader isLoaded={!isLoadingApr} className="!rounded-3xl">
             <AlertBanner
               className="!rounded-3xl"
@@ -412,7 +433,7 @@ export const Staking: React.FC = memo(() => {
             }
           />
         </div>
-        <div className="flex w-96 flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
+        <div className="flex w-96 max-w-full flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
           {isLoading || isFetchingValPrefs ? (
             <div className="flex flex-auto items-center justify-center">
               <Spinner />

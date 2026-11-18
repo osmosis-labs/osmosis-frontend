@@ -20,11 +20,9 @@
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "test:e2e": "yarn with-env is-ci-cli test:e2e:ci test:e2e:dev",
-    "test:e2e:dev": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)'",
-    "test:e2e:ci": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --ci",
-    "lint": "eslint \"src/**/*.+(js|ts|tsx|json)\" && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
-    "lint:fix": "eslint --fix \"src/**/*.+(js|ts|tsx|json)\" && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
+    "test:e2e": "yarn with-env jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)'",
+    "lint": "oxlint src && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint:fix": "oxlint --fix src && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
     "prepublishOnly": "yarn build",
     "with-env": "dotenv -e ../web/.env -c --"
   },
@@ -36,19 +34,19 @@
     "@osmosis-labs/utils": "^1.0.0",
     "@trpc/client": "^11.19.0",
     "@trpc/server": "^11.19.0",
-    "zod": "^3.22.4"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
-    "eslint": "^9.39.5",
     "jest": "^30.5.2",
+    "oxlint": "^1.90.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
     "typescript": "6.0.3"
   },
   "lint-staged": {
     "*": [
-      "eslint",
-      "prettier --check"
+      "oxlint --no-error-on-unmatched-pattern",
+      "prettier --check --ignore-unknown"
     ]
   }
 }

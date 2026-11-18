@@ -24,7 +24,10 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import {
+  isValidNumericalRawInput,
+  normalizeDecimalSeparator,
+} from "@osmosis-labs/utils";
 
 import {
   ConcentratedDepositAmount,
@@ -34,8 +37,8 @@ import {
   typeDepositAmount,
 } from "./concentrated-deposit-amount";
 
-export const MODERATE_STRATEGY_MULTIPLIER = 0.25;
-export const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
+const MODERATE_STRATEGY_MULTIPLIER = 0.25;
+const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 
 export type DepositSide = "base" | "quote";
 
@@ -62,7 +65,8 @@ export function getQuoteOverBaseMultiplier(
 
 /** Raw price input after the user typed `value`: invalid input is ignored, empty resets to "0". */
 export function reducePriceInput(prev: string, value: string): string {
-  const trimmed = value.trim();
+  const trimmed = normalizeDecimalSeparator(value.trim());
+  if (trimmed === null) return prev;
   if (trimmed === "") return "0";
   if (!isValidNumericalRawInput(trimmed)) return prev;
   return trimmed.startsWith(".") ? "0" + trimmed : trimmed;
@@ -86,7 +90,7 @@ export function priceInputToDec(raw: string, quoteOverBase: Dec): Dec {
 }
 
 /** Raw input as a Dec, including currency decimals. For display. */
-export function priceInputToDecWithCurrencyDecimals(raw: string): Dec {
+function priceInputToDecWithCurrencyDecimals(raw: string): Dec {
   return new Dec(safeInputToDecString(stripTrailingDot(raw)));
 }
 
@@ -122,7 +126,7 @@ export function isInactiveConcentratedPool(pool: Pool | undefined): boolean {
 // Range
 // ---------------------------------------------------------------------------
 
-export type Strategy = "passive" | "aggressive" | "moderate" | null;
+type Strategy = "passive" | "aggressive" | "moderate" | null;
 
 export interface RangeInputs {
   fullRange: boolean;

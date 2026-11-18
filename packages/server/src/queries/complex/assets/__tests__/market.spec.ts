@@ -36,8 +36,8 @@ describe("getAssetMarketActivity", () => {
     const fresh = await getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
     expect(fresh?.price?.toDec().toString()).toBe("2.000000000000000000");
 
-    // Just past the ttl the entry is served while it refreshes in the background (which
-    // fails here); it still counts as fresh.
+    // Just past the ttl the refresh fails; within the grace the cached entry still counts
+    // as fresh.
     (queryAllTokenData as jest.Mock).mockRejectedValue(new Error("500"));
     jest.setSystemTime(new Date("2026-10-19T10:06:00Z"));
     const refreshing = await getAssetMarketActivity({
@@ -102,6 +102,89 @@ describe("getAssetMarketActivity", () => {
       getAssetMarketActivity({ coinMinimalDenom: "uosmo" })
     ).rejects.toThrow();
     expect(query.mock.calls.length).toBe(callsAfterExpiry);
+  });
+});
+
+describe("getAssetMarketActivity with a lost refresh", () => {
+  afterEach(() => jest.useRealTimers());
+
+  it("doesn't hold requests on a refresh that never settles", async () => {
+    // Fresh module state, so the cache and retry delay from the tests above don't apply.
+    let market!: typeof import("../market");
+    let query!: jest.Mock;
+    jest.isolateModules(() => {
+      market = require("../market");
+      query = require("../../../data-services").queryAllTokenData;
+    });
+
+    jest.useFakeTimers({ now: new Date("2026-10-20T10:00:00Z") });
+    query.mockResolvedValueOnce([tokenData]);
+    await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+
+    // Past the ttl the refresh never settles, as when the serverless runtime stalls it.
+    // The request gives up after a fetch's timeout and keeps the cached prices (grace).
+    query.mockReturnValue(new Promise(() => undefined));
+    jest.setSystemTime(new Date("2026-10-20T10:06:00Z"));
+    const refreshing = market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    await jest.advanceTimersByTimeAsync(4_000);
+    expect((await refreshing)?.price?.toDec().toString()).toBe(
+      "2.000000000000000000"
+    );
+
+    // Past the grace a request waits for a refresh, but not on the lost one, and not for
+    // longer than a fetch may take.
+    jest.setSystemTime(new Date("2026-10-20T10:08:00Z"));
+    const callsBefore = query.mock.calls.length;
+    const pending = market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    await jest.advanceTimersByTimeAsync(4_000);
+    const stale = await pending;
+    expect(stale?.price).toBeUndefined();
+    expect(stale?.volume24h).toBeDefined();
+    // It started a new fetch instead of joining the lost refresh.
+    expect(query.mock.calls.length).toBe(callsBefore + 1);
+  });
+
+  it("doesn't let a lost refresh that settles late replace newer prices", async () => {
+    let market!: typeof import("../market");
+    let query!: jest.Mock;
+    jest.isolateModules(() => {
+      market = require("../market");
+      query = require("../../../data-services").queryAllTokenData;
+    });
+
+    jest.useFakeTimers({ now: new Date("2026-10-20T10:00:00Z") });
+    query.mockResolvedValueOnce([tokenData]);
+    await market.getAssetMarketActivity({ coinMinimalDenom: "uosmo" });
+
+    // The refresh past the ttl stalls and its request gives up on it...
+    let settleLost!: (data: TokenData[]) => void;
+    query.mockReturnValueOnce(new Promise((resolve) => (settleLost = resolve)));
+    jest.setSystemTime(new Date("2026-10-20T10:06:00Z"));
+    const refreshing = market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    await jest.advanceTimersByTimeAsync(4_000);
+    await refreshing;
+
+    // ...and is replaced past the grace by a refresh with newer prices.
+    query.mockResolvedValueOnce([{ ...tokenData, price: 3 }]);
+    jest.setSystemTime(new Date("2026-10-20T10:08:00Z"));
+    const replaced = await market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    expect(replaced?.price?.toDec().toString()).toBe("3.000000000000000000");
+
+    // The lost refresh then settles with its older response.
+    settleLost([{ ...tokenData, price: 1 }]);
+    await jest.advanceTimersByTimeAsync(0);
+    const after = await market.getAssetMarketActivity({
+      coinMinimalDenom: "uosmo",
+    });
+    expect(after?.price?.toDec().toString()).toBe("3.000000000000000000");
   });
 });
 

@@ -29,7 +29,7 @@ export function getSquidErrors(error: ApiClientError): SquidErrors {
     return squidError;
   } catch (e) {
     if (e instanceof z.ZodError) {
-      throw new Error("Squid error validation failed:" + e.errors.join(", "));
+      throw new Error("Squid error validation failed:" + e.issues.join(", "));
     }
     throw new Error("Squid errors: An unexpected error occurred");
   }

@@ -12,6 +12,7 @@ import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
 import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
 import { useCurrentLanguage, useWindowSize } from "~/hooks";
+import { ForcedMigrationModal } from "~/modals/forced-migration";
 import { InactiveValidatorsAlertModal } from "~/modals/inactive-validators-alert";
 import { AssetVariantsConversionModal } from "~/modals/variants-conversion";
 
@@ -85,6 +86,7 @@ export const MainLayout = ({
       />
       <div className="ml-sidebar md:ml-0">{children}</div>
       <AssetVariantsConversionModal />
+      <ForcedMigrationModal />
       <InactiveValidatorsAlertModal />
     </React.Fragment>
   );

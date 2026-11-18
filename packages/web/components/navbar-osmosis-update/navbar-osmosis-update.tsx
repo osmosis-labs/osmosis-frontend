@@ -1,7 +1,7 @@
 import { queryOsmosisCMS } from "@osmosis-labs/server";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
-import React, { FunctionComponent } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";

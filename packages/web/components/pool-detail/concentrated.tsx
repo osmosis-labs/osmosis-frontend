@@ -1,5 +1,4 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { prepareCollectAllPositionsRewardsMsgs } from "@osmosis-labs/tx";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -13,9 +12,11 @@ import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/price-historical";
+import { CollectAllRewardsButton } from "~/components/complex/collect-all-rewards-button";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Spinner } from "~/components/loaders/spinner";
+import { PrivateText } from "~/components/privacy";
 import { Button, ChartButton } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useFeatureFlags, useTranslation, useWalletSelect } from "~/hooks";
@@ -56,7 +57,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { t } = useTranslation();
     const { isLoading: isWalletLoading } = useWalletSelect();
     const { incentivizePool } = useFeatureFlags();
-    const { address, signAndBroadcast, transactionContext } = useWallet();
+    const { address } = useWallet();
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
@@ -83,24 +84,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const userHasPositionInPool = userPositions && userPositions.length > 0;
 
-    const claimableSpreadRewardPositions = useMemo(
-      () =>
-        userPositions?.filter(
-          ({ position }) => position.claimable_spread_rewards.length > 0
-        ) ?? [],
-      [userPositions]
-    );
-    const claimableIncentivePositions = useMemo(
-      () =>
-        userPositions?.filter(
-          ({ position }) => position.claimable_incentives.length > 0
-        ) ?? [],
-      [userPositions]
-    );
-    const hasClaimableRewards =
-      claimableSpreadRewardPositions.length > 0 ||
-      claimableIncentivePositions.length > 0;
-
     const {
       pool,
       currentPrice,
@@ -113,20 +96,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       zoomOut,
     } = chartConfig;
 
-    const onClickCollectAllRewards = () => {
-      prepareCollectAllPositionsRewardsMsgs(
-        transactionContext,
-        claimableSpreadRewardPositions.map(({ id }) => id),
-        claimableIncentivePositions.map(({ id }) => id),
-        undefined
-      )
-        .then((prepared) => signAndBroadcast(...prepared))
-        .catch(console.error);
-    };
-
     useEffect(() => {
       if (openCreatePosition === "true") {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot deep link: opens the modal and strips the query param together
+        // eslint-disable-next-line hooks-compat/set-state-in-effect -- one-shot deep link: opens the modal and strips the query param together
         setActiveModal("add-liquidity");
         removeQueryParam(OpenCreatePositionSearchParam);
       }
@@ -188,8 +160,8 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             onRequestClose={() => setActiveModal(null)}
           />
         )}
-        <section className="flex flex-col gap-8">
-          <div className="flex flex-col rounded-3xl p-8">
+        <section className="flex flex-col gap-8 sm:gap-2">
+          <div className="flex flex-col rounded-3xl p-8 sm:px-0 sm:pb-4 sm:pt-0">
             <div className="flex flex-row lg:flex-col lg:gap-3">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-center gap-2">
@@ -212,10 +184,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                         })
                       )}
                     />
-                    <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">
-                      {pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"}{" "}
-                      {t("clPositions.spreadFactor")}
-                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -238,10 +206,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   )}
                 </div>
               </div>
-              <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
+              <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-wrap xs:gap-x-6 xs:gap-y-4">
                 {!isUninitializedPool && !isInactivePool && pool && (
                   <PoolDataGroup
                     label={t("pool.24hrTradingVolume")}
+                    shortLabel={t("pool.24hVolume")}
                     value={
                       pool.market?.volume24hUsd
                         ? formatPretty(pool.market.volume24hUsd)
@@ -260,33 +229,29 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   }
                 />
 
-                <div className="lg:hidden">
-                  <PoolDataGroup
-                    label={t("clPositions.spreadFactor")}
-                    value={
-                      pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"
-                    }
-                  />
-                </div>
+                <PoolDataGroup
+                  label={t("clPositions.spreadFactor")}
+                  value={
+                    pool?.spreadFactor ? pool.spreadFactor.toString() : "0%"
+                  }
+                />
               </div>
             </div>
             {!isUninitializedPool && !isInactivePool && (
-              <div className="flex h-[340px] flex-row">
-                <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                  {chartConfig.isHistoricalDataLoading ? (
-                    <Spinner className="m-auto" />
-                  ) : !chartConfig.historicalChartUnavailable ? (
-                    <>
-                      <ChartHeader config={chartConfig} />
-                      <Chart config={chartConfig} />
-                    </>
-                  ) : (
-                    <ChartUnavailable />
-                  )}
-                </div>
-
-                <div className="flex-shrink-1 relative flex w-[229px] flex-col">
-                  <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
+              // The price header and zoom buttons share one row above both
+              // charts, and both charts sit in one row with the same 24px
+              // bottom axis margin, so their plot areas share a top and bottom
+              // at every width and the depth chart's current-price line meets
+              // the price line.
+              <div className="flex h-[340px] flex-col py-7 sm:py-3">
+                <div className="flex items-start gap-2 sm:items-end">
+                  <div className="min-w-0 flex-1">
+                    {!chartConfig.isHistoricalDataLoading &&
+                      !chartConfig.historicalChartUnavailable && (
+                        <ChartHeader config={chartConfig} />
+                      )}
+                  </div>
+                  <div className="flex h-6 shrink-0 justify-end gap-1 pr-8 sm:pr-0">
                     <ChartButton
                       alt="refresh"
                       icon="refresh-ccw"
@@ -306,7 +271,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       onClick={zoomIn}
                     />
                   </div>
-                  <div className="mt-8 flex flex-1 flex-col">
+                </div>
+                <div className="mt-5 flex min-h-0 flex-1 flex-row">
+                  <div className="flex-shrink-1 flex w-0 flex-1 flex-col">
+                    {chartConfig.isHistoricalDataLoading ? (
+                      <Spinner className="m-auto" />
+                    ) : !chartConfig.historicalChartUnavailable ? (
+                      <Chart config={chartConfig} />
+                    ) : (
+                      <ChartUnavailable />
+                    )}
+                  </div>
+
+                  {/* Phones: at most a third of the row, so the price chart keeps at
+                      least two thirds as the screen narrows. */}
+                  <div className="flex-shrink-1 flex w-[229px] flex-col sm:w-[min(7rem,33.333%)]">
                     <ConcentratedLiquidityDepthChart
                       yRange={yRange}
                       xRange={xRange}
@@ -317,31 +296,19 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                           : (lastChartData?.close ?? 0),
                         depth: xRange[1],
                       }}
+                      annotationLabel={
+                        currentPrice
+                          ? formatPretty(currentPrice, formatOpts)
+                          : undefined
+                      }
                       offset={{
                         top: 0,
-                        right: currentPrice
-                          ? currentPrice.gt(new Dec(100))
-                            ? 120
-                            : 56
-                          : 36,
-                        bottom: 24 + 28,
+                        bottom: 24,
                         left: 0,
                       }}
                       horizontal
                     />
                   </div>
-                  {currentPrice && (
-                    <h6
-                      className={classNames(
-                        "absolute right-0 top-[51%] max-w-[2rem] text-right",
-                        {
-                          caption: currentPrice.lt(new Dec(0.01)),
-                        }
-                      )}
-                    >
-                      {formatPretty(currentPrice, formatOpts)}
-                    </h6>
-                  )}
                 </div>
               </div>
             )}
@@ -396,18 +363,15 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     </span> */}
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    className="subtitle1 w-fit"
-                    onClick={onClickCollectAllRewards}
-                    disabled={!hasClaimableRewards}
-                  >
-                    {t("clPositions.collectAllRewards")}
-                  </Button>
+                <div className="flex gap-2 sm:w-full sm:flex-wrap">
+                  <CollectAllRewardsButton
+                    className="subtitle1 w-fit sm:flex-1 sm:whitespace-nowrap"
+                    forPoolId={poolId}
+                  />
 
                   <Button
                     variant="outline"
-                    className="subtitle1 w-fit"
+                    className="subtitle1 w-fit sm:flex-1 sm:whitespace-nowrap"
                     onClick={() => {
                       setActiveModal("add-liquidity");
                     }}
@@ -447,12 +411,23 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
 const PoolDataGroup: FunctionComponent<{
   label: string;
+  /** Shown instead of `label` on phones, so the stats fit on one row. */
+  shortLabel?: string;
   value: string;
   className?: string;
-}> = ({ label, value, className }) => (
-  <div className={classNames("flex flex-col gap-2", className)}>
-    <div className="text-body2 font-body2 text-osmoverse-400">{label}</div>
-    <h4 className="text-osmoverse-100">{value}</h4>
+}> = ({ label, shortLabel, value, className }) => (
+  <div className={classNames("flex flex-col gap-2 sm:gap-1", className)}>
+    <div className="whitespace-nowrap text-body2 font-body2 text-osmoverse-400">
+      {shortLabel ? (
+        <>
+          <span className="sm:hidden">{label}</span>
+          <span className="hidden sm:inline">{shortLabel}</span>
+        </>
+      ) : (
+        label
+      )}
+    </div>
+    <h4 className="text-osmoverse-100 sm:text-h5 sm:font-h5">{value}</h4>
   </div>
 );
 
@@ -486,8 +461,11 @@ const ChartHeader: FunctionComponent<{
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
       classes={{
-        buttons: "sm:hidden",
-        pricesHeaderContainerClass: "sm:flex-col",
+        // Phones: the price (with its "X per Y" caption beside it) on top and
+        // the date-range buttons below, left-aligned, on the same row as the
+        // zoom buttons.
+        pricesHeaderRootContainer: "sm:flex-col",
+        buttons: "sm:justify-start sm:pr-0",
       }}
     />
   );
@@ -583,15 +561,19 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
     );
 
   return (
-    <div className="flex flex-wrap gap-4">
-      <div className="flex shrink-0 items-center gap-8 rounded-3xl px-8 py-7">
-        <div className="flex h-full flex-col place-content-between">
+    // On phones this becomes a two-column grid: Total balance with the
+    // per-asset amounts beside it, then the fee breakdown full width below.
+    // The wrapper divs dissolve (`contents`) so their children sit in the grid
+    // directly.
+    <div className="flex flex-wrap gap-4 sm:grid sm:grid-cols-[auto_1fr] sm:gap-x-6 sm:gap-y-3">
+      <div className="flex shrink-0 items-center gap-8 rounded-3xl px-8 py-7 sm:contents">
+        <div className="flex h-full flex-col place-content-between sm:col-start-1 sm:row-start-1">
           <span className="body2 text-osmoverse-300">
             {t("clPositions.totalBalance")}
           </span>
           <div>
             <h4 className="text-osmoverse-100">
-              {userPoolValue?.toString() ?? "–"}
+              <PrivateText text={userPoolValue?.toString() ?? "–"} />
             </h4>
             <span className="subtitle1 text-osmoverse-300">
               {numUserPositions === 1
@@ -602,7 +584,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
             </span>
           </div>
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 sm:col-start-2 sm:row-start-1 sm:gap-2 sm:self-center">
           {userPoolAssets.map((asset) => (
             <div
               className="subtitle1 flex gap-2"
@@ -625,11 +607,13 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
                   />
                 </div>
               )}
-              <span className="text-osmoverse-300">
+              {/* The amount already carries the symbol; on phones the
+                  duplicate label pushes it onto a second line. */}
+              <span className="text-osmoverse-300 sm:hidden">
                 {asset.currency.coinDenom}
               </span>
               <span className="text-osmoverse-100">
-                {formatPretty(asset, { maxDecimals: 2 })}
+                <PrivateText text={formatPretty(asset, { maxDecimals: 2 })} />
               </span>
             </div>
           ))}
@@ -637,12 +621,17 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
       </div>
       {/* Incentivize entry sits to the right of the Total APR card, filling
           the dead space beside it. Gated on its own incentivizePool flag, not
-          on aprBreakdown, so the two can be toggled independently. */}
-      <div className="flex shrink-0 items-center gap-4">
+          on aprBreakdown, so the two can be toggled independently. On phones
+          the card takes its own grid row and stretches, with the button
+          beside it; on very narrow screens the button wraps under it. */}
+      <div className="flex max-w-full shrink-0 flex-wrap items-center gap-4 sm:col-span-2 sm:row-start-2 sm:gap-3">
         {featureFlags.aprBreakdown && (
-          <SkeletonLoader isLoaded={!isLoadingIncentives}>
+          <SkeletonLoader
+            className="sm:min-w-[min(14rem,100%)] sm:flex-1"
+            isLoaded={!isLoadingIncentives}
+          >
             <AprBreakdown
-              className="shrink-0 rounded-3xl"
+              className="shrink-0 rounded-3xl sm:w-full sm:p-2"
               showDisclaimerTooltip
               {...incentives?.aprBreakdown}
             />
@@ -661,7 +650,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
       </div>
 
       {hasIncentives && (
-        <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7">
+        <div className="flex h-full w-full flex-col place-content-between items-center rounded-3xl px-8 py-7 sm:col-span-2 sm:row-start-3">
           <span className="body2 mr-auto text-osmoverse-300">
             {t("pool.incentives")}
           </span>

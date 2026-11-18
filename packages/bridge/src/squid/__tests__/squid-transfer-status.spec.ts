@@ -1,4 +1,5 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { poll } from "@osmosis-labs/utils";
+// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http as httpMock, HttpResponse } from "msw";
 
 import { MockChains } from "../../__tests__/mock-chains";
@@ -160,6 +161,68 @@ describe("SquidTransferStatusProvider", () => {
 
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
+
+  it("resolves an EVM tx as failed when its receipt shows a revert", async () => {
+    // A reverted tx never reaches Squid, which only answers 404 for it.
+    server.use(
+      httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
+    const check = jest.fn(async () => "reverted" as const);
+    const evmProvider = new SquidTransferStatusProvider(
+      "integratorId",
+      "mainnet" as BridgeEnvironment,
+      MockChains,
+      check
+    );
+    evmProvider.statusReceiverDelegate = mockReceiver;
+
+    await evmProvider.trackTxStatus(createTxSnapshot());
+
+    expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
+    expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
+      "testTxHash",
+      "failed",
+      undefined
+    );
+  });
+
+  it.each([
+    ["has no receipt", undefined, 5],
+    // found once, then not re-checked; Squid may still be indexing it
+    ["has landed but Squid hasn't indexed it", "success" as const, 1],
+  ])(
+    "does not count 404s toward failed while an EVM tx %s",
+    async (_, receipt, checks) => {
+      server.use(
+        httpMock.get("https://v2.api.squidrouter.com/v2/status", () => {
+          return new HttpResponse(null, { status: 404 });
+        })
+      );
+      // poll past the 3 404s that would otherwise resolve it as failed
+      (poll as jest.Mock).mockImplementationOnce(async ({ fn, validate }) => {
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const result = await fn();
+          if (validate(result)) return result;
+        }
+      });
+      const check = jest.fn(async () => receipt);
+      const evmProvider = new SquidTransferStatusProvider(
+        "integratorId",
+        "mainnet" as BridgeEnvironment,
+        MockChains,
+        check
+      );
+      evmProvider.statusReceiverDelegate = mockReceiver;
+
+      await evmProvider.trackTxStatus(createTxSnapshot());
+
+      expect(check).toHaveBeenCalledTimes(checks);
+      expect(check).toHaveBeenCalledWith({ txHash: "testTxHash", chainId: 1 });
+      expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
+    }
+  );
 
   it("should generate correct explorer URL", () => {
     const snapshot = createTxSnapshot({

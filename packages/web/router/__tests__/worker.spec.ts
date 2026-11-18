@@ -1,193 +1,138 @@
 /**
  * @jest-environment node
  */
-import { BACKEND_HEADER, BUCKET_COOKIE, FALLBACK_HEADER } from "../routing";
-import router, { type RouterEnv } from "../worker";
+import router from "../worker";
 
-const CF_COOKIE = `${BUCKET_COOKIE}=0`;
-const VERCEL_COOKIE = `${BUCKET_COOKIE}=9999`;
-
-function setup({
-  cf = () => new Response("from cf"),
-  vercel = () => new Response("from vercel"),
-  percent = "5",
-  vercelOrigin,
-}: {
-  cf?: (request: Request) => Response | Promise<Response>;
-  vercel?: (request: Request) => Response;
-  percent?: string;
-  vercelOrigin?: string;
-} = {}) {
-  const production = jest.fn(async (request: Request) => cf(request));
-  const origin = jest
-    .spyOn(globalThis, "fetch")
-    .mockImplementation(async (input) => vercel(input as Request));
-  const env: RouterEnv = {
-    PRODUCTION: { fetch: production },
-    CF_PERCENT: percent,
-    VERCEL_ORIGIN: vercelOrigin,
-  };
-  return {
-    production,
-    origin,
-    route: (url: string, cookie?: string, init: RequestInit = {}) =>
-      router.fetch(
-        new Request(url, {
-          ...init,
-          headers: {
-            ...(cookie ? { cookie } : {}),
-            "sec-fetch-dest": "document",
-            ...(init.headers as Record<string, string> | undefined),
-          },
-        }),
-        env
-      ),
-  };
-}
-
+beforeEach(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {});
+  jest.spyOn(console, "error").mockImplementation(() => {});
+});
 afterEach(() => jest.restoreAllMocks());
 
-describe("router", () => {
-  it("serves a Cloudflare-bucket browser from the production Worker", async () => {
-    const { route, production, origin } = setup();
+it.each([
+  ["https://app.test/pools", {}],
+  [
+    "https://app.test/?osmo_backend=vercel",
+    { cookie: "osmo_backend=vercel; osmo_bucket=9999" },
+  ],
+  ["https://app.test/pools", { "user-agent": "Googlebot" }],
+])(
+  "forwards %s to Cloudflare regardless of old rollout settings",
+  async (url, headers) => {
+    const request = new Request(url, { headers });
+    const fetch = jest.fn(async () => new Response("from cf"));
+    const response = await router.fetch(request, { PRODUCTION: { fetch } });
 
-    const response = await route("https://app.test/pools", CF_COOKIE);
-
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(request);
     expect(await response.text()).toBe("from cf");
-    expect(response.headers.get(BACKEND_HEADER)).toBe("cf");
-    expect(production).toHaveBeenCalledTimes(1);
-    expect(origin).not.toHaveBeenCalled();
+    expect(response.headers.get("x-osmosis-backend")).toBe("cf");
+    expect(response.headers.get("set-cookie")).toBeNull();
+  }
+);
+
+it("preserves the request body and response status, headers and cookies", async () => {
+  const request = new Request("https://app.test/api/broadcast-transaction", {
+    method: "POST",
+    body: '{"tx":"signed"}',
   });
-
-  it("passes the rest through to Vercel at the same URL", async () => {
-    const { route, production, origin } = setup();
-
-    const response = await route("https://app.test/pools", VERCEL_COOKIE);
-
-    expect(await response.text()).toBe("from vercel");
-    expect(response.headers.get(BACKEND_HEADER)).toBe("vercel");
-    expect((origin.mock.calls[0][0] as Request).url).toBe(
-      "https://app.test/pools"
-    );
-    expect(production).not.toHaveBeenCalled();
-  });
-
-  it("rewrites Vercel requests to VERCEL_ORIGIN when the router runs on a test hostname", async () => {
-    const { route, origin } = setup({
-      vercelOrigin: "https://app.osmosis.zone",
+  const fetch = jest.fn(async (forwarded: Request) => {
+    expect(forwarded).toBe(request);
+    expect(await forwarded.text()).toBe('{"tx":"signed"}');
+    return new Response("nope", {
+      status: 418,
+      headers: { "set-cookie": "app=1", "cache-control": "no-store" },
     });
-
-    await route("https://canary.test/assets/OSMO?tab=info", VERCEL_COOKIE);
-
-    expect((origin.mock.calls[0][0] as Request).url).toBe(
-      "https://app.osmosis.zone/assets/OSMO?tab=info"
-    );
   });
+  const response = await router.fetch(request, { PRODUCTION: { fetch } });
 
-  it("keeps the backend's status, headers and cookies, adding its own", async () => {
-    const { route } = setup({
-      percent: "100",
-      cf: () =>
-        new Response("nope", {
-          status: 418,
-          headers: { "set-cookie": "app=1", "cache-control": "no-store" },
-        }),
-    });
+  expect(response.status).toBe(418);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(response.headers.getSetCookie()).toEqual(["app=1"]);
+});
 
-    const response = await route("https://app.test/");
+it.each([
+  ["/_next/static/old.js", "GET", 404],
+  ["/pools", "GET", 503],
+  ["/api/broadcast-transaction", "POST", 500],
+])("returns %s failures without retrying", async (path, method, status) => {
+  const origin = jest.spyOn(globalThis, "fetch");
+  const fetch = jest.fn(async () => new Response("failed", { status }));
+  const response = await router.fetch(
+    new Request(`https://app.test${path}`, { method }),
+    {
+      PRODUCTION: { fetch },
+    }
+  );
 
-    expect(response.status).toBe(418);
-    expect(response.headers.get("cache-control")).toBe("no-store");
-    const cookies = response.headers.getSetCookie();
-    expect(cookies).toContain("app=1");
-    expect(cookies.some((c) => c.startsWith(`${BUCKET_COOKIE}=`))).toBe(true);
+  expect(response.status).toBe(status);
+  expect(await response.text()).toBe("failed");
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(origin).not.toHaveBeenCalled();
+  expect(response.headers.get("x-osmosis-fallback")).toBeNull();
+});
+
+it("returns upgrade responses untouched", async () => {
+  // Node's Response constructor cannot create a Workers WebSocket upgrade.
+  const upgrade = { status: 101, webSocket: {} } as unknown as Response;
+  const fetch = jest.fn(async () => upgrade);
+  expect(
+    await router.fetch(new Request("https://app.test/socket"), {
+      PRODUCTION: { fetch },
+    })
+  ).toBe(upgrade);
+});
+
+it("logs upstream status without query strings, cookies or bodies", async () => {
+  const fetch = jest.fn(async () => new Response(null, { status: 503 }));
+  await router.fetch(
+    new Request(`https://app.test/${"x".repeat(600)}?secret=private`, {
+      method: "POST",
+      headers: { "cf-ray": "ray-1", cookie: "secret=private" },
+      body: "private",
+    }),
+    { PRODUCTION: { fetch } }
+  );
+
+  expect(console.error).toHaveBeenCalledWith(
+    expect.objectContaining({
+      event: "router_upstream",
+      backend: "cf",
+      method: "POST",
+      path: `/${"x".repeat(511)}`,
+      rayId: "ray-1",
+      status: 503,
+      outcome: "http_error",
+    })
+  );
+  expect(JSON.stringify((console.error as jest.Mock).mock.calls)).not.toContain(
+    "private"
+  );
+});
+
+it("logs and propagates exceptions without retrying or exposing their messages", async () => {
+  const origin = jest.spyOn(globalThis, "fetch");
+  const error = new TypeError("private upstream details");
+  const fetch = jest.fn(async () => {
+    throw error;
   });
+  await expect(
+    router.fetch(new Request("https://app.test/pools"), {
+      PRODUCTION: { fetch },
+    })
+  ).rejects.toBe(error);
 
-  it("retries a missing build asset on the other platform", async () => {
-    const { route, production, origin } = setup({
-      vercel: () => new Response("not found", { status: 404 }),
-    });
-
-    const response = await route(
-      "https://app.test/_next/static/chunks/main-abc.js",
-      VERCEL_COOKIE
-    );
-
-    expect(await response.text()).toBe("from cf");
-    expect(response.headers.get(BACKEND_HEADER)).toBe("cf");
-    expect(origin).toHaveBeenCalledTimes(1);
-    expect(production).toHaveBeenCalledTimes(1);
-  });
-
-  it("never retries other 404s or failures on the other platform", async () => {
-    const { route, production } = setup({
-      vercel: () => new Response("not found", { status: 404 }),
-    });
-
-    const page = await route("https://app.test/missing", VERCEL_COOKIE);
-    const api = await route(
-      "https://app.test/api/broadcast-transaction",
-      VERCEL_COOKIE,
-      { method: "POST", body: "{}" }
-    );
-
-    expect(page.status).toBe(404);
-    expect(api.status).toBe(404);
-    expect(production).not.toHaveBeenCalled();
-  });
-
-  it("serves a page load from Vercel when the production Worker fails it", async () => {
-    const errorBody = new Response("error", { status: 503 });
-    const cancel = jest.spyOn(errorBody.body!, "cancel");
-    const { route, origin } = setup({ cf: () => errorBody });
-
-    const response = await route("https://app.test/pools", CF_COOKIE);
-
-    expect(await response.text()).toBe("from vercel");
-    expect(response.headers.get(BACKEND_HEADER)).toBe("vercel");
-    expect(response.headers.get(FALLBACK_HEADER)).toBe("cf-503");
-    expect(origin).toHaveBeenCalledTimes(1);
-    expect(cancel).toHaveBeenCalled();
-  });
-
-  it("serves a page load from Vercel when the production Worker throws", async () => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
-    const { route } = setup({
-      cf: () => Promise.reject(new Error("exceeded CPU limit")),
-    });
-
-    const response = await route("https://app.test/pools", CF_COOKIE);
-
-    expect(await response.text()).toBe("from vercel");
-    expect(response.headers.get(FALLBACK_HEADER)).toBe("cf-error");
-  });
-
-  it("keeps production Worker failures outside page loads on Cloudflare", async () => {
-    const { route, origin } = setup({
-      cf: () => new Response("error", { status: 500 }),
-    });
-
-    const api = await route("https://app.test/api/pools", CF_COOKIE, {
-      headers: { "sec-fetch-dest": "empty" },
-    });
-    const broadcast = await route(
-      "https://app.test/api/broadcast-transaction",
-      CF_COOKIE,
-      { method: "POST", body: "{}" }
-    );
-
-    expect(api.status).toBe(500);
-    expect(broadcast.status).toBe(500);
-    expect(api.headers.get(FALLBACK_HEADER)).toBeNull();
-    expect(origin).not.toHaveBeenCalled();
-  });
-
-  it("sends everyone to Vercel at 0%", async () => {
-    const { route, production } = setup({ percent: "0" });
-
-    const response = await route("https://app.test/pools", CF_COOKIE);
-
-    expect(response.headers.get(BACKEND_HEADER)).toBe("vercel");
-    expect(production).not.toHaveBeenCalled();
-  });
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(origin).not.toHaveBeenCalled();
+  expect(console.error).toHaveBeenCalledTimes(1);
+  expect(console.error).toHaveBeenCalledWith(
+    expect.objectContaining({
+      event: "router_upstream",
+      outcome: "exception",
+      errorType: "TypeError",
+    })
+  );
+  expect(JSON.stringify((console.error as jest.Mock).mock.calls)).not.toContain(
+    "private"
+  );
 });

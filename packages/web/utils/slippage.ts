@@ -84,7 +84,7 @@ export function computeAutoSlippage(quote: AutoSlippageQuote | undefined): {
  *
  * returns ["498419192699272362737", "497246119581463551214"]
  */
-export function extractSwapRequiredErrorAmounts(str: string) {
+function extractSwapRequiredErrorAmounts(str: string) {
   const regex = /^\d+/;
   const split = str
     .split(" ")

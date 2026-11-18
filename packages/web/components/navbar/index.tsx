@@ -216,16 +216,20 @@ export const NavBar: FunctionComponent<
             {({ close: closeMobileMainMenu }) => {
               closeMobileMenuRef.current = closeMobileMainMenu;
 
-              const mobileMenus = menus.concat({
-                label: t("menu.settings"),
-                link: (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpenSettings();
-                  closeMobileMainMenu();
+              // Mobile shows primary and secondary items as one list.
+              const mobileMenus = menus.concat(
+                {
+                  label: t("menu.settings"),
+                  link: (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onOpenSettings();
+                    closeMobileMainMenu();
+                  },
+                  icon: <Icon id="setting" className="h-6 w-6" />,
                 },
-                icon: <Icon id="setting" className="h-6 w-6" />,
-              });
+                secondaryMenuItems.filter(({ hideOnMobile }) => !hideOnMobile)
+              );
 
               return (
                 <>
@@ -245,11 +249,8 @@ export const NavBar: FunctionComponent<
                       }
                     />
                   </PopoverButton>
-                  <PopoverPanel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
-                    <MainMenu
-                      menus={mobileMenus}
-                      secondaryMenuItems={secondaryMenuItems}
-                    />
+                  <PopoverPanel className="absolute top-full mt-4 flex max-h-[calc(100dvh-6rem)] w-52 flex-col gap-2 overflow-y-auto rounded-3xl bg-osmoverse-800 py-3 px-2">
+                    <MainMenu menus={mobileMenus} secondaryMenuItems={[]} />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
                         <WalletInfo onOpenProfile={onOpenProfile} />
@@ -652,7 +653,7 @@ const AnnouncementBanner: FunctionComponent<{
         bg
       )}
     >
-      <div className="flex min-w-0 w-full flex-wrap place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
+      <div className="flex min-w-0 w-full flex-wrap place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left sm:items-start">
         <span className="min-w-0 [overflow-wrap:anywhere]">
           {isChainHalted
             ? (banner?.enTextOrLocalizationPath ?? "")

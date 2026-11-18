@@ -69,7 +69,7 @@ export interface MigrationPoolState {
  * message, and every one of them is a refusal: there is no case where the
  * flow proceeds with an adjustment or a warning.
  */
-export type MigrationIneligibilityReason =
+type MigrationIneligibilityReason =
   /** No entry in the CMS map, or the entry is explicitly disabled. */
   | "notMapped"
   /** One or both pools are not concentrated liquidity. */

@@ -1,7 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { render, screen } from "@testing-library/react";
-import React from "react";
 
 import { AssetsInfo } from "../expanded";
 
@@ -47,7 +46,7 @@ describe("AssetsInfo", () => {
     expect(screen.getByText("200 OSMO")).toBeInTheDocument();
     expect(screen.getByText("200.002 PEPE")).toBeInTheDocument();
     expect(screen.getByText("200.02 USDC")).toBeInTheDocument();
-    expect(screen.getByText("($300)")).toBeInTheDocument();
+    expect(screen.getByText("($300.00)")).toBeInTheDocument();
   });
 
   it("should handle assets with very small decimals", () => {
@@ -65,7 +64,7 @@ describe("AssetsInfo", () => {
         new Dec(0.62345678).mul(DecUtils.getTenExponentN(8))
       ),
     ];
-    const totalValue = new PricePretty(DEFAULT_VS_CURRENCY, "300");
+    const totalValue = new PricePretty(DEFAULT_VS_CURRENCY, "300.5");
 
     render(
       <AssetsInfo
@@ -79,7 +78,7 @@ describe("AssetsInfo", () => {
     expect(screen.getByText("0.021234 BTC")).toBeInTheDocument();
     expect(screen.getByText("0.00000001 BTC2")).toBeInTheDocument();
     expect(screen.getByText("0.623456 BTC3")).toBeInTheDocument();
-    expect(screen.getByText("($300)")).toBeInTheDocument();
+    expect(screen.getByText("($300.50)")).toBeInTheDocument();
   });
 
   it("renders with empty text when no assets", () => {
