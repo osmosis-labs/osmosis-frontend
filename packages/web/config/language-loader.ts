@@ -11,7 +11,8 @@ export async function loadLanguage(
     `../localizations/dayjs-locale-${language}.js`
   );
   // Some locale files only export data; register it before changeLanguage selects it.
-  dayjs.locale(dateLocale, undefined, true);
+  // Keep Day.js's built-in English locale: the exported one lacks `ordinal` and `formats`.
+  if (language !== "en") dayjs.locale(dateLocale, undefined, true);
 
   return translations.default;
 }
