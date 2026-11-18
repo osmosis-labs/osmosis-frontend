@@ -8,7 +8,7 @@ name: Assetlist deploy
 #   schedule (daily 15:00 UTC) -> runs cf-deploy.yml on stage and master, but only
 #                                 if the mainnet frontend lists changed in the last
 #                                 26 hours. assetlists generates and auto-merges at
-#                                 14:00 UTC.
+#                                 14:30 UTC.
 #   workflow_dispatch          -> runs cf-deploy.yml on stage and master regardless.
 #
 # Scheduled workflows run from the default branch (stage), which is why this
