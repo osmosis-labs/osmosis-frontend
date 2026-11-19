@@ -12,6 +12,35 @@ import {
 
 const ORIGIN = "https://app.test";
 
+/**
+ * Pathname → handler id, written out by hand rather than derived from the route table, so a
+ * table edit that moves a route shows up here. Must name every handler id.
+ */
+const ROUTE_FIXTURE: readonly (readonly [string, ApiHandlerId])[] = [
+  ["/api/trpc/pools.list", "trpc"],
+  ["/api/edge-trpc-main/edge.assets.get", "edgeTrpcMain"],
+  ["/api/edge-trpc-pools/edge.pools.foo", "edgeTrpcPools"],
+  ["/api/edge-trpc-assets/edge.assets.getUserAsset", "edgeTrpcAssets"],
+  ["/api/pools", "pools"],
+  ["/api/pools/7", "pool"],
+  ["/api/active-gauges", "activeGauges"],
+  ["/api/broadcast-transaction", "broadcastTransaction"],
+  ["/api/estimate-gas-fee", "estimateGasFee"],
+  ["/api/evm-rpc", "evmRpc"],
+  ["/api/simulate-position-migration", "simulatePositionMigration"],
+  ["/api/solana-rpc", "solanaRpc"],
+  ["/api/swapped-signature", "swappedSignature"],
+  ["/api/skip-track-tx", "skipTrackTx"],
+  ["/api/skip-tx-status", "skipTxStatus"],
+  ["/api/csp-report", "cspReport"],
+];
+
+const FIXTURE_IDS = [...new Set(ROUTE_FIXTURE.map(([, id]) => id))];
+
+function routeId(pathname: string): ApiHandlerId | undefined {
+  return matchApiRoute(pathname)?.handlerId;
+}
+
 /** An in-memory stand-in for the Workers Cache API, keyed by URL. */
 class MemoryCache {
   readonly entries = new Map<string, Response>();
@@ -33,7 +62,7 @@ function stubHandlers(): Record<
     ApiHandlerId,
     jest.Mock<ReturnType<ApiHandler>, Parameters<ApiHandler>>
   >;
-  for (const id of API_HANDLER_IDS) {
+  for (const id of FIXTURE_IDS) {
     handlers[id] = jest.fn(
       async (_request: Request) => new Response(id, { status: 200 })
     );
@@ -63,24 +92,23 @@ function dispatch(url: string, init?: RequestInit, handlers = stubHandlers()) {
 }
 
 describe("matchApiRoute", () => {
+  it.each(ROUTE_FIXTURE)("routes %s to %s", (pathname, handlerId) => {
+    expect(routeId(pathname)).toBe(handlerId);
+  });
+
+  it("names every route id in the fixture", () => {
+    expect([...FIXTURE_IDS].sort()).toEqual([...API_HANDLER_IDS].sort());
+  });
+
   it.each([
-    ["/api/trpc/pools.list", "trpc"],
     ["/api/trpc", "trpc"],
-    ["/api/edge-trpc-main/edge.assets.get", "edgeTrpcMain"],
-    ["/api/edge-trpc-pools/edge.pools.foo", "edgeTrpcPools"],
-    ["/api/edge-trpc-assets/edge.assets.getUserAsset", "edgeTrpcAssets"],
-    ["/api/pools", "pools"],
-    ["/api/active-gauges", "activeGauges"],
-    ["/api/broadcast-transaction", "broadcastTransaction"],
-    ["/api/estimate-gas-fee", "estimateGasFee"],
-    ["/api/evm-rpc", "evmRpc"],
-    ["/api/simulate-position-migration", "simulatePositionMigration"],
-    ["/api/solana-rpc", "solanaRpc"],
-    ["/api/swapped-signature", "swappedSignature"],
-    ["/api/skip-track-tx", "skipTrackTx"],
-    ["/api/skip-tx-status", "skipTxStatus"],
-  ] as const)("routes %s to %s", (pathname, handlerId) => {
-    expect(matchApiRoute(pathname)?.handlerId).toBe(handlerId);
+    ["/api/trpc/", "trpc"],
+    // The pool handler parses the id itself and answers 400 for a non-number.
+    ["/api/pools/abc", "pool"],
+    ["/api/active-gauges/", undefined],
+    ["/api/pools/1/", undefined],
+  ] as const)("routes the edge case %s to %s", (pathname, handlerId) => {
+    expect(routeId(pathname)).toBe(handlerId);
   });
 
   it("parses a single pool id and leaves the list route exact", () => {
@@ -98,13 +126,13 @@ describe("matchApiRoute", () => {
   });
 
   it("does not treat a prefix as a prefix of a longer sibling", () => {
-    expect(matchApiRoute("/api/trpc-other")).toBeUndefined();
-    expect(matchApiRoute("/api/edge-trpc-mainextra")).toBeUndefined();
+    expect(routeId("/api/trpc-other")).toBeUndefined();
+    expect(routeId("/api/edge-trpc-mainextra")).toBeUndefined();
   });
 
   it("returns undefined for an unknown path", () => {
-    expect(matchApiRoute("/api/missing")).toBeUndefined();
-    expect(matchApiRoute("/pools")).toBeUndefined();
+    expect(routeId("/api/missing")).toBeUndefined();
+    expect(routeId("/pools")).toBeUndefined();
   });
 });
 
@@ -121,25 +149,7 @@ describe("API route table", () => {
 
 describe("handleApiRequest", () => {
   it("calls the handler the route table names", async () => {
-    const cases: [string, ApiHandlerId][] = [
-      ["/api/trpc/pools.list", "trpc"],
-      ["/api/edge-trpc-main/edge.x", "edgeTrpcMain"],
-      ["/api/edge-trpc-pools/edge.x", "edgeTrpcPools"],
-      ["/api/edge-trpc-assets/edge.x", "edgeTrpcAssets"],
-      ["/api/pools", "pools"],
-      ["/api/pools/7", "pool"],
-      ["/api/active-gauges", "activeGauges"],
-      ["/api/broadcast-transaction", "broadcastTransaction"],
-      ["/api/estimate-gas-fee", "estimateGasFee"],
-      ["/api/evm-rpc", "evmRpc"],
-      ["/api/simulate-position-migration", "simulatePositionMigration"],
-      ["/api/solana-rpc", "solanaRpc"],
-      ["/api/swapped-signature", "swappedSignature"],
-      ["/api/skip-track-tx", "skipTrackTx"],
-      ["/api/skip-tx-status", "skipTxStatus"],
-    ];
-
-    for (const [pathname, handlerId] of cases) {
+    for (const [pathname, handlerId] of ROUTE_FIXTURE) {
       const { handlers, done } = dispatch(`${ORIGIN}${pathname}`, {
         method: pathname.includes("broadcast") ? "POST" : "GET",
         body: pathname.includes("broadcast") ? "{}" : undefined,
