@@ -189,6 +189,29 @@ export function buildOrderbookLevels({
   return { bids, asks };
 }
 
+/**
+ * Best bid, best ask and mid from levels sorted best first, as
+ * `buildOrderbookLevels` returns them.
+ *
+ * The contract's `next_bid_tick` and `next_ask_tick` only move outward:
+ * cancelling the last order at a tick leaves the pointer there, so it can sit
+ * well past the best tick that still has liquidity. Reading the spread from
+ * the pointers would show one that doesn't exist. A side with no levels is 0,
+ * so no spread is shown, and the mid is the other side's best price.
+ */
+export function bestPricesFromLevels(
+  bids: OrderbookLevel[],
+  asks: OrderbookLevel[]
+): { bidPrice: number; askPrice: number; midPrice: number } {
+  const bidPrice = bids[0]?.price ?? 0;
+  const askPrice = asks[0]?.price ?? 0;
+  const midPrice =
+    bidPrice > 0 && askPrice > 0
+      ? (bidPrice + askPrice) / 2
+      : bidPrice || askPrice;
+  return { bidPrice, askPrice, midPrice };
+}
+
 export function getPairDepth({
   poolId,
   bucketSize,
@@ -350,6 +373,12 @@ async function computePairDepth({
     quoteDecimals,
   });
 
+  // The contract's pointers can sit past real liquidity, so the spread and
+  // mid come from the best levels when the book has any.
+  if (rawBids.length > 0 || rawAsks.length > 0) {
+    ({ bidPrice, askPrice, midPrice } = bestPricesFromLevels(rawBids, rawAsks));
+  }
+
   // Asks: cumulative builds from outermost inward so fill bar grows toward mid.
   // aggregateLevels handles this internally when bucketing; do it manually otherwise.
   let asks: OrderbookLevel[];
@@ -386,13 +415,6 @@ async function computePairDepth({
     clPoolIds: clPools?.map(({ poolId }) => poolId) ?? [],
     clUnavailable: clPools === null,
   };
-
-  console.debug("[pair-depth] levels built", {
-    bidLevels: bids.length,
-    askLevels: asks.length,
-    bidSample: bids.slice(0, 3),
-    askSample: asks.slice(0, 3),
-  });
 
   if (bids.length === 0 && asks.length === 0)
     return { ...empty, midPrice, bidPrice, askPrice, ...clInfo };
