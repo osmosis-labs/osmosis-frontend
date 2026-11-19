@@ -1,9 +1,9 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { getOrderbookPools } from "./pools";
 
 const orderbookDenomsCache = new LRUCache<string, CacheEntry>(

@@ -1,7 +1,7 @@
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryPortfolioOverTime } from "../../data-services";
 
 export type Range = "1d" | "7d" | "1mo" | "1y" | "all";

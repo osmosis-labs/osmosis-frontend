@@ -1,17 +1,28 @@
+import { getRequestScoped } from "@osmosis-labs/server";
 import { AvailableFlags } from "@osmosis-labs/types";
 import { camelToKebabCase } from "@osmosis-labs/utils";
 import * as LaunchDarkly from "launchdarkly-node-client-sdk";
 
 const INITIALIZATION_TIMEOUT_SECONDS = 5;
 
-let ldClient: Promise<LaunchDarkly.LDClient> | undefined;
+/** The initialized client, shared once ready. While it initializes, the pending
+ *  promise is shared only within a request on Workers (see `request-scope.ts` in
+ *  @osmosis-labs/server): it can't settle in another request. */
+let readyClient: LaunchDarkly.LDClient | undefined;
+type ClientInit = { pending?: Promise<LaunchDarkly.LDClient> };
+const sharedClientInit: ClientInit = {};
+const clientInitSlot = {};
 
 /**
  * Resolves even if LaunchDarkly is unreachable or misconfigured: a timed-out client
  * keeps connecting in the background, and a failed one serves each flag's default.
  */
 function getLaunchDarklyClient(): Promise<LaunchDarkly.LDClient> {
-  ldClient ??= (async () => {
+  if (readyClient) return Promise.resolve(readyClient);
+  const init =
+    getRequestScoped<ClientInit>(clientInitSlot, () => ({})) ??
+    sharedClientInit;
+  init.pending ??= (async () => {
     const client = LaunchDarkly.initialize(
       process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID ?? "",
       {
@@ -27,9 +38,10 @@ function getLaunchDarklyClient(): Promise<LaunchDarkly.LDClient> {
     } catch (e) {
       console.warn("LaunchDarkly failed to initialize, using flag defaults", e);
     }
+    readyClient = client;
     return client;
   })();
-  return ldClient;
+  return init.pending;
 }
 
 export async function getLaunchDarklyFlagValue<ReturnValue = boolean>({

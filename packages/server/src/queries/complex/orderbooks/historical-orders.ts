@@ -2,12 +2,12 @@ import { tickToPrice } from "@osmosis-labs/math";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import {
   HistoricalLimitOrder,
   queryHistoricalOrders,

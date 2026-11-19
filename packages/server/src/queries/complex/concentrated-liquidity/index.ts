@@ -10,7 +10,7 @@ import {
   RatePretty,
 } from "@osmosis-labs/unit";
 import { aggregateCoinsByDenom, timeout } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -37,7 +37,7 @@ import {
   queryAccountDelegatedPositions,
   queryAccountUndelegatingPositions,
 } from "../../../queries/osmosis/superfluid";
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryPositionPerformance } from "../../data-services";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getSuperfluidPoolIds } from "../pools/superfluid";

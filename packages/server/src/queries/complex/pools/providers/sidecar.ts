@@ -2,7 +2,7 @@ import type { PoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { timeout } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
@@ -13,7 +13,7 @@ import {
   SortType,
 } from "../../../../queries/complex/pools";
 import { queryPools } from "../../../../queries/sidecar";
-import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset, isHoldingValueUnknown } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";

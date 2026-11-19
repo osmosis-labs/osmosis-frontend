@@ -1,11 +1,11 @@
 import { Chain } from "@osmosis-labs/types";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { LRUCache } from "lru-cache";
 
 import { Epochs, queryEpochs } from "../../../queries/osmosis/epochs";
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 
 const epochsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 

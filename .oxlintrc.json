@@ -223,6 +223,33 @@
       }
     },
     {
+      "files": [
+        "packages/server/src/**/*.ts",
+        "packages/bridge/src/**/*.ts",
+        "packages/tx/src/**/*.ts"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "cachified",
+                "importNames": ["default", "cachified"],
+                "message": "Import cachified from @osmosis-labs/server (utils/cache.ts): it keeps in-flight values within a Cloudflare Worker request."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/server/src/utils/cache.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
       "files": ["packages/proto-codecs/**/*.{js,cjs,mjs,jsx,ts,tsx}"],
       "rules": {
         "typescript/no-namespace": "off"

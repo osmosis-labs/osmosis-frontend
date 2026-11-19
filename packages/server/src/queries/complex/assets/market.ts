@@ -6,10 +6,11 @@ import {
 } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { AsyncTimeoutError, timeout } from "@osmosis-labs/utils";
-import cachified, { type CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
+  cachified,
   DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";

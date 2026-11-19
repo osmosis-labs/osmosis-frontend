@@ -1,9 +1,10 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils";
+import { cachified } from "../../../utils/cache";
 import {
   querySuperfluidAssetMultiplier,
   querySuperfluidParams,

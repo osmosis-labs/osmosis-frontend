@@ -1,7 +1,8 @@
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { getRequestScoped } from "../../../utils/request-scope";
 import { queryCanonicalOrderbooks } from "../../sidecar/orderbooks";
 
 const orderbookPoolsCache = new LRUCache<string, CacheEntry>(
@@ -55,18 +56,26 @@ export function getOrderbookPools() {
  */
 const FRESH_MIN_INTERVAL_MS = 1500;
 let lastFreshReadAt = 0;
-let inFlightFreshRead: Promise<Orderbook[]> | undefined;
+
+/** The fresh read in flight. On Workers one per request: a read started by one
+ *  request can't settle in another (see `request-scope.ts`). */
+type FreshRead = { inFlight?: Promise<Orderbook[]> };
+const sharedFreshRead: FreshRead = {};
+const freshReadSlot = {};
 
 export function getOrderbookPoolsFresh(): Promise<Orderbook[]> {
+  const freshRead =
+    getRequestScoped<FreshRead>(freshReadSlot, () => ({})) ?? sharedFreshRead;
   // Concurrent fresh reads share one sidecar request.
-  if (inFlightFreshRead) return inFlightFreshRead;
+  if (freshRead.inFlight) return freshRead.inFlight;
   // A fresh read just completed and wrote its result back: serve that.
   if (Date.now() - lastFreshReadAt < FRESH_MIN_INTERVAL_MS) {
     return fetchOrderbookPools(false);
   }
-  inFlightFreshRead = fetchOrderbookPools(true).finally(() => {
+  const read = fetchOrderbookPools(true).finally(() => {
     lastFreshReadAt = Date.now();
-    inFlightFreshRead = undefined;
+    freshRead.inFlight = undefined;
   });
-  return inFlightFreshRead;
+  freshRead.inFlight = read;
+  return read;
 }

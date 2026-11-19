@@ -1,9 +1,10 @@
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { captureIfError, DEFAULT_LRU_OPTIONS } from "../../../utils";
+import { cachified } from "../../../utils/cache";
 import { queryTransmuterTotalPoolLiquidity } from "../../contracts";
 import { getAsset } from "../assets";
 

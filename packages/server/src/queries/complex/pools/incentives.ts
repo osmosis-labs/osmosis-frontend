@@ -1,6 +1,6 @@
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
-import cachified, { type CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -10,6 +10,7 @@ import { z } from "zod";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import {
+  cachified,
   DATA_SERVICES_APR_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
