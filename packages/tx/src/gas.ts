@@ -1,7 +1,8 @@
-import { cached, type CacheEntry } from "@osmosis-labs/server";
 import {
   BaseAccount,
   BaseAccountTypeStr,
+  cached,
+  type CacheEntry,
   DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,

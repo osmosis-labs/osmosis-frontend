@@ -1,5 +1,9 @@
-import { type Cache, cached } from "@osmosis-labs/server";
-import { Chain, queryGeneratedChains } from "@osmosis-labs/server";
+import {
+  type Cache,
+  cached,
+  Chain,
+  queryGeneratedChains,
+} from "@osmosis-labs/server";
 import { AssetList, Chain as OsmosisTypesChain } from "@osmosis-labs/types";
 
 import { BridgeAsset } from "../interface";

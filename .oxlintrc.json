@@ -26,6 +26,17 @@
     "packages/proto-codecs/src/codegen/**"
   ],
   "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "cachified",
+            "message": "Use `cached` from @osmosis-labs/server (utils/cached.ts): cachified shares pending promises across requests and refreshes on timers, which break on Cloudflare Workers."
+          }
+        ]
+      }
+    ],
     "no-array-constructor": "error",
     "unicorn/filename-case": [
       "error",
@@ -226,28 +237,6 @@
       ],
       "rules": {
         "import/no-default-export": "off"
-      }
-    },
-    {
-      "files": [
-        "packages/server/src/**/*.ts",
-        "packages/bridge/src/**/*.ts",
-        "packages/tx/src/**/*.ts",
-        "packages/trpc/src/**/*.ts",
-        "packages/utils/src/**/*.ts"
-      ],
-      "rules": {
-        "no-restricted-imports": [
-          "error",
-          {
-            "paths": [
-              {
-                "name": "cachified",
-                "message": "Use `cached` from @osmosis-labs/server (utils/cached.ts): cachified shares pending promises across requests and refreshes on timers, which break on Cloudflare Workers."
-              }
-            ]
-          }
-        ]
       }
     },
     {

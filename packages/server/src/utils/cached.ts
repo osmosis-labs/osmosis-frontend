@@ -145,14 +145,19 @@ function isValid(result: CheckResult): boolean {
   return result === true || result === undefined || result === null;
 }
 
+/** True for a well-formed entry. A malformed one (e.g. no `createdTime`) would otherwise
+ *  read as fresh forever, so it is treated as missing and refetched. */
 function isEntry(entry: unknown): entry is CacheEntry {
+  if (typeof entry !== "object" || entry === null || !("value" in entry)) {
+    return false;
+  }
+  const metadata = (entry as { metadata?: unknown }).metadata;
+  if (typeof metadata !== "object" || metadata === null) return false;
+  const { createdTime, ttl, swr } = metadata as Partial<CacheMetadata>;
   return (
-    typeof entry === "object" &&
-    entry !== null &&
-    "value" in entry &&
-    "metadata" in entry &&
-    typeof (entry as CacheEntry).metadata === "object" &&
-    (entry as CacheEntry).metadata !== null
+    Number.isFinite(createdTime) &&
+    (ttl === null || typeof ttl === "number") &&
+    typeof swr === "number"
   );
 }
 
@@ -241,7 +246,12 @@ function fetchFresh<Value>(
   const work = (async () => {
     const value = await getFreshOrFallback(options, { background, metadata });
     if (checkValue) {
-      const result = await checkValue(value);
+      let result: CheckResult;
+      try {
+        result = await checkValue(value);
+      } catch (e) {
+        result = String(e);
+      }
       if (!isValid(result)) {
         throw Object.assign(
           new Error(`check failed for fresh value of ${key}`),

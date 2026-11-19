@@ -8,8 +8,8 @@ import {
   getBridgeSupportedAssetsParams,
   getBridgeTransactionStepSchema,
 } from "@osmosis-labs/bridge";
-import { type CacheEntry } from "@osmosis-labs/server";
 import {
+  type CacheEntry,
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
   getCachedTransmuterTotalPoolLiquidity,

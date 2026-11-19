@@ -176,6 +176,23 @@ describe("cached outside a request (Node, browser)", () => {
     expect(cache.has("k")).toBe(false);
   });
 
+  it("fails with the same error when checkValue throws on a fresh value", async () => {
+    const cache = newCache();
+
+    await expect(
+      cached({
+        key: "k",
+        cache,
+        ttl: 1000,
+        getFreshValue: async () => "v",
+        checkValue: () => {
+          throw new Error("bad shape");
+        },
+      })
+    ).rejects.toThrow("check failed for fresh value of k");
+    expect(cache.has("k")).toBe(false);
+  });
+
   it("forceFresh fetches, and falls back to the cached value when that fails", async () => {
     const cache = newCache();
     await cached({
@@ -331,6 +348,24 @@ describe("cached outside a request (Node, browser)", () => {
         getFreshValue: async () => "v",
       })
     ).toBe("v");
+  });
+
+  it("refetches an entry with malformed metadata instead of treating it as fresh", async () => {
+    const cache = newCache();
+    cache.set("k", {
+      value: "broken",
+      metadata: { ttl: null },
+    } as unknown as CacheEntry);
+
+    expect(
+      await cached({
+        key: "k",
+        cache,
+        ttl: 1000,
+        getFreshValue: async () => "v",
+      })
+    ).toBe("v");
+    expect(cache.get("k")?.value).toBe("v");
   });
 });
 
