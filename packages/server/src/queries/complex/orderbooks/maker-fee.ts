@@ -1,9 +1,9 @@
 import { Chain } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { queryOrderbookMakerFee } from "../../osmosis";
 
 const makerFeeCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -15,7 +15,7 @@ export function getOrderbookMakerFee({
   orderbookAddress: string;
   chainList: Chain[];
 }) {
-  return cachified({
+  return cached({
     cache: makerFeeCache,
     key: `orderbookMakerFee-${orderbookAddress}`,
     ttl: 1000 * 60 * 60 * 4, // 4 hours

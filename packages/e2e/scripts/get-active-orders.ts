@@ -21,10 +21,11 @@
 
 import * as dotenv from "dotenv";
 import * as path from "path";
+
 import {
-  SQS_BASE_URL,
   deriveAddress,
   fetchActiveOrders,
+  SQS_BASE_URL,
 } from "../utils/order-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });

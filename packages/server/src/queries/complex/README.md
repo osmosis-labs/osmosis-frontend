@@ -4,13 +4,15 @@ This file contains complex query functions: the combination of raw query data fr
 
 ## Caching
 
-Functions are often wrapped in a caching layer to prevent unnecessary database calls and data processing. This is done using the [`cachified`](https://github.com/epicweb-dev/cachified) library. Most functions, except those that rely on real-time user data (such as bank balances), are wrapped. The actual cache implementation is passed to `cachified` to store the data: for in-memory caching we use [`lru-cache`](https://github.com/isaacs/node-lru-cache).
+Functions are often wrapped in a caching layer to prevent unnecessary database calls and data processing. This is done with `cached` (`utils/cached.ts`). Most functions, except those that rely on real-time user data (such as bank balances), are wrapped. The actual cache implementation is passed to `cached` to store the data: for in-memory caching we use [`lru-cache`](https://github.com/isaacs/node-lru-cache).
+
+`cached` is built for Cloudflare Workers, where a promise can only settle in the request that created it and work nobody awaits is cancelled once the response is sent. So never keep a pending promise, DataLoader, or semaphore in module state: use `cached`, or `getRequestScoped` from `utils/request-scope.ts` for anything else in flight. Only settled values may be shared across requests. The `cachified` library is banned by lint for this reason.
 
 The `key` value should include all stringified inputs that needed are in `getFreshValue`.
 
 ### Cache Timing
 
-Cachified includes two settings for specifying the lifetime of a cached value: `ttl` and `staleWhileRevalidate`. The `ttl` is the time-to-live, or the maximum time a value should be cached. The `staleWhileRevalidate` is the time a value can be served after it has expired, while the cache is being updated in the background. This is useful for ensuring that the user does not experience a delay while the cache is being updated.
+`cached` takes two settings for specifying the lifetime of a cached value: `ttl` and `staleWhileRevalidate`. The `ttl` is the time-to-live, or the maximum time a value should be cached. The `staleWhileRevalidate` is the time a value can be served after it has expired, while the cache is being updated in the background. This is useful for ensuring that the user does not experience a delay while the cache is being updated.
 
 With this, once a value is cached and the function is called again, the following happens:
 
@@ -22,9 +24,9 @@ Example:
 
 ```javascript
 // in memory cache
-const cache = new LRUCache<string, Cache>({ max: 20 });
+const cache = new LRUCache<string, CacheEntry>({ max: 20 });
 async function getAssetData({ denom }: { denom: string }) {
-  return cachified({
+  return cached({
     cache,
     key: `asset-data-${denom}`, // string inputs needed in `getFreshValue` included in key
     ttl: 1000 * 60, // 1 minute (bonus: with an explanation as to why)

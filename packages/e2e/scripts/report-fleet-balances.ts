@@ -34,13 +34,13 @@ import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";
 
-import { deriveAddress } from "../utils/wallet-utils";
-import { fetchTokenPrices } from "../utils/price-utils";
 import {
-  type TokenBalance,
   fetchAllKnownBalances,
+  type TokenBalance,
   validatePrivateKey,
 } from "../utils/fund-utils";
+import { fetchTokenPrices } from "../utils/price-utils";
+import { deriveAddress } from "../utils/wallet-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 

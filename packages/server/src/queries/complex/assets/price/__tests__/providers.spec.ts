@@ -1,6 +1,12 @@
+import { AsyncLocalStorage } from "node:async_hooks";
+
 import { Asset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 
+import {
+  type RequestScope,
+  setRequestScopeProvider,
+} from "../../../../../utils/request-scope";
 import { AssetLists as assetLists } from "../../../../__tests__/mock-asset-lists";
 import { MockChains as chainList } from "../../../../__tests__/mock-chains";
 import { querySimplePrice } from "../../../../coingecko";
@@ -127,5 +133,44 @@ describe("getAssetPrice", () => {
     await expect(getAssetPrice(params)).resolves.toEqual(new Dec(2));
 
     expect(priceProvider).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not let a late 'no price' answer hide a price found meanwhile", async () => {
+    // Two requests on one Worker isolate, each with its own in-flight fetch.
+    const scopes = new AsyncLocalStorage<RequestScope>();
+    setRequestScopeProvider(() => scopes.getStore());
+    const inRequest = <T>(fn: () => T) =>
+      scopes.run({ waitUntil: () => undefined }, fn);
+
+    try {
+      const coinMinimalDenom = assetLists[0].assets.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom !== "uosmo" && coinMinimalDenom !== "uion"
+      )!.coinMinimalDenom;
+      let rejectSlow!: (e: Error) => void;
+      const slow = new Promise<Dec>((_, reject) => (rejectSlow = reject));
+      const params = { assetLists, chainList, asset: { coinMinimalDenom } };
+
+      const late = inRequest(() =>
+        getAssetPrice({ ...params, priceProvider: () => slow })
+      );
+      await expect(
+        inRequest(() =>
+          getAssetPrice({ ...params, priceProvider: async () => new Dec(3) })
+        )
+      ).resolves.toEqual(new Dec(3));
+      rejectSlow(
+        new NoSqsPriceError(`No SQS price result for ${coinMinimalDenom}`)
+      );
+      await expect(late).rejects.toThrow("No SQS price result");
+
+      const priceProvider = jest.fn();
+      await expect(
+        inRequest(() => getAssetPrice({ ...params, priceProvider }))
+      ).resolves.toEqual(new Dec(3));
+      expect(priceProvider).not.toHaveBeenCalled();
+    } finally {
+      setRequestScopeProvider(() => undefined);
+    }
   });
 });

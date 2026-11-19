@@ -23,21 +23,14 @@
  * @requires RESERVE_USDC       - (distribute only) USDC to keep in topup account. Default: 500.
  */
 
+import type { OfflineDirectSigner } from "@cosmjs/proto-signing";
 import BigNumber from "bignumber.js";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
 import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
-import type { OfflineDirectSigner } from "@cosmjs/proto-signing";
-
-import {
-  OSMOSIS_RPC,
-  createSigningClient,
-  deriveAddress,
-} from "../utils/order-utils";
 import {
   type AccountTarget,
-  type ReserveConfig,
   buildSendCoins,
   calculateDistribution,
   computeSwapGaps,
@@ -47,9 +40,15 @@ import {
   printDistributionPlan,
   printReserves,
   printSwapReport,
+  type ReserveConfig,
   resolveRequirementsToTokenUnits,
   validatePrivateKey,
 } from "../utils/fund-utils";
+import {
+  createSigningClient,
+  deriveAddress,
+  OSMOSIS_RPC,
+} from "../utils/order-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 

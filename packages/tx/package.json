@@ -40,7 +40,6 @@
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
     "buffer": "^6.0.3",
-    "cachified": "^3.5.4",
     "cosmjs-types": "^0.10.1",
     "lru-cache": "^10.0.1",
     "utility-types": "^3.10.0"
