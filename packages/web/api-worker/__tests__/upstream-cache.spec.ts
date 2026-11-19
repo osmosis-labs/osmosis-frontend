@@ -1,12 +1,13 @@
 /**
  * @jest-environment node
  */
+import { runInRequestScope } from "~/utils/request-scope";
+
 import {
   applyUpstreamServerTiming,
   bindUpstreamCache,
   installUpstreamCache,
   restoreUpstreamCache,
-  runWithUpstreamCache,
 } from "../upstream-cache";
 
 const POOLS = "https://sqs.osmosis.zone/pools";
@@ -32,7 +33,8 @@ class MemoryCache {
 
 function setup() {
   const cache = new MemoryCache();
-  const pending: Promise<unknown>[] = [];
+  /** One `waitUntil` collector per simulated request. */
+  const requests: Promise<unknown>[][] = [];
   const upstream = jest.fn(
     async (_input: RequestInfo | URL, _init?: RequestInit) =>
       new Response("pools", { status: 200 })
@@ -42,20 +44,24 @@ function setup() {
   installUpstreamCache();
   bindUpstreamCache(cache as unknown as Cache);
 
+  /** Runs `fn` as one Worker request, in its own request scope. */
+  const inRequest = <T>(fn: () => Promise<T>): Promise<T> => {
+    const pending: Promise<unknown>[] = [];
+    requests.push(pending);
+    return runInRequestScope((promise) => {
+      pending.push(promise);
+    }, fn);
+  };
   const call = (input: RequestInfo | URL, init?: RequestInit) =>
-    runWithUpstreamCache(
-      (promise) => {
-        pending.push(promise);
-      },
-      () => globalThis.fetch(input, init)
-    );
+    inRequest(() => globalThis.fetch(input, init));
 
   return {
     cache,
     upstream,
-    pending,
+    requests,
+    inRequest,
     call,
-    flush: () => Promise.all(pending),
+    flush: () => Promise.all(requests.flat()),
     restoreFetch: () => {
       restoreUpstreamCache();
       globalThis.fetch = previous;
@@ -84,11 +90,8 @@ describe("upstream cache", () => {
     expect(await hit.text()).toBe("pools");
     expect(ctx.upstream).toHaveBeenCalledTimes(1);
 
-    const timed = await runWithUpstreamCache(
-      (promise) => {
-        ctx.pending.push(promise);
-      },
-      async () => applyUpstreamServerTiming(await globalThis.fetch(POOLS))
+    const timed = await ctx.inRequest(async () =>
+      applyUpstreamServerTiming(await globalThis.fetch(POOLS))
     );
     expect(timed.headers.get("server-timing")).toBe(
       'upstream;desc="hit=1 miss=0 bypass=0"'
@@ -225,15 +228,13 @@ describe("upstream cache", () => {
   it("shares one upstream read across concurrent misses in one request", async () => {
     const release = gateUpstream();
 
-    const calls = runWithUpstreamCache(
-      () => undefined,
-      () =>
-        Promise.all([
-          globalThis.fetch(POOLS),
-          globalThis.fetch(POOLS),
-          globalThis.fetch(POOLS),
-          globalThis.fetch(POOLS),
-        ])
+    const calls = ctx.inRequest(() =>
+      Promise.all([
+        globalThis.fetch(POOLS),
+        globalThis.fetch(POOLS),
+        globalThis.fetch(POOLS),
+        globalThis.fetch(POOLS),
+      ])
     );
     release();
     const responses = await calls;
@@ -260,18 +261,15 @@ describe("upstream cache", () => {
     });
 
     const controller = new AbortController();
-    const done = runWithUpstreamCache(
-      () => undefined,
-      async () => {
-        const aborted = globalThis.fetch(POOLS, { signal: controller.signal });
-        const kept = globalThis.fetch(POOLS);
-        await started;
-        controller.abort();
-        await expect(aborted).rejects.toMatchObject({ name: "AbortError" });
-        release();
-        return kept.then((response) => response.text());
-      }
-    );
+    const done = ctx.inRequest(async () => {
+      const aborted = globalThis.fetch(POOLS, { signal: controller.signal });
+      const kept = globalThis.fetch(POOLS);
+      await started;
+      controller.abort();
+      await expect(aborted).rejects.toMatchObject({ name: "AbortError" });
+      release();
+      return kept.then((response) => response.text());
+    });
 
     await expect(done).resolves.toBe("pools");
     expect(ctx.upstream).toHaveBeenCalledTimes(1);
@@ -285,9 +283,8 @@ describe("upstream cache", () => {
     controller.abort();
 
     await expect(
-      runWithUpstreamCache(
-        () => undefined,
-        () => globalThis.fetch(POOLS, { signal: controller.signal })
+      ctx.inRequest(() =>
+        globalThis.fetch(POOLS, { signal: controller.signal })
       )
     ).rejects.toMatchObject({ name: "AbortError" });
     expect(ctx.upstream).not.toHaveBeenCalled();
@@ -304,6 +301,17 @@ describe("upstream cache", () => {
     expect(
       await Promise.all(responses.map((response) => response.text()))
     ).toEqual(["pools", "pools"]);
+  });
+
+  it("hands the cache write to the waitUntil of the request that missed", async () => {
+    await Promise.all([
+      ctx.call(POOLS),
+      ctx.call("https://example.test/not-allowlisted"),
+    ]);
+
+    expect(ctx.requests.map((pending) => pending.length)).toEqual([1, 0]);
+    await ctx.flush();
+    expect(ctx.cache.entries.size).toBe(1);
   });
 
   it("falls through to the network when the Cache API throws", async () => {
@@ -329,25 +337,15 @@ describe("upstream cache", () => {
       return new Response("ok", { status: 200 });
     });
 
-    const miss = runWithUpstreamCache(
-      (promise) => {
-        ctx.pending.push(promise);
-      },
-      async () => {
-        await globalThis.fetch(POOLS);
-        return applyUpstreamServerTiming(new Response("miss"));
-      }
-    );
-    const bypass = runWithUpstreamCache(
-      (promise) => {
-        ctx.pending.push(promise);
-      },
-      async () => {
-        await globalThis.fetch("https://example.test/private");
-        await globalThis.fetch(POOLS, { method: "POST", body: "{}" });
-        return applyUpstreamServerTiming(new Response("bypass"));
-      }
-    );
+    const miss = ctx.inRequest(async () => {
+      await globalThis.fetch(POOLS);
+      return applyUpstreamServerTiming(new Response("miss"));
+    });
+    const bypass = ctx.inRequest(async () => {
+      await globalThis.fetch("https://example.test/private");
+      await globalThis.fetch(POOLS, { method: "POST", body: "{}" });
+      return applyUpstreamServerTiming(new Response("bypass"));
+    });
 
     releaseMiss();
     const [missResponse, bypassResponse] = await Promise.all([miss, bypass]);
@@ -403,9 +401,8 @@ describe("upstream cache", () => {
   });
 
   it("appends zero counters to a request that made no upstream calls", async () => {
-    const timed = await runWithUpstreamCache(
-      () => undefined,
-      async () => applyUpstreamServerTiming(new Response("nothing fetched"))
+    const timed = await ctx.inRequest(async () =>
+      applyUpstreamServerTiming(new Response("nothing fetched"))
     );
 
     expect(timed.headers.get("server-timing")).toBe(
@@ -442,7 +439,7 @@ describe("upstream cache", () => {
         await Promise.all(responses.map((response) => response.text()))
       ).toEqual(["pools", "pools"]);
       expect(ctx.cache.entries.size).toBe(0);
-      expect(ctx.pending).toHaveLength(0);
+      expect(ctx.requests).toHaveLength(0);
     });
 
     it("leaves the response without Server-Timing", async () => {

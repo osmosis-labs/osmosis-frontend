@@ -4,9 +4,12 @@
  * Installed by wrapping `globalThis.fetch` from `worker.ts`. Shared packages
  * keep calling `fetch` unchanged. Only the API Worker loads this module. The allowlist is `upstream-cache-rules.ts`.
  *
- * Cache failures and a missing request context fall through to the network.
+ * Per-request state (counters, shared misses) lives on the request scope the
+ * Worker entry opens (`utils/request-scope.ts`). Outside a scope, a call still
+ * reads warm entries but shares nothing, writes nothing and counts nothing.
+ * Cache failures fall through to the network.
  */
-import { AsyncLocalStorage } from "node:async_hooks";
+import { getRequestScope, getRequestScoped } from "@osmosis-labs/server";
 
 import { parseCacheControl } from "~/utils/edge-cache";
 
@@ -16,13 +19,10 @@ import {
   type UpstreamCacheRule,
 } from "./upstream-cache-rules";
 
-type WaitUntil = (promise: Promise<unknown>) => void;
-
 type RequestState = {
   hit: number;
   miss: number;
   bypass: number;
-  waitUntil: WaitUntil;
   /**
    * One upstream read per cache key, shared by concurrent misses within this request (a tRPC
    * batch often needs the same upstream several times). Never shared across requests: the
@@ -39,7 +39,18 @@ type CachedBody = {
   body: ArrayBuffer;
 };
 
-const requestStore = new AsyncLocalStorage<RequestState>();
+/** The request-scope slot for this module's `RequestState`. */
+const STATE_KEY = {};
+
+/** This request's state, or `undefined` outside a request scope. */
+function requestState(): RequestState | undefined {
+  return getRequestScoped<RequestState>(STATE_KEY, () => ({
+    hit: 0,
+    miss: 0,
+    bypass: 0,
+    inflight: new Map(),
+  }));
+}
 
 /**
  * Caps concurrent distinct misses per request. Past this, callers fetch on
@@ -75,22 +86,12 @@ export function bindUpstreamCache(cache: Cache): void {
 }
 
 /**
- * Per-request counters and `waitUntil`. Concurrent requests get separate
- * stores, so `Server-Timing` cannot leak across them.
+ * Appends `upstream;desc="hit=… miss=… bypass=…"` from the current request, zeros included.
+ * Concurrent requests have separate scopes, so counts cannot leak across them. Outside a
+ * request scope the response is returned unchanged.
  */
-export function runWithUpstreamCache<T>(
-  waitUntil: WaitUntil,
-  fn: () => Promise<T>
-): Promise<T> {
-  return requestStore.run(
-    { hit: 0, miss: 0, bypass: 0, waitUntil, inflight: new Map() },
-    fn
-  );
-}
-
-/** Appends `upstream;desc="hit=… miss=… bypass=…"` from the current request. */
 export function applyUpstreamServerTiming(response: Response): Response {
-  const counts = requestStore.getStore();
+  const counts = requestState();
   if (!counts) return response;
   const headers = new Headers(response.headers);
   const desc = `hit=${counts.hit} miss=${counts.miss} bypass=${counts.bypass}`;
@@ -256,7 +257,7 @@ function loadShared(
   key: string,
   loader: () => Promise<CachedBody>
 ): Promise<CachedBody> {
-  const inflight = requestStore.getStore()?.inflight;
+  const inflight = requestState()?.inflight;
   if (!inflight) return loader();
   const existing = inflight.get(key);
   if (existing) return existing;
@@ -277,8 +278,8 @@ function loadShared(
 
 function storeSnapshot(key: string, snapshot: CachedBody, ttl: number): void {
   const cache = cacheStore;
-  const counts = requestStore.getStore();
-  if (!cache || !counts) return;
+  const scope = getRequestScope();
+  if (!cache || !scope) return;
 
   const headers = storedHeaders(snapshot.headers, ttl);
   const stored = new Response(snapshot.body.slice(0), {
@@ -290,7 +291,7 @@ function storeSnapshot(key: string, snapshot: CachedBody, ttl: number): void {
     console.error("Upstream cache write failed", key, error);
   });
   try {
-    counts.waitUntil(write);
+    scope.waitUntil(write);
   } catch (error) {
     console.error("Upstream cache waitUntil failed", key, error);
   }
@@ -386,7 +387,7 @@ function readRequest(
 }
 
 function count(kind: "hit" | "miss" | "bypass"): void {
-  const counts = requestStore.getStore();
+  const counts = requestState();
   if (counts) counts[kind] += 1;
 }
 
