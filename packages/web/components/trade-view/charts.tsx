@@ -25,13 +25,8 @@ export const AssetUsdChart: FunctionComponent<{
         strategy="afterInteractive"
       />
       {coinDenom ? (
-        // The widget reads its symbol only at creation, so rebuild it when
-        // the denom changes.
-        <AdvancedChart
-          key={coinDenom}
-          coinDenom={coinDenom}
-          datafeed={datafeed}
-        />
+        // A denom change switches the symbol on the live chart.
+        <AdvancedChart coinDenom={coinDenom} datafeed={datafeed} />
       ) : (
         <ChartUnavailable />
       )}

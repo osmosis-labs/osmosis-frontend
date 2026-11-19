@@ -114,7 +114,6 @@ export const TradeViewChart: FunctionComponent<{
       className
     )}
   >
-    {/* The TradingView widget is built once per mount; remount per asset. */}
-    <AssetUsdChart key={base ?? ""} coinDenom={base} />
+    <AssetUsdChart coinDenom={base} />
   </section>
 );
