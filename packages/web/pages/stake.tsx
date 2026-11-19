@@ -179,6 +179,11 @@ export const Staking: React.FC = memo(() => {
       ? "stake"
       : "edit";
 
+  // `useAmountInput` returns a fresh object every render, but its `reset`
+  // is a stable useCallback; depend on that, not the whole config.
+  const resetStakeAmount = stakeTabAmountConfig.reset;
+  const resetUnstakeAmount = unstakeTabAmountConfig.reset;
+
   const openSquadModalToStake = useCallback(() => {
     setSquadModalOpener("stake");
     setShowValidatorModal(true);
@@ -192,7 +197,7 @@ export const Staking: React.FC = memo(() => {
   const stakeCall = useCallback(() => {
     if (isReadyToSendTx && coin?.amount) {
       prepareDelegateToValidatorSetMsg(transactionContext, coin, "", (tx) => {
-        if (tx.code === 0) stakeTabAmountConfig.reset();
+        if (tx.code === 0) resetStakeAmount();
       })
         .then((prepared) => signAndBroadcast(...prepared))
         .catch(console.error);
@@ -204,7 +209,7 @@ export const Staking: React.FC = memo(() => {
     coin,
     signAndBroadcast,
     transactionContext,
-    stakeTabAmountConfig.reset,
+    resetStakeAmount,
   ]);
 
   const unstakeCall = useCallback(() => {
@@ -214,7 +219,7 @@ export const Staking: React.FC = memo(() => {
         coin,
         "",
         (tx) => {
-          if (tx.code === 0) unstakeTabAmountConfig.reset();
+          if (tx.code === 0) resetUnstakeAmount();
         }
       )
         .then((prepared) => signAndBroadcast(...prepared))
@@ -227,7 +232,7 @@ export const Staking: React.FC = memo(() => {
     coin,
     signAndBroadcast,
     transactionContext,
-    unstakeTabAmountConfig.reset,
+    resetUnstakeAmount,
   ]);
 
   const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
