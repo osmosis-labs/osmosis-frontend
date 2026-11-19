@@ -1,7 +1,7 @@
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { queryPortfolioOverTime } from "../../data-services";
 
 export type Range = "1d" | "7d" | "1mo" | "1y" | "all";
@@ -20,7 +20,7 @@ export async function getPortfolioOverTime({
   address: string;
   range: Range;
 }): Promise<ChartPortfolioOverTimeResponse[]> {
-  return await cachified({
+  return await cached({
     cache: transactionsCache,
     ttl: 1000 * 60, // 60 seconds
     key: `portfolio-over-time-${address}-range-${range}`,

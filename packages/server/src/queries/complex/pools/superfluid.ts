@@ -5,7 +5,6 @@ import type {
 } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -19,6 +18,7 @@ import {
 } from "../../../queries/osmosis";
 import { queryAllSuperfluidAssets } from "../../../queries/osmosis/superfluid";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { getEpochs } from "../osmosis";
 import { getPool, Pool } from ".";
 
@@ -28,7 +28,7 @@ const superfluidAprCache = new LRUCache<string, CacheEntry>(
 );
 
 export function getSuperfluidPoolIds({ chainList }: { chainList: Chain[] }) {
-  return cachified({
+  return cached({
     cache: superfluidCache,
     key: "superfluid-pool-ids",
     ttl: 1000 * 60 * 5, // 5 mins
@@ -70,7 +70,7 @@ export function getSuperfluidPoolApr({
   chainList: Chain[];
   assetLists: AssetList[];
 }): Promise<RatePretty> {
-  return cachified({
+  return cached({
     cache: superfluidAprCache,
     key: `superfluid-pool-apr-${poolId}`,
     ttl: 1000 * 60 * 5, // 5 mins
@@ -107,7 +107,7 @@ export function getOsmoStakingAprPercent({
 }: {
   chainList: Chain[];
 }): Promise<Dec> {
-  return cachified({
+  return cached({
     cache: superfluidAprCache,
     key: "osmo-staking-apr-percent",
     ttl: 1000 * 60 * 5, // 5 mins

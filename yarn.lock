@@ -7569,9 +7569,7 @@ __metadata:
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
-    cachified: "npm:^3.5.4"
     jest: "npm:^30.5.2"
-    launchdarkly-node-client-sdk: "npm:^3.4.3"
     long: "npm:^5.2.3"
     lru-cache: "npm:^10.0.1"
     oxlint: "npm:^1.90.0"
@@ -7628,7 +7626,6 @@ __metadata:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
     "@types/jest-in-case": "npm:^1.0.6"
-    cachified: "npm:^3.5.4"
     dataloader: "npm:^2.2.3"
     dayjs: "npm:^1.11.23"
     fuse.js: "npm:^6.5.3"
@@ -7684,7 +7681,6 @@ __metadata:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
     buffer: "npm:^6.0.3"
-    cachified: "npm:^3.5.4"
     cosmjs-types: "npm:^0.10.1"
     jest: "npm:^30.5.2"
     lru-cache: "npm:^10.0.1"
@@ -7825,7 +7821,6 @@ __metadata:
     axios: "npm:^0.34.0"
     babel-plugin-react-compiler: "npm:1.0.0"
     bip39-light: "npm:^1.0.7"
-    cachified: "npm:^3.5.4"
     chokidar-cli: "npm:^3.0.0"
     class-variance-authority: "npm:^0.7.0"
     classnames: "npm:^2.5.1"
@@ -14671,13 +14666,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cachified@npm:^3.5.4":
-  version: 3.5.4
-  resolution: "cachified@npm:3.5.4"
-  checksum: 10c0/16da8d9ed79ed5ef8a3c50f3d3f50719aff4b824ab746a27f4ae2f3c060fc034f8a48127d5d3e29d452cf2aa451a8dd293021b01bed3183d475a4b23c058aa0f
-  languageName: node
-  linkType: hard
-
 "call-bind-apply-helpers@npm:^1.0.1, call-bind-apply-helpers@npm:^1.0.2":
   version: 1.0.2
   resolution: "call-bind-apply-helpers@npm:1.0.2"
@@ -18668,7 +18656,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.9":
+"graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.9":
   version: 4.2.9
   resolution: "graceful-fs@npm:4.2.9"
   checksum: 10c0/2a66760ce6677ca18a24a1ef15d440cfd970086446af1e78c9e9de083c48122d8bd9c3fdc37f8f80f34aae833fa0d9dd52725e75a1c3f433ddd34eece39e7376
@@ -21057,13 +21045,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"launchdarkly-eventsource@npm:2.0.3":
-  version: 2.0.3
-  resolution: "launchdarkly-eventsource@npm:2.0.3"
-  checksum: 10c0/8a7274e26231e43970a4d8ed52d572d1278bb0f1e90ada0dc86117cf0925e5a579c6b7e8b958eb4bada2aa471c6880ac12ef1c5d00cb513de5852cb04b104794
-  languageName: node
-  linkType: hard
-
 "launchdarkly-js-client-sdk@npm:^3.9.5":
   version: 3.9.5
   resolution: "launchdarkly-js-client-sdk@npm:3.9.5"
@@ -21081,17 +21062,6 @@ __metadata:
     base64-js: "npm:^1.3.0"
     fast-deep-equal: "npm:^2.0.1"
   checksum: 10c0/1cd8450a1ba845e5796fd9af72c7656a9de79797b05cc28b21198bf6eb3610ca7a1127502137e78791d34a257b321e7a71e84e7946abc613d90548a56d56c21d
-  languageName: node
-  linkType: hard
-
-"launchdarkly-node-client-sdk@npm:^3.4.3":
-  version: 3.4.3
-  resolution: "launchdarkly-node-client-sdk@npm:3.4.3"
-  dependencies:
-    launchdarkly-eventsource: "npm:2.0.3"
-    launchdarkly-js-sdk-common: "npm:5.8.3"
-    node-localstorage: "npm:^1.3.1"
-  checksum: 10c0/2864bc5661a41e8e1a138984744f3c9ab92eade2e50a435a11274795cfd4ad6326e30738849233ae15fe7ba4b5ed96f4ea2bfc38c827e330dd7d8348517c8b93
   languageName: node
   linkType: hard
 
@@ -22532,15 +22502,6 @@ __metadata:
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
   checksum: 10c0/a6a4d8369e2f2720e9c645255ffde909c0fbd41c92ea92a5607fc17055955daac99c1ff589d421eee12a0d24e99f7bfc2aabfeb1a4c14742f6c099a51863f31a
-  languageName: node
-  linkType: hard
-
-"node-localstorage@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "node-localstorage@npm:1.3.1"
-  dependencies:
-    write-file-atomic: "npm:^1.1.4"
-  checksum: 10c0/78eb29d4fa36bd7fc1f48a6e197201beb46d75532ad5ba11932f29fd60ed7e0d83018977a31e0bea44ef49d3c8448f5ddf0eb7566fcc5f6321b29d45f36663a6
   languageName: node
   linkType: hard
 
@@ -25887,13 +25848,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slide@npm:^1.1.5":
-  version: 1.1.6
-  resolution: "slide@npm:1.1.6"
-  checksum: 10c0/f3bde70fd4c0a2ba6c23c674f010849865ddfacbc0ae3a57522d7ce88e4cc6c186d627943c34004d4f009a3fb477c03307b247ab69a266de4b3c72b271a6a03a
-  languageName: node
-  linkType: hard
-
 "slow-redact@npm:^0.3.0":
   version: 0.3.2
   resolution: "slow-redact@npm:0.3.2"
@@ -28628,17 +28582,6 @@ __metadata:
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
   checksum: 10c0/56fece1a4018c6a6c8e28fbc88c87e0fbf4ea8fd64fc6c63b18f4acc4bd13e0ad2515189786dd2c30d3eec9663d70f4ecf699330002f8ccb547e4a18231fc9f0
-  languageName: node
-  linkType: hard
-
-"write-file-atomic@npm:^1.1.4":
-  version: 1.3.4
-  resolution: "write-file-atomic@npm:1.3.4"
-  dependencies:
-    graceful-fs: "npm:^4.1.11"
-    imurmurhash: "npm:^0.1.4"
-    slide: "npm:^1.1.5"
-  checksum: 10c0/6f6270708f12e9bba36c527da3f06e4e11146681947b00732695f769f23651713e085e88a5e0f8d04f40d131ed1f1f588d9eeade3a0f862fe8a91f4b4a15a23c
   languageName: node
   linkType: hard
 

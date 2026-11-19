@@ -1,9 +1,9 @@
 import {
   type BrowserContext,
-  type Page,
-  type Response,
   chromium,
   expect,
+  type Page,
+  type Response,
   test,
 } from "@playwright/test";
 

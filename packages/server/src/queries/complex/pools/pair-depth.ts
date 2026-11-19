@@ -2,10 +2,10 @@ import { maxTick, minTick, tickToPrice } from "@osmosis-labs/math";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { queryLiquidityPerTickRange } from "../../osmosis";
 import {
   queryOrderbookTicksSQS,
@@ -226,7 +226,7 @@ export function getPairDepth({
   assetLists: AssetList[];
   chainList: Chain[];
 }): Promise<PairDepthResult> {
-  return cachified({
+  return cached({
     cache: pairDepthCache,
     key: `pairDepth-${poolId}-${bucketSize ?? 0}-${includeCl ? "cl" : "ob"}`,
     ttl: 1000 * 30,
@@ -325,7 +325,7 @@ async function computePairDepth({
       orderbookAddress: contractAddress,
       chainList,
     }),
-    // Network and gateway failures throw so cachified does not cache them
+    // Network and gateway failures throw so the cache does not keep them
     // and React Query keeps the previous successful data (keepPreviousData).
     queryOrderbookTicksSQS({ poolId }),
   ]);
