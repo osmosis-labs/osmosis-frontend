@@ -1,4 +1,3 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import { ProtoStore } from "@cosmology/proto-parser";
 import * as fs from "fs";
 import { join } from "path";

@@ -10,7 +10,6 @@ import {
   RatePretty,
 } from "@osmosis-labs/unit";
 import { aggregateCoinsByDenom, timeout } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -38,6 +37,7 @@ import {
   queryAccountUndelegatingPositions,
 } from "../../../queries/osmosis/superfluid";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { queryPositionPerformance } from "../../data-services";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import { getSuperfluidPoolIds } from "../pools/superfluid";
@@ -197,7 +197,7 @@ function getUserUnbondingPositions({
   chainList: Chain[];
   bech32Address: string;
 }) {
-  return cachified({
+  return cached({
     cache: concentratedLiquidityCache,
     key: `unbonding-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
@@ -213,7 +213,7 @@ function getUserDelegatedPositions({
   chainList: Chain[];
   bech32Address: string;
 }) {
-  return cachified({
+  return cached({
     cache: concentratedLiquidityCache,
     key: `delegated-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
@@ -229,7 +229,7 @@ function getUserUndelegatingPositions({
   chainList: Chain[];
   bech32Address: string;
 }) {
-  return cachified({
+  return cached({
     cache: concentratedLiquidityCache,
     key: `undelegating-cl-positions-${bech32Address}`,
     ttl: 1000 * 5, // 5 seconds
