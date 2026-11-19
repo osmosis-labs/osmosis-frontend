@@ -28,6 +28,8 @@ export interface CacheMetadata {
   ttl: number | null;
   /** How long past `ttl` the value is served while it refreshes, in ms. */
   swr: number;
+  /** Orders fetches started in the same millisecond (see `isLater`). */
+  sequence?: number;
 }
 
 export interface CacheEntry<Value = unknown> {
@@ -58,8 +60,9 @@ export interface CachedOptions<Value> {
   ttl?: number;
   /** Served stale for this long past `ttl` while refreshing, in ms. Default: 0. */
   staleWhileRevalidate?: number;
-  /** Fetch even when a fresh value is cached. If that fetch fails, the cached value (at
-   *  any age) is returned instead. */
+  /** Fetch even when a fresh value is cached. If that fetch fails, the value cached by
+   *  then (at any age) is returned and re-cached with this call's ttl. A fresh value
+   *  that fails `checkValue` still fails the call. */
   forceFresh?: boolean;
   /** Validates a value, cached or fresh: `true` (or nothing) when valid, otherwise a
    *  reason. An invalid cached value is dropped and fetched again; an invalid fresh value
@@ -83,8 +86,19 @@ export function getFreshness(
   return now <= freshUntil + metadata.swr ? "stale" : "expired";
 }
 
+/** A fetch in flight. Joined only while it is within its ttl, like cachified: past that
+ *  a caller starts a new fetch, and its value also settles the callers of this one. */
+interface PendingFetch {
+  promise: Promise<unknown>;
+  metadata: CacheMetadata;
+  adopt: (value: unknown) => void;
+  /** Started with `forceFresh`. A forced call joins only another forced one: a regular
+   *  fetch may be cached with a longer ttl than the forced call asks for. */
+  forced: boolean;
+}
+
 /** In-flight fetches by cache and key. On Workers there is one map per request. */
-type PendingFetches = WeakMap<Cache, Map<string, Promise<unknown>>>;
+type PendingFetches = WeakMap<Cache, Map<string, PendingFetch>>;
 
 const sharedPending: PendingFetches = new WeakMap();
 const pendingByScope = new WeakMap<RequestScope, PendingFetches>();
@@ -92,7 +106,7 @@ const pendingByScope = new WeakMap<RequestScope, PendingFetches>();
 function getPendingFetches(
   scope: RequestScope | undefined,
   cache: Cache
-): Map<string, Promise<unknown>> {
+): Map<string, PendingFetch> {
   let byCache = sharedPending;
   if (scope) {
     byCache = pendingByScope.get(scope) ?? new WeakMap();
@@ -106,53 +120,102 @@ function getPendingFetches(
   return pending;
 }
 
+/** Orders fetches started in the same millisecond. Per isolate, like the caches. */
+let lastSequence = 0;
+
+function newMetadata<Value>(options: CachedOptions<Value>): CacheMetadata {
+  return {
+    createdTime: Date.now(),
+    sequence: ++lastSequence,
+    ttl:
+      options.ttl === undefined || options.ttl === Infinity
+        ? null
+        : options.ttl,
+    swr: options.staleWhileRevalidate ?? 0,
+  };
+}
+
+/** True when `a` comes from a fetch started after `b`'s. */
+function isLater(a: CacheMetadata, b: CacheMetadata): boolean {
+  if (a.createdTime !== b.createdTime) return a.createdTime > b.createdTime;
+  return (a.sequence ?? 0) > (b.sequence ?? 0);
+}
+
 function isValid(result: CheckResult): boolean {
   return result === true || result === undefined || result === null;
 }
 
+function isEntry(entry: unknown): entry is CacheEntry {
+  return (
+    typeof entry === "object" &&
+    entry !== null &&
+    "value" in entry &&
+    "metadata" in entry &&
+    typeof (entry as CacheEntry).metadata === "object" &&
+    (entry as CacheEntry).metadata !== null
+  );
+}
+
 /** The cached entry, or `undefined` when there is none, it can't be read, or it fails
- *  `checkValue` (then it is dropped). */
+ *  `checkValue` (then it is dropped, unless it was replaced meanwhile). */
 async function readEntry<Value>(
   options: CachedOptions<Value>
 ): Promise<CacheEntry<Value> | undefined> {
   const { cache, key, checkValue } = options;
-  let entry: CacheEntry | undefined;
+  let entry: unknown;
   try {
     entry = await cache.get(key);
   } catch {
     return undefined;
   }
-  if (!entry || typeof entry !== "object" || !entry.metadata) return undefined;
+  if (!isEntry(entry)) return undefined;
   if (checkValue) {
     const result = await Promise.resolve()
       .then(() => checkValue(entry.value))
       .catch((e: unknown) => String(e));
     if (!isValid(result)) {
-      await Promise.resolve(cache.delete(key)).catch(() => undefined);
+      await Promise.resolve()
+        .then(async () => {
+          if ((await cache.get(key)) === entry) await cache.delete(key);
+        })
+        .catch(() => undefined);
       return undefined;
     }
   }
   return entry as CacheEntry<Value>;
 }
 
-/** Writes `entry` unless the cache holds one created later. Write failures are ignored:
- *  the caller still gets the value. */
+/** Writes `entry` unless the cache holds one from a later fetch. With a synchronous
+ *  cache (the LRUs) the check and the write happen in one step, so concurrent writers
+ *  can't interleave. Write failures are ignored: the caller still gets the value. */
 async function writeIfNewer(
   cache: Cache,
   key: string,
   entry: CacheEntry
 ): Promise<void> {
   try {
-    const current = await cache.get(key);
-    if (
-      current?.metadata &&
-      current.metadata.createdTime > entry.metadata.createdTime
-    ) {
-      return;
-    }
+    const read = cache.get(key);
+    const current = read instanceof Promise ? await read : read;
+    if (isEntry(current) && isLater(current.metadata, entry.metadata)) return;
     await cache.set(key, entry);
   } catch {
     // Not cached this time.
+  }
+}
+
+/** The fresh value, or with `forceFresh` and a failed fetch, the value cached by then.
+ *  Like cachified, that fallback is then written with this fetch's metadata. */
+async function getFreshOrFallback<Value>(
+  options: CachedOptions<Value>,
+  context: FreshValueContext
+): Promise<Value> {
+  try {
+    return await options.getFreshValue(context);
+  } catch (e) {
+    if (!options.forceFresh) throw e;
+    const fallback = await readEntry(options);
+    if (!fallback) throw e;
+    return fallback.value;
   }
 }
 
@@ -165,18 +228,18 @@ function fetchFresh<Value>(
   const { key, cache, checkValue } = options;
   const pending = getPendingFetches(scope, cache);
   const inFlight = pending.get(key);
-  if (inFlight) return inFlight as Promise<Value>;
+  const forced = Boolean(options.forceFresh);
+  if (
+    inFlight &&
+    (inFlight.forced || !forced) &&
+    getFreshness(inFlight.metadata) === "fresh"
+  ) {
+    return inFlight.promise as Promise<Value>;
+  }
 
-  const metadata: CacheMetadata = {
-    createdTime: Date.now(),
-    ttl:
-      options.ttl === undefined || options.ttl === Infinity
-        ? null
-        : options.ttl,
-    swr: options.staleWhileRevalidate ?? 0,
-  };
-  const fetch = (async () => {
-    const value = await options.getFreshValue({ background, metadata });
+  const metadata = newMetadata(options);
+  const work = (async () => {
+    const value = await getFreshOrFallback(options, { background, metadata });
     if (checkValue) {
       const result = await checkValue(value);
       if (!isValid(result)) {
@@ -190,10 +253,16 @@ function fetchFresh<Value>(
       await writeIfNewer(cache, key, { value, metadata });
     }
     return value;
-  })().finally(() => {
-    if (pending.get(key) === fetch) pending.delete(key);
-  });
-  pending.set(key, fetch);
+  })();
+
+  let adopt!: (value: unknown) => void;
+  const adopted = new Promise<unknown>((resolve) => (adopt = resolve));
+  const fetch = Promise.race([work, adopted]).finally(() => {
+    if (pending.get(key)?.promise === fetch) pending.delete(key);
+  }) as Promise<Value>;
+  // A fetch past its ttl is replaced, not abandoned: its callers get this value too.
+  if (inFlight) work.then(inFlight.adopt, () => undefined);
+  pending.set(key, { promise: fetch, metadata, adopt, forced });
   return fetch;
 }
 
@@ -218,9 +287,9 @@ export async function cached<Value>(
   options: CachedOptions<Value>
 ): Promise<Value> {
   const scope = getRequestScope();
-  const entry = await readEntry(options);
+  const entry = options.forceFresh ? undefined : await readEntry(options);
 
-  if (entry && !options.forceFresh) {
+  if (entry) {
     const freshness = getFreshness(entry.metadata);
     if (freshness === "fresh") return entry.value;
     if (freshness === "stale") {
@@ -229,10 +298,5 @@ export async function cached<Value>(
     }
   }
 
-  try {
-    return await fetchFresh(options, scope, false);
-  } catch (e) {
-    if (options.forceFresh && entry) return entry.value;
-    throw e;
-  }
+  return fetchFresh(options, scope, false);
 }

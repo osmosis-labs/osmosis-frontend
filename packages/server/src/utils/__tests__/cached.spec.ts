@@ -207,6 +207,118 @@ describe("cached outside a request (Node, browser)", () => {
     ).toBe("b");
   });
 
+  it("re-caches a forceFresh fallback with the forced call's ttl", async () => {
+    // The orderbook pools path: an hour-long list must not survive a failed forced
+    // read for another hour; it is retried after the forced read's 15s.
+    const cache = newCache();
+    await cached({
+      key: "k",
+      cache,
+      ttl: 3_600_000,
+      getFreshValue: async () => "old",
+    });
+
+    await cached({
+      key: "k",
+      cache,
+      ttl: 15_000,
+      forceFresh: true,
+      getFreshValue: async () => {
+        throw new Error("down");
+      },
+    });
+
+    expect(cache.get("k")?.metadata.ttl).toBe(15_000);
+  });
+
+  it("forceFresh falls back to a value cached while it was fetching", async () => {
+    const cache = newCache();
+    const failing = deferred<string>();
+
+    const forced = cached({
+      key: "k",
+      cache,
+      ttl: 15_000,
+      forceFresh: true,
+      getFreshValue: () => failing.promise,
+    });
+    cache.set("k", {
+      value: "meanwhile",
+      metadata: { createdTime: Date.now(), ttl: 60_000, swr: 0 },
+    });
+    failing.reject(new Error("down"));
+
+    expect(await forced).toBe("meanwhile");
+  });
+
+  it("forceFresh still fails on a fresh value that fails checkValue", async () => {
+    const cache = newCache();
+    await cached({
+      key: "k",
+      cache,
+      ttl: 60_000,
+      getFreshValue: async () => ["a"],
+    });
+
+    await expect(
+      cached({
+        key: "k",
+        cache,
+        ttl: 60_000,
+        forceFresh: true,
+        getFreshValue: async () => [],
+        checkValue: (v) => (v as string[]).length > 0 || "empty",
+      })
+    ).rejects.toThrow("check failed for fresh value of k");
+  });
+
+  it("a forced call does not join a pending regular fetch", async () => {
+    const cache = newCache();
+    const regular = deferred<string>();
+    const forcedFetch = jest.fn(async () => "forced");
+
+    const r = cached({
+      key: "k",
+      cache,
+      ttl: 3_600_000,
+      getFreshValue: () => regular.promise,
+    });
+    const f = await cached({
+      key: "k",
+      cache,
+      ttl: 15_000,
+      forceFresh: true,
+      getFreshValue: forcedFetch,
+    });
+    regular.resolve("regular");
+    await r;
+
+    expect(f).toBe("forced");
+    expect(forcedFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("starts a new fetch once a pending one is past its ttl, and settles both callers", async () => {
+    const cache = newCache();
+    const stuck = deferred<string>();
+    const first = cached({
+      key: "k",
+      cache,
+      ttl: 10,
+      getFreshValue: () => stuck.promise,
+    });
+    await tick(20);
+
+    const second = await cached({
+      key: "k",
+      cache,
+      ttl: 10,
+      getFreshValue: async () => "replacement",
+    });
+
+    expect(second).toBe("replacement");
+    expect(await first).toBe("replacement");
+  });
+
   it("recovers from an entry it can't read", async () => {
     const cache = newCache();
     cache.set("k", { value: "broken" } as unknown as CacheEntry);
@@ -329,5 +441,35 @@ describe("cached in a Worker request", () => {
     await a;
 
     expect(cache.get("k")?.value).toBe("new");
+  });
+
+  it("orders fetches started in the same millisecond", async () => {
+    const now = jest.spyOn(Date, "now").mockReturnValue(1_000_000);
+    try {
+      const cache = newCache();
+      const older = deferred<string>();
+      const a = inRequest(() =>
+        cached({
+          key: "k",
+          cache,
+          ttl: 60_000,
+          getFreshValue: () => older.promise,
+        })
+      );
+      await inRequest(() =>
+        cached({
+          key: "k",
+          cache,
+          ttl: 60_000,
+          getFreshValue: async () => "new",
+        })
+      );
+      older.resolve("old");
+      await a;
+
+      expect(cache.get("k")?.value).toBe("new");
+    } finally {
+      now.mockRestore();
+    }
   });
 });
