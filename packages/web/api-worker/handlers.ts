@@ -19,7 +19,7 @@ import { trpcHandler } from "~/server/api-handlers/trpc";
 
 import type { ApiHandler, ApiHandlerId } from "./routes";
 
-/** Handler id → Fetch handler. Ids are checked against `API_HANDLER_IDS` by the route tests. */
+/** Handler id → Fetch handler. The type makes TypeScript require one entry per route in `routes.ts`. */
 export const apiHandlers: Record<ApiHandlerId, ApiHandler> = {
   trpc: trpcHandler,
   edgeTrpcMain: edgeTrpcMainHandler,

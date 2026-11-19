@@ -3,7 +3,6 @@
  */
 import { handleApiRequest } from "../dispatch";
 import {
-  API_HANDLER_IDS,
   API_ROUTES,
   type ApiHandler,
   type ApiHandlerId,
@@ -36,10 +35,6 @@ const ROUTE_FIXTURE: readonly (readonly [string, ApiHandlerId])[] = [
 ];
 
 const FIXTURE_IDS = [...new Set(ROUTE_FIXTURE.map(([, id]) => id))];
-
-function routeId(pathname: string): ApiHandlerId | undefined {
-  return matchApiRoute(pathname)?.handlerId;
-}
 
 /** An in-memory stand-in for the Workers Cache API, keyed by URL. */
 class MemoryCache {
@@ -93,11 +88,11 @@ function dispatch(url: string, init?: RequestInit, handlers = stubHandlers()) {
 
 describe("matchApiRoute", () => {
   it.each(ROUTE_FIXTURE)("routes %s to %s", (pathname, handlerId) => {
-    expect(routeId(pathname)).toBe(handlerId);
+    expect(matchApiRoute(pathname)).toBe(handlerId);
   });
 
   it("names every route id in the fixture", () => {
-    expect([...FIXTURE_IDS].sort()).toEqual([...API_HANDLER_IDS].sort());
+    expect([...FIXTURE_IDS].sort()).toEqual(Object.keys(API_ROUTES).sort());
   });
 
   it.each([
@@ -108,42 +103,25 @@ describe("matchApiRoute", () => {
     ["/api/active-gauges/", undefined],
     ["/api/pools/1/", undefined],
   ] as const)("routes the edge case %s to %s", (pathname, handlerId) => {
-    expect(routeId(pathname)).toBe(handlerId);
+    expect(matchApiRoute(pathname)).toBe(handlerId);
   });
 
-  it("parses a single pool id and leaves the list route exact", () => {
-    expect(matchApiRoute("/api/pools/1")).toEqual({
-      handlerId: "pool",
-      params: { id: "1" },
-    });
-    expect(matchApiRoute("/api/pools/42")?.params.id).toBe("42");
-    expect(matchApiRoute("/api/pools")).toEqual({
-      handlerId: "pools",
-      params: {},
-    });
+  it("routes a single pool id and leaves the list route exact", () => {
+    expect(matchApiRoute("/api/pools/1")).toBe("pool");
+    expect(matchApiRoute("/api/pools/42")).toBe("pool");
+    expect(matchApiRoute("/api/pools")).toBe("pools");
     expect(matchApiRoute("/api/pools/1/ticks")).toBeUndefined();
     expect(matchApiRoute("/api/pools/")).toBeUndefined();
   });
 
   it("does not treat a prefix as a prefix of a longer sibling", () => {
-    expect(routeId("/api/trpc-other")).toBeUndefined();
-    expect(routeId("/api/edge-trpc-mainextra")).toBeUndefined();
+    expect(matchApiRoute("/api/trpc-other")).toBeUndefined();
+    expect(matchApiRoute("/api/edge-trpc-mainextra")).toBeUndefined();
   });
 
   it("returns undefined for an unknown path", () => {
-    expect(routeId("/api/missing")).toBeUndefined();
-    expect(routeId("/pools")).toBeUndefined();
-  });
-});
-
-describe("API route table", () => {
-  it("routes every handler exactly once", () => {
-    expect(new Set(API_ROUTES.map((route) => route.handlerId)).size).toBe(
-      API_HANDLER_IDS.length
-    );
-    expect(API_ROUTES.map((route) => route.handlerId).sort()).toEqual(
-      [...API_HANDLER_IDS].sort()
-    );
+    expect(matchApiRoute("/api/missing")).toBeUndefined();
+    expect(matchApiRoute("/pools")).toBeUndefined();
   });
 });
 
