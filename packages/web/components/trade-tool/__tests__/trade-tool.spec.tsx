@@ -58,6 +58,12 @@ jest.mock("~/components/trade-view/use-trade-view-expanded", () => ({
     setExpanded: jest.fn(),
   }),
 }));
+jest.mock("~/components/trade-view/hooks", () => ({
+  useCanonicalOrderbookForPair: () => ({
+    orderbook: undefined,
+    isLoading: false,
+  }),
+}));
 
 describe("TradeTool limit orders kill switch", () => {
   beforeEach(() => {
