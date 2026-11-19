@@ -102,7 +102,7 @@ describe("cachified in a request scope", () => {
     expect(getFreshValue).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps the request alive until a fresh value settles", async () => {
+  it("does not hold the request open for a value it awaits itself", async () => {
     const cache = new LRUCache<string, CacheEntry>({ max: 10 });
     const waitUntil = jest.fn();
 
@@ -117,7 +117,33 @@ describe("cachified in a request scope", () => {
       waitUntil
     );
 
-    expect(waitUntil).toHaveBeenCalledTimes(1);
+    expect(waitUntil).not.toHaveBeenCalled();
+  });
+
+  it("serves a stale value and refreshes it, kept alive through the cache write", async () => {
+    const cache = new LRUCache<string, CacheEntry>({ max: 10 });
+    const options = {
+      key: "k",
+      cache,
+      ttl: 10,
+      staleWhileRevalidate: 60_000,
+    };
+    await inRequest(() =>
+      cachified({ ...options, getFreshValue: async () => "old" })
+    );
+    await new Promise((r) => setTimeout(r, 20));
+
+    const kept: Promise<unknown>[] = [];
+    const stale = await inRequest(
+      () => cachified({ ...options, getFreshValue: async () => "new" }),
+      jest.fn((p: Promise<unknown>) => kept.push(p))
+    );
+
+    // Served stale, and the refresh was handed over before the response, not on a timer.
+    expect(stale).toBe("old");
+    expect(kept).toHaveLength(1);
+    await kept[0];
+    expect(cache.get("k")?.value).toBe("new");
   });
 
   it("is plain cachified outside a request", async () => {

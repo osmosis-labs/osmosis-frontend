@@ -178,6 +178,8 @@ const aprCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 const invalidAprRanges = new LRUCache<string, Error>({
   max: 1_000,
   ttl: 30 * 1000, // 30 seconds
+  // Read the clock on every check: see `priceFailures` in assets/price/index.ts.
+  ttlResolution: 0,
 });
 
 export function getConcentratedRangePoolApr({
