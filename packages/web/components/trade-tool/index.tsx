@@ -62,10 +62,9 @@ interface TradeToolProps {
   /**
    * Where the pair's order book goes when the pair has a canonical orderbook:
    * "expandable" offers an expand control that puts the book beside the
-   * widget and the user's orders below; "below" always shows the book under
-   * the widget; "beside" always puts the book beside the widget, stacking
-   * under it below 1024px, with no chart and no orders (the page shows
-   * those itself). Omit for the widget alone.
+   * widget; "below" always shows the book under the widget; "beside" always
+   * puts the book beside the widget, stacking under it below 1024px, with no
+   * chart (the page shows its own orders). Omit for the widget alone.
    */
   bookLayout?: "expandable" | "below" | "beside";
   /**
@@ -508,7 +507,9 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
           />
         )}
       </div>
-      {isBookBeside && !isBesideLayout && <TradeViewOrders {...pair} />}
+      {/* Only the orderbook pool page lists the user's orders here; the
+          expanded trade view links to order history instead. */}
+      {orderbookPool && <TradeViewOrders {...pair} />}
     </div>
   );
 };
