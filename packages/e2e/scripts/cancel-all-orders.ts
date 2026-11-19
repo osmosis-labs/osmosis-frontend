@@ -35,21 +35,22 @@
  *   Add PRIVATE_KEY=<hex> and optionally DRY_RUN=true to packages/e2e/.env
  */
 
-import * as dotenv from "dotenv";
-import * as path from "path";
 import type { ExecuteInstruction } from "@cosmjs/cosmwasm-stargate";
 import type { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import * as dotenv from "dotenv";
+import * as path from "path";
+
 import {
-  CANCEL_BATCH_SIZE,
-  CANCEL_GAS_MULTIPLIER,
-  OSMOSIS_RPC,
-  SQS_BASE_URL,
   buildCancelMessages,
   buildClaimMessages,
+  CANCEL_BATCH_SIZE,
+  CANCEL_GAS_MULTIPLIER,
   chunk,
   createSigningClient,
   deriveAddress,
   fetchActiveOrders,
+  OSMOSIS_RPC,
+  SQS_BASE_URL,
 } from "../utils/order-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
