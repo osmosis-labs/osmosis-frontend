@@ -17,18 +17,14 @@ export type UpstreamCacheRule = {
   id: string;
   hosts: readonly string[];
   path: RegExp;
-  /** Seconds used when the upstream sends no freshness lifetime. */
-  defaultTtlSeconds: number;
   /**
-   * Hard cap. Spot prices stay at or under 30s. A historical chart may match
-   * its in-memory TTL when that TTL is the bucket width.
+   * Seconds to keep an entry: the fallback when the upstream sends no freshness
+   * lifetime, and the cap when it does. Spot prices stay at or under 30s. A
+   * historical chart may match its in-memory TTL when that TTL is the bucket
+   * width. The function form reads it from the URL, where one path serves a
+   * realtime price (`realtime=true`, 3s) and a slower chart.
    */
-  maxTtlSeconds: number;
-  /**
-   * When set, both the fallback and the cap come from the URL. Used where one
-   * path serves a realtime price (`realtime=true`, 3s) and a slower chart.
-   */
-  ttlSeconds?: (url: URL) => number;
+  ttlSeconds: number | ((url: URL) => number);
   /**
    * When set, a 2xx body is stored only if this returns true. For upstreams that
    * answer "no data" with a 200 the caller won't keep, which the cache would
@@ -83,81 +79,69 @@ const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
     id: "sqs-pools",
     hosts: SIDECAR_HOSTS,
     path: /^\/pools$/,
-    defaultTtlSeconds: 5,
-    maxTtlSeconds: 5,
+    ttlSeconds: 5,
   },
   {
     id: "sqs-prices",
     hosts: SIDECAR_HOSTS,
     path: /^\/tokens\/prices$/,
-    defaultTtlSeconds: 10,
-    maxTtlSeconds: 10,
+    ttlSeconds: 10,
   },
   {
     id: "numia-pools-apr",
     hosts: NUMIA_HOSTS,
     path: /^\/pools_apr$/,
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
+    ttlSeconds: 30,
   },
   {
     id: "numia-pools-apr-range",
     hosts: NUMIA_HOSTS,
     path: /^\/pools_apr_range$/,
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
+    ttlSeconds: 30,
   },
   {
     id: "numia-staking-apr",
     hosts: NUMIA_HOSTS,
     path: /^\/apr$/,
-    defaultTtlSeconds: 30 * 60,
-    maxTtlSeconds: 30 * 60,
+    ttlSeconds: 30 * 60,
   },
   {
     id: "numia-token-data",
     hosts: NUMIA_HOSTS,
     path: /^\/tokens\/v2\/all$/,
     // The payload carries prices. In-memory freshness is 5 minutes; the price cap is 30s.
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
+    ttlSeconds: 30,
   },
   {
     id: "numia-token-chart",
     hosts: NUMIA_HOSTS,
     path: /^\/tokens\/v2\/historical\/[^/]+\/chart$/,
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
     ttlSeconds: tokenChartTtl,
   },
   {
     id: "numia-pair-chart",
     hosts: NUMIA_HOSTS,
     path: /^\/pairs\/v1\/historical\/[^/]+\/chart$/,
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
+    ttlSeconds: 30,
   },
   {
     id: "numia-range-apr",
     hosts: NUMIA_HOSTS,
     path: /^\/cl\/v1\/apr\/rewards\/[^/]+$/,
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
+    ttlSeconds: 30,
   },
   {
     id: "coingecko-simple-price",
     hosts: COINGECKO_HOSTS,
     path: /^\/api\/v3\/simple\/price$/,
     // In-memory price TTL is 60s. The price cap is 30s.
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
+    ttlSeconds: 30,
   },
   {
     id: "coingecko-coin-list",
     hosts: COINGECKO_HOSTS,
     path: /^\/api\/v3\/coins\/list$/,
-    defaultTtlSeconds: 60 * 60,
-    maxTtlSeconds: 60 * 60,
+    ttlSeconds: 60 * 60,
   },
   {
     id: "coingecko-coin",
@@ -165,8 +149,7 @@ const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
     path: /^\/api\/v3\/coins\/(?!list$)[^/]+$/,
     // Coin payloads include market prices, so this stays inside the price cap
     // even though the in-memory coin record is kept for 30 minutes.
-    defaultTtlSeconds: 30,
-    maxTtlSeconds: 30,
+    ttlSeconds: 30,
   },
   {
     id: "coingecko-market-chart",
@@ -175,8 +158,7 @@ const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
     // Matches `getCoinGeckoCoinMarketChart`: the range is bucketed (shortest
     // bucket is 5 minutes) and the in-memory entry lives for that same 5
     // minutes. A 10s cap left every isolate refetching CoinGecko inside one bucket.
-    defaultTtlSeconds: 5 * 60,
-    maxTtlSeconds: 5 * 60,
+    ttlSeconds: 5 * 60,
     acceptBody: hasMarketChartPrices,
   },
   {
@@ -185,15 +167,13 @@ const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
     path: /^\/osmosis-labs\/(?:assetlists|fe-content)\/[^/]+\/.+/,
     // `main` (no commit pin) can change. Commit-pinned URLs are immutable, and
     // 5 minutes still covers a cold isolate during a burst.
-    defaultTtlSeconds: 5 * 60,
-    maxTtlSeconds: 5 * 60,
+    ttlSeconds: 5 * 60,
   },
   {
     id: "keybase-lookup",
     hosts: ["keybase.io"],
     path: /^\/_\/api\/1\.0\/user\/lookup\.json$/,
-    defaultTtlSeconds: 5 * 60,
-    maxTtlSeconds: 5 * 60,
+    ttlSeconds: 5 * 60,
   },
 ];
 
@@ -206,14 +186,9 @@ export function matchUpstreamRule(url: URL): UpstreamCacheRule | undefined {
   return undefined;
 }
 
-/** Fallback and cap for `url`, in seconds. */
-export function ruleTtlBounds(
-  rule: UpstreamCacheRule,
-  url: URL
-): { fallback: number; cap: number } {
-  if (rule.ttlSeconds) {
-    const seconds = rule.ttlSeconds(url);
-    return { fallback: seconds, cap: seconds };
-  }
-  return { fallback: rule.defaultTtlSeconds, cap: rule.maxTtlSeconds };
+/** The rule's TTL for `url`, in seconds: both the fallback and the cap. */
+export function ruleTtlSeconds(rule: UpstreamCacheRule, url: URL): number {
+  return typeof rule.ttlSeconds === "function"
+    ? rule.ttlSeconds(url)
+    : rule.ttlSeconds;
 }

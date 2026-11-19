@@ -15,7 +15,7 @@ import { parseCacheControl } from "~/utils/edge-cache";
 
 import {
   matchUpstreamRule,
-  ruleTtlBounds,
+  ruleTtlSeconds,
   type UpstreamCacheRule,
 } from "./upstream-cache-rules";
 
@@ -152,7 +152,7 @@ async function cachedFetch(
   // any other caller in this request that is still waiting on it.
   if (request.signal.aborted) throw abortReason(request.signal);
   const body = await whenNotAborted(
-    loadShared(key, () => readUpstream(native, request, rule, url)),
+    loadShared(key, () => readUpstream(native, request, rule, url, key)),
     request.signal
   );
   return toResponse(body);
@@ -225,7 +225,8 @@ async function readUpstream(
   native: typeof fetch,
   request: Request,
   rule: UpstreamCacheRule,
-  url: URL
+  url: URL,
+  key: string
 ): Promise<CachedBody> {
   // The caller's signal is not forwarded: one aborted consumer must not
   // cancel the shared read the others are waiting on. `cachedFetch` rejects
@@ -244,7 +245,7 @@ async function readUpstream(
   };
   const ttl = cacheableTtl(response, rule, url);
   if (ttl !== undefined && (!rule.acceptBody || rule.acceptBody(body))) {
-    storeSnapshot(normalizedKey(url), snapshot, ttl);
+    storeSnapshot(key, snapshot, ttl);
   }
   return snapshot;
 }
@@ -325,11 +326,11 @@ function cacheableTtl(
   if (PRIVATE_DIRECTIVES.some((name) => directives.has(name))) {
     return undefined;
   }
-  const { fallback, cap } = ruleTtlBounds(rule, url);
+  const ruleTtl = ruleTtlSeconds(rule, url);
   const advertised =
     directiveSeconds(directives, "s-maxage") ??
     directiveSeconds(directives, "max-age");
-  const ttl = Math.min(advertised ?? fallback, cap);
+  const ttl = Math.min(advertised ?? ruleTtl, ruleTtl);
   if (!Number.isInteger(ttl) || ttl <= 0) return undefined;
   return ttl;
 }
