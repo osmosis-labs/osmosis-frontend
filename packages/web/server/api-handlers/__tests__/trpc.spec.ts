@@ -29,4 +29,18 @@ describe("trpcHandler", () => {
     // tRPC itself answers: the procedure does not exist.
     expect(response.status).toBe(404);
   });
+
+  it.each([
+    "edge.assets.getUserAsset",
+    "local.bridgeTransfer.getSupportedAssetsBalances",
+  ])(
+    "serves only the bridgeTransfer router (%s is not found)",
+    async (path) => {
+      const response = await trpcHandler(
+        new Request(`https://app.test/api/trpc/${path}`)
+      );
+
+      expect(response.status).toBe(404);
+    }
+  );
 });

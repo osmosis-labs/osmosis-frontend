@@ -1,6 +1,6 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
-import { appRouter } from "~/server/api/root-router";
+import { nodeRouter } from "~/server/api/node-router";
 import { createTrpcContext } from "~/server/api/trpc";
 import { readBodyText } from "~/server/api-handlers/request-body";
 
@@ -19,7 +19,7 @@ export async function trpcHandler(req: Request) {
 
   return fetchRequestHandler({
     endpoint: "/api/trpc",
-    router: appRouter,
+    router: nodeRouter,
     req,
     createContext: createTrpcContext,
     onError: onTrpcError,
