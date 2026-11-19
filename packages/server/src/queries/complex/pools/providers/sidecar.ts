@@ -1,7 +1,7 @@
 import type { PoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
-import { getAssetFromAssetList, timeout } from "@osmosis-labs/utils";
+import { timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -102,28 +102,13 @@ export function getPoolsFromSidecar({
       });
 
       const pools = sidecarPools.data
-        .map((sidecarPool, index) => {
-          let coins = reserveCoins[index] ?? null;
-          // For orderbook pools, sort so the stablecoin is always second (quote)
-          if (
-            coins &&
-            getPoolTypeFromChainPool(sidecarPool.chain_model) ===
-              "cosmwasm-orderbook"
-          ) {
-            const firstIsStable = Boolean(
-              getAssetFromAssetList({
-                coinMinimalDenom: coins[0].currency.coinMinimalDenom,
-                assetLists,
-              })?.rawAsset.pegMechanism
-            );
-            if (firstIsStable) coins = [coins[1], coins[0]];
-          }
-          return makePoolFromSidecarPool({
+        .map((sidecarPool, index) =>
+          makePoolFromSidecarPool({
             assetLists,
             sidecarPool,
-            reserveCoins: coins,
-          });
-        })
+            reserveCoins: reserveCoins[index] ?? null,
+          })
+        )
         .filter(Boolean) as Pool[];
 
       // Filter pools by requested types
