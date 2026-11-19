@@ -1,7 +1,7 @@
+import { type CacheEntry } from "@osmosis-labs/server";
 import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { NativeEVMTokenConstantAddress } from "@osmosis-labs/utils";
-import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";

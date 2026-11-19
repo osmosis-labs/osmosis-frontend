@@ -6,14 +6,13 @@ import {
 } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { AsyncTimeoutError, timeout } from "@osmosis-labs/utils";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
-  cachified,
   DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import { getRequestScoped } from "../../../utils/request-scope";
 import {
@@ -104,7 +103,7 @@ function getCachedTotalSupply(params: {
   assetLists: AssetList[];
   denom: string;
 }) {
-  return cachified({
+  return cached({
     cache: totalSupplyCache,
     key: `total-supply-${params.denom}`,
     ttl: 1000 * 60 * 10, // 10 minutes
@@ -124,7 +123,7 @@ async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
   asset: TAsset;
   includeTotalSupply?: boolean;
 }): Promise<TAsset & AssetMarketInfo> {
-  const assetMarket = await cachified({
+  const assetMarket = await cached({
     cache: marketInfoCache,
     key: `market-asset-${asset.coinMinimalDenom}-${includeTotalSupply}`,
     ttl: 1000 * 60, // 1 minute
@@ -281,7 +280,7 @@ export async function getAssetCoingeckoCoin({
   coinGeckoId: string;
   currency?: CoingeckoVsCurrencies;
 }) {
-  return cachified({
+  return cached({
     cache: assetCoingeckoCoinCache,
     key: `assetCoingeckoCoinCache-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60 * 30, // 15 minutes
@@ -648,7 +647,7 @@ export async function getCategoryImageSamples({
   chainList: Chain[];
   perCategory?: number;
 }): Promise<Record<string, string[]>> {
-  return cachified({
+  return cached({
     cache: categoryImageSamplesCache,
     key: `category-image-samples-${perCategory}`,
     ttl: 1000 * 60 * 60, // 1 hour

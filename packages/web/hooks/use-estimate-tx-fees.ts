@@ -1,5 +1,10 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
+import {
+  cached,
+  type CacheEntry,
+  DEFAULT_VS_CURRENCY,
+  superjson,
+} from "@osmosis-labs/server";
 import type { SignOptions } from "@osmosis-labs/tx";
 import {
   getFallbackFeeAmountFromBalances,
@@ -13,7 +18,6 @@ import {
   SwapRequiresError,
 } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { useMemo } from "react";
 
@@ -294,7 +298,7 @@ function getCachedAssetWithPrice(
   apiUtils: ReturnType<typeof api.useUtils>,
   coinMinimalDenom: string
 ) {
-  return cachified({
+  return cached({
     cache: getAssetCache,
     key: coinMinimalDenom,
     ttl: 1000 * 10, // 10 seconds

@@ -1,10 +1,14 @@
 import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
-import { type CacheEntry, shouldRefresh } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
-import { cachified, DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import {
+  cached,
+  type CacheEntry,
+  getFreshness,
+} from "../../../../utils/cached";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getCoingeckoPrice } from "./providers/coingecko";
@@ -19,7 +23,7 @@ export type PriceProvider = (
 ) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Assets SQS has no price for, retried after the ttl. cachified doesn't keep failures,
+/** Assets SQS has no price for, retried after the ttl. `cached` doesn't keep failures,
  *  so without this an asset with no price (e.g. no pools) is re-sent to SQS on every
  *  request, and those are the denoms SQS route-searches. Only that "no price" answer is
  *  kept, never a price: a failed request (5xx, timeout, expired batch) says nothing
@@ -35,10 +39,10 @@ const priceFailures = new LRUCache<string, Error>({
 });
 const PRICE_TTL = 1000 * 10; // 10 seconds
 
-/** True when `pricesCache` holds a price for `key` that cachified still serves as fresh. */
+/** True when `pricesCache` holds a price for `key` that `cached` still serves as fresh. */
 function hasFreshPrice(key: string): boolean {
   const entry = pricesCache.get(key);
-  return entry !== undefined && shouldRefresh(entry.metadata) === false;
+  return entry !== undefined && getFreshness(entry.metadata) === "fresh";
 }
 
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
@@ -104,7 +108,7 @@ export async function getAssetPrice({
   const failure = priceFailures.get(key);
   if (failure) throw failure;
 
-  return cachified({
+  return cached({
     key,
     cache: pricesCache,
     ttl: PRICE_TTL,

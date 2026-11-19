@@ -1,7 +1,8 @@
 import {
   BaseAccount,
   BaseAccountTypeStr,
-  cachified,
+  cached,
+  type CacheEntry,
   DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,
@@ -16,7 +17,6 @@ import type { Chain } from "@osmosis-labs/types";
 import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
-import { type CacheEntry } from "cachified";
 import type { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { LRUCache } from "lru-cache";
 
@@ -843,7 +843,7 @@ export function getFeesBaseDenom({
   chainId: string;
   chainList: Chain[];
 }) {
-  return cachified({
+  return cached({
     cache: queryCache,
     key: "fees-base-denom-" + chainId,
     ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 10, // 10 minutes since denoms don't change often
@@ -861,7 +861,7 @@ export function getFeeTokenDenoms({
   chainId: string;
   chainList: Chain[];
 }) {
-  return cachified({
+  return cached({
     cache: queryCache,
     key: "fee-token-denoms-" + chainId,
     ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 60 * 10, // 10 minutes since denoms don't change often
@@ -881,7 +881,7 @@ export function getFeeTokenSpotPrice({
   chainList: Chain[];
   denom: string;
 }) {
-  return cachified({
+  return cached({
     cache: queryCache,
     key: `spot-price-${chainId}-${denom}`,
     ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 5, // 5 seconds, shorter in case of swift price changes
@@ -899,7 +899,7 @@ export function getBaseFeeSpotPrice({
   chainId: string;
   chainList: Chain[];
 }) {
-  return cachified({
+  return cached({
     cache: queryCache,
     key: "base-fee-spot-price-" + chainId,
     ttl: process.env.NODE_ENV === "test" ? -1 : 1000 * 5, // 5 seconds, shorter in case of swift price changes

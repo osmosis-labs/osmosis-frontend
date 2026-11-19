@@ -1,7 +1,6 @@
 import { Asset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -9,7 +8,8 @@ import {
   queryPrices,
 } from "../../../../../queries/sidecar/prices";
 import { EdgeDataLoader } from "../../../../../utils/batching";
-import { cachified, LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
+import { LARGE_LRU_OPTIONS } from "../../../../../utils/cache";
+import { cached, type CacheEntry } from "../../../../../utils/cached";
 import { getRequestScoped } from "../../../../../utils/request-scope";
 
 /** SQS answered but has no usable price for the denom (as opposed to a transport or
@@ -94,7 +94,7 @@ function getBatchLoader(): Promise<EdgeDataLoader<string, string>> {
   const scoped = getRequestScoped(batchLoaderSlot, createBatchLoader);
   if (scoped) return Promise.resolve(scoped);
 
-  return cachified({
+  return cached({
     cache: sidecarCache,
     key: "sidecar-batch-loader",
     // This TTL only controls the lifetime of the DataLoader instance. The loader doesn't

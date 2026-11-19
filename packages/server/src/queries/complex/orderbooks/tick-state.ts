@@ -1,8 +1,8 @@
 import { Chain } from "@osmosis-labs/types";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import {
   queryOrderbookTicks,
   queryOrderbookTickUnrealizedCancelsById,
@@ -19,7 +19,7 @@ export function getOrderbookTickState({
   chainList: Chain[];
   tickIds: number[];
 }) {
-  return cachified({
+  return cached({
     cache: tickInfoCache,
     key: `orderbookTickInfo-${orderbookAddress}-${tickIds
       .sort((a, b) => a - b)
@@ -41,7 +41,7 @@ export function getOrderbookTickUnrealizedCancels({
   chainList: Chain[];
   tickIds: number[];
 }) {
-  return cachified({
+  return cached({
     cache: tickInfoCache,
     key: `orderbookTickUnrealizedCancels-${orderbookAddress}-${tickIds
       .sort((a, b) => a - b)

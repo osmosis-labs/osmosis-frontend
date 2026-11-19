@@ -1,9 +1,9 @@
 import { Dec } from "@osmosis-labs/unit";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { EdgeDataLoader } from "../../../../../utils/batching";
-import { cachified, DEFAULT_LRU_OPTIONS } from "../../../../../utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "../../../../../utils/cache";
+import { cached, type CacheEntry } from "../../../../../utils/cached";
 import { getRequestScoped } from "../../../../../utils/request-scope";
 import { CoingeckoVsCurrencies, querySimplePrice } from "../../../../coingecko";
 
@@ -65,7 +65,7 @@ export async function getCoinGeckoPricesBatchLoader({
     return loader;
   }
 
-  return cachified({
+  return cached({
     cache: coinGeckoCache,
     key: `prices-batch-loader-${currency}`,
     // Only the lifetime of the DataLoader instance, to prevent long-running batch loaders.
@@ -87,7 +87,7 @@ export async function getCoingeckoPrice({
   const currencyBatchLoader = await getCoinGeckoPricesBatchLoader({ currency });
 
   // Cache a result per CoinGecko ID *and* currency ID.
-  return cachified({
+  return cached({
     cache: coinGeckoCache,
     key: `coingecko-price-${coinGeckoId}-${currency}`,
     ttl: 1000 * 60, // 1 minute

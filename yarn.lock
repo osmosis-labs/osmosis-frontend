@@ -7569,7 +7569,6 @@ __metadata:
     "@osmosis-labs/types": "npm:^1.0.0"
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
-    cachified: "npm:^3.5.4"
     jest: "npm:^30.5.2"
     long: "npm:^5.2.3"
     lru-cache: "npm:^10.0.1"
@@ -7627,7 +7626,6 @@ __metadata:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
     "@types/jest-in-case": "npm:^1.0.6"
-    cachified: "npm:^3.5.4"
     dataloader: "npm:^2.2.3"
     dayjs: "npm:^1.11.23"
     fuse.js: "npm:^6.5.3"
@@ -7683,7 +7681,6 @@ __metadata:
     "@osmosis-labs/unit": "npm:0.10.24-ibc.go.v7.hot.fix"
     "@osmosis-labs/utils": "npm:^1.0.0"
     buffer: "npm:^6.0.3"
-    cachified: "npm:^3.5.4"
     cosmjs-types: "npm:^0.10.1"
     jest: "npm:^30.5.2"
     lru-cache: "npm:^10.0.1"
@@ -7824,7 +7821,6 @@ __metadata:
     axios: "npm:^0.34.0"
     babel-plugin-react-compiler: "npm:1.0.0"
     bip39-light: "npm:^1.0.7"
-    cachified: "npm:^3.5.4"
     chokidar-cli: "npm:^3.0.0"
     class-variance-authority: "npm:^0.7.0"
     classnames: "npm:^2.5.1"
@@ -14667,13 +14663,6 @@ __metadata:
   version: 3.1.2
   resolution: "bytes@npm:3.1.2"
   checksum: 10c0/76d1c43cbd602794ad8ad2ae94095cddeb1de78c5dddaa7005c51af10b0176c69971a6d88e805a90c2b6550d76636e43c40d8427a808b8645ede885de4a0358e
-  languageName: node
-  linkType: hard
-
-"cachified@npm:^3.5.4":
-  version: 3.5.4
-  resolution: "cachified@npm:3.5.4"
-  checksum: 10c0/16da8d9ed79ed5ef8a3c50f3d3f50719aff4b824ab746a27f4ae2f3c060fc034f8a48127d5d3e29d452cf2aa451a8dd293021b01bed3183d475a4b23c058aa0f
   languageName: node
   linkType: hard
 

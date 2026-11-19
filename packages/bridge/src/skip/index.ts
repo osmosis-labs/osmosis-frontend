@@ -1,5 +1,5 @@
 import type { Registry } from "@cosmjs/proto-signing";
-import { cachified } from "@osmosis-labs/server";
+import { cached } from "@osmosis-labs/server";
 import {
   estimateGasFee,
   getDefaultGasPrice,
@@ -334,7 +334,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       });
     }
 
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: JSON.stringify({
         id: SkipBridgeProvider.ID,
@@ -1198,7 +1198,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       // in production too: a silent catch here hid the counterparty
       // mutation bug as unexplainable empty results for months.
       // Uses the already-resolved assets/skipChains from above: re-awaiting
-      // the cachified getters here could itself throw (evicted entry plus a
+      // the cached getters here could itself throw (evicted entry plus a
       // failed refresh), which would escape this catch and turn the
       // intended empty-result degradation into a rejection.
       console.warn(
@@ -1277,7 +1277,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         .toString();
 
       const isRoutable = (fast: boolean) =>
-        cachified({
+        cached({
           cache: this.ctx.cache,
           key: `${SkipBridgeProvider.ID}_route_probe_${direction}${
             multiTx ? "_multi" : ""
@@ -2026,7 +2026,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   getAssets(chainID?: string) {
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: SkipBridgeProvider.ID + `_assets_${chainID}`,
       ttl: 1000 * 60 * 30, // 30 minutes
@@ -2035,14 +2035,14 @@ export class SkipBridgeProvider implements BridgeProvider {
       // reads as "asset unsupported" downstream, which silently bypasses the
       // client's retry and re-poll machinery (observed in QA as a Skip-only
       // asset intermittently rendering external-only). Failing the check
-      // makes cachified throw instead, so it propagates as a provider
+      // makes `cached` throw instead, so it propagates as a provider
       // failure the client retries.
       getFreshValue: () =>
         this.skipClient.assets({
           chainID,
         }),
       checkValue: (value) => {
-        // cachified types the checked value as {}; it is the fresh/cached
+        // `cached` types the checked value as unknown; it is the fresh/cached
         // return of skipClient.assets. A scoped request must return the
         // requested chain with a POPULATED asset list: a genuinely
         // unsupported asset is a denom absent from a populated registry,
@@ -2061,7 +2061,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   getChains() {
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: SkipBridgeProvider.ID + "_chains",
       ttl: 1000 * 60 * 30, // 30 minutes

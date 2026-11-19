@@ -1,11 +1,11 @@
 import { BondStatus, Chain } from "@osmosis-labs/types";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { queryValidators } from "../../../queries/cosmos";
 import { queryValidatorThumbnail } from "../../../queries/keybase";
-import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 
 const validatorsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -16,7 +16,7 @@ export async function getValidators({
   chainList: Chain[];
   status: BondStatus;
 }) {
-  return cachified({
+  return cached({
     cache: validatorsCache,
     key: `validators-${status}`,
     ttl: 1000 * 60 * 5, // 5 minutes
@@ -33,7 +33,7 @@ export async function getValidatorInfo({
   chainList: Chain[];
   validatorBech32Address: string;
 }) {
-  return cachified({
+  return cached({
     cache: validatorsCache,
     key: `validator-${validatorBech32Address}`,
     ttl: 1000 * 30, // 30 seconds
@@ -97,7 +97,7 @@ export async function getValidatorsWithInfos({
   chainList: Chain[];
   status: BondStatus;
 }) {
-  return cachified({
+  return cached({
     cache: validatorsCache,
     key: `validator-infos-${status}`,
     ttl: 1000 * 30, // 30 seconds

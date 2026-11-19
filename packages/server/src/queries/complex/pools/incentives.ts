@@ -1,6 +1,5 @@
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
-import { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -10,10 +9,10 @@ import { z } from "zod";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import {
-  cachified,
   DATA_SERVICES_APR_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import {
   type PoolDataRange,
   queryPoolAprsRange,
@@ -71,7 +70,7 @@ const incentivePoolsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 export function getCachedPoolIncentivesMap(): Promise<
   Map<string, PoolIncentives>
 > {
-  return cachified({
+  return cached({
     cache: incentivePoolsCache,
     key: "pools-incentives-map",
     ttl: 1000 * 30, // 30 seconds
@@ -172,7 +171,7 @@ export function getCachedPoolIncentivesMap(): Promise<
 }
 
 const aprCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Ranges whose APR response was invalid (NaN). cachified doesn't keep failures, so
+/** Ranges whose APR response was invalid (NaN). `cached` doesn't keep failures, so
  *  without this a range that never had a good value would re-query the data service on
  *  every call. Only the failure is kept, never a value. */
 const invalidAprRanges = new LRUCache<string, Error>({
@@ -192,7 +191,7 @@ export function getConcentratedRangePoolApr({
   upperTick: string;
 }): Promise<RatePretty | undefined> {
   const key = `concentrated-pool-apr-${poolId}-${lowerTick}-${upperTick}`;
-  return cachified({
+  return cached({
     cache: aprCache,
     key,
     ttl: 30 * 1000, // 30 seconds
@@ -261,7 +260,7 @@ export function getPoolGaugeIncentives({
   chainList: Chain[];
   assetLists: AssetList[];
 }): Promise<{ coinPerDay: CoinPretty } | null> {
-  return cachified({
+  return cached({
     cache: incentivesCache,
     key: `pool-gauge-incentives-${poolId}`,
     ttl: 1000 * 60 * 10, // 10 mins
@@ -300,7 +299,7 @@ export function getPoolGaugeIncentives({
 
 /** Gets internally incentivized pools with gauges that distribute minted staking tokens. */
 export function getIncentivizedPools({ chainList }: { chainList: Chain[] }) {
-  return cachified({
+  return cached({
     cache: incentivesCache,
     key: "incentivized-pools",
     ttl: 1000 * 60 * 10, // 10 mins
@@ -322,7 +321,7 @@ export function getIncentivizedPools({ chainList }: { chainList: Chain[] }) {
 
 /** Gets gauges and filters those that are active. */
 export function getActiveGauges({ chainList }: { chainList: Chain[] }) {
-  return cachified({
+  return cached({
     cache: incentivesCache,
     key: "active-external-gauges",
     ttl: 1000 * 60 * 10, // 10 mins
