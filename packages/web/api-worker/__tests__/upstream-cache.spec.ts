@@ -381,6 +381,77 @@ describe("upstream cache", () => {
     expect(ctx.upstream).toHaveBeenCalledTimes(2);
   });
 
+  it.each([
+    ["private", "private, max-age=60"],
+    ["no-store", "no-store"],
+    ["max-age=0", "public, max-age=0"],
+  ])("does not store a response sent with %s", async (_name, cacheControl) => {
+    ctx.upstream.mockImplementation(
+      async () =>
+        new Response("pools", {
+          status: 200,
+          headers: { "cache-control": cacheControl },
+        })
+    );
+
+    await ctx.call(POOLS);
+    await ctx.flush();
+    await ctx.call(POOLS);
+
+    expect(ctx.cache.entries.size).toBe(0);
+    expect(ctx.upstream).toHaveBeenCalledTimes(2);
+  });
+
+  it("appends zero counters to a request that made no upstream calls", async () => {
+    const timed = await runWithUpstreamCache(
+      () => undefined,
+      async () => applyUpstreamServerTiming(new Response("nothing fetched"))
+    );
+
+    expect(timed.headers.get("server-timing")).toBe(
+      'upstream;desc="hit=0 miss=0 bypass=0"'
+    );
+  });
+
+  describe("outside a request scope", () => {
+    it("reads a warm entry but never writes one", async () => {
+      await globalThis.fetch(POOLS);
+      expect(ctx.cache.entries.size).toBe(0);
+
+      await ctx.call(POOLS);
+      await ctx.flush();
+      expect(ctx.cache.entries.size).toBe(1);
+
+      const warm = await globalThis.fetch(POOLS);
+      expect(await warm.text()).toBe("pools");
+      expect(ctx.upstream).toHaveBeenCalledTimes(2);
+    });
+
+    it("sends each concurrent cold miss to the network", async () => {
+      const release = gateUpstream();
+
+      const calls = Promise.all([
+        globalThis.fetch(POOLS),
+        globalThis.fetch(POOLS),
+      ]);
+      release();
+      const responses = await calls;
+
+      expect(ctx.upstream).toHaveBeenCalledTimes(2);
+      expect(
+        await Promise.all(responses.map((response) => response.text()))
+      ).toEqual(["pools", "pools"]);
+      expect(ctx.cache.entries.size).toBe(0);
+      expect(ctx.pending).toHaveLength(0);
+    });
+
+    it("leaves the response without Server-Timing", async () => {
+      const response = new Response("unscoped");
+      expect(applyUpstreamServerTiming(response)).toBe(response);
+      expect(response.headers.get("server-timing")).toBeNull();
+    });
+  });
+
   it("uses a shorter TTL for realtime token charts", async () => {
     const realtime =
       "https://data.app.osmosis.zone/tokens/v2/historical/uosmo/chart?realtime=true";
