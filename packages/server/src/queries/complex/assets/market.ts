@@ -446,7 +446,15 @@ function refreshTokenData(): Promise<TokenDataEntry> {
     promise: fetchTokenData(startedAt).then(
       (entry) => {
         // A lost refresh that settles after its replacement must not put older data back.
-        if (!tokenDataEntry || entry.fetchedAt > tokenDataEntry.fetchedAt) {
+        // Refreshes in other requests can start in the same millisecond: then the one
+        // with prices wins.
+        if (
+          !tokenDataEntry ||
+          entry.fetchedAt > tokenDataEntry.fetchedAt ||
+          (entry.fetchedAt === tokenDataEntry.fetchedAt &&
+            entry.hasPrices &&
+            !tokenDataEntry.hasPrices)
+        ) {
           tokenDataEntry = entry;
         }
         return tokenDataEntry;

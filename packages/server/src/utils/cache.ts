@@ -42,13 +42,26 @@ export const LARGE_LRU_OPTIONS: LRUCache.Options<
 
 /** A view of `cache` for the current request: reads and writes go to `cache`, but the
  *  view is its own object, so cachified, which dedupes in-flight values per cache
- *  object, only dedupes within the request. */
+ *  object, only dedupes within the request.
+ *
+ *  Requests no longer share fetches, so overlapping ones write the same key in any
+ *  order. A write never replaces an entry created later: a slow refresh can't put older
+ *  data back over a newer value. */
 function requestCacheView(cache: Cache): Cache {
   return (
     getRequestScoped<Cache>(cache, () => ({
       name: cache.name,
       get: (key) => cache.get(key),
-      set: (key, value) => cache.set(key, value),
+      set: async (key, value) => {
+        const current = await cache.get(key);
+        if (
+          current?.metadata &&
+          current.metadata.createdTime > value.metadata.createdTime
+        ) {
+          return;
+        }
+        return cache.set(key, value);
+      },
       delete: (key) => cache.delete(key),
     })) ?? cache
   );
@@ -65,18 +78,24 @@ function keepRequestAlive(scope: RequestScope, promise: Promise<unknown>) {
 }
 
 /** The cached entry when it is past its ttl but still within stale-while-revalidate,
- *  matching how cachified decides to serve stale and refresh in the background. */
+ *  matching how cachified decides to serve stale and refresh in the background.
+ *  `undefined` when there is none or it can't be read: cachified's own read then handles
+ *  it (and deletes an entry it can't use). */
 async function readStaleEntry<Value>(
   cache: Cache,
   options: CachifiedOptions<Value>
 ): Promise<CacheEntry<unknown> | undefined> {
-  const entry = await cache.get(options.key);
-  if (!entry) return undefined;
-  const refresh = shouldRefresh(entry.metadata);
-  const swr = options.staleWhileRevalidate ?? options.swr;
-  return refresh === "stale" || (refresh === "now" && swr === Infinity)
-    ? entry
-    : undefined;
+  try {
+    const entry = await cache.get(options.key);
+    if (!entry?.metadata) return undefined;
+    const refresh = shouldRefresh(entry.metadata);
+    const swr = options.staleWhileRevalidate ?? options.swr;
+    return refresh === "stale" || (refresh === "now" && swr === Infinity)
+      ? entry
+      : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /** `cachified`, safe to call from a Cloudflare Worker request.
@@ -117,7 +136,14 @@ export async function cachified<Value>(
     if (stale) {
       keepRequestAlive(
         scope,
-        baseCachified({ ...scoped, forceFresh: true, fallbackToCache: false })
+        baseCachified({
+          ...scoped,
+          forceFresh: true,
+          fallbackToCache: false,
+          // Already kept alive as a whole, so call the caller's function directly.
+          getFreshValue: (context) =>
+            getFreshValue({ ...context, background: true }),
+        })
       );
       return stale.value as Value;
     }

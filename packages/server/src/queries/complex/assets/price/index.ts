@@ -1,6 +1,6 @@
 import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
-import { type CacheEntry } from "cachified";
+import { type CacheEntry, shouldRefresh } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
@@ -35,13 +35,10 @@ const priceFailures = new LRUCache<string, Error>({
 });
 const PRICE_TTL = 1000 * 10; // 10 seconds
 
-/** True when `pricesCache` holds a price for `key` that is still within its ttl. */
+/** True when `pricesCache` holds a price for `key` that cachified still serves as fresh. */
 function hasFreshPrice(key: string): boolean {
   const entry = pricesCache.get(key);
-  return (
-    entry !== undefined &&
-    Date.now() - entry.metadata.createdTime < (entry.metadata.ttl ?? 0)
-  );
+  return entry !== undefined && shouldRefresh(entry.metadata) === false;
 }
 
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.

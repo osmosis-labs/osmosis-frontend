@@ -10,20 +10,27 @@ const CLIENT_ERROR_CODES = new Set<TRPCError["code"]>([
   "FORBIDDEN",
   "METHOD_NOT_SUPPORTED",
   "PAYLOAD_TOO_LARGE",
+  "UNSUPPORTED_MEDIA_TYPE",
   "TOO_MANY_REQUESTS",
   "CLIENT_CLOSED_REQUEST",
 ]);
 
-/** Keeps only the origin of URLs in a message: upstream URLs can carry API keys in their
- *  path or query (e.g. EVM RPC endpoints). */
+/** Longest message kept in a log line. Messages can echo request input. */
+const MAX_LOGGED_MESSAGE_LENGTH = 300;
+
+/** Keeps only the origin of URLs in a message (upstream URLs can carry API keys in their
+ *  path or query, e.g. EVM RPC endpoints) and bounds its length. */
 export function redactUrls(message: string): string {
-  return message.replace(/https?:\/\/[^\s"'<>]+/g, (url) => {
+  const redacted = message.replace(/https?:\/\/[^\s"'<>]+/gi, (url) => {
     try {
       return `${new URL(url).origin}/…`;
     } catch {
       return "<url>";
     }
   });
+  return redacted.length > MAX_LOGGED_MESSAGE_LENGTH
+    ? `${redacted.slice(0, MAX_LOGGED_MESSAGE_LENGTH)}…`
+    : redacted;
 }
 
 /** tRPC `onError` for every API handler. In production it logs server-side failures (and

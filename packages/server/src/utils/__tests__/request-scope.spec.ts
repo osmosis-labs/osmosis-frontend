@@ -146,6 +146,51 @@ describe("cachified in a request scope", () => {
     expect(cache.get("k")?.value).toBe("new");
   });
 
+  it("does not let an older write replace a newer entry", async () => {
+    const cache = new LRUCache<string, CacheEntry>({ max: 10 });
+    const slow = deferred<string>();
+
+    // A starts first; B starts later, finishes first and caches its newer value.
+    const a = inRequest(() =>
+      cachified({
+        key: "k",
+        cache,
+        ttl: 60_000,
+        getFreshValue: () => slow.promise,
+      })
+    );
+    await new Promise((r) => setTimeout(r, 5));
+    await inRequest(() =>
+      cachified({
+        key: "k",
+        cache,
+        ttl: 60_000,
+        getFreshValue: async () => "new",
+      })
+    );
+    slow.resolve("old");
+    await a;
+
+    expect(cache.get("k")?.value).toBe("new");
+  });
+
+  it("recovers from an entry it can't read, like plain cachified", async () => {
+    const cache = new LRUCache<string, CacheEntry>({ max: 10 });
+    cache.set("k", { value: "broken" } as unknown as CacheEntry);
+
+    const value = await inRequest(() =>
+      cachified({
+        key: "k",
+        cache,
+        ttl: 1000,
+        staleWhileRevalidate: 60_000,
+        getFreshValue: async () => "v",
+      })
+    );
+
+    expect(value).toBe("v");
+  });
+
   it("is plain cachified outside a request", async () => {
     const cache = new LRUCache<string, CacheEntry>({ max: 10 });
     const pending = deferred<string>();

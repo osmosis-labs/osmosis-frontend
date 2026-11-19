@@ -12,6 +12,18 @@ describe("redactUrls", () => {
   });
 });
 
+describe("redactUrls edge cases", () => {
+  it("redacts URLs whatever their case", () => {
+    expect(redactUrls("HTTPS://RPC.EXAMPLE.COM/v2/SECRET")).toBe(
+      "https://rpc.example.com/…"
+    );
+  });
+
+  it("bounds the message length", () => {
+    expect(redactUrls("x".repeat(1000))).toHaveLength(301);
+  });
+});
+
 describe("onTrpcError in production", () => {
   const env = process.env.NODE_ENV;
   let log: jest.SpyInstance;
