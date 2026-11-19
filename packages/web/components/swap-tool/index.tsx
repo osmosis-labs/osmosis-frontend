@@ -179,12 +179,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
             .add(swapState.quote?.swapFee?.toDec() ?? new Dec(0))
         );
       }
-      return new RatePretty(
-        swapState.inAmountInput?.fiatValue
-          ?.toDec()
-          .sub(swapState.tokenOutFiatValue?.toDec())
-          .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
-      );
+      // Without a fiat value on both sides the difference is unknown, not
+      // zero: return undefined so neither the swap tool nor the review shows
+      // a figure for it. An unpriced output arrives as a zero fiat value
+      // (see tokenOutFiatValue in use-swap), so zero counts as missing too.
+      const inFiat = swapState.inAmountInput?.fiatValue?.toDec();
+      const outFiat = swapState.tokenOutFiatValue?.toDec();
+      if (!inFiat?.isPositive() || !outFiat?.isPositive()) return undefined;
+      return new RatePretty(inFiat.sub(outFiat).quo(inFiat));
     }, [
       quoteType,
       swapState.inAmountInput?.fiatValue,
@@ -194,10 +196,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
       swapState.quote?.swapFee,
     ]);
 
-    const showOutputDifferenceWarning = outputDifference
-      .toDec()
-      .abs()
-      .gt(new Dec(0.05));
+    const showOutputDifferenceWarning =
+      outputDifference?.toDec().abs().gt(new Dec(0.05)) ?? false;
 
     const quotedPriceImpact = swapState.quote?.priceImpactTokenOut;
 
@@ -363,7 +363,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
     } = useDisclosure();
 
     const displayedOutputDifference = outputDifference
-      .toDec()
+      ?.toDec()
       .abs()
       .mul(new Dec(100))
       .toString(4);
@@ -665,7 +665,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
                             body={t("tradeDetails.outputDifference.content")}
                             childWrapperClassName="ml-1"
                           >{`(${
-                            outputDifference.toDec().isNegative() ? "+" : "-"
+                            outputDifference?.toDec().isNegative() ? "+" : "-"
                           }${displayedOutputDifference}%)`}</GenericDisclaimer>
                         </span>
                       </>
