@@ -33,10 +33,10 @@
  *                               balances for planning the manual swap-back.
  */
 
-import * as dotenv from "dotenv";
-import * as path from "path";
 import type { Coin } from "@cosmjs/stargate";
 import BigNumber from "bignumber.js";
+import * as dotenv from "dotenv";
+import * as path from "path";
 
 import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
 
@@ -49,17 +49,17 @@ import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
 const LEGACY_SWEEP_SYMBOLS = ["USDC.noble"];
 import { TOKEN_DENOMS } from "../utils/balance-checker";
 import {
-  deriveAddress,
-  createSigningClient,
-  OSMOSIS_RPC,
-} from "../utils/order-utils";
-import {
-  type TokenBalance,
   fetchAllKnownBalances,
   printBalanceTable,
   resolveRequirementsToTokenUnits,
+  type TokenBalance,
   validatePrivateKey,
 } from "../utils/fund-utils";
+import {
+  createSigningClient,
+  deriveAddress,
+  OSMOSIS_RPC,
+} from "../utils/order-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 

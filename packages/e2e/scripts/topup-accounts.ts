@@ -19,22 +19,16 @@
  * @requires SLACK_WEBHOOK_URL       - (optional) Slack incoming-webhook URL for topup summary.
  */
 
+import type { OfflineDirectSigner } from "@cosmjs/proto-signing";
+import type { Coin } from "@cosmjs/stargate";
+import BigNumber from "bignumber.js";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
+import { TOKEN_DENOMS } from "../utils/balance-checker";
 import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
-import type { OfflineDirectSigner } from "@cosmjs/proto-signing";
-import type { Coin } from "@cosmjs/stargate";
-
-import {
-  OSMOSIS_RPC,
-  createSigningClient,
-  deriveAddress,
-} from "../utils/order-utils";
 import {
   type AccountTarget,
-  type ReserveConfig,
-  type TokenBalance,
   calculateTopup,
   computeSwapGaps,
   fetchAllKnownBalances,
@@ -42,11 +36,16 @@ import {
   printBalanceTable,
   printDistributionPlan,
   printReserves,
+  type ReserveConfig,
   resolveRequirementsToTokenUnits,
+  type TokenBalance,
   validatePrivateKey,
 } from "../utils/fund-utils";
-import { TOKEN_DENOMS } from "../utils/balance-checker";
-import BigNumber from "bignumber.js";
+import {
+  createSigningClient,
+  deriveAddress,
+  OSMOSIS_RPC,
+} from "../utils/order-utils";
 
 const MINTSCAN_TX_URL = "https://www.mintscan.io/osmosis/txs";
 

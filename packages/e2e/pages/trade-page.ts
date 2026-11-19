@@ -1,15 +1,15 @@
 import {
   type BrowserContext,
+  expect,
   type Locator,
   type Page,
-  expect,
 } from "@playwright/test";
 
 import {
-  SEQUENCE_RETRY_DELAY_MS,
   buildExplorerTxUrl,
   isSequenceMismatch,
   pollTxOnChain,
+  SEQUENCE_RETRY_DELAY_MS,
 } from "../utils/tx-confirm";
 import { unfoldWalletMsgYaml } from "../utils/wallet-msg";
 import { BasePage } from "./base-page";
