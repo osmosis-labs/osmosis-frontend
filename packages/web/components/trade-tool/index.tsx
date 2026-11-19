@@ -6,6 +6,7 @@ import { parseAsStringEnum, parseAsStringLiteral, useQueryState } from "nuqs";
 import {
   FunctionComponent,
   PropsWithChildren,
+  ReactNode,
   useEffect,
   useMemo,
   useState,
@@ -24,6 +25,7 @@ import {
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
 import { useBookPriceSelection } from "~/components/trade-tool/use-book-price-selection";
+import { useCanonicalOrderbookForPair } from "~/components/trade-view/hooks";
 import { useTradeViewExpanded } from "~/components/trade-view/use-trade-view-expanded";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useIsClient } from "~/hooks/use-is-client";
@@ -69,6 +71,11 @@ interface TradeToolProps {
   limitOnly?: boolean;
   /** Show the link to the order history page under the widget. */
   showOrderHistoryLink?: boolean;
+  /**
+   * Shown directly under the widget card, in the widget's own column, so it
+   * stays under the widget whether or not the trade view is expanded.
+   */
+  belowWidget?: ReactNode;
 }
 
 /**
@@ -104,6 +111,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     orderbookPool,
     limitOnly = false,
     showOrderHistoryLink = true,
+    belowWidget,
     children,
   } = props;
   const { t } = useTranslation();
@@ -174,9 +182,10 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   // so they stay aligned whatever the widget shows; it scrolls inside.
   const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null);
   const [cardHeight, setCardHeight] = useState<number>();
+  // Measured whether or not the book is beside the widget, so the height is
+  // already known on the first frame of an expand.
   useEffect(() => {
-    if (!cardElement || !isBookBeside || typeof ResizeObserver === "undefined")
-      return;
+    if (!cardElement || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(([entry]) =>
       setCardHeight(
         entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height
@@ -184,7 +193,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     );
     observer.observe(cardElement);
     return () => observer.disconnect();
-  }, [cardElement, isBookBeside]);
+  }, [cardElement]);
 
   // The pair the active widget has selected, reported by the widget itself
   // so it is right whether or not the widget keeps its pair in the URL.
@@ -207,6 +216,22 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   // Price picked by clicking a book row, filled into the limit price only
   // while the widget is still on that book's pair.
   const { externalOrderPrice, selectBookPrice } = useBookPriceSelection(pair);
+
+  // Whether the pair has a book, known before the book panel loads, so the
+  // book's slot is laid out from the first frame of an expand.
+  const { orderbook: pairOrderbook, isLoading: isOrderbooksLoading } =
+    useCanonicalOrderbookForPair({
+      coinMinimalDenomA: pair.base,
+      coinMinimalDenomB: pair.quote,
+      poolId: orderbookPool?.poolId,
+    });
+
+  // Fetch the panels' code ahead of the first expand, so their content
+  // arrives without waiting on it.
+  useEffect(() => {
+    if (bookLayout === "expandable" && isExpandable)
+      void import("~/components/trade-view/panels");
+  }, [bookLayout, isExpandable]);
 
   const limitToolPairProps = orderbookPool
     ? {
@@ -383,6 +408,10 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   // Expanded Buy and Sell also show the base asset's price chart, the same
   // chart as the orderbook pool page; Swap shows widget and book only.
   const showChart = isBookBeside && !orderbookPool && tab !== SwapToolTab.SWAP;
+  // The book's slot is kept while the orderbook list loads, so a pair that
+  // has a book doesn't shift the row when the list arrives.
+  const showBook =
+    isBookBeside && (Boolean(pairOrderbook) || isOrderbooksLoading);
 
   // Below 1024px the book stacks under the widget at a fixed height. At
   // 1536px and below the chart takes its own row above widget and book.
@@ -414,36 +443,54 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
           "2xl:flex-wrap": showChart,
         })}
       >
+        {/* The chart and book slots are sized here, outside their lazily
+            loaded panels, so the row's layout is final on the first frame
+            of an expand and the panels fill their cards in place. The chart
+            takes all the width the widget and book leave. */}
         {showChart && (
-          <TradeViewChart
-            base={pair.base}
+          <div
             style={chartHeight}
-            className={classNames("min-w-0 flex-1 2xl:basis-full", {
-              "h-[420px]": !chartHeight,
-            })}
-          />
+            className={classNames(
+              "min-w-0 flex-1 overflow-hidden rounded-3xl bg-osmoverse-900 2xl:basis-full",
+              { "h-[420px]": !chartHeight }
+            )}
+          >
+            <TradeViewChart base={pair.base} className="h-full w-full" />
+          </div>
         )}
+        {/* What the page shows under the widget sits in the widget's
+            column, so it stays under the widget in every layout. */}
         <div
-          className={classNames({
+          className={classNames("flex flex-col gap-4", {
             "w-[512px] shrink-0 lg:w-full": isBookBeside,
           })}
         >
           {widget}
+          {belowWidget}
         </div>
-        {isBookBeside && (
-          <TradeViewBook
-            {...pair}
-            hideOpenOrderbookLink={Boolean(orderbookPool)}
-            onPriceSelect={selectBookPrice}
+        {showBook && (
+          <div
             style={sideHeight}
             className={classNames(
-              orderbookPool || showChart
+              "overflow-hidden rounded-3xl bg-osmoverse-900",
+              orderbookPool
                 ? "min-w-0 flex-1 lg:w-full"
-                : "w-[420px] shrink-0 lg:w-full",
-              { "max-w-[420px] 2xl:max-w-none": showChart },
+                : showChart
+                  ? // Beside the chart the book keeps its width, so the
+                    // chart gets the rest; with the chart on its own row
+                    // (1536px and below) the book fills beside the widget.
+                    "w-[380px] shrink-0 2xl:w-auto 2xl:min-w-0 2xl:flex-1 lg:w-full"
+                  : "w-[420px] shrink-0 lg:w-full",
               { "h-[520px]": !sideHeight }
             )}
-          />
+          >
+            <TradeViewBook
+              {...pair}
+              hideOpenOrderbookLink={Boolean(orderbookPool)}
+              onPriceSelect={selectBookPrice}
+              className="h-full w-full"
+            />
+          </div>
         )}
       </div>
       {/* Only the orderbook pool page lists the user's orders here; the
