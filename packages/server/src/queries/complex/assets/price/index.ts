@@ -3,7 +3,7 @@ import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import { LRUCache } from "lru-cache";
 
 import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
-import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import { PER_ASSET_LRU_OPTIONS } from "../../../../utils/cache";
 import {
   cached,
   type CacheEntry,
@@ -23,7 +23,7 @@ export type PriceProvider = (
   currency?: CoingeckoVsCurrencies
 ) => Promise<Dec>;
 
-const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const pricesCache = new LRUCache<string, CacheEntry>(PER_ASSET_LRU_OPTIONS);
 /** Assets SQS has no price for, retried after the ttl. `cached` doesn't keep failures,
  *  so without this an asset with no price (e.g. no pools) is re-sent to SQS on every
  *  request, and those are the denoms SQS route-searches. Only that "no price" answer is

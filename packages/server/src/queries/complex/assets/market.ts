@@ -11,6 +11,7 @@ import { LRUCache } from "lru-cache";
 import {
   DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
+  PER_ASSET_LRU_OPTIONS,
 } from "../../../utils/cache";
 import { cached, type CacheEntry } from "../../../utils/cached";
 import { captureErrorAndReturn } from "../../../utils/error";
@@ -111,7 +112,7 @@ function getCachedTotalSupply(params: {
   });
 }
 
-const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const marketInfoCache = new LRUCache<string, CacheEntry>(PER_ASSET_LRU_OPTIONS);
 /** Cached function that returns an asset with market info from the data services only. */
 async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
   asset,
