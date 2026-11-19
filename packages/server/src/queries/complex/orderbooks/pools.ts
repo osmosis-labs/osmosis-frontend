@@ -68,10 +68,13 @@ export function getOrderbookPoolsFresh(): Promise<Orderbook[]> {
     getRequestScoped<FreshRead>(freshReadSlot, () => ({})) ?? sharedFreshRead;
   // Concurrent fresh reads share one sidecar request.
   if (freshRead.inFlight) return freshRead.inFlight;
-  // A fresh read just completed and wrote its result back: serve that.
+  // A fresh read started or completed just now: serve the cached list. Claiming the slot
+  // when the read starts keeps the floor across requests, which can't join each
+  // other's in-flight read on Workers.
   if (Date.now() - lastFreshReadAt < FRESH_MIN_INTERVAL_MS) {
     return fetchOrderbookPools(false);
   }
+  lastFreshReadAt = Date.now();
   const read = fetchOrderbookPools(true).finally(() => {
     lastFreshReadAt = Date.now();
     freshRead.inFlight = undefined;
