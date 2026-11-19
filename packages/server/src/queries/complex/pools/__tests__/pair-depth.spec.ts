@@ -1,5 +1,5 @@
 import { SQSOrderbookTick } from "../../../sidecar/orderbooks";
-import { buildOrderbookLevels } from "../pair-depth";
+import { bestPricesFromLevels, buildOrderbookLevels } from "../pair-depth";
 
 function tick(
   tickId: number,
@@ -112,5 +112,30 @@ describe("buildOrderbookLevels", () => {
         quoteDecimals: 6,
       })
     ).toEqual({ bids: [], asks: [] });
+  });
+});
+
+describe("bestPricesFromLevels", () => {
+  it("reads the spread from liquidity, not pointers stranded past it", () => {
+    // Pointers left at 100 (bid) and 1000 (ask) by cancelled orders; the
+    // only liquidity is a bid at 1 and an ask at 10,000.
+    const { bids, asks } = buildOrderbookLevels({
+      ticks: [tick(0, { bid: "1000000" }), tick(36000000, { ask: "1000000" })],
+      nextBidTick: 18000000,
+      nextAskTick: 27000000,
+      baseDecimals: 6,
+      quoteDecimals: 6,
+    });
+
+    const { bidPrice, askPrice, midPrice } = bestPricesFromLevels(bids, asks);
+    expect(bidPrice).toBeCloseTo(1);
+    expect(askPrice).toBeCloseTo(10000);
+    expect(midPrice).toBeCloseTo(5000.5);
+    // One-sided book: no spread, mid is the side that has liquidity.
+    expect(bestPricesFromLevels(bids, [])).toEqual({
+      bidPrice: bids[0].price,
+      askPrice: 0,
+      midPrice: bids[0].price,
+    });
   });
 });
