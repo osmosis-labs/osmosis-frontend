@@ -168,7 +168,8 @@ export function imageCacheKey(url: URL, accept: string | null): string {
   return key.toString();
 }
 
-function parseCacheControl(header: string | null): Map<string, string> {
+/** `Cache-Control` directives, lower-cased name → raw value (`""` when the directive has none). */
+export function parseCacheControl(header: string | null): Map<string, string> {
   const directives = new Map<string, string>();
   for (const part of (header ?? "").split(",")) {
     const [name, value = ""] = part.trim().split("=");

@@ -8,6 +8,8 @@
  */
 import { AsyncLocalStorage } from "node:async_hooks";
 
+import { parseCacheControl } from "~/utils/edge-cache";
+
 import {
   matchUpstreamRule,
   ruleTtlBounds,
@@ -45,7 +47,7 @@ const requestStore = new AsyncLocalStorage<RequestState>();
  */
 const MAX_INFLIGHT = 100;
 
-const PRIVATE_DIRECTIVES = new Set(["private", "no-store", "no-cache"]);
+const PRIVATE_DIRECTIVES = ["private", "no-store", "no-cache"] as const;
 
 let nativeFetch: typeof fetch | undefined;
 let cacheStore: Cache | undefined;
@@ -319,7 +321,7 @@ function cacheableTtl(
 ): number | undefined {
   if (response.status < 200 || response.status >= 300) return undefined;
   const directives = parseCacheControl(response.headers.get("cache-control"));
-  if ([...PRIVATE_DIRECTIVES].some((name) => directives.has(name))) {
+  if (PRIVATE_DIRECTIVES.some((name) => directives.has(name))) {
     return undefined;
   }
   const { fallback, cap } = ruleTtlBounds(rule, url);
@@ -386,15 +388,6 @@ function readRequest(
 function count(kind: "hit" | "miss" | "bypass"): void {
   const counts = requestStore.getStore();
   if (counts) counts[kind] += 1;
-}
-
-function parseCacheControl(header: string | null): Map<string, string> {
-  const directives = new Map<string, string>();
-  for (const part of (header ?? "").split(",")) {
-    const [name, value = ""] = part.trim().split("=");
-    if (name) directives.set(name.toLowerCase(), value.trim());
-  }
-  return directives;
 }
 
 function directiveSeconds(
