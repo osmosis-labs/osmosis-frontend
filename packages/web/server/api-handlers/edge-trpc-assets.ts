@@ -1,10 +1,11 @@
-import { captureError } from "@osmosis-labs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { edgeRouter } from "~/server/api/edge-router";
 import { createTrpcContext } from "~/server/api/trpc";
 import { getAssetsCdnCacheControl } from "~/utils/trpc-cdn-cache";
 import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
+
+import { onTrpcError } from "./trpc-error-log";
 
 /**
  * Create a separate api edge route for the pools edge server since its query is too expensive
@@ -37,14 +38,6 @@ export async function edgeTrpcAssetsHandler(req: Request) {
           }
         : {};
     },
-    onError:
-      process.env.NODE_ENV === "development"
-        ? ({ path, error }) => {
-            captureError(error);
-            console.error(
-              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
-            );
-          }
-        : undefined,
+    onError: onTrpcError,
   });
 }

@@ -5,6 +5,7 @@
  * `installUpstreamCache` wraps this isolate's `fetch` so shared packages pick up the upstream
  * cache without a code change. The pages Worker never loads this module.
  */
+import { runInRequestScope } from "../utils/request-scope";
 import { handleApiRequest } from "./dispatch";
 import { apiHandlers } from "./handlers";
 import {
@@ -30,15 +31,18 @@ const worker = {
     const cache = (caches as unknown as { default: Cache }).default;
     bindUpstreamCache(cache);
     const waitUntil = (promise: Promise<unknown>) => ctx.waitUntil(promise);
-    return runWithUpstreamCache(waitUntil, async () => {
-      const response = await handleApiRequest(
-        request,
-        waitUntil,
-        cache,
-        apiHandlers
-      );
-      return applyUpstreamServerTiming(response);
-    });
+    // In-flight work in shared packages stays within this request (`utils/request-scope.ts`).
+    return runInRequestScope(waitUntil, () =>
+      runWithUpstreamCache(waitUntil, async () => {
+        const response = await handleApiRequest(
+          request,
+          waitUntil,
+          cache,
+          apiHandlers
+        );
+        return applyUpstreamServerTiming(response);
+      })
+    );
   },
 };
 

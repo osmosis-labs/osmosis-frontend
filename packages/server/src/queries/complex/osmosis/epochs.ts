@@ -1,11 +1,11 @@
 import { Chain } from "@osmosis-labs/types";
-import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { LRUCache } from "lru-cache";
 
 import { Epochs, queryEpochs } from "../../../queries/osmosis/epochs";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 
 const epochsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -20,7 +20,7 @@ export function getEpochs({
 }: {
   chainList: Chain[];
 }): Promise<Epoch[]> {
-  return cachified({
+  return cached({
     cache: epochsCache,
     key: "epochs",
     ttl: 1000 * 60 * 3, // 3 minutes

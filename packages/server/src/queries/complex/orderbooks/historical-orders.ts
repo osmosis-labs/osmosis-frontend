@@ -2,12 +2,12 @@ import { tickToPrice } from "@osmosis-labs/math";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import {
   HistoricalLimitOrder,
   queryHistoricalOrders,
@@ -30,7 +30,7 @@ export function getOrderbookHistoricalOrders({
   assetLists: AssetList[];
   chainList: Chain[];
 }) {
-  return cachified({
+  return cached({
     cache: orderbookHistoricalOrdersCache,
     key: `orderbookHistoricalOrders-${userOsmoAddress}`,
     ttl: 1000 * 5, // 5 seconds

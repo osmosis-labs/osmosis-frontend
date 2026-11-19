@@ -1,8 +1,8 @@
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { DEFAULT_LRU_OPTIONS } from "./cache";
+import { cached, type CacheEntry } from "./cached";
 
 /** Include this in your function's input, and return the correct `nextCursor` value
  *  to automatically get pagination support for your query function via `useInfiniteQuery` tRPC hook.
@@ -103,7 +103,7 @@ export async function maybeCachePaginatedItems<TItem>({
   // The incomplete flag is cached with its list, so later pages are cut from the same
   // snapshot as the first and every request sharing a fetch reports that fetch's status.
   // A reload (cursor 0) fetches again.
-  const { items, incomplete } = await cachified({
+  const { items, incomplete } = await cached({
     key: cacheKey,
     cache: paginationCache,
     ttl,

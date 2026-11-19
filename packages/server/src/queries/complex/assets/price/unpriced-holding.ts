@@ -1,6 +1,7 @@
 import { AssetList } from "@osmosis-labs/types";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 
+import { getRequestScoped } from "../../../../utils/request-scope";
 import { queryPools } from "../../../sidecar";
 import { getAsset } from "..";
 import { getAssetMarketActivity, isMarketDataAvailable } from "../market";
@@ -11,8 +12,19 @@ import { NoSqsPriceError } from "./providers/sidecar";
 const POOLS_PAGE_SIZE = 100;
 
 /** Checks in flight, by denom, so concurrent sums (a portfolio load runs several per
- *  pool) share one pools request. Only the pending request is shared, never a result. */
-const pendingDrainedChecks = new Map<string, Promise<boolean>>();
+ *  pool) share one pools request. Only the pending request is shared, never a result.
+ *  On Workers only within a request (see `request-scope.ts`). */
+const sharedPendingDrainedChecks = new Map<string, Promise<boolean>>();
+const pendingDrainedChecksSlot = {};
+
+function getPendingDrainedChecks(): Map<string, Promise<boolean>> {
+  return (
+    getRequestScoped(
+      pendingDrainedChecksSlot,
+      () => new Map<string, Promise<boolean>>()
+    ) ?? sharedPendingDrainedChecks
+  );
+}
 
 /** True only when SQS lists at least one pool for the denom and every one of them is
  *  empty: every balance zero, the denom's and every other asset's. SQS lists an empty
@@ -22,6 +34,7 @@ const pendingDrainedChecks = new Map<string, Promise<boolean>>();
  *  incomplete (more pages). Read fresh each time: a cached "drained" could outlive
  *  liquidity being added back. */
 function isDrainedOnSqs(coinMinimalDenom: string): Promise<boolean> {
+  const pendingDrainedChecks = getPendingDrainedChecks();
   const pending = pendingDrainedChecks.get(coinMinimalDenom);
   if (pending) return pending;
 
