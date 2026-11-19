@@ -16,7 +16,6 @@ export class Decimal {
     Decimal.verifyFractionalDigits(fractionalDigits);
     const badCharacter = input.match(/[^0-9.]/);
     if (badCharacter) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       throw new Error(
         `Invalid character at position ${badCharacter.index! + 1}`
       );
