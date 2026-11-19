@@ -6,14 +6,16 @@ import {
 } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { AsyncTimeoutError, timeout } from "@osmosis-labs/utils";
-import cachified, { type CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
+  cachified,
   DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
+import { getRequestScoped } from "../../../utils/request-scope";
 import {
   type CoingeckoVsCurrencies,
   queryCoingeckoCoin,
@@ -398,9 +400,21 @@ type TokenDataEntry = Awaited<ReturnType<typeof fetchTokenData>>;
 /** The last token data fetched. A failed refresh leaves it in place without renewing it,
  *  so it ages out at its maximum age. */
 let tokenDataEntry: TokenDataEntry | undefined;
-/** The refresh in flight, shared by every request that needs one. */
-let tokenDataRefresh:
-  { promise: Promise<TokenDataEntry>; startedAt: number } | undefined;
+type TokenDataRefresh = { promise: Promise<TokenDataEntry>; startedAt: number };
+/** The refresh in flight, shared by every caller that needs one. On Workers only within a
+ *  request (see `request-scope.ts`): a refresh started by one request can't settle in
+ *  another, so a later request joining it would wait out the fetch timeout and then hold
+ *  off refreshes for the retry delay. The settled entry and the failure time stay shared. */
+type TokenDataRefreshSlot = { current?: TokenDataRefresh };
+const sharedTokenDataRefresh: TokenDataRefreshSlot = {};
+const tokenDataRefreshSlot = {};
+
+function getTokenDataRefreshSlot(): TokenDataRefreshSlot {
+  return (
+    getRequestScoped<TokenDataRefreshSlot>(tokenDataRefreshSlot, () => ({})) ??
+    sharedTokenDataRefresh
+  );
+}
 
 /** The cached token data entry if it's within its maximum age, without fetching. */
 function readCachedTokenData(): TokenDataEntry | undefined {
@@ -417,36 +431,46 @@ function readCachedTokenData(): TokenDataEntry | undefined {
  *  enough to count as lost. A failure of the current refresh is recorded for the retry
  *  delay. */
 function refreshTokenData(): Promise<TokenDataEntry> {
+  const slot = getTokenDataRefreshSlot();
+  const inFlight = slot.current;
   if (
-    tokenDataRefresh &&
-    Date.now() - tokenDataRefresh.startedAt < TOKEN_DATA_REFRESH_ABANDON_AFTER
+    inFlight &&
+    Date.now() - inFlight.startedAt < TOKEN_DATA_REFRESH_ABANDON_AFTER
   ) {
-    return tokenDataRefresh.promise;
+    return inFlight.promise;
   }
 
   const startedAt = Date.now();
-  const refresh: NonNullable<typeof tokenDataRefresh> = {
+  const refresh: TokenDataRefresh = {
     startedAt,
     promise: fetchTokenData(startedAt).then(
       (entry) => {
         // A lost refresh that settles after its replacement must not put older data back.
-        if (!tokenDataEntry || entry.fetchedAt > tokenDataEntry.fetchedAt) {
+        // Refreshes in other requests can start in the same millisecond: then the one
+        // with prices wins.
+        if (
+          !tokenDataEntry ||
+          entry.fetchedAt > tokenDataEntry.fetchedAt ||
+          (entry.fetchedAt === tokenDataEntry.fetchedAt &&
+            entry.hasPrices &&
+            !tokenDataEntry.hasPrices)
+        ) {
           tokenDataEntry = entry;
         }
         return tokenDataEntry;
       },
       (e) => {
         // A lost refresh failing late says nothing about its replacement.
-        if (tokenDataRefresh === refresh) tokenDataRefreshFailedAt = Date.now();
+        if (slot.current === refresh) tokenDataRefreshFailedAt = Date.now();
         throw e;
       }
     ),
   };
-  tokenDataRefresh = refresh;
+  slot.current = refresh;
   // A lost refresh that settles late must not clear its replacement.
   refresh.promise
     .finally(() => {
-      if (tokenDataRefresh === refresh) tokenDataRefresh = undefined;
+      if (slot.current === refresh) slot.current = undefined;
     })
     .catch(() => undefined);
   return refresh.promise;

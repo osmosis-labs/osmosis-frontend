@@ -1,6 +1,6 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "../../../env";
@@ -10,7 +10,7 @@ import {
   queryTransactions,
   Transaction,
 } from "../../../queries/data-services";
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import {
   FormattedTransfer,

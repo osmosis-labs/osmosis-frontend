@@ -35,7 +35,6 @@
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
     "cachified": "^3.5.4",
-    "launchdarkly-node-client-sdk": "^3.4.3",
     "long": "^5.2.3",
     "lru-cache": "^10.0.1",
     "viem": "~2.41.2",

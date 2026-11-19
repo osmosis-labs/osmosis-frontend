@@ -1,6 +1,7 @@
 import {
   BaseAccount,
   BaseAccountTypeStr,
+  cachified,
   DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,
@@ -15,7 +16,7 @@ import type { Chain } from "@osmosis-labs/types";
 import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import type { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { LRUCache } from "lru-cache";
 

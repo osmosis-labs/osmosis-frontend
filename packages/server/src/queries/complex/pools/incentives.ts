@@ -1,6 +1,6 @@
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
-import cachified, { type CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -10,6 +10,7 @@ import { z } from "zod";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import {
+  cachified,
   DATA_SERVICES_APR_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
@@ -177,6 +178,8 @@ const aprCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 const invalidAprRanges = new LRUCache<string, Error>({
   max: 1_000,
   ttl: 30 * 1000, // 30 seconds
+  // Read the clock on every check: see `priceFailures` in assets/price/index.ts.
+  ttlResolution: 0,
 });
 
 export function getConcentratedRangePoolApr({

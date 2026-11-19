@@ -2,7 +2,7 @@ import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { Dec, Int, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -10,6 +10,7 @@ import {
   captureIfError,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils";
+import { cachified } from "../../../utils/cache";
 import {
   queryTransmuterAssetConfigs,
   queryTransmuterCorruptedDenoms,

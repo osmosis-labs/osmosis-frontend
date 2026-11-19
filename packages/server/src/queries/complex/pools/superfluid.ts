@@ -5,7 +5,7 @@ import type {
 } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -18,7 +18,7 @@ import {
   querySuperfluidParams,
 } from "../../../queries/osmosis";
 import { queryAllSuperfluidAssets } from "../../../queries/osmosis/superfluid";
-import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { getEpochs } from "../osmosis";
 import { getPool, Pool } from ".";
 

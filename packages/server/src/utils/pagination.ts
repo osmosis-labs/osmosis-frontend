@@ -1,8 +1,8 @@
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "./cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "./cache";
 
 /** Include this in your function's input, and return the correct `nextCursor` value
  *  to automatically get pagination support for your query function via `useInfiniteQuery` tRPC hook.

@@ -1,7 +1,8 @@
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
+  cachified,
   DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../../utils/cache";

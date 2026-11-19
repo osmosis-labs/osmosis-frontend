@@ -1,8 +1,9 @@
 import { Asset, AssetList } from "@osmosis-labs/types";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils";
+import { cachified } from "../../../utils/cache";
 import { queryUpcomingAssets } from "../../github";
 
 /** An asset is considered "new" for this many ms after its listing date. */

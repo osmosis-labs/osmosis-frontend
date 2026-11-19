@@ -1,4 +1,5 @@
 import type { Registry } from "@cosmjs/proto-signing";
+import { cachified } from "@osmosis-labs/server";
 import {
   estimateGasFee,
   getDefaultGasPrice,
@@ -16,7 +17,6 @@ import {
   NativeEVMTokenConstantAddress,
   redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
-import cachified from "cachified";
 import {
   Address,
   createPublicClient,

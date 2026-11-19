@@ -1,3 +1,4 @@
+import { cachified } from "@osmosis-labs/server";
 import {
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
@@ -13,7 +14,6 @@ import {
   NativeEVMTokenConstantAddress,
   redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
-import { cachified } from "cachified";
 import Long from "long";
 import {
   Address,

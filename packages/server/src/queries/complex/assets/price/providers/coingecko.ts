@@ -1,9 +1,10 @@
 import { Dec } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
+import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { EdgeDataLoader } from "../../../../../utils/batching";
-import { DEFAULT_LRU_OPTIONS } from "../../../../../utils/cache";
+import { cachified, DEFAULT_LRU_OPTIONS } from "../../../../../utils/cache";
+import { getRequestScoped } from "../../../../../utils/request-scope";
 import { CoingeckoVsCurrencies, querySimplePrice } from "../../../../coingecko";
 
 const coinGeckoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -32,23 +33,44 @@ async function batchFetchCoingeckoPrices(
   });
 }
 
+function createPricesBatchLoader(currency: CoingeckoVsCurrencies) {
+  // Batch only, so prices are cached only by `getCoingeckoPrice` (1 minute).
+  return new EdgeDataLoader(
+    (ids: readonly string[]) => batchFetchCoingeckoPrices(ids, currency),
+    { cache: false }
+  );
+}
+
+type PricesBatchLoader = ReturnType<typeof createPricesBatchLoader>;
+
+const batchLoadersSlot = {};
+
+/** One loader per currency. On Workers also one per request: a batch started by one
+ *  request can't settle in another (see `request-scope.ts`). */
 export async function getCoinGeckoPricesBatchLoader({
   currency,
 }: {
   currency: CoingeckoVsCurrencies;
 }) {
+  const requestLoaders = getRequestScoped(
+    batchLoadersSlot,
+    () => new Map<CoingeckoVsCurrencies, PricesBatchLoader>()
+  );
+  if (requestLoaders) {
+    let loader = requestLoaders.get(currency);
+    if (!loader) {
+      loader = createPricesBatchLoader(currency);
+      requestLoaders.set(currency, loader);
+    }
+    return loader;
+  }
+
   return cachified({
     cache: coinGeckoCache,
     key: `prices-batch-loader-${currency}`,
     // Only the lifetime of the DataLoader instance, to prevent long-running batch loaders.
     ttl: 1000 * 60 * 10, // 10 minutes
-    getFreshValue: async () => {
-      // Batch only, so prices are cached only by `getCoingeckoPrice` (1 minute).
-      return new EdgeDataLoader(
-        (ids: readonly string[]) => batchFetchCoingeckoPrices(ids, currency),
-        { cache: false }
-      );
-    },
+    getFreshValue: async () => createPricesBatchLoader(currency),
   });
 }
 
