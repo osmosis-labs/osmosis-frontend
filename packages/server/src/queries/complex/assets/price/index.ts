@@ -11,6 +11,7 @@ import {
 } from "../../../../utils/cached";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
+import { counterpartyKey, getAssetListIndex } from "../asset-list-index";
 import { getCoingeckoPrice } from "./providers/coingecko";
 import { getPriceFromSidecar, NoSqsPriceError } from "./providers/sidecar";
 import { resolveUnpricedHolding } from "./unpriced-holding";
@@ -45,6 +46,40 @@ function hasFreshPrice(key: string): boolean {
   return entry !== undefined && getFreshness(entry.metadata) === "fresh";
 }
 
+/** The first asset, in list order, that has the exact `coinMinimalDenom`, a counterparty
+ *  with the chain id and (case-insensitive) address, or the exact `sourceDenom`. Each
+ *  criterion counts only when given (non-empty), as several may be. */
+export function findPriceAsset(
+  assetLists: AssetList[],
+  {
+    coinMinimalDenom,
+    chainId,
+    address,
+    sourceDenom,
+  }: {
+    coinMinimalDenom?: string;
+    chainId?: number | string;
+    address?: string;
+    sourceDenom?: string;
+  }
+): Asset | undefined {
+  const index = getAssetListIndex(assetLists);
+  const candidates = [
+    coinMinimalDenom ? index.byMinimalDenom.get(coinMinimalDenom) : undefined,
+    chainId && address
+      ? index.byCounterparty.get(counterpartyKey(chainId, address))
+      : undefined,
+    sourceDenom ? index.bySourceDenom.get(sourceDenom) : undefined,
+  ];
+  let first: (typeof candidates)[number];
+  for (const candidate of candidates) {
+    if (candidate && (!first || candidate.position < first.position)) {
+      first = candidate;
+    }
+  }
+  return first?.asset;
+}
+
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
  *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
@@ -73,23 +108,12 @@ export async function getAssetPrice({
       : { chainId: undefined, address: undefined };
   const coinGeckoId = "coinGeckoId" in asset ? asset.coinGeckoId : undefined;
   const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
-  const foundAsset = assetLists
-    .map((assets) => assets.assets)
-    .flat()
-    .find(
-      (asset) =>
-        (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
-        (chainId &&
-          address &&
-          asset.counterparty.some(
-            (counterparty) =>
-              "chainId" in counterparty &&
-              "address" in counterparty &&
-              counterparty.chainId === chainId &&
-              counterparty.address.toLowerCase() === address.toLowerCase()
-          )) ||
-        (sourceDenom && asset.sourceDenom === sourceDenom)
-    );
+  const foundAsset = findPriceAsset(assetLists, {
+    coinMinimalDenom,
+    chainId,
+    address,
+    sourceDenom,
+  });
 
   // Fall back to CoinGecko if asset list does not provide
   // the Osmosis asset that can be used for prices from Osmosis.
@@ -166,25 +190,14 @@ export async function calcAssetValue({
 /** Smallest display amount whose value can't round to zero at any real price. */
 const MIN_PRICEABLE_AMOUNT = new Dec("0.000001");
 
-const assetsByMinimalDenom = new WeakMap<AssetList[], Map<string, Asset>>();
-/** `coinMinimalDenom` lookup that indexes each asset list array once, since the check
- *  runs per coin and per zero-cap reserve across all pools. First match wins. */
+/** `coinMinimalDenom` lookup on the indexed asset lists, since the check runs per coin
+ *  and per zero-cap reserve across all pools. First match wins. */
 function findAssetByMinimalDenom(
   assetLists: AssetList[],
   coinMinimalDenom: string
 ): Asset | undefined {
-  let index = assetsByMinimalDenom.get(assetLists);
-  if (!index) {
-    index = new Map();
-    for (const { assets } of assetLists) {
-      for (const asset of assets) {
-        if (!index.has(asset.coinMinimalDenom))
-          index.set(asset.coinMinimalDenom, asset);
-      }
-    }
-    assetsByMinimalDenom.set(assetLists, index);
-  }
-  return index.get(coinMinimalDenom);
+  return getAssetListIndex(assetLists).byMinimalDenom.get(coinMinimalDenom)
+    ?.asset;
 }
 
 /** True when a held coin with no value means its price is unavailable, so the value is
