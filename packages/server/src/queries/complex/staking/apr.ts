@@ -1,13 +1,12 @@
 import { Dec } from "@osmosis-labs/unit";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { queryStakingApr } from "../../../queries/data-services/staking-apr";
 import {
-  cachified,
   DATA_SERVICES_APR_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 
 const averageStakingAprCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
@@ -30,7 +29,7 @@ export async function getAverageStakingApr({
   endDate: string;
 }): Promise<Dec> {
   try {
-    return await cachified({
+    return await cached({
       cache: averageStakingAprCache,
       ttl: STAKING_APR_TTL,
       staleWhileRevalidate: DATA_SERVICES_APR_MAX_AGE - STAKING_APR_TTL,

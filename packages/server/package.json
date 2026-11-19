@@ -33,7 +33,6 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
-    "cachified": "^3.5.4",
     "dataloader": "^2.2.3",
     "dayjs": "^1.11.23",
     "fuse.js": "^6.5.3",

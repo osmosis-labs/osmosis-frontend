@@ -1,9 +1,8 @@
 import { Asset, AssetList } from "@osmosis-labs/types";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils";
-import { cachified } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { queryUpcomingAssets } from "../../github";
 
 /** An asset is considered "new" for this many ms after its listing date. */
@@ -51,7 +50,7 @@ const upcomingAssetsCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 export function getUpcomingAssets() {
-  return cachified({
+  return cached({
     cache: upcomingAssetsCache,
     key: "upcoming-assets",
     ttl: 1000 * 60 * 5, // 5 minutes

@@ -1,7 +1,7 @@
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { getRequestScoped } from "../../../utils/request-scope";
 import { queryCanonicalOrderbooks } from "../../sidecar/orderbooks";
 
@@ -17,11 +17,11 @@ export interface Orderbook {
 }
 
 function fetchOrderbookPools(forceFresh = false) {
-  return cachified({
+  return cached({
     cache: orderbookPoolsCache,
     key: `orderbookPools`,
     // A forced-fresh read exists to catch a just-created orderbook that the
-    // cached list predates, and cachified writes its result back to the
+    // cached list predates, and `cached` writes its result back to the
     // shared cache. Write it with a short TTL: if the sidecar hasn't ingested
     // the new pool yet, the pre-creation list re-caches for seconds instead
     // of re-poisoning every client on this instance for a full hour; if it

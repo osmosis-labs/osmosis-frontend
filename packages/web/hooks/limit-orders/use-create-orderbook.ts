@@ -362,7 +362,7 @@ export function useCreateOrderbook({
 
   const refreshOrderbookCaches = useCallback(async () => {
     // The fresh verify bypasses AND repopulates the server-side
-    // orderbook-pools LRU (cachified forceFresh writes the fresh value back,
+    // orderbook-pools LRU (`cached` forceFresh writes the fresh value back,
     // at a short TTL so a still-stale capture can't poison the shared cache
     // for the full window), so it must complete before any client refetches
     // or they would re-cache the pre-creation pool list. The sidecar ingests

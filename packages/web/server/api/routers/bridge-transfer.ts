@@ -8,6 +8,7 @@ import {
   getBridgeSupportedAssetsParams,
   getBridgeTransactionStepSchema,
 } from "@osmosis-labs/bridge";
+import { type CacheEntry } from "@osmosis-labs/server";
 import {
   DEFAULT_VS_CURRENCY,
   getAssetPrice,
@@ -35,7 +36,6 @@ import {
   XrplChainInfo,
 } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
-import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 

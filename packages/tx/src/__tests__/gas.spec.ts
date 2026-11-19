@@ -28,7 +28,7 @@ import { MockChains } from "./mock-chains";
 // Automock the queries, but keep the real cache wrapper: a mocked one returns nothing.
 jest.mock("@osmosis-labs/server", () => ({
   ...jest.createMockFromModule<object>("@osmosis-labs/server"),
-  cachified: jest.requireActual("cachified").cachified,
+  cached: jest.requireActual("@osmosis-labs/server").cached,
 }));
 
 beforeEach(() => {

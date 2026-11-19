@@ -1,4 +1,4 @@
-import { CacheEntry } from "cachified";
+import { type CacheEntry } from "@osmosis-labs/server";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http as httpMock, HttpResponse } from "msw";

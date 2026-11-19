@@ -1,9 +1,9 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { cachified, DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { getOrderbookPools } from "./pools";
 
 const orderbookDenomsCache = new LRUCache<string, CacheEntry>(
@@ -18,7 +18,7 @@ export function getOrderbookDenoms({
   chainList: Chain[];
   assetLists: AssetList[];
 }) {
-  return cachified({
+  return cached({
     cache: orderbookDenomsCache,
     key: `orderbookDenoms-${orderbookAddress}`,
     ttl: 1000 * 60 * 60 * 24 * 30, // 30 days (unlikely to change)
