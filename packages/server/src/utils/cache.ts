@@ -89,7 +89,8 @@ async function readStaleEntry<Value>(
     const entry = await cache.get(options.key);
     if (!entry?.metadata) return undefined;
     const refresh = shouldRefresh(entry.metadata);
-    const swr = options.staleWhileRevalidate ?? options.swr;
+    // Same precedence as cachified.
+    const swr = options.swr ?? options.staleWhileRevalidate;
     return refresh === "stale" || (refresh === "now" && swr === Infinity)
       ? entry
       : undefined;

@@ -19,6 +19,12 @@ describe("redactUrls edge cases", () => {
     );
   });
 
+  it("redacts websocket URLs", () => {
+    expect(redactUrls("wss://rpc.example.com/ws/SECRET closed")).toBe(
+      "wss://rpc.example.com/… closed"
+    );
+  });
+
   it("bounds the message length", () => {
     expect(redactUrls("x".repeat(1000))).toHaveLength(301);
   });
@@ -55,6 +61,17 @@ describe("onTrpcError in production", () => {
       message: "upstream https://sqs.example.com/… timed out",
       cause: null,
     });
+  });
+
+  it("skips expected outcomes such as a missing SQS price", () => {
+    const cause = new Error("No SQS price result for uion and USDC");
+    cause.name = "NoSqsPriceError";
+    onTrpcError({
+      path: "assets.getAssetPrice",
+      error: new TRPCError({ code: "INTERNAL_SERVER_ERROR", cause }),
+    });
+
+    expect(log).not.toHaveBeenCalled();
   });
 
   it("skips errors caused by the request", () => {
