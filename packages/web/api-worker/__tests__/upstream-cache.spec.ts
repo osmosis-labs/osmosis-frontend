@@ -360,6 +360,27 @@ describe("upstream cache", () => {
     );
   });
 
+  it("does not store an empty CoinGecko market chart", async () => {
+    const chart =
+      "https://prices.osmosis.zone/api/v3/coins/osmosis/market_chart/range?from=0&to=300&vs_currency=usd";
+    ctx.upstream.mockImplementation(
+      async () => new Response('{"prices":[]}', { status: 200 })
+    );
+
+    const empty = await ctx.call(chart);
+    await ctx.flush();
+    expect(await empty.text()).toBe('{"prices":[]}');
+    expect(ctx.cache.entries.size).toBe(0);
+
+    ctx.upstream.mockImplementation(
+      async () => new Response('{"prices":[[0,1]]}', { status: 200 })
+    );
+    await ctx.call(chart);
+    await ctx.flush();
+    expect(ctx.cache.entries.size).toBe(1);
+    expect(ctx.upstream).toHaveBeenCalledTimes(2);
+  });
+
   it("uses a shorter TTL for realtime token charts", async () => {
     const realtime =
       "https://data.app.osmosis.zone/tokens/v2/historical/uosmo/chart?realtime=true";
