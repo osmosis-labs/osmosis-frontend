@@ -25,6 +25,10 @@
   },
   "upload_source_maps": true,
   "minify": true,
+  // No name-preservation helpers, as in the pages Worker. Errors are matched by
+  // `instanceof` or an explicit `this.name`, never by a minified class or function name.
+  // Enable for readable profiles.
+  "keep_names": false,
   // Same server aliases as next.config.js. `./libsodium` is the relative import inside
   // @cosmjs/crypto (alias matches the specifier, and nothing else in node_modules uses it).
   // Wagmi connector stand-ins are omitted: the API graph does not import those modules.
