@@ -31,6 +31,15 @@ export async function broadcastTransactionHandler(req: Request) {
       : null;
 
   if (!matchedRestEndpoint) {
+    // Log only the origin of the refused endpoint so Workers Logs show which
+    // hosts clients try to broadcast through.
+    let origin = "unparseable";
+    try {
+      origin = new URL(String(body.restEndpoint)).origin;
+    } catch {
+      // keep "unparseable"
+    }
+    console.warn("broadcast-transaction: rest endpoint not allowed", origin);
     return new Response(JSON.stringify({ error: "Invalid rest endpoint" }), {
       status: 400,
       headers: {

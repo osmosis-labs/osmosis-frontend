@@ -1,8 +1,7 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import {
   type BrowserContext,
-  type Page,
   chromium,
+  type Page,
   test,
 } from "@playwright/test";
 

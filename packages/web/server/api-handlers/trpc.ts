@@ -1,9 +1,10 @@
-import { captureError } from "@osmosis-labs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter } from "~/server/api/root-router";
 import { createTrpcContext } from "~/server/api/trpc";
 import { readBodyText } from "~/server/api-handlers/request-body";
+
+import { onTrpcError } from "./trpc-error-log";
 
 export async function trpcHandler(req: Request) {
   // tRPC reads the body itself without a limit, so mutation bodies go through
@@ -21,14 +22,6 @@ export async function trpcHandler(req: Request) {
     router: appRouter,
     req,
     createContext: createTrpcContext,
-    onError:
-      process.env.NODE_ENV === "development"
-        ? ({ path, error }) => {
-            captureError(error);
-            console.error(
-              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
-            );
-          }
-        : undefined,
+    onError: onTrpcError,
   });
 }

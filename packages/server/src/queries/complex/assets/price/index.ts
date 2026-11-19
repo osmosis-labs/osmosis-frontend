@@ -1,10 +1,14 @@
 import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import {
+  cached,
+  type CacheEntry,
+  getFreshness,
+} from "../../../../utils/cached";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
 import { getCoingeckoPrice } from "./providers/coingecko";
@@ -19,7 +23,7 @@ export type PriceProvider = (
 ) => Promise<Dec>;
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Assets SQS has no price for, retried after the ttl. cachified doesn't keep failures,
+/** Assets SQS has no price for, retried after the ttl. `cached` doesn't keep failures,
  *  so without this an asset with no price (e.g. no pools) is re-sent to SQS on every
  *  request, and those are the denoms SQS route-searches. Only that "no price" answer is
  *  kept, never a price: a failed request (5xx, timeout, expired batch) says nothing
@@ -28,7 +32,19 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 const priceFailures = new LRUCache<string, Error>({
   max: 1_500,
   ttl: 1000 * 30, // 30 seconds
+  // Read the clock on every check. lru-cache otherwise caches it and clears that with a
+  // timer, which a Worker cancels when the request ends: the cached time then sticks and
+  // entries never expire.
+  ttlResolution: 0,
 });
+const PRICE_TTL = 1000 * 10; // 10 seconds
+
+/** True when `pricesCache` holds a price for `key` that `cached` still serves as fresh. */
+function hasFreshPrice(key: string): boolean {
+  const entry = pricesCache.get(key);
+  return entry !== undefined && getFreshness(entry.metadata) === "fresh";
+}
+
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
  *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
@@ -92,15 +108,26 @@ export async function getAssetPrice({
   const failure = priceFailures.get(key);
   if (failure) throw failure;
 
-  return cachified({
+  return cached({
     key,
     cache: pricesCache,
-    ttl: 1000 * 10, // 10 seconds
+    ttl: PRICE_TTL,
     getFreshValue: () => priceProvider(foundAsset, currency),
-  }).catch((e) => {
-    if (e instanceof NoSqsPriceError) priceFailures.set(key, e);
-    throw e;
-  });
+  }).then(
+    (price) => {
+      // A "no price" answer that settled after this one must not hide it.
+      priceFailures.delete(key);
+      return price;
+    },
+    (e) => {
+      // Overlapping requests settle in any order: one that found a price wins over a
+      // "no price" answer, whichever settled last.
+      if (e instanceof NoSqsPriceError && !hasFreshPrice(key)) {
+        priceFailures.set(key, e);
+      }
+      throw e;
+    }
+  );
 }
 
 /** Calculates the fiat value of an asset given any denom and base amount.

@@ -1,6 +1,10 @@
-import { Chain, queryGeneratedChains } from "@osmosis-labs/server";
+import {
+  type Cache,
+  cached,
+  Chain,
+  queryGeneratedChains,
+} from "@osmosis-labs/server";
 import { AssetList, Chain as OsmosisTypesChain } from "@osmosis-labs/types";
-import cachified, { Cache } from "cachified";
 
 import { BridgeAsset } from "../interface";
 
@@ -78,7 +82,7 @@ export function getChains({
   cache: Cache;
   chainList: OsmosisTypesChain[];
 }): Promise<Chain[]> {
-  return cachified({
+  return cached({
     cache,
     key: "queryGeneratedChains" + chainList[0].chain_id,
     ttl: 60 * 60 * 24, // 1 day

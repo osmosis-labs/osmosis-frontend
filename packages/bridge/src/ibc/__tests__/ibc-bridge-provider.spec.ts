@@ -1,5 +1,5 @@
+import { type CacheEntry } from "@osmosis-labs/server";
 import { estimateGasFee } from "@osmosis-labs/tx";
-import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 // eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
