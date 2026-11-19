@@ -59,21 +59,29 @@ export type CachedPaginationParams<TItem> = {
   /** Call `markIncomplete` when the list is known to be missing items (e.g. one data
    *  source failed): the result then carries `incomplete: true`, on later pages too. */
   getFreshItems: (context: { markIncomplete: () => void }) => Promise<TItem[]>;
+  /** Unique across all callers: the cache is shared, so prefix it with the procedure. */
   cacheKey: string;
+  /** Fetch the list again when the first page (cursor 0) is requested, so a reload
+   *  shows changes right away. Only for lists scoped to one user (balances, orders),
+   *  which change with the user's own actions: a shared list would be refetched on
+   *  every user's first page, and the ttl governs its freshness instead. */
+  reloadOnFirstPage?: boolean;
   cursor?: number | null | undefined;
   limit?: number | null | undefined;
   ttl?: number;
 };
 
 /** Returns cached items while the user is paginating the list.
- *  If the input changes or the cursor is reset, the cache is invalidated.
- *  With useInfiniteQuery, the cursor will be reset to 0 when input to the query changes or the query is invalidated. */
+ *  The list is cached per key for the ttl. With `reloadOnFirstPage`, a reset cursor also
+ *  refetches it: with useInfiniteQuery, the cursor is reset to 0 when input to the query
+ *  changes or the query is invalidated. */
 export async function maybeCachePaginatedItems<TItem>({
   getFreshItems,
   cacheKey,
   cursor,
   limit,
   ttl = 30 * 1000, // 30 seconds
+  reloadOnFirstPage = false,
 }: CachedPaginationParams<TItem>): Promise<{
   items: TItem[];
   nextCursor: number | undefined;
@@ -95,14 +103,13 @@ export async function maybeCachePaginatedItems<TItem>({
     };
   }
 
-  // If cursor is 0, delete the cache entry for the given key
-  if (cursor === 0) {
+  if (reloadOnFirstPage && cursor === 0) {
     paginationCache.delete(cacheKey);
   }
 
   // The incomplete flag is cached with its list, so later pages are cut from the same
   // snapshot as the first and every request sharing a fetch reports that fetch's status.
-  // A reload (cursor 0) fetches again.
+  // A reload (cursor 0) of a `reloadOnFirstPage` list fetches again.
   const { items, incomplete } = await cached({
     key: cacheKey,
     cache: paginationCache,
