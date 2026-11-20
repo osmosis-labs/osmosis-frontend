@@ -29,3 +29,14 @@ export const LARGE_LRU_OPTIONS: LRUCache.Options<
 > = {
   max: 1_500,
 };
+
+/** For caches keyed per listed asset, possibly with a variant (e.g. with and without
+ *  total supply): ~1,350 assets, so up to ~2,700 keys. Smaller bounds evict entries
+ *  every time a full asset list is priced. */
+export const PER_ASSET_LRU_OPTIONS: LRUCache.Options<
+  string,
+  CacheEntry<unknown>,
+  unknown
+> = {
+  max: 3_000,
+};

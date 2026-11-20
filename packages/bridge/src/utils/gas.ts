@@ -85,7 +85,7 @@ export function getChains({
   return cached({
     cache,
     key: "queryGeneratedChains" + chainList[0].chain_id,
-    ttl: 60 * 60 * 24, // 1 day
+    ttl: 1000 * 60 * 60 * 24, // 1 day
     getFreshValue: () =>
       queryGeneratedChains({ zoneChainId: chainList[0].chain_id }),
   });

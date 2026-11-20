@@ -240,7 +240,9 @@ async function readUpstream(
     body,
   };
   const ttl = cacheableTtl(response, rule, url);
-  if (ttl !== undefined) storeSnapshot(normalizedKey(url), snapshot, ttl);
+  if (ttl !== undefined && (!rule.acceptBody || rule.acceptBody(body))) {
+    storeSnapshot(normalizedKey(url), snapshot, ttl);
+  }
   return snapshot;
 }
 

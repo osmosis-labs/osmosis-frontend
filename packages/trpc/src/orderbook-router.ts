@@ -138,6 +138,8 @@ export const orderbookRouter = createTRPCRouter({
         },
         cacheKey: `all-active-orders-${input.userOsmoAddress}-${sortCacheKey(input.sort)}`,
         ttl: 15000,
+        // the user's own orders: a reload shows a just-placed or cancelled order
+        reloadOnFirstPage: true,
         cursor: input.cursor,
         limit: input.limit,
       });
@@ -198,6 +200,8 @@ export const orderbookRouter = createTRPCRouter({
         // the filter changes the list, so each filter is cached on its own
         cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}-${input.filter ?? "all"}-${sortCacheKey(input.sort)}`,
         ttl: 10000,
+        // the user's own orders: a reload shows a just-placed or cancelled order
+        reloadOnFirstPage: true,
         cursor: input.cursor,
         limit: input.limit,
       });

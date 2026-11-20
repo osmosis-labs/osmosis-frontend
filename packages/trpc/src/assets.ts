@@ -114,6 +114,7 @@ export const assetsRouter = createTRPCRouter({
               : assets;
           },
           cacheKey: JSON.stringify({
+            procedure: "getUserAssets",
             search,
             userOsmoAddress,
             onlyVerified,
@@ -123,6 +124,8 @@ export const assetsRouter = createTRPCRouter({
             // only affects ordering while searching
             watchListDenoms: search ? watchListDenoms : undefined,
           }),
+          // balances change with the user's own transactions: a reload shows them
+          reloadOnFirstPage: Boolean(userOsmoAddress),
           cursor,
           limit,
         })
@@ -372,6 +375,7 @@ export const assetsRouter = createTRPCRouter({
             }
           },
           cacheKey: JSON.stringify({
+            procedure: "getMarketAssets",
             search,
             onlyVerified,
             sort: sortInput,
@@ -497,6 +501,7 @@ export const assetsRouter = createTRPCRouter({
           );
 
         const cacheKey = JSON.stringify({
+          procedure: "getUserBridgeAssets",
           search,
           onlyVerified,
           userOsmoAddress,
@@ -520,6 +525,8 @@ export const assetsRouter = createTRPCRouter({
                 sortInput.direction
               ),
             cacheKey,
+            // balances change with the user's own transactions: a reload shows them
+            reloadOnFirstPage: Boolean(userOsmoAddress),
             cursor,
             limit,
           });
@@ -538,6 +545,7 @@ export const assetsRouter = createTRPCRouter({
               : assets;
           },
           cacheKey,
+          reloadOnFirstPage: Boolean(userOsmoAddress),
           cursor,
           limit,
         }).then(async ({ items, nextCursor }) => ({
@@ -966,6 +974,7 @@ export const assetsRouter = createTRPCRouter({
               }) as typeof assets;
           },
           cacheKey: JSON.stringify({
+            procedure: "getImmersiveBridgeAssets",
             search,
             userOsmoAddress,
             includePreview,
@@ -976,6 +985,8 @@ export const assetsRouter = createTRPCRouter({
             // only affects ordering while searching
             watchListDenoms: search ? watchListDenoms : undefined,
           }),
+          // balances change with the user's own transfers: a reload shows them
+          reloadOnFirstPage: type === "withdraw" && Boolean(userOsmoAddress),
           cursor,
           limit,
         })

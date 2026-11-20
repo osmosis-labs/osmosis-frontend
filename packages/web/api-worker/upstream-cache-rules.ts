@@ -29,6 +29,12 @@ export type UpstreamCacheRule = {
    * path serves a realtime price (`realtime=true`, 3s) and a slower chart.
    */
   ttlSeconds?: (url: URL) => number;
+  /**
+   * When set, a 2xx body is stored only if this returns true. For upstreams that
+   * answer "no data" with a 200 the caller won't keep, which the cache would
+   * otherwise pin for the whole ttl.
+   */
+  acceptBody?: (body: ArrayBuffer) => boolean;
 };
 
 const SIDECAR_HOSTS = ["sqs.osmosis.zone", "sqsprod.osmosis.zone"] as const;
@@ -48,6 +54,23 @@ const COINGECKO_HOSTS = [
   "coingecko.osmosis.zone",
   "api.coingecko.com",
 ] as const;
+
+/** CoinGecko answers a range it has no data for with `{"prices":[]}`, which
+ *  `getCoinGeckoCoinMarketChart` refuses to cache. */
+function hasMarketChartPrices(body: ArrayBuffer): boolean {
+  try {
+    const chart: unknown = JSON.parse(new TextDecoder().decode(body));
+    return (
+      typeof chart === "object" &&
+      chart !== null &&
+      "prices" in chart &&
+      Array.isArray(chart.prices) &&
+      chart.prices.length > 0
+    );
+  } catch {
+    return false;
+  }
+}
 
 function tokenChartTtl(url: URL): number {
   // In-memory historical prices are 3s when realtime and 3 minutes otherwise.
@@ -154,6 +177,7 @@ const UPSTREAM_CACHE_RULES: readonly UpstreamCacheRule[] = [
     // minutes. A 10s cap left every isolate refetching CoinGecko inside one bucket.
     defaultTtlSeconds: 5 * 60,
     maxTtlSeconds: 5 * 60,
+    acceptBody: hasMarketChartPrices,
   },
   {
     id: "github-raw-content",
