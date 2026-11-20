@@ -3,8 +3,10 @@
 The Cloudflare frontend's own backend. The OpenNext pages Worker keeps pages and
 `/_next/image` and forwards `/api/*` here over its `API` service binding
 (`worker.ts`), so the traffic router only picks a frontend and never routes API
-calls. API handlers live in `server/api-handlers`; `routes.ts` is the route table
-and `handlers.ts` maps its IDs to Fetch handlers. There are no Next API wrappers.
+calls. API handlers live in `server/api-handlers`; `routes.ts` is the route table,
+keyed by handler ID (exact paths, the tRPC prefixes, and the one `/api/pools/:id`
+pattern), and `handlers.ts` maps each ID to a Fetch handler. TypeScript requires
+an entry for every ID. There are no Next API wrappers.
 
 | Branch   | Pages Worker                  | API Worker                        |
 | -------- | ----------------------------- | --------------------------------- |
