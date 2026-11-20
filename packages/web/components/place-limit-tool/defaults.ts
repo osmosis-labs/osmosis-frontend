@@ -6,9 +6,6 @@ export const ATOM_BASE_DENOM =
   "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 export const USDC_BASE_DENOM =
   "factory/osmo147h5x9pcj7lm0cttlaefx6sqq5vdfnmwfcqxkmjd7exqm9gc7grqhr75m0/alloyed/allUSDC";
-/** USDC via Noble. Retained as a selectable quote while users still hold it. */
-export const USDC_NOBLE_BASE_DENOM =
-  "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 export const USDT_BASE_DENOM =
   "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT";
 
@@ -20,18 +17,8 @@ export const USDT_BASE_DENOM =
  */
 export const UI_DEFAULT_QUOTES: string[] = [USDC_BASE_DENOM, USDT_BASE_DENOM];
 
-/**
- * Quotes a user may receive when selling. Sell mode is deliberately limited
- * to the canonical stables, but Noble USDC stays selectable (not default)
- * while pairs that only have a Noble-quoted orderbook remain: dropping it
- * here would make limit sells on those pairs impossible while limit buys
- * still work. Keeps default ordering (UI_DEFAULT_QUOTES) separate from the
- * Sell allowlist.
- */
-export const SELL_QUOTES: string[] = [
-  ...UI_DEFAULT_QUOTES,
-  USDC_NOBLE_BASE_DENOM,
-];
+/** Quotes a user may receive when selling: the canonical stables only. */
+export const SELL_QUOTES: string[] = UI_DEFAULT_QUOTES;
 
 /**
  * Quotes selectable in Buy and Limit mode: the two canonical stables and the
@@ -42,9 +29,8 @@ export const SELL_QUOTES: string[] = [
  */
 export const VALID_QUOTES: string[] = [
   ...UI_DEFAULT_QUOTES,
-  // allUSDC constituents
-  // "USDC.noble"
-  USDC_NOBLE_BASE_DENOM,
+  // allUSDC constituents. USDC.noble is one too, but is no longer offered
+  // as a quote for new orders.
   // "USDC.eth.axl"
   "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
   // "USDC.inj"

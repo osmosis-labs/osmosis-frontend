@@ -562,7 +562,10 @@
       "depthClLegend": "含 CL 池",
       "depthClLegendTooltip": "斜纹柱包含此交易对集中流动性池的流动性。这是 AMM 曲线流动性，不是挂单；显示的数量仅为挂单。",
       "depthClUnavailable": "CL 深度不可用",
-      "depthRowWithCl": "挂单：{orders} · CL 池：{cl}"
+      "depthRowWithCl": "挂单：{orders} · CL 池：{cl}",
+      "retiredQuoteDesc": "{quote} 不再作为新限价单的计价币种。你仍可在此订单簿上领取和取消订单。",
+      "retiredQuoteGoTo": "在 {pair} 订单簿交易",
+      "retiredQuoteCreate": "创建 {pair} 订单簿"
     }
   },
   "pools": {

@@ -562,7 +562,10 @@
       "depthClLegend": "Incl. pools CL",
       "depthClLegendTooltip": "As barras hachuradas incluem liquidez de pools de liquidez concentrada para este par. É liquidez da curva AMM, não ordens em aberto; as quantidades exibidas são apenas ordens.",
       "depthClUnavailable": "Profundidade CL indisponível",
-      "depthRowWithCl": "Ordens: {orders} · Pools CL: {cl}"
+      "depthRowWithCl": "Ordens: {orders} · Pools CL: {cl}",
+      "retiredQuoteDesc": "{quote} não é mais oferecido como cotação para novas ordens limite. Você ainda pode resgatar e cancelar suas ordens neste livro.",
+      "retiredQuoteGoTo": "Negociar no livro de ordens {pair}",
+      "retiredQuoteCreate": "Criar um livro de ordens {pair}"
     }
   },
   "pools": {

@@ -562,7 +562,10 @@
       "depthClLegend": "CL 풀 포함",
       "depthClLegendTooltip": "빗금 막대에는 이 페어의 집중 유동성 풀 유동성이 포함됩니다. 이는 AMM 곡선 유동성이며 대기 주문이 아닙니다. 표시된 수량은 주문만입니다.",
       "depthClUnavailable": "CL 깊이를 불러올 수 없음",
-      "depthRowWithCl": "주문: {orders} · CL 풀: {cl}"
+      "depthRowWithCl": "주문: {orders} · CL 풀: {cl}",
+      "retiredQuoteDesc": "{quote}는 더 이상 새 지정가 주문의 견적 통화로 제공되지 않습니다. 이 오더북의 주문은 계속 청구하거나 취소할 수 있습니다.",
+      "retiredQuoteGoTo": "{pair} 오더북에서 거래",
+      "retiredQuoteCreate": "{pair} 오더북 만들기"
     }
   },
   "pools": {

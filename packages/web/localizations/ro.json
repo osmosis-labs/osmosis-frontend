@@ -562,7 +562,10 @@
       "depthClLegend": "Incl. pool-uri CL",
       "depthClLegendTooltip": "Barele hașurate includ lichiditate din pool-urile de lichiditate concentrată pentru această pereche. Este lichiditate de curbă AMM, nu ordine în așteptare; cantitățile afișate sunt doar ordine.",
       "depthClUnavailable": "Adâncime CL indisponibilă",
-      "depthRowWithCl": "Ordine: {orders} · Pool-uri CL: {cl}"
+      "depthRowWithCl": "Ordine: {orders} · Pool-uri CL: {cl}",
+      "retiredQuoteDesc": "{quote} nu mai este oferit ca monedă de cotare pentru ordinele limită noi. Poți în continuare să revendici și să anulezi ordinele din acest registru.",
+      "retiredQuoteGoTo": "Tranzacționează în registrul de ordine {pair}",
+      "retiredQuoteCreate": "Creează un registru de ordine {pair}"
     }
   },
   "pools": {

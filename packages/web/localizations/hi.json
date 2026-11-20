@@ -562,7 +562,10 @@
       "depthClLegend": "CL पूल सहित",
       "depthClLegendTooltip": "धारीदार बार में इस जोड़ी के कॉन्सन्ट्रेटेड लिक्विडिटी पूल की लिक्विडिटी शामिल है। यह AMM कर्व लिक्विडिटी है, लंबित ऑर्डर नहीं; दिखाई गई मात्राएँ केवल ऑर्डर हैं।",
       "depthClUnavailable": "CL गहराई उपलब्ध नहीं",
-      "depthRowWithCl": "ऑर्डर: {orders} · CL पूल: {cl}"
+      "depthRowWithCl": "ऑर्डर: {orders} · CL पूल: {cl}",
+      "retiredQuoteDesc": "{quote} अब नए लिमिट ऑर्डर के लिए कोट के रूप में उपलब्ध नहीं है। आप इस बुक पर अपने ऑर्डर अब भी क्लेम और रद्द कर सकते हैं।",
+      "retiredQuoteGoTo": "{pair} ऑर्डरबुक पर ट्रेड करें",
+      "retiredQuoteCreate": "{pair} ऑर्डरबुक बनाएं"
     }
   },
   "pools": {
