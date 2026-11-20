@@ -131,6 +131,26 @@ export const useOrderbookSelectableDenoms = () => {
  * @param denoms An object including both the base and quote denom
  * @returns A state including info about the current orderbook and any orders the user may have on the orderbook
  */
+/**
+ * The orderbook whose base and quote are exactly these minimal denoms.
+ * Symbols are never compared: two assets can share a symbol, and callers
+ * resolve a symbol from the URL to its denom before looking up a book.
+ */
+export function findOrderbookByDenoms<
+  T extends { baseDenom: string; quoteDenom: string },
+>(
+  orderbooks: T[],
+  baseCoinMinimalDenom: string | undefined,
+  quoteCoinMinimalDenom: string | undefined
+): T | undefined {
+  if (!baseCoinMinimalDenom || !quoteCoinMinimalDenom) return undefined;
+  return orderbooks.find(
+    (orderbook) =>
+      orderbook.baseDenom === baseCoinMinimalDenom &&
+      orderbook.quoteDenom === quoteCoinMinimalDenom
+  );
+}
+
 export const useOrderbook = ({
   baseDenom,
   quoteDenom,
@@ -179,14 +199,10 @@ export const useOrderbook = ({
 
   const orderbook = useMemo(
     () =>
-      orderbooks.find(
-        (orderbook) =>
-          baseAsset &&
-          quoteAsset &&
-          (orderbook.baseDenom === baseAsset.coinDenom ||
-            orderbook.baseDenom === baseAsset.coinMinimalDenom) &&
-          (orderbook.quoteDenom === quoteAsset.coinDenom ||
-            orderbook.quoteDenom === quoteAsset.coinMinimalDenom)
+      findOrderbookByDenoms(
+        orderbooks,
+        baseAsset?.coinMinimalDenom,
+        quoteAsset?.coinMinimalDenom
       ),
     [orderbooks, baseAsset, quoteAsset]
   );
@@ -420,6 +436,27 @@ export const useOrderbookOrders = ({
     refetch: refetchOrders,
     isRefetching,
   };
+};
+
+/** Delays (ms) after a confirmed order at which the user's orders refetch. */
+const ORDER_REFETCH_DELAYS_MS = [0, 1500, 4000];
+
+/**
+ * Refetches the user's orders wherever a list of them is mounted, so a new
+ * order shows up without waiting for the next poll. SQS ingests the block a
+ * moment after the tx confirms, so a single immediate refetch usually comes
+ * back without the order; the later refetches pick it up.
+ */
+export const useInvalidateOrderbookOrders = () => {
+  const apiUtils = api.useUtils();
+  return useCallback(() => {
+    for (const delay of ORDER_REFETCH_DELAYS_MS) {
+      setTimeout(() => {
+        apiUtils.local.orderbooks.getAllOrdersSQS.invalidate();
+        apiUtils.edge.orderbooks.getAllOrders.invalidate();
+      }, delay);
+    }
+  }, [apiUtils]);
 };
 
 /**

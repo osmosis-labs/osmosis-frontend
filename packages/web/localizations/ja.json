@@ -558,7 +558,11 @@
       "depthNoOrders": "未約定注文なし",
       "depthNoOrdersDesc": "この板は現在空です",
       "depthUnavailable": "板情報データを取得できません",
-      "depthUnavailableDesc": "板情報の読み込みに失敗しました。再試行中..."
+      "depthUnavailableDesc": "板情報の読み込みに失敗しました。再試行中...",
+      "depthClLegend": "CLプール含む",
+      "depthClLegendTooltip": "斜線のバーには、このペアの集中流動性プールの流動性が含まれます。これはAMMカーブの流動性であり、指値注文ではありません。表示数量は注文のみです。",
+      "depthClUnavailable": "CLの厚みを取得できません",
+      "depthRowWithCl": "注文: {orders} · CLプール: {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "{minutes}分前",
     "buyWith": "{coinA}または{coinB}で購入",
     "orderHistory": "注文履歴",
+    "openOrderbook": "板を開く",
     "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
     "tradeAnotherAsset": "別の資産を{coinDenom}と交換する",
     "sellAnAsset": "資産を売る",
@@ -1538,5 +1543,8 @@
       "stepTitle": "{symbol}を{symbol}.whに変換",
       "description": "アロイド資産として {balance} {symbol} を保有しています。Wormholeは{symbol}.whバリアントをブリッジするため、先に変換してから下でブリッジしてください。"
     }
+  },
+  "tradeView": {
+    "orderBook": "板"
   }
 }

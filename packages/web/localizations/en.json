@@ -558,7 +558,11 @@
       "depthNoOrders": "No open orders",
       "depthNoOrdersDesc": "This order book is currently empty",
       "depthUnavailable": "Depth data unavailable",
-      "depthUnavailableDesc": "Unable to load order book depth. Retrying..."
+      "depthUnavailableDesc": "Unable to load order book depth. Retrying...",
+      "depthClLegend": "Incl. CL pools",
+      "depthClLegendTooltip": "Hatched bars include liquidity from concentrated liquidity pools for this pair. It is AMM curve liquidity, not resting orders; quantities shown are orders only.",
+      "depthClUnavailable": "CL depth unavailable",
+      "depthRowWithCl": "Orders: {orders} · CL pools: {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "{minutes}m ago",
     "buyWith": "Buy with {coinA} or {coinB}",
     "orderHistory": "Order history",
+    "openOrderbook": "Open orderbook",
     "tradeAnotherAssetOr": "Trade another asset for {coinA} or {coinB}",
     "tradeAnotherAsset": "Trade another asset for {coinDenom}",
     "sellAnAsset": "Sell an asset",
@@ -1538,5 +1543,8 @@
       "stepTitle": "Convert {symbol} to {symbol}.wh",
       "description": "You hold {balance} {symbol} as the alloyed asset. Wormhole bridges the {symbol}.wh variant, so convert first, then bridge below."
     }
+  },
+  "tradeView": {
+    "orderBook": "Order book"
   }
 }

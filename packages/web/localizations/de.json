@@ -558,7 +558,11 @@
       "depthNoOrders": "Keine offenen Aufträge",
       "depthNoOrdersDesc": "Dieses Orderbuch ist derzeit leer",
       "depthUnavailable": "Tiefendaten nicht verfügbar",
-      "depthUnavailableDesc": "Orderbuch-Tiefe konnte nicht geladen werden. Erneuter Versuch..."
+      "depthUnavailableDesc": "Orderbuch-Tiefe konnte nicht geladen werden. Erneuter Versuch...",
+      "depthClLegend": "Inkl. CL-Pools",
+      "depthClLegendTooltip": "Schraffierte Balken enthalten Liquidität aus Concentrated-Liquidity-Pools für dieses Paar. Das ist AMM-Kurvenliquidität, keine offenen Orders; angezeigte Mengen sind nur Orders.",
+      "depthClUnavailable": "CL-Tiefe nicht verfügbar",
+      "depthRowWithCl": "Orders: {orders} · CL-Pools: {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "vor {minutes} Minuten",
     "buyWith": "Kaufen mit {coinA} oder {coinB}",
     "orderHistory": "Orderverlauf",
+    "openOrderbook": "Orderbuch öffnen",
     "tradeAnotherAssetOr": "Tauschen Sie einen anderen Vermögenswert gegen {coinA} oder {coinB}",
     "tradeAnotherAsset": "Tauschen Sie einen anderen Vermögenswert gegen {coinDenom}",
     "sellAnAsset": "Einen Vermögenswert verkaufen",
@@ -1538,5 +1543,8 @@
       "stepTitle": "{symbol} in {symbol}.wh umwandeln",
       "description": "Du hältst {balance} {symbol} als alloyierten Vermögenswert. Wormhole bridgt die {symbol}.wh-Variante, also wandle zuerst um und bridge dann unten."
     }
+  },
+  "tradeView": {
+    "orderBook": "Orderbuch"
   }
 }

@@ -558,7 +558,11 @@
       "depthNoOrders": "Sin órdenes abiertas",
       "depthNoOrdersDesc": "Este libro de órdenes está vacío",
       "depthUnavailable": "Datos de profundidad no disponibles",
-      "depthUnavailableDesc": "No se pudo cargar la profundidad del libro de órdenes. Reintentando..."
+      "depthUnavailableDesc": "No se pudo cargar la profundidad del libro de órdenes. Reintentando...",
+      "depthClLegend": "Incl. pools CL",
+      "depthClLegendTooltip": "Las barras rayadas incluyen liquidez de pools de liquidez concentrada para este par. Es liquidez de curva AMM, no órdenes en espera; las cantidades mostradas son solo órdenes.",
+      "depthClUnavailable": "Profundidad CL no disponible",
+      "depthRowWithCl": "Órdenes: {orders} · Pools CL: {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "hace {minutes} min",
     "buyWith": "Compre con {coinA} o {coinB}",
     "orderHistory": "Historial de órdenes",
+    "openOrderbook": "Abrir libro de órdenes",
     "tradeAnotherAssetOr": "Cambie otro activo por {coinA} o {coinB}",
     "tradeAnotherAsset": "Cambie otro activo por {coinDenom}",
     "sellAnAsset": "Vender un activo",
@@ -1538,5 +1543,8 @@
       "stepTitle": "Convertir {symbol} a {symbol}.wh",
       "description": "Tienes {balance} {symbol} como activo aleado. Wormhole usa el puente con la variante {symbol}.wh, así que convierte primero y luego usa el puente abajo."
     }
+  },
+  "tradeView": {
+    "orderBook": "Libro de órdenes"
   }
 }

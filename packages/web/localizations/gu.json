@@ -558,7 +558,11 @@
       "depthNoOrders": "કોઈ ખુલ્લા ઓર્ડર નથી",
       "depthNoOrdersDesc": "આ ઓર્ડર બુક હાલમાં ખાલી છે",
       "depthUnavailable": "ઊંડાઈ ડેટા અનુપલબ્ધ",
-      "depthUnavailableDesc": "ઓર્ડર બુક ઊંડાઈ લોડ કરવામાં અસમર્થ. ફરી પ્રયાસ કરી રહ્યા છીએ..."
+      "depthUnavailableDesc": "ઓર્ડર બુક ઊંડાઈ લોડ કરવામાં અસમર્થ. ફરી પ્રયાસ કરી રહ્યા છીએ...",
+      "depthClLegend": "CL પૂલ સહિત",
+      "depthClLegendTooltip": "છાયાંકિત પટ્ટીઓમાં આ જોડી માટે કોન્સન્ટ્રેટેડ લિક્વિડિટી પૂલની લિક્વિડિટી શામેલ છે. આ AMM કર્વ લિક્વિડિટી છે, બાકી ઓર્ડર નહીં; દર્શાવેલ જથ્થા ફક્ત ઓર્ડર છે.",
+      "depthClUnavailable": "CL ઊંડાઈ ઉપલબ્ધ નથી",
+      "depthRowWithCl": "ઓર્ડર: {orders} · CL પૂલ: {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "{minutes} મિનિટ પહેલા",
     "buyWith": "{coinA} અથવા {coinB} વડે ખરીદો",
     "orderHistory": "ઓર્ડર ઇતિહાસ",
+    "openOrderbook": "ઓર્ડરબુક ખોલો",
     "tradeAnotherAssetOr": "{coinA} અથવા {coinB} માટે બીજી સંપત્તિનો વેપાર કરો",
     "tradeAnotherAsset": "{coinDenom} માટે બીજી સંપત્તિનો વેપાર કરો",
     "sellAnAsset": "સંપત્તિ વેચો",
@@ -1538,5 +1543,8 @@
       "stepTitle": "{symbol} ને {symbol}.wh માં કન્વર્ટ કરો",
       "description": "તમારી પાસે {balance} {symbol} એલોય્ડ એસેટ તરીકે છે. Wormhole {symbol}.wh વેરિઅન્ટ બ્રિજ કરે છે, તેથી પહેલા કન્વર્ટ કરો, પછી નીચે બ્રિજ કરો."
     }
+  },
+  "tradeView": {
+    "orderBook": "ઓર્ડર બુક"
   }
 }

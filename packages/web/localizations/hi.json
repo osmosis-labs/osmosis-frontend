@@ -558,7 +558,11 @@
       "depthNoOrders": "कोई खुले आदेश नहीं",
       "depthNoOrdersDesc": "यह ऑर्डर बुक वर्तमान में खाली है",
       "depthUnavailable": "गहराई डेटा अनुपलब्ध",
-      "depthUnavailableDesc": "ऑर्डर बुक गहराई लोड करने में असमर्थ। पुनः प्रयास हो रहा है..."
+      "depthUnavailableDesc": "ऑर्डर बुक गहराई लोड करने में असमर्थ। पुनः प्रयास हो रहा है...",
+      "depthClLegend": "CL पूल सहित",
+      "depthClLegendTooltip": "धारीदार बार में इस जोड़ी के कॉन्सन्ट्रेटेड लिक्विडिटी पूल की लिक्विडिटी शामिल है। यह AMM कर्व लिक्विडिटी है, लंबित ऑर्डर नहीं; दिखाई गई मात्राएँ केवल ऑर्डर हैं।",
+      "depthClUnavailable": "CL गहराई उपलब्ध नहीं",
+      "depthRowWithCl": "ऑर्डर: {orders} · CL पूल: {cl}"
     }
   },
   "pools": {
@@ -1359,6 +1363,7 @@
     "minutesAgo": "{minutes} मिनट पहले",
     "buyWith": "{coinA} या {coinB} के साथ खरीदें",
     "orderHistory": "ऑर्डर इतिहास",
+    "openOrderbook": "ऑर्डरबुक खोलें",
     "tradeAnotherAssetOr": "{coinA} या {coinB} के लिए किसी अन्य परिसंपत्ति का व्यापार करें",
     "tradeAnotherAsset": "{coinDenom} के लिए किसी अन्य परिसंपत्ति का व्यापार करें",
     "sellAnAsset": "एक परिसंपत्ति बेचें",
@@ -1538,5 +1543,8 @@
       "stepTitle": "{symbol} को {symbol}.wh में बदलें",
       "description": "आपके पास एलॉयड एसेट के रूप में {balance} {symbol} है। Wormhole {symbol}.wh वैरिएंट को ब्रिज करता है, इसलिए पहले कन्वर्ट करें, फिर नीचे ब्रिज करें।"
     }
+  },
+  "tradeView": {
+    "orderBook": "ऑर्डर बुक"
   }
 }
