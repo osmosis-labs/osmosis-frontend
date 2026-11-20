@@ -540,7 +540,26 @@
     "yourStats": "તમારું પૂલ બેલેન્સ",
     "onlyInRangePositions": "માત્ર શ્રેણીમાં હોદ્દા માટે",
     "custom": "કસ્ટમ",
-    "nextRewardIn": "પછીનું પુરસ્કાર"
+    "nextRewardIn": "પછીનું પુરસ્કાર",
+    "orderbookPool": {
+      "type": "ઓર્ડર બુક",
+      "spread": "સ્પ્રેડ",
+      "makerFee": "મેકર ફી",
+      "yourOrders": "તમારા ઓર્ડર",
+      "noOrders": "આ જોડી માટે કોઈ ઓર્ડર નથી",
+      "noOrdersDesc": "તમારો પ્રથમ મર્યાદા ઓર્ડર આપો.",
+      "filterAll": "બધા",
+      "filterBuy": "ખરીદો",
+      "filterSell": "વેચો",
+      "depthPrice": "ભાવ",
+      "depthRaw": "કાચું",
+      "depthNoAsks": "કોઈ વેચાણ નથી",
+      "depthNoBids": "કોઈ ખરીદી નથી",
+      "depthNoOrders": "કોઈ ખુલ્લા ઓર્ડર નથી",
+      "depthNoOrdersDesc": "આ ઓર્ડર બુક હાલમાં ખાલી છે",
+      "depthUnavailable": "ઊંડાઈ ડેટા અનુપલબ્ધ",
+      "depthUnavailableDesc": "ઓર્ડર બુક ઊંડાઈ લોડ કરવામાં અસમર્થ. ફરી પ્રયાસ કરી રહ્યા છીએ..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1329,7 +1348,6 @@
     "pay": "ચૂકવો",
     "open": "ખુલ્લા",
     "filled": "ભરાયેલ",
-    "claimable": "મેળવી શકાય",
     "claimAndClose": "મેળવો અને બંધ કરો",
     "close": "બંધ કરો",
     "claim": "મેળવો",

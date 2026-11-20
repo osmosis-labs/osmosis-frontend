@@ -540,7 +540,26 @@
     "yourStats": "موجودی استخر شما",
     "onlyInRangePositions": "فقط برای موقعیت های در محدوده",
     "custom": "سفارشی",
-    "nextRewardIn": "پاداش بعدی در"
+    "nextRewardIn": "پاداش بعدی در",
+    "orderbookPool": {
+      "type": "دفتر سفارشات",
+      "spread": "اسپرد",
+      "makerFee": "کارمزد میکر",
+      "yourOrders": "سفارش‌های شما",
+      "noOrders": "هیچ سفارشی برای این جفت وجود ندارد",
+      "noOrdersDesc": "اولین سفارش محدود خود را ثبت کنید.",
+      "filterAll": "همه",
+      "filterBuy": "خرید",
+      "filterSell": "فروش",
+      "depthPrice": "قیمت",
+      "depthRaw": "خام",
+      "depthNoAsks": "بدون فروشنده",
+      "depthNoBids": "بدون خریدار",
+      "depthNoOrders": "سفارش بازی وجود ندارد",
+      "depthNoOrdersDesc": "این دفتر سفارش در حال حاضر خالی است",
+      "depthUnavailable": "داده‌های عمق در دسترس نیست",
+      "depthUnavailableDesc": "بارگذاری عمق دفتر سفارش ممکن نیست. در حال تلاش مجدد..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1329,7 +1348,6 @@
     "pay": "پرداخت",
     "open": "باز",
     "filled": "اجرا شده",
-    "claimable": "قابل دریافت",
     "claimAndClose": "دریافت و بستن",
     "close": "بستن",
     "claim": "دریافت",

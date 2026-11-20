@@ -540,7 +540,26 @@
     "yourStats": "Havuz bakiyeniz",
     "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için",
     "custom": "Gelenek",
-    "nextRewardIn": "Sonraki ödül"
+    "nextRewardIn": "Sonraki ödül",
+    "orderbookPool": {
+      "type": "Emir defteri",
+      "spread": "Fark",
+      "makerFee": "Yapıcı ücreti",
+      "yourOrders": "Emirleriniz",
+      "noOrders": "Bu parite için emir yok",
+      "noOrdersDesc": "İlk limit emrinizi verin.",
+      "filterAll": "Tümü",
+      "filterBuy": "Al",
+      "filterSell": "Sat",
+      "depthPrice": "Fiyat",
+      "depthRaw": "Ham",
+      "depthNoAsks": "Satış yok",
+      "depthNoBids": "Alış yok",
+      "depthNoOrders": "Açık emir yok",
+      "depthNoOrdersDesc": "Bu emir defteri şu anda boş",
+      "depthUnavailable": "Derinlik verisi mevcut değil",
+      "depthUnavailableDesc": "Emir defteri derinliği yüklenemedi. Yeniden deneniyor..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1329,7 +1348,6 @@
     "pay": "Ödeme",
     "open": "Açık",
     "filled": "Gerçekleşti",
-    "claimable": "Talep edilebilir",
     "claimAndClose": "Talep et ve kapat",
     "close": "Kapat",
     "claim": "Talep et",

@@ -540,7 +540,26 @@
     "yourStats": "您的资金池余额",
     "onlyInRangePositions": "仅适用于范围内的位置",
     "custom": "风俗",
-    "nextRewardIn": "下次奖励"
+    "nextRewardIn": "下次奖励",
+    "orderbookPool": {
+      "type": "订单簿",
+      "spread": "价差",
+      "makerFee": "挂单手续费",
+      "yourOrders": "我的订单",
+      "noOrders": "该交易对暂无订单",
+      "noOrdersDesc": "请下您的第一笔限价订单。",
+      "filterAll": "全部",
+      "filterBuy": "买入",
+      "filterSell": "卖出",
+      "depthPrice": "价格",
+      "depthRaw": "原始",
+      "depthNoAsks": "无卖单",
+      "depthNoBids": "无买单",
+      "depthNoOrders": "暂无挂单",
+      "depthNoOrdersDesc": "该订单簿当前为空",
+      "depthUnavailable": "深度数据不可用",
+      "depthUnavailableDesc": "无法加载订单簿深度。正在重试..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1329,7 +1348,6 @@
     "pay": "支付",
     "open": "挂单中",
     "filled": "已成交",
-    "claimable": "可领取",
     "claimAndClose": "领取并关闭",
     "close": "关闭",
     "claim": "领取",
