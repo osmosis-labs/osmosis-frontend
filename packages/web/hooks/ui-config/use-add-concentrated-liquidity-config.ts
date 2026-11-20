@@ -1,19 +1,39 @@
-import { BigDec } from "@osmosis-labs/math";
+import {
+  BigDec,
+  calcMarginalPriceImpact,
+  calcZapInCostFraction,
+  calcZapInPositionMinima,
+  estimateSqrtPriceAfterSwapIn,
+} from "@osmosis-labs/math";
 import type { Pool } from "@osmosis-labs/server";
 import {
   prepareAddToConcentratedLiquidityPositionMsg,
   prepareCreateConcentratedLiquidityPositionMsg,
+  prepareZapInToConcentratedPositionMsg,
 } from "@osmosis-labs/tx";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import {
   AppCurrency,
   CoinPretty,
+  Dec,
+  Int,
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
+import { displayToast } from "~/components/alert/toast";
+import { ToastType } from "~/components/alert/types";
 import { getChainInfo } from "~/config/chain";
+import { usePrice } from "~/hooks/queries/assets/use-price";
+import { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
+import { ClZapQuote, useClZapQuote } from "~/hooks/use-cl-zap-quote";
+import {
+  useSwapSlippage,
+  useSwapSlippageConfig,
+} from "~/hooks/use-swap-slippage";
+import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
+import type { SlippageSource } from "~/utils/slippage";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
@@ -22,15 +42,20 @@ import {
   addConcentratedLiquidityReducer,
   calcDepositPercentages,
   ConcentratedPoolParams,
+  CounterpartyPlan,
   counterpartyPlanToActions,
   DepositSide,
   deriveRangeView,
+  deriveSingleAssetInputState,
+  deriveSingleAssetSwap,
   getQuoteOverBaseMultiplier,
   INITIAL_ADD_CL_STATE,
   InvalidRangeError,
   isInactiveConcentratedPool,
   planCounterpartyUpdate,
   RangeView,
+  SingleAssetInputState,
+  SingleAssetSwap,
 } from "./add-concentrated-liquidity-state";
 import {
   calcHighGasFee,
@@ -69,6 +94,18 @@ export interface AddConcentratedLiquidityConfig extends Omit<
   readonly baseDepositAmountIn: ConcentratedDepositAmount;
   readonly quoteDepositAmountIn: ConcentratedDepositAmount;
   readonly error: Error | undefined;
+  /** Single-asset deposit (zap-in): one side is provided and part of it swapped. */
+  readonly singleAssetMode: boolean;
+  readonly singleAssetSide: DepositSide;
+  /** The deposit input of the provided side in single-asset mode. */
+  readonly singleAssetDepositAmountIn: ConcentratedDepositAmount;
+  /** The swap leg in single-asset mode; undefined outside it or before a
+   *  positive amount is entered. `swapInAmount` zero means a one-sided range. */
+  readonly requiredSwap: SingleAssetSwap | undefined;
+  /** Submit state in single-asset mode; undefined outside it or before the pool loads. */
+  readonly singleAssetInputState: SingleAssetInputState | undefined;
+  readonly setSingleAssetMode: (enabled: boolean) => void;
+  readonly setSingleAssetSide: (side: DepositSide) => void;
   readonly setMinRange: (min: string) => void;
   readonly setMaxRange: (max: string) => void;
   readonly setFullRange: (isFullRange: boolean) => void;
@@ -111,6 +148,8 @@ export interface AddConcentratedLiquidityInputs {
   quoteDepositPrice: PricePretty | undefined;
   /** Historical prices with currency decimals; `Infinity` means no data. */
   historicalPriceMinMax: { min: number; max: number } | undefined;
+  /** Single-asset mode on first render (the persisted per-pool preference). */
+  initialSingleAssetMode?: boolean;
 }
 
 /** State and derived values of the add concentrated liquidity config, with no queries or tx sending. */
@@ -122,10 +161,12 @@ export function useAddConcentratedLiquidityState({
   baseDepositPrice,
   quoteDepositPrice,
   historicalPriceMinMax,
+  initialSingleAssetMode = false,
 }: AddConcentratedLiquidityInputs): AddConcentratedLiquidityConfig {
   const [state, dispatch] = useReducer(
     addConcentratedLiquidityReducer,
-    INITIAL_ADD_CL_STATE
+    INITIAL_ADD_CL_STATE,
+    (initial) => ({ ...initial, singleAssetMode: initialSingleAssetMode })
   );
 
   // pool
@@ -236,6 +277,14 @@ export function useAddConcentratedLiquidityState({
   );
   const setElectSuperfluidStaking = useCallback(
     (elected: boolean) => dispatch({ type: "setSuperfluid", elected }),
+    []
+  );
+  const setSingleAssetMode = useCallback(
+    (enabled: boolean) => dispatch({ type: "setSingleAssetMode", enabled }),
+    []
+  );
+  const setSingleAssetSide = useCallback(
+    (side: DepositSide) => dispatch({ type: "setSingleAssetSide", side }),
     []
   );
   const setBaseAmount = useCallback(
@@ -382,22 +431,27 @@ export function useAddConcentratedLiquidityState({
     quoteCurrency,
   ]);
 
-  // The non-anchor deposit amount follows the anchor one.
-  const counterpartyPlan = useMemo(
+  // The non-anchor deposit amount follows the anchor one. Suppressed in
+  // single-asset mode, where the counterparty comes from the swap instead.
+  const { singleAssetMode, singleAssetSide } = state;
+  const counterpartyPlan = useMemo<CounterpartyPlan>(
     () =>
-      planCounterpartyUpdate({
-        anchor: state.anchor,
-        base: baseDepositAmountIn,
-        quote: quoteDepositAmountIn,
-        pool: poolParams,
-        isInactivePool,
-        tickRange,
-        baseDepositOnly,
-        quoteDepositOnly,
-        baseDepositPrice: prices?.base ?? null,
-        quoteDepositPrice: prices?.quote ?? null,
-      }),
+      singleAssetMode
+        ? { type: "none" }
+        : planCounterpartyUpdate({
+            anchor: state.anchor,
+            base: baseDepositAmountIn,
+            quote: quoteDepositAmountIn,
+            pool: poolParams,
+            isInactivePool,
+            tickRange,
+            baseDepositOnly,
+            quoteDepositOnly,
+            baseDepositPrice: prices?.base ?? null,
+            quoteDepositPrice: prices?.quote ?? null,
+          }),
     [
+      singleAssetMode,
       state.anchor,
       baseDepositAmountIn,
       quoteDepositAmountIn,
@@ -418,6 +472,35 @@ export function useAddConcentratedLiquidityState({
     );
   }, [counterpartyPlan]);
 
+  const singleAssetDepositAmountIn =
+    singleAssetSide === "base" ? baseDepositAmountIn : quoteDepositAmountIn;
+  const requiredSwap = useMemo(
+    () =>
+      singleAssetMode
+        ? deriveSingleAssetSwap({
+            side: singleAssetSide,
+            input: singleAssetDepositAmountIn,
+            counterpartyCurrency:
+              singleAssetSide === "base" ? quoteCurrency : baseCurrency,
+            pool: poolParams,
+            tickRange,
+          })
+        : undefined,
+    [
+      singleAssetMode,
+      singleAssetSide,
+      singleAssetDepositAmountIn,
+      baseCurrency,
+      quoteCurrency,
+      poolParams,
+      tickRange,
+    ]
+  );
+  const singleAssetInputState =
+    singleAssetMode && poolParams
+      ? deriveSingleAssetInputState(singleAssetDepositAmountIn, requiredSwap)
+      : undefined;
+
   const { fullRange } = state;
   const error = useMemo<Error | undefined>(() => {
     if (!fullRange && rangeView.range[0].gte(rangeView.range[1])) {
@@ -425,6 +508,8 @@ export function useAddConcentratedLiquidityState({
         "lower range must be less than upper range."
       );
     }
+    // In single-asset mode only the provided side's input is relevant.
+    if (singleAssetMode) return singleAssetDepositAmountIn.error;
     if (quoteDepositOnly) return quoteDepositAmountIn.error;
     if (baseDepositOnly) return baseDepositAmountIn.error;
     return baseDepositAmountIn.error || quoteDepositAmountIn.error;
@@ -435,6 +520,8 @@ export function useAddConcentratedLiquidityState({
     quoteDepositOnly,
     baseDepositAmountIn,
     quoteDepositAmountIn,
+    singleAssetMode,
+    singleAssetDepositAmountIn,
   ]);
 
   const shouldBeSuperfluidStaked = state.superfluidStakingElected && fullRange;
@@ -453,6 +540,13 @@ export function useAddConcentratedLiquidityState({
       baseDepositAmountIn,
       quoteDepositAmountIn,
       error,
+      singleAssetMode,
+      singleAssetSide,
+      singleAssetDepositAmountIn,
+      requiredSwap,
+      singleAssetInputState,
+      setSingleAssetMode,
+      setSingleAssetSide,
       setMinRange,
       setMaxRange,
       setFullRange,
@@ -472,6 +566,13 @@ export function useAddConcentratedLiquidityState({
       baseDepositAmountIn,
       quoteDepositAmountIn,
       error,
+      singleAssetMode,
+      singleAssetSide,
+      singleAssetDepositAmountIn,
+      requiredSwap,
+      singleAssetInputState,
+      setSingleAssetMode,
+      setSingleAssetSide,
       setMinRange,
       setMaxRange,
       setFullRange,
@@ -493,7 +594,7 @@ export function useAddConcentratedLiquidityConfig(
   config: AddConcentratedLiquidityConfig;
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
-} {
+} & ZapInConfig {
   const apiUtils = api.useUtils();
 
   const {
@@ -549,7 +650,14 @@ export function useAddConcentratedLiquidityConfig(
       { enabled: isPoolFetched }
     );
 
-  const config = useAddConcentratedLiquidityState({
+  // Single-asset mode is a per-pool preference, not shareable state.
+  const [persistedSingleAssetMode, setPersistedSingleAssetMode] =
+    useLocalStorageState<boolean>(
+      `cl-add-position-single-asset-mode:${poolId}`,
+      false
+    );
+
+  const stateConfig = useAddConcentratedLiquidityState({
     poolId,
     chain,
     pool,
@@ -557,6 +665,27 @@ export function useAddConcentratedLiquidityConfig(
     baseDepositPrice,
     quoteDepositPrice,
     historicalPriceMinMax: historicalPriceData,
+    initialSingleAssetMode: persistedSingleAssetMode,
+  });
+  const { setSingleAssetMode: setStateSingleAssetMode } = stateConfig;
+  const setSingleAssetMode = useCallback(
+    (enabled: boolean) => {
+      setStateSingleAssetMode(enabled);
+      setPersistedSingleAssetMode(enabled);
+    },
+    [setStateSingleAssetMode, setPersistedSingleAssetMode]
+  );
+  const config = useMemo(
+    () => ({ ...stateConfig, setSingleAssetMode }),
+    [stateConfig, setSingleAssetMode]
+  );
+
+  const zap = useZapIn({
+    poolId,
+    config,
+    transactionContext,
+    signAndBroadcast,
+    apiUtils,
   });
 
   const {
@@ -700,5 +829,408 @@ export function useAddConcentratedLiquidityConfig(
     ]
   );
 
-  return { config, addLiquidity, increaseLiquidity };
+  return { config, addLiquidity, increaseLiquidity, ...zap };
+}
+
+/** Total zap-in cost (price impact + swap fees) at which the submit Confirm
+ *  gate engages, as a fraction of value in. */
+const ZAP_HIGH_COST_THRESHOLD = new Dec(0.05);
+
+export interface ZapInConfig {
+  /** Swap + create-position in one atomic tx, for single-asset mode. */
+  zapInLiquidity: () => Promise<void>;
+  zapQuote: ReturnType<typeof useClZapQuote>;
+  /** The swap leg's slippage, resolved like the swap tool's (typed value,
+   *  else the tier picked from the quote, else the default) and held in
+   *  manual mode, so what the input shows is what the transaction signs. */
+  zapSlippageConfig: SlippageConfig;
+  /** The swap leg's guaranteed minimum output (the quote less slippage), as
+   *  displayed and as submitted. */
+  zapMinReceived: CoinPretty | undefined;
+  /** Where the swap leg's slippage came from (typed, auto tier, default). */
+  zapSlippageSource: SlippageSource;
+  /** True when the auto tier was picked without knowing route liquidity. */
+  zapSlippageLiquidityUnknown: boolean;
+  /** Fiat value of the full single-asset deposit; undefined without a quote
+   *  or an input price. */
+  zapValueIn: PricePretty | undefined;
+  /** Fiat value landing in the position: value in less `zapTotalCostPercent`;
+   *  undefined without a quote or an input price. */
+  zapValueOut: PricePretty | undefined;
+  /** Combined zap-in cost (swap fee + adverse price impact on the swapped
+   *  slice) as a fraction of the input, computed without fiat prices so the
+   *  gate also holds for unpriced assets. For a swap routed through the
+   *  destination pool this uses the POST-swap marginal impact when it is
+   *  worse than the quoted average fill: arbitrage reverts the moved price
+   *  against the in-range LPs, which the depositor is about to become. */
+  zapTotalCostPercent: RatePretty | undefined;
+  /** True when `zapTotalCostPercent` reaches the high-cost threshold. */
+  zapHighCost: boolean;
+  /** True while the quote routes through the destination pool but the depth
+   *  data for the marginal impact hasn't loaded; submission blocks on this so
+   *  the gate never evaluates on the understated average-fill figure. */
+  zapImpactPending: boolean;
+}
+
+/** Portion of a quote's swap input routed through the destination pool. In an
+ *  acyclic route the destination pair pool can only appear as a direct
+ *  single-hop route (any other placement revisits a denom), so the amount is
+ *  exact from the split. */
+function destinationRoutedInput(
+  quote: ClZapQuote | undefined,
+  poolId: string
+): { amount: Int; spread: Dec } {
+  const routes = (quote?.split ?? []).filter(
+    (route) => route.pools.length === 1 && route.pools[0].id === poolId
+  );
+  return {
+    amount: routes.reduce(
+      (sum, route) => sum.add(route.initialAmount),
+      new Int(0)
+    ),
+    // The chain charges the spread factor on token-in before the price math.
+    // The un-deducted taker fee overstates the movement slightly, which the
+    // pre/post-swap minima envelope absorbs.
+    spread: routes[0]?.pools[0].spreadFactor?.toDec() ?? new Dec(0),
+  };
+}
+
+function useZapIn({
+  poolId,
+  config,
+  transactionContext,
+  signAndBroadcast,
+  apiUtils,
+}: {
+  poolId: string;
+  config: AddConcentratedLiquidityConfig;
+  transactionContext: ReturnType<typeof useWallet>["transactionContext"];
+  signAndBroadcast: ReturnType<typeof useWallet>["signAndBroadcast"];
+  apiUtils: ReturnType<typeof api.useUtils>;
+}): ZapInConfig {
+  const zapSlippageConfig = useSwapSlippageConfig();
+
+  const {
+    requiredSwap,
+    singleAssetMode,
+    singleAssetSide,
+    singleAssetDepositAmountIn,
+    pool: clPool,
+    tickRange,
+  } = config;
+
+  // Denoms come from the selected side, not `requiredSwap`, so they stay put
+  // while the amount is briefly empty mid-edit and the held quote survives.
+  const sideCurrency =
+    singleAssetSide === "base" ? clPool?.baseCurrency : clPool?.quoteCurrency;
+  const otherCurrency =
+    singleAssetSide === "base" ? clPool?.quoteCurrency : clPool?.baseCurrency;
+  const zapQuote = useClZapQuote({
+    tokenInAmount: requiredSwap?.swapInAmount.toString() ?? "0",
+    tokenInDenom: sideCurrency?.coinMinimalDenom ?? "",
+    tokenOutDenom: otherCurrency?.coinMinimalDenom ?? "",
+    enabled: singleAssetMode && Boolean(requiredSwap?.needsSwap),
+  });
+  const quote = zapQuote.quote;
+
+  // Same resolution as the swap tool: a typed value, else the tier for this
+  // quote's impact and route liquidity, else the default. There is no review
+  // step to latch the tier against, and no fee simulation before submit.
+  const {
+    source: zapSlippageSource,
+    liquidityUnknown: zapSlippageLiquidityUnknown,
+  } = useSwapSlippage({
+    slippageConfig: zapSlippageConfig,
+    quote,
+    quoteType: "out-given-in",
+    feeError: undefined,
+    isReviewOpen: false,
+    isQuoteSettled: !zapQuote.isLoading && !zapQuote.isRefreshing,
+  });
+  const slippage = zapSlippageConfig.slippage.toDec();
+  // The swap leg's floor in micro units, computed once for display and submit.
+  const zapMinOutAmount = quote
+    ? new Dec(quote.amount.toCoin().amount)
+        .mul(new Dec(1).sub(slippage))
+        .truncate()
+    : undefined;
+  const zapMinReceived =
+    quote && zapMinOutAmount
+      ? new CoinPretty(quote.amount.currency, zapMinOutAmount)
+      : undefined;
+
+  // Marginal impact of the destination-routed slice, over the pool's live
+  // tick liquidity. The same simulation runs at submit time for the minima.
+  const destination = destinationRoutedInput(quote, poolId);
+  const needsMarginalImpact = destination.amount.gt(new Int(0));
+  const { data: liquidityDepths } =
+    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
+      { poolId },
+      { enabled: needsMarginalImpact }
+    );
+  let marginalImpact: Dec | undefined;
+  const spotSqrtPrice = clPool?.currentSqrtPrice;
+  if (
+    needsMarginalImpact &&
+    spotSqrtPrice &&
+    !spotSqrtPrice.isZero() &&
+    liquidityDepths &&
+    liquidityDepths.length > 0
+  ) {
+    marginalImpact = calcMarginalPriceImpact({
+      currentSqrtPrice: spotSqrtPrice,
+      postSwapSqrtPrice: estimateSqrtPriceAfterSwapIn({
+        tokenInAmount: new Dec(destination.amount)
+          .mul(new Dec(1).sub(destination.spread))
+          .truncate(),
+        inputSide: singleAssetSide,
+        currentSqrtPrice: spotSqrtPrice,
+        liquidityDepths,
+      }),
+      inputSide: singleAssetSide,
+    });
+  }
+  const zapImpactPending = needsMarginalImpact && marginalImpact === undefined;
+
+  // Total cost: one fiat-free calculation shared by the breakdown rows, the
+  // rust styling and the Confirm gate, so display and gate can't diverge and
+  // an unpriced input still gates. Value in and out are only the fiat view of
+  // the same fraction.
+  let zapTotalCostPercent: RatePretty | undefined;
+  if (requiredSwap?.needsSwap && quote && clPool) {
+    // Worst of the quoted (average-fill) and marginal impacts.
+    const quotedImpact = quote.priceImpactTokenOut?.toDec();
+    const impact =
+      marginalImpact !== undefined &&
+      (quotedImpact === undefined || marginalImpact.lt(quotedImpact))
+        ? marginalImpact
+        : quotedImpact;
+    const costFraction = calcZapInCostFraction({
+      inputAmount: requiredSwap.inputAmount,
+      swapInAmount: requiredSwap.swapInAmount,
+      tokenOutAmount: new Int(quote.amount.toCoin().amount),
+      inputSide: singleAssetSide,
+      currentSqrtPrice: clPool.currentSqrtPrice,
+      swapFee: quote.swapFee?.toDec() ?? new Dec(0),
+      priceImpact: impact,
+      priceImpactUnknown: Boolean(quote.priceImpactUnknown),
+    });
+    if (costFraction) zapTotalCostPercent = new RatePretty(costFraction);
+  }
+  const { price: zapInputPrice } = usePrice(requiredSwap?.tokenInCurrency);
+  let zapValueIn: PricePretty | undefined;
+  let zapValueOut: PricePretty | undefined;
+  if (requiredSwap && zapTotalCostPercent && zapInputPrice) {
+    zapValueIn = zapInputPrice.mul(
+      new CoinPretty(requiredSwap.tokenInCurrency, requiredSwap.inputAmount)
+    );
+    zapValueOut = zapValueIn.mul(new Dec(1).sub(zapTotalCostPercent.toDec()));
+  }
+  const zapHighCost = Boolean(
+    singleAssetMode && zapTotalCostPercent?.toDec().gte(ZAP_HIGH_COST_THRESHOLD)
+  );
+
+  const zapInLiquidity = useCallback(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        // Broadcast failures are toasted by the tx client. Failures BEFORE it
+        // (stale quote, missing pool price, unavailable depth data) have no
+        // other user-visible surface, so the catch below toasts them.
+        let broadcastAttempted = false;
+        try {
+          if (!requiredSwap) throw new Error("No single-asset amount entered");
+          if (!clPool) throw new Error(`Pool #${poolId} not found`);
+          const [lowerTick, upperTick] = tickRange;
+
+          const onFulfill = (tx: { code?: number; rawLog?: string }) => {
+            if (tx.code) reject(tx.rawLog);
+            else {
+              Promise.all([
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange.invalidate(
+                  { poolId }
+                ),
+                apiUtils.local.pools.getPool.invalidate({ poolId }),
+              ])
+                .then(() => resolve())
+                .catch(reject);
+            }
+          };
+
+          // A two-sided range that needs no swap only because the split
+          // truncated to zero (dust input) must not be sent as a one-sided
+          // position.
+          if (!requiredSwap.needsSwap && !requiredSwap.rangeIsOneSided) {
+            throw new Error(
+              "Deposit amount too small to compute a swap for this range"
+            );
+          }
+
+          // Range entirely on the provided side: no swap, create a one-sided
+          // position directly with the full provided amount.
+          if (!requiredSwap.needsSwap) {
+            const provided = {
+              currency: singleAssetDepositAmountIn.sendCurrency,
+              amount: singleAssetDepositAmountIn.amount,
+            };
+            broadcastAttempted = true;
+            const prepared =
+              await prepareCreateConcentratedLiquidityPositionMsg(
+                transactionContext,
+                poolId,
+                clPool,
+                lowerTick,
+                upperTick,
+                undefined,
+                singleAssetSide === "base" ? provided : undefined,
+                singleAssetSide === "quote" ? provided : undefined,
+                undefined,
+                undefined,
+                onFulfill
+              );
+            await signAndBroadcast(...prepared);
+            return;
+          }
+
+          if (!quote || zapQuote.isRefreshing)
+            throw new Error("Swap quote not ready");
+
+          const routes = quote.split.map((route) => ({
+            pools: route.pools.map((routePool, i: number) => ({
+              id: routePool.id,
+              tokenOutDenom: route.tokenOutDenoms[i],
+            })),
+            tokenInAmount: route.initialAmount.toString(),
+          }));
+
+          const tokenOutMinAmount = zapMinOutAmount ?? new Int(0);
+          if (tokenOutMinAmount.lte(new Int(0)))
+            throw new Error("Swap output floor rounds to zero");
+
+          // `tokensProvided` is the MAX the chain pulls, so each side is an
+          // amount the wallet is GUARANTEED to hold after the swap leg: the
+          // exact un-swapped remainder, and the swap's guaranteed floor (not
+          // the expected output) on the swapped side. A positive-slippage
+          // surplus stays as wallet dust rather than reverting the position.
+          const providedRemaining = requiredSwap.inputAmount.sub(
+            requiredSwap.swapInAmount
+          );
+          const baseMicro =
+            singleAssetSide === "base" ? providedRemaining : tokenOutMinAmount;
+          const quoteMicro =
+            singleAssetSide === "base" ? tokenOutMinAmount : providedRemaining;
+          const tokensProvided = [
+            { denom: clPool.baseCurrency.coinMinimalDenom, amount: baseMicro },
+            {
+              denom: clPool.quoteCurrency.coinMinimalDenom,
+              amount: quoteMicro,
+            },
+          ].map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+
+          // Minima sit one slippage-width below each side's EXPECTED
+          // consumption at the price the position is created at. A route
+          // through the destination pool itself moves that price first, so
+          // simulate the move over the live tick liquidity and envelope the
+          // minima between the pre- and post-swap prices. The depth data is
+          // REQUIRED for that route: fail closed rather than compose spot-only
+          // minima that the moved price would revert.
+          let postSwapSqrtPrice: BigDec | undefined;
+          const submitDestination = destinationRoutedInput(quote, poolId);
+          if (submitDestination.amount.gt(new Int(0))) {
+            const depthsError = new Error(
+              "Pool liquidity data required for this swap route could not be loaded, please try again"
+            );
+            const depths =
+              await apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                .fetch({ poolId })
+                .catch((e) => {
+                  console.error(e);
+                  throw depthsError;
+                });
+            if (!depths || depths.length === 0) throw depthsError;
+            postSwapSqrtPrice = estimateSqrtPriceAfterSwapIn({
+              tokenInAmount: new Dec(submitDestination.amount)
+                .mul(new Dec(1).sub(submitDestination.spread))
+                .truncate(),
+              inputSide: singleAssetSide,
+              currentSqrtPrice: clPool.currentSqrtPrice,
+              liquidityDepths: depths,
+            });
+          }
+
+          const minima = calcZapInPositionMinima({
+            cap0: baseMicro,
+            cap1: quoteMicro,
+            lowerTick,
+            upperTick,
+            currentSqrtPrice: clPool.currentSqrtPrice,
+            postSwapSqrtPrice,
+            slippage,
+          });
+
+          broadcastAttempted = true;
+          const prepared = await prepareZapInToConcentratedPositionMsg(
+            transactionContext,
+            poolId,
+            clPool,
+            lowerTick,
+            upperTick,
+            {
+              routes,
+              tokenInCoinMinimalDenom:
+                requiredSwap.tokenInCurrency.coinMinimalDenom,
+              tokenOutMinAmount: tokenOutMinAmount.toString(),
+            },
+            tokensProvided,
+            minima.tokenMinAmount0.toString(),
+            minima.tokenMinAmount1.toString(),
+            undefined,
+            onFulfill
+          );
+          await signAndBroadcast(...prepared);
+        } catch (e: unknown) {
+          console.error(e);
+          const message = e instanceof Error ? e.message : String(e);
+          if (!broadcastAttempted) {
+            displayToast(
+              {
+                titleTranslationKey: "errors.generic",
+                captionElement: message,
+              },
+              ToastType.ERROR
+            );
+          }
+          reject(message);
+        }
+      }),
+    [
+      requiredSwap,
+      clPool,
+      poolId,
+      tickRange,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
+      apiUtils.local.pools.getPool,
+      singleAssetDepositAmountIn,
+      singleAssetSide,
+      transactionContext,
+      signAndBroadcast,
+      quote,
+      zapQuote.isRefreshing,
+      zapMinOutAmount,
+      slippage,
+    ]
+  );
+
+  return {
+    zapInLiquidity,
+    zapQuote,
+    zapSlippageConfig,
+    zapMinReceived,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
+    zapValueIn,
+    zapValueOut,
+    zapTotalCostPercent,
+    zapHighCost,
+    zapImpactPending,
+  };
 }

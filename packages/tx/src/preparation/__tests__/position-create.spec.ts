@@ -3,12 +3,16 @@ import type { Currency } from "@osmosis-labs/types";
 import { Dec, Int } from "@osmosis-labs/unit";
 
 import { makeCreatePositionMsg } from "../../message-composers";
-import { prepareCreateConcentratedLiquidityPositionMsg } from "../osmosis";
+import {
+  prepareCreateConcentratedLiquidityPositionMsg,
+  prepareZapInToConcentratedPositionMsg,
+} from "../osmosis";
 import type { TransactionPreparationContext } from "../types";
 
 jest.mock("../../message-composers", () => ({
   ...jest.requireActual("../../message-composers"),
   makeCreatePositionMsg: jest.fn(),
+  makeSwapExactAmountInMsg: jest.fn(),
 }));
 
 describe("prepareCreateConcentratedLiquidityPositionMsg", () => {
@@ -46,6 +50,40 @@ describe("prepareCreateConcentratedLiquidityPositionMsg", () => {
       expect.objectContaining({
         tokenMinAmount0: "19000000",
         tokenMinAmount1: "9500000",
+      })
+    );
+  });
+});
+
+describe("prepareZapInToConcentratedPositionMsg", () => {
+  it("drops a zero-amount provided coin, which the chain rejects", async () => {
+    // A range that needs only the other token swaps the whole input, so the
+    // provided side's remainder is zero.
+    const [, buildMsgs] = await prepareZapInToConcentratedPositionMsg(
+      { address: "osmo1test" } as unknown as TransactionPreparationContext,
+      "1",
+      { tickSpacing: 100 },
+      new Int(-8000000),
+      new Int(-7600000),
+      {
+        routes: [
+          { pools: [{ id: "1", tokenOutDenom: "uusdc" }], tokenInAmount: "5" },
+        ],
+        tokenInCoinMinimalDenom: "uosmo",
+        tokenOutMinAmount: "1",
+      },
+      [
+        { denom: "uosmo", amount: "0" },
+        { denom: "uusdc", amount: "1" },
+      ],
+      "0",
+      "0"
+    );
+    await (buildMsgs as () => Promise<unknown>)();
+
+    expect(makeCreatePositionMsg).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        tokensProvided: [{ denom: "uusdc", amount: "1" }],
       })
     );
   });

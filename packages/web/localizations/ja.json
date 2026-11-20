@@ -34,7 +34,16 @@
     "low": "低い",
     "buttonCreateAndStake": "ポジションとステークの作成",
     "estimated": "推定",
-    "estimatedInfo": "これは現在選択されている価格に基づいた見積もりです。実際の年利は異なる場合があります。ポジションが範囲外になると、APR は 0% になります。"
+    "estimatedInfo": "これは現在選択されている価格に基づいた見積もりです。実際の年利は異なる場合があります。ポジションが範囲外になると、APR は 0% になります。",
+    "singleAsset": {
+      "splitBreakdown": "ご入金いただいた{inputAmount} {inputDenom}のうち、{swapAmount} {inputDenom}({swapPercent})をポジションレシオに合わせて{outDenom}にスワップします。",
+      "noSwapNeeded": "選択した範囲には{inputDenom}のみが必要なため、スワップは不要です。",
+      "valueIn": "入金額",
+      "valueOut": "出金額",
+      "totalCost": "総コスト",
+      "totalCostWarning": "この入金の合計コストは{totalCost}で、価格インパクトとスワップ手数料が含まれ、ポジションに届く価値が減少します。",
+      "quoteLoading": "最適なスワップを検索中…"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "流動性のスーパーチャージとは何ですか?",
