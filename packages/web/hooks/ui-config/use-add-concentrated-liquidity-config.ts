@@ -8,10 +8,18 @@ import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
 import {
   AppCurrency,
   CoinPretty,
+  Dec,
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 import { getChainInfo } from "~/config/chain";
 import { api } from "~/utils/trpc";
@@ -76,7 +84,31 @@ export interface AddConcentratedLiquidityConfig extends Omit<
   readonly setBaseDepositAmountMax: () => void;
   readonly setQuoteDepositAmountMax: () => void;
   readonly setElectSuperfluidStaking: (elected: boolean) => void;
+  /** Lookback in days the sliders-driven range strategy optimizes against. */
+  readonly lookbackDays: number;
+  readonly setLookbackDays: (days: number) => void;
+  /** Subset of the 1-year series covering the active lookback window. */
+  readonly historicalPrices: HistoricalPricePoint[];
+  /** The 1-year series as Dec closes in display units, directly comparable
+   *  against `rangeWithCurrencyDecimals` and `currentPriceWithDecimals`. */
+  readonly allHistoricalPricesInDisplayUnits: {
+    time: number;
+    close: Dec;
+  }[];
+  /** 7-day min/max, with currency decimals; null without data. */
+  readonly minHistoricalPrice: number | null;
+  readonly maxHistoricalPrice: number | null;
 }
+
+export type HistoricalPricePoint = { time: number; close: number };
+
+/** Default lookback in days for the sliders-driven range strategy. Matches
+ *  the 7-day window of the moderate/aggressive presets. */
+const DEFAULT_LOOKBACK_DAYS = 7;
+
+const MS_PER_DAY = 86_400_000;
+
+const EMPTY_HISTORICAL_PRICES: HistoricalPricePoint[] = [];
 
 /** Returns the previous currency object while its identity (denom, decimals, display) is unchanged,
  *  since pool refetches hand out new currency objects every time. */
@@ -111,6 +143,8 @@ export interface AddConcentratedLiquidityInputs {
   quoteDepositPrice: PricePretty | undefined;
   /** Historical prices with currency decimals; `Infinity` means no data. */
   historicalPriceMinMax: { min: number; max: number } | undefined;
+  /** 1-year price series (display units) for the advanced range sliders and backtest. */
+  historicalPrices?: HistoricalPricePoint[];
 }
 
 /** State and derived values of the add concentrated liquidity config, with no queries or tx sending. */
@@ -122,6 +156,7 @@ export function useAddConcentratedLiquidityState({
   baseDepositPrice,
   quoteDepositPrice,
   historicalPriceMinMax,
+  historicalPrices: allHistoricalPrices = EMPTY_HISTORICAL_PRICES,
 }: AddConcentratedLiquidityInputs): AddConcentratedLiquidityConfig {
   const [state, dispatch] = useReducer(
     addConcentratedLiquidityReducer,
@@ -176,6 +211,32 @@ export function useAddConcentratedLiquidityState({
     historicalPriceMinMax && historicalPriceMinMax.max !== Infinity
       ? historicalPriceMinMax.max
       : null;
+
+  // advanced range strategy: the lookback slider filters the 1-year series
+  // client-side so any window works without new fetches
+  const [lookbackDays, setLookbackDaysState] = useState(DEFAULT_LOOKBACK_DAYS);
+  const setLookbackDays = useCallback(
+    (days: number) => setLookbackDaysState(Math.max(0, days)),
+    []
+  );
+  // the window ends at mount time, which keeps the filter pure
+  const [nowMs] = useState(() => Date.now());
+  const historicalPrices = useMemo(() => {
+    if (allHistoricalPrices.length === 0) return EMPTY_HISTORICAL_PRICES;
+    const cutoff = nowMs - lookbackDays * MS_PER_DAY;
+    return allHistoricalPrices.filter((p) => p.time >= cutoff);
+  }, [allHistoricalPrices, lookbackDays, nowMs]);
+  // The data service already returns display prices, so no decimal shift here
+  // (shifting again moved the series by 10^(baseDecimals - quoteDecimals) on
+  // pairs with unequal exponents).
+  const allHistoricalPricesInDisplayUnits = useMemo(
+    () =>
+      allHistoricalPrices.map((p) => ({
+        time: p.time,
+        close: new Dec(p.close),
+      })),
+    [allHistoricalPrices]
+  );
 
   const prices = useMemo(
     () =>
@@ -460,6 +521,12 @@ export function useAddConcentratedLiquidityState({
       setBaseDepositAmountMax,
       setQuoteDepositAmountMax,
       setElectSuperfluidStaking,
+      lookbackDays,
+      setLookbackDays,
+      historicalPrices,
+      allHistoricalPricesInDisplayUnits,
+      minHistoricalPrice,
+      maxHistoricalPrice,
     }),
     [
       rangeView,
@@ -479,6 +546,12 @@ export function useAddConcentratedLiquidityState({
       setBaseDepositAmountMax,
       setQuoteDepositAmountMax,
       setElectSuperfluidStaking,
+      lookbackDays,
+      setLookbackDays,
+      historicalPrices,
+      allHistoricalPricesInDisplayUnits,
+      minHistoricalPrice,
+      maxHistoricalPrice,
     ]
   );
 }
@@ -549,6 +622,21 @@ export function useAddConcentratedLiquidityConfig(
       { enabled: isPoolFetched }
     );
 
+  // 1-year fetch: drives the advanced sliders and backtest. The 7-day fetch
+  // above still drives the moderate/aggressive presets.
+  const { data: longHistoricalPriceData } =
+    api.edge.assets.getAssetPairHistoricalPrice.useQuery(
+      {
+        poolId,
+        baseCoinMinimalDenom:
+          pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
+        quoteCoinMinimalDenom:
+          pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
+        timeDuration: "1y",
+      },
+      { enabled: isPoolFetched }
+    );
+
   const config = useAddConcentratedLiquidityState({
     poolId,
     chain,
@@ -557,6 +645,7 @@ export function useAddConcentratedLiquidityConfig(
     baseDepositPrice,
     quoteDepositPrice,
     historicalPriceMinMax: historicalPriceData,
+    historicalPrices: longHistoricalPriceData?.prices,
   });
 
   const {
