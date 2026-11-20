@@ -1,7 +1,7 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
+import { type CacheEntry } from "@osmosis-labs/server";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { Address, Hex } from "viem";
 import { z } from "zod";

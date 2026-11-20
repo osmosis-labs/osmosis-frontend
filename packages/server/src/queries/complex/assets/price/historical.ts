@@ -1,10 +1,10 @@
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
   DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
 } from "../../../../utils/cache";
+import { cached, type CacheEntry } from "../../../../utils/cached";
 import { dayjs } from "../../../../utils/dayjs";
 import { queryMarketChart, QueryMarketChartResponse } from "../../../coingecko";
 import {
@@ -70,7 +70,7 @@ export function getAssetHistoricalPrice({
     }
   }
 
-  return cachified({
+  return cached({
     cache: tokenHistoricalPriceCache,
     key: `token-historical-price-${coinMinimalDenom}-${timeFrame}-${
       numRecentFrames ?? "all"
@@ -106,7 +106,7 @@ export function getPoolAssetPairHistoricalPrice({
   baseCoinMinimalDenom: string;
   timeDuration: TimeDuration;
 }): Promise<{ prices: TokenPairHistoricalPrice[]; min: number; max: number }> {
-  return cachified({
+  return cached({
     cache: tokenPairPriceCache,
     key: `token-pair-historical-price-${poolId}-${quoteCoinMinimalDenom}-${baseCoinMinimalDenom}-${timeDuration}`,
     ttl: 1000 * 60 * 3, // 3 minutes
@@ -222,7 +222,7 @@ export async function getCoinGeckoCoinMarketChart({
     toTimestamp = timeFrame.to;
   }
 
-  return cachified({
+  return cached({
     cache: tokenHistoricalPriceCache,
     key: `coingecko-coin-market-chart-${id}-${fromTimestamp}-${toTimestamp}-${vsCurrency}`,
     // 5 minutes, the width of the shortest bucket, so the latest point is never much older
@@ -236,7 +236,7 @@ export async function getCoinGeckoCoinMarketChart({
       });
       // An empty chart is not cached, so it doesn't outlive CoinGecko recovering
       // (the CDN skips caching it for the same reason). The result rides on the error
-      // because cachified hands that same error to concurrent callers of this key.
+      // because `cached` hands that same error to concurrent callers of this key.
       if (!result?.prices?.length) {
         throw Object.assign(
           new Error(`Empty CoinGecko market chart for ${id}`),

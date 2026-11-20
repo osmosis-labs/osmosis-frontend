@@ -250,7 +250,7 @@ jobs:
           package-manager-cache: false
           node-version: 24.x
       - name: Install Playwright
-        run: yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+        run: yarn workspaces focus app-osmosis-e2e && npx playwright install chromium
       - name: Check E2E tooling
         working-directory: packages/e2e
         run: yarn typecheck && yarn test:tooling
@@ -295,7 +295,7 @@ jobs:
           package-manager-cache: false
           node-version: 24.x
       - name: Install Playwright
-        run: yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+        run: yarn workspaces focus app-osmosis-e2e && npx playwright install chromium
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
@@ -356,7 +356,7 @@ jobs:
           node-version: 24.x
       - name: Install Playwright
         run: |
-          yarn workspaces focus app-osmosis-e2e && npx playwright install --with-deps chromium
+          yarn workspaces focus app-osmosis-e2e && npx playwright install chromium
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"

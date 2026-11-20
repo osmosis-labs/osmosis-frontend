@@ -11,7 +11,9 @@ export function captureError(e: any) {
   }
 }
 
-/** Captures an error from a throwable function and returns the value or `undefined` if it throws. */
+/** Captures an error from a throwable function and returns the value or `undefined` if it throws.
+ *  Synchronous throws only: a returned promise that rejects is passed through, so for
+ *  async functions use `.catch((e) => captureErrorAndReturn(e, undefined))` instead. */
 export function captureIfError<TReturn>(throwableFn: () => TReturn) {
   try {
     return throwableFn();

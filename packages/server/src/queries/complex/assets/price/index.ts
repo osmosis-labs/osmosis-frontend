@@ -1,12 +1,17 @@
 import { Asset, AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
-import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import { PER_ASSET_LRU_OPTIONS } from "../../../../utils/cache";
+import {
+  cached,
+  type CacheEntry,
+  getFreshness,
+} from "../../../../utils/cached";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
+import { counterpartyKey, getAssetListIndex } from "../asset-list-index";
 import { getCoingeckoPrice } from "./providers/coingecko";
 import { getPriceFromSidecar, NoSqsPriceError } from "./providers/sidecar";
 import { resolveUnpricedHolding } from "./unpriced-holding";
@@ -18,8 +23,8 @@ export type PriceProvider = (
   currency?: CoingeckoVsCurrencies
 ) => Promise<Dec>;
 
-const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-/** Assets SQS has no price for, retried after the ttl. cachified doesn't keep failures,
+const pricesCache = new LRUCache<string, CacheEntry>(PER_ASSET_LRU_OPTIONS);
+/** Assets SQS has no price for, retried after the ttl. `cached` doesn't keep failures,
  *  so without this an asset with no price (e.g. no pools) is re-sent to SQS on every
  *  request, and those are the denoms SQS route-searches. Only that "no price" answer is
  *  kept, never a price: a failed request (5xx, timeout, expired batch) says nothing
@@ -28,7 +33,53 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 const priceFailures = new LRUCache<string, Error>({
   max: 1_500,
   ttl: 1000 * 30, // 30 seconds
+  // Read the clock on every check. lru-cache otherwise caches it and clears that with a
+  // timer, which a Worker cancels when the request ends: the cached time then sticks and
+  // entries never expire.
+  ttlResolution: 0,
 });
+const PRICE_TTL = 1000 * 10; // 10 seconds
+
+/** True when `pricesCache` holds a price for `key` that `cached` still serves as fresh. */
+function hasFreshPrice(key: string): boolean {
+  const entry = pricesCache.get(key);
+  return entry !== undefined && getFreshness(entry.metadata) === "fresh";
+}
+
+/** The first asset, in list order, that has the exact `coinMinimalDenom`, a counterparty
+ *  with the chain id and (case-insensitive) address, or the exact `sourceDenom`. Each
+ *  criterion counts only when given (non-empty), as several may be. */
+export function findPriceAsset(
+  assetLists: AssetList[],
+  {
+    coinMinimalDenom,
+    chainId,
+    address,
+    sourceDenom,
+  }: {
+    coinMinimalDenom?: string;
+    chainId?: number | string;
+    address?: string;
+    sourceDenom?: string;
+  }
+): Asset | undefined {
+  const index = getAssetListIndex(assetLists);
+  const candidates = [
+    coinMinimalDenom ? index.byMinimalDenom.get(coinMinimalDenom) : undefined,
+    chainId && address
+      ? index.byCounterparty.get(counterpartyKey(chainId, address))
+      : undefined,
+    sourceDenom ? index.bySourceDenom.get(sourceDenom) : undefined,
+  ];
+  let first: (typeof candidates)[number];
+  for (const candidate of candidates) {
+    if (candidate && (!first || candidate.position < first.position)) {
+      first = candidate;
+    }
+  }
+  return first?.asset;
+}
+
 /** Finds the fiat value of a single unit of a given asset for a given fiat currency.
  *  Assets can be identified either by `coinMinimalDenom` or `sourceDenom`.
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
@@ -57,23 +108,12 @@ export async function getAssetPrice({
       : { chainId: undefined, address: undefined };
   const coinGeckoId = "coinGeckoId" in asset ? asset.coinGeckoId : undefined;
   const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
-  const foundAsset = assetLists
-    .map((assets) => assets.assets)
-    .flat()
-    .find(
-      (asset) =>
-        (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
-        (chainId &&
-          address &&
-          asset.counterparty.some(
-            (counterparty) =>
-              "chainId" in counterparty &&
-              "address" in counterparty &&
-              counterparty.chainId === chainId &&
-              counterparty.address.toLowerCase() === address.toLowerCase()
-          )) ||
-        (sourceDenom && asset.sourceDenom === sourceDenom)
-    );
+  const foundAsset = findPriceAsset(assetLists, {
+    coinMinimalDenom,
+    chainId,
+    address,
+    sourceDenom,
+  });
 
   // Fall back to CoinGecko if asset list does not provide
   // the Osmosis asset that can be used for prices from Osmosis.
@@ -92,15 +132,26 @@ export async function getAssetPrice({
   const failure = priceFailures.get(key);
   if (failure) throw failure;
 
-  return cachified({
+  return cached({
     key,
     cache: pricesCache,
-    ttl: 1000 * 10, // 10 seconds
+    ttl: PRICE_TTL,
     getFreshValue: () => priceProvider(foundAsset, currency),
-  }).catch((e) => {
-    if (e instanceof NoSqsPriceError) priceFailures.set(key, e);
-    throw e;
-  });
+  }).then(
+    (price) => {
+      // A "no price" answer that settled after this one must not hide it.
+      priceFailures.delete(key);
+      return price;
+    },
+    (e) => {
+      // Overlapping requests settle in any order: one that found a price wins over a
+      // "no price" answer, whichever settled last.
+      if (e instanceof NoSqsPriceError && !hasFreshPrice(key)) {
+        priceFailures.set(key, e);
+      }
+      throw e;
+    }
+  );
 }
 
 /** Calculates the fiat value of an asset given any denom and base amount.
@@ -139,25 +190,14 @@ export async function calcAssetValue({
 /** Smallest display amount whose value can't round to zero at any real price. */
 const MIN_PRICEABLE_AMOUNT = new Dec("0.000001");
 
-const assetsByMinimalDenom = new WeakMap<AssetList[], Map<string, Asset>>();
-/** `coinMinimalDenom` lookup that indexes each asset list array once, since the check
- *  runs per coin and per zero-cap reserve across all pools. First match wins. */
+/** `coinMinimalDenom` lookup on the indexed asset lists, since the check runs per coin
+ *  and per zero-cap reserve across all pools. First match wins. */
 function findAssetByMinimalDenom(
   assetLists: AssetList[],
   coinMinimalDenom: string
 ): Asset | undefined {
-  let index = assetsByMinimalDenom.get(assetLists);
-  if (!index) {
-    index = new Map();
-    for (const { assets } of assetLists) {
-      for (const asset of assets) {
-        if (!index.has(asset.coinMinimalDenom))
-          index.set(asset.coinMinimalDenom, asset);
-      }
-    }
-    assetsByMinimalDenom.set(assetLists, index);
-  }
-  return index.get(coinMinimalDenom);
+  return getAssetListIndex(assetLists).byMinimalDenom.get(coinMinimalDenom)
+    ?.asset;
 }
 
 /** True when a held coin with no value means its price is unavailable, so the value is
