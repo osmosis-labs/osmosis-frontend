@@ -10,6 +10,7 @@ import {
   calcZapInPositionMinima,
   calcZapInSwapAmount,
   estimateSqrtPriceAfterSwapIn,
+  simulateSwapOverDepths,
 } from "../zap-in";
 
 /** Geometric mean of the range's sqrt-price bounds — the spot at which a
@@ -245,6 +246,35 @@ describe("estimateSqrtPriceAfterSwapIn", () => {
     expect(result.sub(expected).abs().lte(new BigDec("0.000000001"))).toBe(
       true
     );
+  });
+
+  it("accumulates the output amount within one range (both directions)", () => {
+    // token1 in, price 1 -> 1.001: out0 = L*(Pt - Pc)/(Pc*Pt)
+    const up = simulateSwapOverDepths({
+      tokenInAmount: new Int("1000000000"), // 1e9
+      inputSide: "quote",
+      currentSqrtPrice: one,
+      liquidityDepths: singleRange("1000000000000"), // 1e12
+    });
+    const liquidity = new BigDec("1000000000000");
+    const target = new BigDec("1.001");
+    const expectedOut0 = liquidity
+      .mul(target.sub(one))
+      .quo(one.mul(target))
+      .truncate();
+    expect(up.amountOut.equals(expectedOut0)).toBe(true);
+
+    // token0 in: out1 = L*(Pc - Pt). Round trip sanity: selling the 1e9
+    // token1 got us ~999e6 token0; selling that back must return slightly
+    // less than 1e9 token1 (impact), never more.
+    const down = simulateSwapOverDepths({
+      tokenInAmount: up.amountOut,
+      inputSide: "base",
+      currentSqrtPrice: up.sqrtPriceAfter,
+      liquidityDepths: singleRange("1000000000000"),
+    });
+    expect(down.amountOut.lte(new Int("1000000000"))).toBe(true);
+    expect(down.amountOut.gt(new Int("990000000"))).toBe(true);
   });
 });
 

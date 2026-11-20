@@ -13,8 +13,20 @@ const mockWallet = jest.fn();
 jest.mock("~/hooks/use-wallet", () => ({
   useWallet: () => ({ wallet: mockWallet() }),
 }));
+const mockQuery = () => ({ data: undefined, isLoading: false });
 jest.mock("~/utils/trpc", () => ({
-  api: { useUtils: () => ({}) },
+  api: {
+    useUtils: () => ({}),
+    local: {
+      pools: { getPool: { useQuery: () => mockQuery() } },
+      concentratedLiquidity: {
+        getLiquidityPerTickRange: { useQuery: () => mockQuery() },
+      },
+    },
+  },
+}));
+jest.mock("~/hooks/use-zap-out-quote", () => ({
+  useZapOutQuote: () => ({ quote: undefined }),
 }));
 
 const osmo = { coinDenom: "OSMO", coinMinimalDenom: "uosmo", coinDecimals: 6 };
