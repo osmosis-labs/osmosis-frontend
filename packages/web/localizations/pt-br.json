@@ -1545,6 +1545,8 @@
     }
   },
   "tradeView": {
+    "expand": "Expandir visualização de negociação",
+    "collapse": "Recolher visualização de negociação",
     "orderBook": "Livro de ofertas"
   }
 }

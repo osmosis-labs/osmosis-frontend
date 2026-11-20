@@ -1545,6 +1545,8 @@
     }
   },
   "tradeView": {
+    "expand": "取引ビューを展開",
+    "collapse": "取引ビューを折りたたむ",
     "orderBook": "板"
   }
 }

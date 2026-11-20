@@ -1545,6 +1545,8 @@
     }
   },
   "tradeView": {
+    "expand": "Rozwiń widok handlu",
+    "collapse": "Zwiń widok handlu",
     "orderBook": "Arkusz zleceń"
   }
 }
