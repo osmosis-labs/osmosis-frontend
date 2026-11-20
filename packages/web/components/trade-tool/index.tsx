@@ -54,6 +54,9 @@ const TradeViewChart = dynamic(
 
 const ORDERBOOK_POOL_TABS = [SwapToolTab.BUY, SwapToolTab.SELL];
 
+/** Opens on Buy so the Market/Limit toggle is the first thing people see. */
+const DEFAULT_TAB = SwapToolTab.BUY;
+
 interface TradeToolProps {
   swapToolProps?: SwapToolProps;
   previousTrade?: PreviousTrade;
@@ -61,10 +64,11 @@ interface TradeToolProps {
   /**
    * Where the pair's order book goes when the pair has a canonical orderbook:
    * "expandable" offers an expand control that puts the book beside the
-   * widget; "below" always shows the book under
-   * the widget. Omit for the widget alone.
+   * widget; "below" always shows the book under the widget; "beside" always
+   * puts the book beside the widget, stacking under it below 1024px, with no
+   * chart (the page shows its own orders). Omit for the widget alone.
    */
-  bookLayout?: "expandable" | "below";
+  bookLayout?: "expandable" | "below" | "beside";
   /**
    * For an orderbook pool's own page: Buy and Sell only, locked to the
    * pool's pair, with that pool's book beside the widget, the user's orders
@@ -105,8 +109,9 @@ function useMeasuredHeight() {
 /**
  * The trade tool's tab, order type and denoms all live in the URL. On a
  * statically optimised page `router.query` is empty until the router is
- * ready, so rendering earlier reads the defaults: `tab` falls back to swap,
- * SwapTool mounts and clears `type`, and a `type=limit` deep link is lost.
+ * ready, so rendering earlier reads the defaults: `tab` falls back to the
+ * default tab, the wrong tool mounts and a `?tab=swap` or `type=limit` deep
+ * link is lost.
  *
  * Readiness also waits for `useIsClient` rather than using `isReady`
  * directly: a page without query params can be ready on the first browser
@@ -140,15 +145,21 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     children,
   } = props;
   const { t } = useTranslation();
-  const [tabParam, setTab] = useQueryState(
+  // Read without a default: the limit tool, the price selectors and the
+  // review modal read `tab` from the URL themselves and fall back to sell or
+  // swap, so a missing or invalid tab is written into the URL below rather
+  // than defaulted here alone.
+  const [tabQuery, setTab] = useQueryState(
     "tab",
-    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
-      SwapToolTab.SWAP
-    )
+    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab))
   );
+  const tabParam = tabQuery ?? DEFAULT_TAB;
   const allowedTabs = orderbookPool ? ORDERBOOK_POOL_TABS : undefined;
   const tab =
     allowedTabs && !allowedTabs.includes(tabParam) ? allowedTabs[0] : tabParam;
+  // Until the URL holds the tab shown, render no tool: in that window the
+  // limit tool would place sell orders under the Buy tab.
+  const isTabInUrl = tab === tabQuery;
 
   // Kill switch for limit orders: hides the Market/Limit toggle so Buy and
   // Sell only place market orders (PlaceLimitTool forces the type too).
@@ -158,15 +169,15 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   const limitOrdersDisabled =
     featureFlags._isInitialized && !featureFlags.limitOrders;
 
-  // On an orderbook pool page, write Buy and a limit order into the URL when
-  // they are missing: the limit tool reads them from there.
+  // Write the tab shown into the URL when it's missing, invalid or not
+  // allowed here, and on an orderbook pool page a limit order when the type
+  // is missing: the limit tool reads both from there.
   const [typeParam, setTypeParam] = useQueryState("type");
   useEffect(() => {
-    if (!orderbookPool) return;
-    const fixTab = tab !== tabParam;
-    const fixType = limitOnly
-      ? typeParam !== "limit" && !limitOrdersDisabled
-      : !typeParam;
+    const fixTab = !isTabInUrl;
+    const fixType =
+      Boolean(orderbookPool) &&
+      (limitOnly ? typeParam !== "limit" && !limitOrdersDisabled : !typeParam);
     if (!fixTab && !fixType) return;
     return deferQueryCorrection(() => {
       if (fixTab) setTab(tab);
@@ -177,7 +188,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     limitOnly,
     limitOrdersDisabled,
     tab,
-    tabParam,
+    isTabInUrl,
     typeParam,
     setTab,
     setTypeParam,
@@ -200,8 +211,11 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   const { isWalletConnected } = useWallet();
 
   const { expanded, isExpandable, setExpanded } = useTradeViewExpanded();
+  const isBesideLayout = bookLayout === "beside";
   const isBookBeside =
-    Boolean(orderbookPool) || (bookLayout === "expandable" && expanded);
+    Boolean(orderbookPool) ||
+    isBesideLayout ||
+    (bookLayout === "expandable" && expanded);
 
   // The book beside the widget matches the widget card's rendered height,
   // so they stay aligned whatever the widget shows; it scrolls inside.
@@ -443,7 +457,11 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
 
   // Expanded Buy and Sell also show the base asset's price chart, the same
   // chart as the orderbook pool page; Swap shows widget and book only.
-  const showChart = isBookBeside && !orderbookPool && tab !== SwapToolTab.SWAP;
+  const showChart =
+    isBookBeside &&
+    !orderbookPool &&
+    !isBesideLayout &&
+    tab !== SwapToolTab.SWAP;
   // The book's slot is kept while the orderbook list loads, so a pair that
   // has a book doesn't shift the row when the list arrives.
   const showBook =
@@ -464,6 +482,8 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
       : undefined;
   const chartHeight = !isChartOnOwnRow ? sideHeight : undefined;
 
+  if (!isTabInUrl) return null;
+
   // The widget keeps the same position in the tree in every layout (the
   // chart, book and orders are empty slots when not shown), so expanding,
   // collapsing or switching tabs never remounts it and the form keeps what
@@ -474,8 +494,8 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
         "flex flex-col gap-4": isBookBeside,
         // Without the chart the row is only as wide as widget and book.
         "mx-auto w-fit max-w-full":
-          isBookBeside && !orderbookPool && !showChart,
-        "w-full min-w-0": showChart,
+          isBookBeside && !orderbookPool && !isBesideLayout && !showChart,
+        "w-full min-w-0": showChart || isBesideLayout,
       })}
     >
       <div
@@ -503,7 +523,10 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
             widget's column, so it stays with the widget in every layout. */}
         <div
           className={classNames("flex flex-col", {
-            "w-[512px] shrink-0 lg:w-full": isBookBeside,
+            "w-[512px] shrink-0 lg:w-full": isBookBeside && !isBesideLayout,
+            // Narrower beside a page's own column, so the book has room for
+            // its header.
+            "w-[420px] shrink-0 lg:w-full": isBesideLayout,
           })}
         >
           {aboveWidget && (
@@ -523,7 +546,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
             style={sideHeight}
             className={classNames(
               "overflow-hidden rounded-3xl bg-osmoverse-900",
-              orderbookPool
+              orderbookPool || isBesideLayout
                 ? "min-w-0 flex-1 lg:w-full"
                 : showChart
                   ? // Beside the chart the book keeps its width, so the
@@ -537,6 +560,21 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
             <TradeViewBook
               {...pair}
               hideOpenOrderbookLink={Boolean(orderbookPool)}
+              // Beside the widget the book is only as tall as the widget's
+              // card, which fits 11 rows a side with Swap and 6 with Buy or
+              // Sell.
+              // On an orderbook pool's page it is as tall as the limit widget,
+              // which fits 9 a side. Either way the "<" and ">" rows at the
+              // ends stay in view.
+              visibleLevels={
+                isBesideLayout
+                  ? tab === SwapToolTab.SWAP
+                    ? 11
+                    : 6
+                  : orderbookPool
+                    ? 9
+                    : undefined
+              }
               onPriceSelect={selectBookPrice}
               className="h-full w-full"
             />

@@ -12,9 +12,12 @@ export const useOrderbookDepthPreferences = create(
       {
         /** Include concentrated-liquidity pool depth for the pair. */
         includeCl: true,
+        /** Fold what is past the rows shown into one "<" and ">" row. */
+        showEdges: true,
       },
       (set) => ({
         setIncludeCl: (includeCl: boolean) => set({ includeCl }),
+        setShowEdges: (showEdges: boolean) => set({ showEdges }),
       })
     ),
     { name: "orderbook-depth-preferences" }
