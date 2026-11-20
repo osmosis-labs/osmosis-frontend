@@ -76,7 +76,7 @@ const Home = () => {
             className={classNames(
               "flex flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5",
               expanded
-                ? "w-full min-w-0 max-w-[1520px] px-8 xl:w-[512px] xl:max-w-none xl:px-0"
+                ? "w-full min-w-0 px-8 xl:w-[512px] xl:px-0"
                 : "w-[512px]"
             )}
           >
@@ -91,13 +91,13 @@ const Home = () => {
                 bookLayout="expandable"
                 previousTrade={previousTrade}
                 setPreviousTrade={setPreviousTrade}
+                // In the widget's column, so it stays under the widget when
+                // the trade view is expanded.
+                belowWidget={
+                  featureFlags.swapToolTopGainers ? <TopGainers /> : undefined
+                }
               />
             </ClientOnly>
-            {featureFlags.swapToolTopGainers && (
-              <div className={classNames({ [narrowColumn]: expanded })}>
-                <TopGainers />
-              </div>
-            )}
           </div>
         </div>
       </div>
