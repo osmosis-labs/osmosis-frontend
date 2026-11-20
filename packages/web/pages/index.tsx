@@ -18,9 +18,6 @@ import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useNavBarStore } from "~/stores/nav-bar-store";
 import { api } from "~/utils/trpc";
 
-/** Only the trade row widens when expanded; the rest keeps the widget's width. */
-const narrowColumn = "mx-auto w-[512px] max-w-full";
-
 export const SwapPreviousTradeKey = "swap-previous-trade";
 export type PreviousTrade = {
   sendTokenDenom: string;
@@ -80,19 +77,17 @@ const Home = () => {
                 : "w-[512px]"
             )}
           >
-            {featureFlags.swapsAdBanner && (
-              <div className={classNames({ [narrowColumn]: expanded })}>
-                <SwapAdsBanner />
-              </div>
-            )}
             {/** Hydration issues need to be investigated before this client wrapper can be removed. */}
             <ClientOnly>
               <TradeTool
                 bookLayout="expandable"
                 previousTrade={previousTrade}
                 setPreviousTrade={setPreviousTrade}
-                // In the widget's column, so it stays under the widget when
-                // the trade view is expanded.
+                // Banner and Top gainers sit in the widget's column, so they
+                // stay with the widget when the trade view is expanded.
+                aboveWidget={
+                  featureFlags.swapsAdBanner ? <SwapAdsBanner /> : undefined
+                }
                 belowWidget={
                   featureFlags.swapToolTopGainers ? <TopGainers /> : undefined
                 }

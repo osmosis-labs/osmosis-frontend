@@ -76,6 +76,26 @@ interface TradeToolProps {
    * stays under the widget whether or not the trade view is expanded.
    */
   belowWidget?: ReactNode;
+  /** Shown directly above the widget card, in the widget's own column. */
+  aboveWidget?: ReactNode;
+}
+
+/**
+ * Rendered height of an element, kept current with a ResizeObserver. Returns
+ * a callback ref for the element and its height.
+ */
+function useMeasuredHeight() {
+  const [element, setElement] = useState<HTMLDivElement | null>(null);
+  const [height, setHeight] = useState<number>();
+  useEffect(() => {
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(([entry]) =>
+      setHeight(entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height)
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [element]);
+  return [setElement, height] as const;
 }
 
 /**
@@ -112,6 +132,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     limitOnly = false,
     showOrderHistoryLink = true,
     belowWidget,
+    aboveWidget,
     children,
   } = props;
   const { t } = useTranslation();
@@ -180,20 +201,12 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
 
   // The book beside the widget matches the widget card's rendered height,
   // so they stay aligned whatever the widget shows; it scrolls inside.
-  const [cardElement, setCardElement] = useState<HTMLDivElement | null>(null);
-  const [cardHeight, setCardHeight] = useState<number>();
   // Measured whether or not the book is beside the widget, so the height is
   // already known on the first frame of an expand.
-  useEffect(() => {
-    if (!cardElement || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(([entry]) =>
-      setCardHeight(
-        entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height
-      )
-    );
-    observer.observe(cardElement);
-    return () => observer.disconnect();
-  }, [cardElement]);
+  const [setCardElement, cardHeight] = useMeasuredHeight();
+  // Whatever sits above the widget in its column (the trade page's banner),
+  // so the cards beside the column span it as well.
+  const [setAboveElement, aboveHeight] = useMeasuredHeight();
 
   // The pair the active widget has selected, reported by the widget itself
   // so it is right whether or not the widget keeps its pair in the URL.
@@ -417,9 +430,14 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   // 1536px and below the chart takes its own row above widget and book.
   const { isMobile: isStacked } = useWindowSize(Breakpoint.lg);
   const { isMobile: isChartOnOwnRow } = useWindowSize(Breakpoint.xxl);
+  // The cards beside the widget's column run from the top of what is above
+  // the widget (plus the column's 16px gap) to the bottom of the widget card.
   const sideHeight =
     isBookBeside && !isStacked && cardHeight
-      ? { height: cardHeight }
+      ? {
+          height:
+            cardHeight + (aboveWidget && aboveHeight ? aboveHeight + 16 : 0),
+        }
       : undefined;
   const chartHeight = !isChartOnOwnRow ? sideHeight : undefined;
 
@@ -458,15 +476,24 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
             <TradeViewChart base={pair.base} className="h-full w-full" />
           </div>
         )}
-        {/* What the page shows under the widget sits in the widget's
-            column, so it stays under the widget in every layout. */}
+        {/* What the page shows above and under the widget sits in the
+            widget's column, so it stays with the widget in every layout. */}
         <div
-          className={classNames("flex flex-col gap-4", {
+          className={classNames("flex flex-col", {
             "w-[512px] shrink-0 lg:w-full": isBookBeside,
           })}
         >
-          {widget}
-          {belowWidget}
+          {aboveWidget && (
+            // Spaced from the widget only when it has height: content such
+            // as a banner with nothing to show can render an empty element.
+            <div className={classNames({ "mb-4": aboveHeight })}>
+              <div ref={setAboveElement}>{aboveWidget}</div>
+            </div>
+          )}
+          <div className="flex flex-col gap-4">
+            {widget}
+            {belowWidget}
+          </div>
         </div>
         {showBook && (
           <div
