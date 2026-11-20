@@ -41,6 +41,19 @@ does not select this config and would write the pages Worker instead. Add
   `8453`, `42161`, `43114`, and `81457` (comma-separated URLs; omit a chain to use
   its public endpoint only)
 
+## Request scope
+
+On Workers a promise may only settle in the request that created it, so in-flight
+work must never be shared through module state. `worker.ts` runs every request in
+one request scope (`utils/request-scope.ts`, read by `getRequestScope` and
+`getRequestScoped` in `@osmosis-labs/server`). The upstream cache
+(`upstream-cache.ts`, allowlist in `upstream-cache-rules.ts`) keeps its per-request
+state there: the hit/miss/bypass counters, the misses that concurrent callers in
+the same request share, and the `waitUntil` that keeps cache writes alive. Every
+response gets `Server-Timing: upstream;desc="hit=… miss=… bypass=…"`, zeros
+included (a 404 or an edge-cache hit makes no upstream calls). Outside a scope the
+wrapped `fetch` still reads warm entries but shares, writes and counts nothing.
+
 ## Bundle
 
 Wrangler bundles `worker.ts` with the `~/*` paths from `api-worker/tsconfig.json`.
