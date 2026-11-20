@@ -162,16 +162,37 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
       }
     }
 
-    const outputDifference = useMemo(
-      () =>
-        new RatePretty(
-          swapState.inAmountInput?.fiatValue
-            ?.toDec()
-            .sub(swapState.tokenOutFiatValue?.toDec())
-            .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
-        ),
-      [swapState.inAmountInput?.fiatValue, swapState.tokenOutFiatValue]
-    );
+    const outputDifference = useMemo(() => {
+      // Without a price impact from SQS, only the fiat comparison below can
+      // say anything; the fee alone would read as a real difference.
+      if (
+        quoteType === "in-given-out" &&
+        !swapState.quote?.priceImpactUnknown
+      ) {
+        // priceImpactTokenOut is (effectivePrice / spotPrice) - 1, negative
+        // for an adverse trade, and excludes the swap fee. Negate the impact
+        // and add the fee so the figure matches the exact-in fiat branch
+        // below, whose output amount is already net of fees.
+        return new RatePretty(
+          (swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0))
+            .neg()
+            .add(swapState.quote?.swapFee?.toDec() ?? new Dec(0))
+        );
+      }
+      return new RatePretty(
+        swapState.inAmountInput?.fiatValue
+          ?.toDec()
+          .sub(swapState.tokenOutFiatValue?.toDec())
+          .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
+      );
+    }, [
+      quoteType,
+      swapState.inAmountInput?.fiatValue,
+      swapState.tokenOutFiatValue,
+      swapState.quote?.priceImpactTokenOut,
+      swapState.quote?.priceImpactUnknown,
+      swapState.quote?.swapFee,
+    ]);
 
     const showOutputDifferenceWarning = outputDifference
       .toDec()
