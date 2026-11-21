@@ -3,8 +3,8 @@ import {
   fetchRequestHandler,
 } from "@trpc/server/adapters/fetch";
 
-import { edgeLocalRouter } from "~/server/api/edge-local-router";
 import { edgeRouter } from "~/server/api/edge-router";
+import { localRouter } from "~/server/api/local-router";
 import { nodeRouter } from "~/server/api/node-router";
 import { createTrpcContext } from "~/server/api/trpc";
 import { readBodyText } from "~/server/api-handlers/request-body";
@@ -13,8 +13,7 @@ import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
 import { onTrpcError } from "./trpc-error-log";
 
-type TrpcRouter =
-  typeof nodeRouter | typeof edgeRouter | typeof edgeLocalRouter;
+type TrpcRouter = typeof nodeRouter | typeof edgeRouter | typeof localRouter;
 
 const LOCAL_PUBLIC_CDN_MAX_AGE_SECONDS: Record<string, number> = {
   "cms.getSwapAdBanners": 300,
@@ -121,7 +120,7 @@ export function edgeTrpcAssetsHandler(req: Request): Promise<Response> {
 export function edgeTrpcLocalHandler(req: Request): Promise<Response> {
   return serveTrpc({
     endpoint: "/api/edge-trpc-local",
-    router: edgeLocalRouter,
+    router: localRouter,
     req,
     responseMeta: ({ paths, type, errors, eagerGeneration }) => {
       if (

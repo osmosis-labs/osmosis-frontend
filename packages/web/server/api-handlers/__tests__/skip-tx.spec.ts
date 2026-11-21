@@ -8,14 +8,14 @@ import {
 import { createSkipTxHandler } from "~/server/integrations/skip/tx-status-handler";
 
 describe("skip tx handlers", () => {
-  it("rejects PUT on skip-track-tx and POST on skip-tx-status", async () => {
-    const trackPut = await skipTrackTxHandler(
+  it("rejects GET on skip-track-tx and POST on skip-tx-status", async () => {
+    const trackGet = await skipTrackTxHandler(
       new Request(
         "https://app.test/api/skip-track-tx?chainID=osmosis-1&txHash=ABCDEF1234&env=mainnet",
-        { method: "PUT" }
+        { method: "GET" }
       )
     );
-    expect(trackPut.status).toBe(405);
+    expect(trackGet.status).toBe(405);
 
     const statusPost = await skipTxStatusHandler(
       new Request(
@@ -44,7 +44,7 @@ describe("skip tx handlers", () => {
       throw Object.assign(new Error("tx not found on upstream"), {
         status: 404,
       });
-    }, ["GET"]);
+    }, "GET");
 
     const res = await handler(
       new Request(

@@ -28,9 +28,6 @@ import { EthereumChainInfo, getServerEvmRpcUrls } from "@osmosis-labs/utils";
 import { getAddress } from "viem";
 import { z } from "zod";
 
-import { getClientEvmRpcUrls } from "~/utils/evm-rpc";
-import { clientSolanaRpc } from "~/utils/solana";
-
 /**
  * Normalizes an amount between different decimal precisions
  * Used primarily for cross-chain asset normalization when comparing or displaying values
@@ -181,11 +178,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 address: getAddress(asset.address),
                 userAddress: evmAddress,
                 chainId: asset.chainId,
-                rpcUrls: evmChain
-                  ? typeof window === "undefined"
-                    ? getServerEvmRpcUrls(evmChain)
-                    : getClientEvmRpcUrls(evmChain)
-                  : undefined,
+                rpcUrls: evmChain ? getServerEvmRpcUrls(evmChain) : undefined,
               });
 
               if (!balance) return emptyBalance;
@@ -469,9 +462,7 @@ async function getSolanaTokenBalance({
   owner: string;
   mint: string;
 }): Promise<bigint> {
-  const solanaRpc =
-    typeof window === "undefined" ? serverSolanaRpc : clientSolanaRpc;
-  const result = await solanaRpc<{
+  const result = await serverSolanaRpc<{
     value?: {
       pubkey?: string;
       account?: {
