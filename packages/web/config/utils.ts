@@ -19,28 +19,86 @@ const tokensDir = "/tokens/generated";
 
 const ALLOWED_IMAGE_EXTENSIONS = new Set(["svg", "png", "webp", "jpg", "jpeg"]);
 
+const HTML_NAMED_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  colon: ":",
+  tab: "\t",
+  newline: "\n",
+};
+
+function decodeHtmlEntities(value: string): string {
+  return value.replace(
+    /&(#x[0-9a-f]+|#[0-9]+|[a-z]+);?/gi,
+    (match, entity: string) => {
+      const lower = entity.toLowerCase();
+      if (lower.startsWith("#x")) {
+        const code = Number.parseInt(lower.slice(2), 16);
+        return Number.isFinite(code) && code > 0 && code <= 0x10ffff
+          ? String.fromCodePoint(code)
+          : "";
+      }
+      if (lower.startsWith("#")) {
+        const code = Number.parseInt(lower.slice(1), 10);
+        return Number.isFinite(code) && code > 0 && code <= 0x10ffff
+          ? String.fromCodePoint(code)
+          : "";
+      }
+      return HTML_NAMED_ENTITIES[lower] ?? match;
+    }
+  );
+}
+
+function isUnsafeSvgHref(rawValue: string): boolean {
+  const decoded = decodeHtmlEntities(rawValue)
+    // Browsers ignore ASCII control chars and whitespace before scheme matching.
+    .replace(/[\u0000-\u0020]+/g, "")
+    .toLowerCase();
+  return (
+    decoded.startsWith("javascript:") ||
+    decoded.startsWith("vbscript:") ||
+    decoded.startsWith("data:text/html") ||
+    decoded.startsWith("data:image/svg+xml")
+  );
+}
+
 /**
  * Strips active/executable content from third-party SVGs before they are
  * written into `public/tokens/generated/` (defense-in-depth alongside the
  * `default-src 'none'; sandbox` CSP in `public/_headers`).
  */
 export function sanitizeSvgContent(svg: string): string {
-  return (
-    svg
-      // Drop script, foreignObject, iframe, object, embed, and event-handler tags
+  let out = svg;
+  let prev: string;
+  // Loop until fixed point so nested/overlapping payloads (e.g. `<scr<script>ipt>`)
+  // cannot reconstruct forbidden tags or event-handler attributes.
+  do {
+    prev = out;
+    out = out
       .replace(
-        /<(script|foreignObject|iframe|object|embed)\b[^>]*>[\s\S]*?<\/\1>/gi,
+        /<(script|foreignObject|iframe|object|embed)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,
         ""
       )
-      .replace(/<(script|foreignObject|iframe|object|embed)\b[^>]*\/?>/gi, "")
-      // Drop inline event handlers (onload=, onerror=, onclick=, etc.)
-      .replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-      // Drop javascript: / data:text/html URIs in href / xlink:href
       .replace(
-        /\s+(?:xlink:)?href\s*=\s*(?:"\s*(?:javascript:|data:\s*text\/html)[^"]*"|'\s*(?:javascript:|data:\s*text\/html)[^']*')/gi,
+        /<\/?(script|foreignObject|iframe|object|embed)\b[^>]*\/?>/gi,
         ""
       )
+      .replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "");
+  } while (out !== prev);
+
+  // Decode entity-encoded href / xlink:href values before checking schemes.
+  out = out.replace(
+    /\s+(?:xlink:)?href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi,
+    (full, dq?: string, sq?: string, bare?: string) => {
+      const value = dq ?? sq ?? bare ?? "";
+      return isUnsafeSvgHref(value) ? "" : full;
+    }
   );
+
+  return out;
 }
 
 function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {

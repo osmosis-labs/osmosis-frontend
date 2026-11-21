@@ -586,14 +586,17 @@ export const assetsRouter = createTRPCRouter({
           watchListDenoms: search && !sortInput ? watchListDenoms : undefined,
         });
 
-        // Sorting by a price field needs every row priced first, so cap when
-        // searching across hundreds of unheld assets to avoid flooding SQS
-        // and hitting Worker subrequest limits.
-        if (
-          (sortInput?.keyPath === "currentPrice" ||
-            sortInput?.keyPath === "priceChange24h") &&
-          !search
-        ) {
+        const isPriceSort =
+          sortInput?.keyPath === "currentPrice" ||
+          sortInput?.keyPath === "priceChange24h";
+        const MAX_SEARCH_PRICE_SORT_ASSETS = 50;
+
+        // Sorting by a price field needs every row priced first. When search
+        // matches a small set (<=50 assets) or when not searching (held assets
+        // only), price before sorting; for broad searches (>50 matches), avoid
+        // flooding SQS and fall back to search relevance rather than returning
+        // backend order as a price sort.
+        if (isPriceSort && !search) {
           return maybeCachePaginatedItems({
             getFreshItems: async () =>
               sort(
@@ -607,6 +610,35 @@ export const assetsRouter = createTRPCRouter({
             cursor,
             limit,
           });
+        }
+
+        if (isPriceSort && search) {
+          return maybeCachePaginatedItems({
+            getFreshItems: async () => {
+              const assets = await getUserAssets();
+              if (assets.length <= MAX_SEARCH_PRICE_SORT_ASSETS) {
+                return sort(
+                  await withPrices(assets),
+                  sortInput.keyPath,
+                  sortInput.direction
+                );
+              }
+              return sortAssetSearchResults(assets, {
+                search,
+                watchListDenoms,
+              });
+            },
+            cacheKey,
+            reloadOnFirstPage: Boolean(userOsmoAddress),
+            cursor,
+            limit,
+          }).then(async ({ items, nextCursor }) => ({
+            items:
+              items.length > 0 && "currentPrice" in items[0]
+                ? (items as Awaited<ReturnType<typeof withPrices>>)
+                : await withPrices(items),
+            nextCursor,
+          }));
         }
 
         // Otherwise price only the returned page. A search matches every

@@ -2,6 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 
+import { getImageRelativeFilePath } from "../keplr-chain";
 import { saveAssetImageToTokensDir } from "../utils";
 
 const IMAGE_URL = "https://example.com/logo.svg";
@@ -86,7 +87,7 @@ describe("saveAssetImageToTokensDir", () => {
 
   it("sanitizes executable content from downloaded SVGs", async () => {
     mockBody([
-      '<svg onload="alert(1)"><script>evil()</script><foreignObject><b>x</b></foreignObject><a href="javascript:alert(2)"></a><circle r="1"/></svg>',
+      '<svg onload="alert(1)"><scr<script>ipt>evil()</script><script>evil()</script><foreignObject><b>x</b></foreignObject><a href="javascript:alert(2)"></a><a xlink:href="java&#x73;cript:alert(3)"></a><circle r="1"/></svg>',
     ]);
 
     await save();
@@ -95,7 +96,21 @@ describe("saveAssetImageToTokensDir", () => {
     expect(content).not.toContain("<foreignObject");
     expect(content).not.toContain("onload=");
     expect(content).not.toContain("javascript:");
+    expect(content).not.toContain("java&#x73;cript:");
     expect(content).toContain('<circle r="1"/>');
+  });
+
+  it("matches lowercased extension casing between downloads and generated references", async () => {
+    mockBody(["<svg></svg>"]);
+    const saved = await saveAssetImageToTokensDir({
+      imageUrl: "https://example.com/logo.SVG",
+      asset: { symbol: "ABC" },
+      currentAssetListHash: "not-the-stored-hash",
+    });
+    expect(saved).toBe("abc.svg");
+    expect(
+      getImageRelativeFilePath("https://example.com/logo.SVG", "ABC")
+    ).toBe("/tokens/generated/abc.svg");
   });
 
   it("rejects path traversal symbols and unsupported extensions", async () => {

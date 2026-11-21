@@ -159,8 +159,32 @@ describe("withApiEdgeCache", () => {
     const streamed = await fetch(url, {
       headers: { "trpc-batch-mode": "stream" },
     });
+    const trpcJsonl = await fetch(
+      "https://app.test/api/edge-trpc-assets/assets.getMarketAsset?batch=1",
+      { headers: { "trpc-accept": "application/jsonl" } }
+    );
+    const acceptJsonl = await fetch(
+      "https://app.test/api/edge-trpc-assets/assets.getMarketAsset?batch=1",
+      { headers: { accept: "application/jsonl" } }
+    );
 
     expect(streamed.headers.has(EDGE_CACHE_STATUS_HEADER)).toBe(false);
+    expect(trpcJsonl.headers.has(EDGE_CACHE_STATUS_HEADER)).toBe(false);
+    expect(acceptJsonl.headers.has(EDGE_CACHE_STATUS_HEADER)).toBe(false);
+    expect(handler).toHaveBeenCalledTimes(4);
+  });
+
+  it("preserves duplicate query parameter order in cache keys", async () => {
+    const { fetch, handler } = setup();
+
+    await fetch(
+      "https://app.test/api/edge-trpc-assets/assets.getMarketAsset?input=A&input=B"
+    );
+    const reversed = await fetch(
+      "https://app.test/api/edge-trpc-assets/assets.getMarketAsset?input=B&input=A"
+    );
+
+    expect(reversed.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("MISS");
     expect(handler).toHaveBeenCalledTimes(2);
   });
 

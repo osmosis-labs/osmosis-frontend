@@ -112,28 +112,36 @@ const pendingByScope = new WeakMap<RequestScope, PendingFetches>();
  * others still return the stale value immediately.
  */
 const SWR_REFRESH_DEBOUNCE_MS = 5_000;
-const swrRefreshStartedAt = new WeakMap<Cache, Map<string, number>>();
+interface SwrRefreshClaim {
+  startedAt: number;
+  token: symbol;
+}
+const swrRefreshClaims = new WeakMap<Cache, Map<string, SwrRefreshClaim>>();
 
 function tryClaimSwrRefresh(
   cache: Cache,
   key: string,
   now = Date.now()
-): boolean {
-  let byKey = swrRefreshStartedAt.get(cache);
+): symbol | undefined {
+  let byKey = swrRefreshClaims.get(cache);
   if (!byKey) {
     byKey = new Map();
-    swrRefreshStartedAt.set(cache, byKey);
+    swrRefreshClaims.set(cache, byKey);
   }
-  const startedAt = byKey.get(key);
-  if (startedAt !== undefined && now - startedAt < SWR_REFRESH_DEBOUNCE_MS) {
-    return false;
+  const existing = byKey.get(key);
+  if (existing && now - existing.startedAt < SWR_REFRESH_DEBOUNCE_MS) {
+    return undefined;
   }
-  byKey.set(key, now);
-  return true;
+  const token = Symbol(key);
+  byKey.set(key, { startedAt: now, token });
+  return token;
 }
 
-function releaseSwrRefresh(cache: Cache, key: string): void {
-  swrRefreshStartedAt.get(cache)?.delete(key);
+function releaseSwrRefresh(cache: Cache, key: string, token: symbol): void {
+  const byKey = swrRefreshClaims.get(cache);
+  if (byKey?.get(key)?.token === token) {
+    byKey.delete(key);
+  }
 }
 
 function getPendingFetches(
@@ -338,9 +346,10 @@ export async function cached<Value>(
     const freshness = getFreshness(entry.metadata);
     if (freshness === "fresh") return entry.value;
     if (freshness === "stale") {
-      if (tryClaimSwrRefresh(options.cache, options.key)) {
+      const claimToken = tryClaimSwrRefresh(options.cache, options.key);
+      if (claimToken) {
         const refresh = fetchFresh(options, scope, true).finally(() => {
-          releaseSwrRefresh(options.cache, options.key);
+          releaseSwrRefresh(options.cache, options.key, claimToken);
         });
         runInBackground(scope, refresh);
       }

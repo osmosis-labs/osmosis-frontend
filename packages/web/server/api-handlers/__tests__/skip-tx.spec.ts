@@ -5,6 +5,7 @@ import {
   skipTrackTxHandler,
   skipTxStatusHandler,
 } from "~/server/api-handlers/skip-tx";
+import { createSkipTxHandler } from "~/server/integrations/skip/tx-status-handler";
 
 describe("skip tx handlers", () => {
   it("rejects PUT on skip-track-tx and POST on skip-tx-status", async () => {
@@ -36,5 +37,24 @@ describe("skip tx handlers", () => {
       })
     );
     expect(res.status).toBe(400);
+  });
+
+  it("preserves a redacted 404 not-found signal for Skip status recovery", async () => {
+    const handler = createSkipTxHandler(async () => {
+      throw Object.assign(new Error("tx not found on upstream"), {
+        status: 404,
+      });
+    }, ["GET"]);
+
+    const res = await handler(
+      new Request(
+        "https://app.test/api/skip-tx-status?chainID=osmosis-1&txHash=ABCDEF1234&env=mainnet"
+      )
+    );
+    expect(res.status).toBe(404);
+    await expect(res.json()).resolves.toEqual({
+      error: "Transaction not found",
+      code: "NOT_FOUND",
+    });
   });
 });

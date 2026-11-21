@@ -49,16 +49,10 @@ function apiCacheKey(url: URL): string {
       key.searchParams.set("min_liquidity", minLiquidity);
     return key.toString();
   }
+  // Sort by parameter name only (stable sort) so duplicate parameter values
+  // preserve their original order (tRPC reads the first `input`).
   const params = [...url.searchParams.entries()].sort((a, b) =>
-    a[0] === b[0]
-      ? a[1] < b[1]
-        ? -1
-        : a[1] > b[1]
-          ? 1
-          : 0
-      : a[0] < b[0]
-        ? -1
-        : 1
+    a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0
   );
   for (const [name, value] of params) key.searchParams.append(name, value);
   return key.toString();
@@ -72,8 +66,16 @@ function apiCachePolicy(request: Request): CachePolicy | undefined {
   // The API Worker rejects these before the cache; this keeps a direct call to the policy honest.
   if (isBlockedApiUserAgent(request.headers.get("user-agent")))
     return undefined;
-  // tRPC streaming batches (`trpc-batch-mode: stream`) use a different wire format
-  // than JSON batches and are never cached; bypass so they never receive a cached JSON body.
+  // tRPC streaming batches use JSONL (`trpc-accept` / `Accept: application/jsonl`,
+  // or legacy `trpc-batch-mode: stream`) and must never receive a cached JSON body.
+  const trpcAccept = request.headers.get("trpc-accept")?.toLowerCase() ?? "";
+  const accept = request.headers.get("accept")?.toLowerCase() ?? "";
+  if (
+    trpcAccept.includes("application/jsonl") ||
+    accept.includes("application/jsonl")
+  ) {
+    return undefined;
+  }
   const batchMode = request.headers.get("trpc-batch-mode");
   if (batchMode && batchMode.toLowerCase() !== "json") return undefined;
   return {

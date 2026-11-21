@@ -317,5 +317,22 @@ describe("createNodeQuery", () => {
       );
       expect(apiClient).not.toHaveBeenCalled();
     });
+
+    it("accepts queryAuthenticators leading-slash path", async () => {
+      const { queryAuthenticators } = await import("../osmosis/authenticators");
+      (apiClient as jest.Mock).mockResolvedValueOnce({
+        account_authenticators: [],
+      });
+
+      const res = await queryAuthenticators({
+        chainList: MockChains,
+        address: "osmo1abc",
+      });
+      expect(res).toEqual({ account_authenticators: [] });
+      expect(apiClient).toHaveBeenCalledWith(
+        "https://lcd-osmosis.keplr.app/osmosis/smartaccount/authenticators/osmo1abc",
+        expect.anything()
+      );
+    });
   });
 });

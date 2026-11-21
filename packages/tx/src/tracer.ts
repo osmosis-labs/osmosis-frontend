@@ -136,18 +136,35 @@ export class TxTracer {
   }
 
   open() {
+    this.isManualClose = false;
     const wsUrl = this.getWsEndpoint();
     if (process.env.NODE_ENV !== "production") {
       console.log(`[TxTracer] Connecting to WebSocket: ${wsUrl}`);
     }
 
-    this.ws = this.options.wsObject
+    const ws = this.options.wsObject
       ? new this.options.wsObject(wsUrl)
       : new WebSocket(wsUrl);
-    this.ws.onopen = this.onOpen;
-    this.ws.onmessage = this.onMessage;
-    this.ws.onclose = this.onClose;
-    this.ws.onerror = this.onError;
+    this.ws = ws;
+    ws.onopen = (e) => {
+      if (ws !== this.ws || this.isManualClose) {
+        ws.close();
+        return;
+      }
+      this.onOpen(e);
+    };
+    ws.onmessage = (e) => {
+      if (ws !== this.ws) return;
+      this.onMessage(e);
+    };
+    ws.onclose = (e) => {
+      if (ws !== this.ws) return;
+      this.onClose(e);
+    };
+    ws.onerror = (e) => {
+      if (ws !== this.ws) return;
+      this.onError(e);
+    };
   }
 
   close() {
@@ -545,10 +562,13 @@ export class TxTracer {
               };
             })
             .map((obj) => {
+              if (typeof obj.value === "string" && /['\r\n]/.test(obj.value)) {
+                throw new Error(
+                  `TxTracer: invalid character in query value for "${obj.key}"`
+                );
+              }
               return `${obj.key}=${
-                typeof obj.value === "string"
-                  ? `'${obj.value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
-                  : obj.value
+                typeof obj.value === "string" ? `'${obj.value}'` : obj.value
               }`;
             })
             .join(" AND "),
@@ -604,10 +624,13 @@ export class TxTracer {
             };
           })
           .map((obj) => {
+            if (typeof obj.value === "string" && /['\r\n]/.test(obj.value)) {
+              throw new Error(
+                `TxTracer: invalid character in query value for "${obj.key}"`
+              );
+            }
             return `${obj.key}=${
-              typeof obj.value === "string"
-                ? `'${obj.value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
-                : obj.value
+              typeof obj.value === "string" ? `'${obj.value}'` : obj.value
             }`;
           })
           .join(" AND "),

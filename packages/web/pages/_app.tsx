@@ -105,10 +105,10 @@ const MainLayoutWrapper: FunctionComponent<{
   const { wallet: osmosisWallet } = useWallet();
 
   const menus = useMemo(() => {
-    // Render navigation immediately on SSR/first paint without waiting for
-    // LaunchDarkly; default Stake to the in-app page and fall back to the
-    // external link only if the flag explicitly disables it.
-    const stakeInApp = !flags._isInitialized || flags.staking;
+    if (!flags._isInitialized) {
+      return [];
+    }
+
     const menuItems: (MainLayoutMenu | null)[] = [
       {
         label: t("limitOrders.trade"),
@@ -128,7 +128,7 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="assets" className="h-6 w-6" />,
         selectionTest: /\/assets/,
       },
-      stakeInApp
+      flags.staking
         ? {
             label: t("menu.stake"),
             link: "/stake",
@@ -159,6 +159,12 @@ const MainLayoutWrapper: FunctionComponent<{
   ]);
 
   const secondaryMenuItems = useMemo<MainLayoutMenu[]>(() => {
+    // Wait for the flag-gated primary menu so these links don't render first
+    // and then jump down when it appears.
+    if (!flags._isInitialized) {
+      return [];
+    }
+
     return [
       {
         label: t("menu.vote"),
@@ -185,7 +191,7 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="help-circle" className="h-6 w-6" />,
       },
     ];
-  }, [t, osmosisWallet?.walletInfo?.governanceUrl]);
+  }, [flags._isInitialized, t, osmosisWallet?.walletInfo?.governanceUrl]);
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>

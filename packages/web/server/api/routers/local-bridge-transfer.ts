@@ -116,7 +116,7 @@ const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
             })
           )
         )
-        .max(100),
+        .max(500),
     })
     .merge(schema);
 };

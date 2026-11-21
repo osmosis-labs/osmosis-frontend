@@ -44,6 +44,20 @@ export function createSkipTxHandler(
       const result = await query(new SkipApiClient(env), { chainID, txHash });
       return Response.json(result);
     } catch (error) {
+      // Preserve a stable, redacted not-found signal so SkipTransferStatusProvider
+      // can trigger `trackTransaction` and keep polling unindexed/awaiting txs.
+      const status =
+        typeof error === "object" && error !== null && "status" in error
+          ? Number((error as { status?: unknown }).status)
+          : undefined;
+      const message = error instanceof Error ? error.message.toLowerCase() : "";
+      if (status === 404 || message.includes("not found")) {
+        return Response.json(
+          { error: "Transaction not found", code: "NOT_FOUND" },
+          { status: 404 }
+        );
+      }
+
       console.error("Skip tx handler failed", error);
       return Response.json(
         { error: "Upstream Skip API request failed" },

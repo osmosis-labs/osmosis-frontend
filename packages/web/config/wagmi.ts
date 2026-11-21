@@ -44,6 +44,29 @@ export function hasPersistedEvmSdkSession(): boolean {
   }
 }
 
+/** Waits until any in-flight WagmiProvider startup reconnect finishes. */
+function waitForReconnectIdle(timeoutMs = 5_000): Promise<void> {
+  if (wagmiConfig.state.status !== "reconnecting") return Promise.resolve();
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      unsubscribe();
+      resolve();
+    };
+    const unsubscribe = wagmiConfig.subscribe(
+      (state) => state.status,
+      (status) => {
+        if (status !== "reconnecting") done();
+      }
+    );
+    const timer = setTimeout(done, timeoutMs);
+    if (wagmiConfig.state.status !== "reconnecting") done();
+  });
+}
+
 /**
  * Dynamically imports and registers the EVM wallet SDK connectors once.
  * Safe to call repeatedly; concurrent callers share one load promise.
@@ -66,9 +89,15 @@ export function ensureEvmConnectorsLoaded(): Promise<void> {
           ...added,
         ]);
         if (hasPersistedEvmSdkSession()) {
-          await reconnect(wagmiConfig, { connectors: added }).catch(
-            () => undefined
-          );
+          // Wait for WagmiProvider's initial reconnect pass to settle so we
+          // neither race with it (which causes `reconnect` to return `[]`) nor
+          // clobber an already-connected EIP-6963 injected wallet.
+          await waitForReconnectIdle();
+          if (wagmiConfig.state.connections.size === 0) {
+            await reconnect(wagmiConfig, { connectors: added }).catch(
+              () => undefined
+            );
+          }
         }
       }
     })

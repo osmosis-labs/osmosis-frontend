@@ -167,10 +167,16 @@ async function generateChainListFile({
     `;
   }
 
-  content += `
-    export type ${chainIdTypeName} = ${Array.from(
-      new Set(allAvailableChains.map((c) => c.chain_id))
+  const availableChainIds = Array.from(
+    new Set(
+      allAvailableChains
+        .map((c) => c.chain_id)
+        .filter((id): id is string => typeof id === "string" && id.length > 0)
     )
+  );
+
+  content += `
+    export type ${chainIdTypeName} = ${availableChainIds
       .map(
         (chainId) =>
           `${JSON.stringify(chainId)} /** ${escapeTsComment(
