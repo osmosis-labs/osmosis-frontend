@@ -18,6 +18,7 @@ export const API_ROUTES = {
   edgeTrpcMain: { prefix: "/api/edge-trpc-main" },
   edgeTrpcPools: { prefix: "/api/edge-trpc-pools" },
   edgeTrpcAssets: { prefix: "/api/edge-trpc-assets" },
+  edgeTrpcLocal: { prefix: "/api/edge-trpc-local" },
   pools: { exact: "/api/pools" },
   pool: { pattern: /^\/api\/pools\/[^/]+$/ },
   activeGauges: { exact: "/api/active-gauges" },

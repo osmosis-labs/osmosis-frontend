@@ -300,5 +300,22 @@ describe("createNodeQuery", () => {
       );
       expect(apiClient).toHaveBeenCalledTimes(1);
     });
+
+    it("rejects protocol-relative and absolute SSRF paths", async () => {
+      const protocolRelative = createNodeQuery<{ data: string }>({
+        path: "//evil.test/steal",
+      });
+      await expect(protocolRelative({ chainList: MockChains })).rejects.toThrow(
+        "Invalid node query path"
+      );
+
+      const absolute = createNodeQuery<{ data: string }>({
+        path: "https://evil.test/steal",
+      });
+      await expect(absolute({ chainList: MockChains })).rejects.toThrow(
+        "Invalid node query path"
+      );
+      expect(apiClient).not.toHaveBeenCalled();
+    });
   });
 });

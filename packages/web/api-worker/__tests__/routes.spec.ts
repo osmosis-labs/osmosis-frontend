@@ -20,6 +20,7 @@ const ROUTE_FIXTURE: readonly (readonly [string, ApiHandlerId])[] = [
   ["/api/edge-trpc-main/edge.assets.get", "edgeTrpcMain"],
   ["/api/edge-trpc-pools/edge.pools.foo", "edgeTrpcPools"],
   ["/api/edge-trpc-assets/edge.assets.getUserAsset", "edgeTrpcAssets"],
+  ["/api/edge-trpc-local/cms.getSwapAdBanners", "edgeTrpcLocal"],
   ["/api/pools", "pools"],
   ["/api/pools/7", "pool"],
   ["/api/active-gauges", "activeGauges"],

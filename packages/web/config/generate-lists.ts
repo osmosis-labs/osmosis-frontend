@@ -118,6 +118,8 @@ async function queryAssetListFile<T>({
   );
 }
 
+const escapeTsComment = (value: string) => value.replace(/\*\//g, "* /");
+
 async function generateChainListFile({
   assetLists,
   chainList,
@@ -171,9 +173,9 @@ async function generateChainListFile({
     )
       .map(
         (chainId) =>
-          `"${chainId}" /** ${
+          `${JSON.stringify(chainId)} /** ${escapeTsComment(
             allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
-          } */`
+          )} */`
       )
       .join(" | ")};
   `;
@@ -364,10 +366,10 @@ async function generateAssetListFile({
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
       .map(
         (symbol) =>
-          `"${symbol}" /** source denom: ${
+          `${JSON.stringify(symbol)} /** source denom: ${escapeTsComment(
             assetList.assets.find((asset) => asset.symbol === symbol)!
               .sourceDenom
-          } */`
+          )} */`
       )
       .join(" | ")};
   `;
@@ -390,10 +392,12 @@ async function generateAssetListFile({
       })
       .map(
         (groupKey) =>
-          `"${groupKey}" /** Symbols: ${assetList.assets
-            .filter((asset) => asset.variantGroupKey === groupKey)!
-            .map((asset) => asset.symbol)
-            .join(",")} */`
+          `${JSON.stringify(groupKey)} /** Symbols: ${escapeTsComment(
+            assetList.assets
+              .filter((asset) => asset.variantGroupKey === groupKey)!
+              .map((asset) => asset.symbol)
+              .join(",")
+          )} */`
       )
       .join(" | ")};
   `;

@@ -297,6 +297,22 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => ({
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const denom = params?.denom as string[];
   const tokenDenom = denom.join("/");
+
+  // Reject unknown denoms with 404 before invoking tRPC or writing an R2 ISR entry
+  // so arbitrary URLs cannot fill the incremental cache.
+  const [{ getAsset }, { AssetLists }] = await Promise.all([
+    import("@osmosis-labs/server"),
+    import("~/config/generated/asset-lists"),
+  ]);
+  try {
+    getAsset({ assetLists: AssetLists, anyDenom: tokenDenom });
+  } catch {
+    return {
+      notFound: true as const,
+      revalidate: 60,
+    };
+  }
+
   const trpcHelpers = createTrpcHelpers();
 
   try {

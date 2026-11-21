@@ -60,7 +60,8 @@ export function getTransferHistoryStore(): TransferHistoryStore {
         },
         trackTransaction: async ({ chainID, txHash, env }) => {
           const response = await fetch(
-            `/api/skip-track-tx?chainID=${chainID}&txHash=${txHash}&env=${env}`
+            `/api/skip-track-tx?chainID=${encodeURIComponent(chainID)}&txHash=${encodeURIComponent(txHash)}&env=${encodeURIComponent(env)}`,
+            { method: "POST" }
           );
           const responseJson = await response.json();
           if (!response.ok) {

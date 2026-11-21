@@ -97,13 +97,28 @@ describe("withApiEdgeCache", () => {
     ).toBe("public, s-maxage=900");
   });
 
-  it("keys on the full URL, query included", async () => {
+  it("keys tRPC URLs on query parameters and strips unknown params on fixed routes", async () => {
     const { fetch, handler } = setup();
 
-    await fetch(`${POOLS_URL}?input=a`);
-    await fetch(`${POOLS_URL}?input=b`);
-
+    await fetch(
+      "https://app.test/api/edge-trpc-assets/assets.getMarketAsset?input=a"
+    );
+    await fetch(
+      "https://app.test/api/edge-trpc-assets/assets.getMarketAsset?input=b"
+    );
     expect(handler).toHaveBeenCalledTimes(2);
+
+    // Arbitrary query params must not bust /api/active-gauges or /api/pools
+    await fetch("https://app.test/api/active-gauges?bust=1");
+    await fetch("https://app.test/api/active-gauges?bust=2");
+    expect(handler).toHaveBeenCalledTimes(3);
+
+    await fetch(`${POOLS_URL}?bust=1`);
+    await fetch(`${POOLS_URL}?bust=2`);
+    expect(handler).toHaveBeenCalledTimes(4);
+
+    await fetch(`${POOLS_URL}?min_liquidity=100`);
+    expect(handler).toHaveBeenCalledTimes(5);
   });
 
   it("answers HEAD from a cached GET without a body", async () => {
@@ -115,6 +130,38 @@ describe("withApiEdgeCache", () => {
     expect(head.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("HIT");
     expect(head.body).toBeNull();
     expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not poison the GET cache when a HEAD request misses", async () => {
+    const { fetch, handler, cache } = setup(
+      (req) =>
+        new Response(req.method === "HEAD" ? null : "pools", {
+          headers: { "cache-control": "public, s-maxage=60" },
+        })
+    );
+
+    const head = await fetch(POOLS_URL, { method: "HEAD" });
+    expect(head.status).toBe(200);
+    expect(cache.entries.size).toBe(0);
+
+    const get = await fetch(POOLS_URL);
+    expect(get.headers.get(EDGE_CACHE_STATUS_HEADER)).toBe("MISS");
+    expect(await get.text()).toBe("pools");
+    expect(handler).toHaveBeenCalledTimes(2);
+  });
+
+  it("bypasses the cache for trpc-batch-mode: stream requests", async () => {
+    const { fetch, handler } = setup();
+    const url =
+      "https://app.test/api/edge-trpc-assets/assets.getMarketAsset?input=a";
+
+    await fetch(url);
+    const streamed = await fetch(url, {
+      headers: { "trpc-batch-mode": "stream" },
+    });
+
+    expect(streamed.headers.has(EDGE_CACHE_STATUS_HEADER)).toBe(false);
+    expect(handler).toHaveBeenCalledTimes(2);
   });
 
   it.each([

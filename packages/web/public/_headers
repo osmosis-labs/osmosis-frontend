@@ -1,3 +1,11 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/tokens/generated/*
+  Content-Security-Policy: default-src 'none'; sandbox
+  X-Content-Type-Options: nosniff
+
 /_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 

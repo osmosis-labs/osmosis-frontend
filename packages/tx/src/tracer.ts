@@ -275,6 +275,12 @@ export class TxTracer {
   }
 
   protected readonly onOpen = (e: Event) => {
+    // If close() was called while CONNECTING, honor it instead of re-arming reconnects.
+    if (this.isManualClose) {
+      this.ws.close();
+      return;
+    }
+
     if (process.env.NODE_ENV !== "production") {
       console.log(`[TxTracer] WebSocket connected successfully to ${this.url}`);
     }
@@ -282,7 +288,6 @@ export class TxTracer {
     // Reset reconnect state on successful connection
     this.reconnectAttempts = 0;
     this.cycleCount = 0;
-    this.isManualClose = false;
 
     if (this.newBlockSubscribes.length > 0) {
       this.sendSubscribeBlockRpc();
@@ -541,7 +546,9 @@ export class TxTracer {
             })
             .map((obj) => {
               return `${obj.key}=${
-                typeof obj.value === "string" ? `'${obj.value}'` : obj.value
+                typeof obj.value === "string"
+                  ? `'${obj.value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
+                  : obj.value
               }`;
             })
             .join(" AND "),
@@ -598,7 +605,9 @@ export class TxTracer {
           })
           .map((obj) => {
             return `${obj.key}=${
-              typeof obj.value === "string" ? `'${obj.value}'` : obj.value
+              typeof obj.value === "string"
+                ? `'${obj.value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
+                : obj.value
             }`;
           })
           .join(" AND "),

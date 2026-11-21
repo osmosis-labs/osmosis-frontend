@@ -103,6 +103,39 @@ type PendingFetches = WeakMap<Cache, Map<string, PendingFetch>>;
 const sharedPending: PendingFetches = new WeakMap();
 const pendingByScope = new WeakMap<RequestScope, PendingFetches>();
 
+/**
+ * Isolate-level SWR refresh debounce: on Workers, `pendingByScope` is
+ * per-request so concurrent callers cannot await each other's promises, which
+ * would otherwise cause every concurrent request hitting a stale entry to kick
+ * off its own background `waitUntil` refresh. Recording a short timestamp per
+ * cache/key lets only the first request start the background refresh while
+ * others still return the stale value immediately.
+ */
+const SWR_REFRESH_DEBOUNCE_MS = 5_000;
+const swrRefreshStartedAt = new WeakMap<Cache, Map<string, number>>();
+
+function tryClaimSwrRefresh(
+  cache: Cache,
+  key: string,
+  now = Date.now()
+): boolean {
+  let byKey = swrRefreshStartedAt.get(cache);
+  if (!byKey) {
+    byKey = new Map();
+    swrRefreshStartedAt.set(cache, byKey);
+  }
+  const startedAt = byKey.get(key);
+  if (startedAt !== undefined && now - startedAt < SWR_REFRESH_DEBOUNCE_MS) {
+    return false;
+  }
+  byKey.set(key, now);
+  return true;
+}
+
+function releaseSwrRefresh(cache: Cache, key: string): void {
+  swrRefreshStartedAt.get(cache)?.delete(key);
+}
+
 function getPendingFetches(
   scope: RequestScope | undefined,
   cache: Cache
@@ -267,6 +300,8 @@ function fetchFresh<Value>(
 
   let adopt!: (value: unknown) => void;
   const adopted = new Promise<unknown>((resolve) => (adopt = resolve));
+  // Ensure `work` never triggers an unhandled rejection if `adopted` wins first.
+  work.catch(() => undefined);
   const fetch = Promise.race([work, adopted]).finally(() => {
     if (pending.get(key)?.promise === fetch) pending.delete(key);
   }) as Promise<Value>;
@@ -303,7 +338,12 @@ export async function cached<Value>(
     const freshness = getFreshness(entry.metadata);
     if (freshness === "fresh") return entry.value;
     if (freshness === "stale") {
-      runInBackground(scope, fetchFresh(options, scope, true));
+      if (tryClaimSwrRefresh(options.cache, options.key)) {
+        const refresh = fetchFresh(options, scope, true).finally(() => {
+          releaseSwrRefresh(options.cache, options.key);
+        });
+        runInBackground(scope, refresh);
+      }
       return entry.value;
     }
   }

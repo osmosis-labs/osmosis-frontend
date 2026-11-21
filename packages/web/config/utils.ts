@@ -17,11 +17,58 @@ export function getOsmosisChainId(environment: "testnet" | "mainnet") {
 
 const tokensDir = "/tokens/generated";
 
+const ALLOWED_IMAGE_EXTENSIONS = new Set(["svg", "png", "webp", "jpg", "jpeg"]);
+
+/**
+ * Strips active/executable content from third-party SVGs before they are
+ * written into `public/tokens/generated/` (defense-in-depth alongside the
+ * `default-src 'none'; sandbox` CSP in `public/_headers`).
+ */
+export function sanitizeSvgContent(svg: string): string {
+  return (
+    svg
+      // Drop script, foreignObject, iframe, object, embed, and event-handler tags
+      .replace(
+        /<(script|foreignObject|iframe|object|embed)\b[^>]*>[\s\S]*?<\/\1>/gi,
+        ""
+      )
+      .replace(/<(script|foreignObject|iframe|object|embed)\b[^>]*\/?>/gi, "")
+      // Drop inline event handlers (onload=, onerror=, onclick=, etc.)
+      .replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+      // Drop javascript: / data:text/html URIs in href / xlink:href
+      .replace(
+        /\s+(?:xlink:)?href\s*=\s*(?:"\s*(?:javascript:|data:\s*text\/html)[^"]*"|'\s*(?:javascript:|data:\s*text\/html)[^']*')/gi,
+        ""
+      )
+  );
+}
+
 function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
-  const urlParts = imageUrl.split("/");
-  const fileNameSplit = urlParts[urlParts.length - 1].split(".");
-  const fileType = fileNameSplit[fileNameSplit.length - 1];
-  return path.join("/public", tokensDir, `${symbol.toLowerCase()}.${fileType}`);
+  let pathname: string;
+  try {
+    pathname = new URL(imageUrl).pathname;
+  } catch {
+    throw new Error(`Invalid image URL: ${imageUrl}`);
+  }
+  const lastSegment = pathname.split("/").pop() ?? "";
+  const dotIndex = lastSegment.lastIndexOf(".");
+  const fileType =
+    dotIndex >= 0 ? lastSegment.slice(dotIndex + 1).toLowerCase() : "";
+  if (!ALLOWED_IMAGE_EXTENSIONS.has(fileType)) {
+    throw new Error(
+      `Unsupported image extension "${fileType}" for ${imageUrl}`
+    );
+  }
+  const safeSymbol = symbol.toLowerCase();
+  if (
+    !safeSymbol ||
+    safeSymbol.includes("/") ||
+    safeSymbol.includes("\\") ||
+    safeSymbol.includes("..")
+  ) {
+    throw new Error(`Unsafe asset symbol for filename: ${symbol}`);
+  }
+  return path.join("/public", tokensDir, `${safeSymbol}.${fileType}`);
 }
 
 export const codegenDir = "config/generated";
@@ -173,13 +220,20 @@ export async function saveAssetImageToTokensDir({
   asset: Pick<Asset, "symbol">;
   currentAssetListHash: string;
 }) {
+  const tokensRoot = path.resolve(path.resolve() + "/public" + tokensDir);
   // Ensure the tokens directory exists.
-  if (!fs.existsSync(path.resolve() + "/public" + tokensDir)) {
-    fs.mkdirSync(path.resolve() + "/public" + tokensDir, { recursive: true });
+  if (!fs.existsSync(tokensRoot)) {
+    fs.mkdirSync(tokensRoot, { recursive: true });
   }
 
-  const filePath =
-    path.resolve() + getNodeImageRelativeFilePath(imageUrl, asset.symbol);
+  const filePath = path.resolve(
+    path.resolve() + getNodeImageRelativeFilePath(imageUrl, asset.symbol)
+  );
+  if (!filePath.startsWith(tokensRoot + path.sep)) {
+    throw new Error(
+      `Resolved image path escapes tokens directory: ${filePath}`
+    );
+  }
 
   if (process.env.NODE_ENV === "test") {
     console.info("Skipping image download for test environment");
@@ -214,6 +268,10 @@ export async function saveAssetImageToTokensDir({
       ),
       fs.createWriteStream(tempFilePath, { flags: "w" })
     );
+    if (filePath.endsWith(".svg")) {
+      const rawSvg = fs.readFileSync(tempFilePath, "utf-8");
+      fs.writeFileSync(tempFilePath, sanitizeSvgContent(rawSvg), "utf-8");
+    }
     fs.renameSync(tempFilePath, filePath);
   } catch (e) {
     fs.rmSync(tempFilePath, { force: true });

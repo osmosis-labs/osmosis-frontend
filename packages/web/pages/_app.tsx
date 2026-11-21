@@ -12,7 +12,13 @@ import utc from "dayjs/plugin/utc";
 import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import type { AppProps } from "next/app";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";
-import { ComponentType, FunctionComponent, ReactNode, useMemo } from "react";
+import {
+  ComponentType,
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
@@ -21,7 +27,11 @@ import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
-import { wagmiConfig } from "~/config/wagmi";
+import {
+  ensureEvmConnectorsLoaded,
+  hasPersistedEvmSdkSession,
+  wagmiConfig,
+} from "~/config/wagmi";
 import { MultiLanguageProvider, useTranslation } from "~/hooks";
 import { ImmersiveBridge } from "~/hooks/bridge";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -49,6 +59,12 @@ dayjs.updateLocale("ko", dayjsLocaleKo);
 const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    if (hasPersistedEvmSdkSession()) {
+      void ensureEvmConnectorsLoaded();
+    }
+  }, []);
+
   return (
     <NuqsAdapter>
       <WagmiProvider config={wagmiConfig}>
@@ -89,10 +105,10 @@ const MainLayoutWrapper: FunctionComponent<{
   const { wallet: osmosisWallet } = useWallet();
 
   const menus = useMemo(() => {
-    if (!flags._isInitialized) {
-      return [];
-    }
-
+    // Render navigation immediately on SSR/first paint without waiting for
+    // LaunchDarkly; default Stake to the in-app page and fall back to the
+    // external link only if the flag explicitly disables it.
+    const stakeInApp = !flags._isInitialized || flags.staking;
     const menuItems: (MainLayoutMenu | null)[] = [
       {
         label: t("limitOrders.trade"),
@@ -112,7 +128,7 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="assets" className="h-6 w-6" />,
         selectionTest: /\/assets/,
       },
-      flags.staking
+      stakeInApp
         ? {
             label: t("menu.stake"),
             link: "/stake",
@@ -143,12 +159,6 @@ const MainLayoutWrapper: FunctionComponent<{
   ]);
 
   const secondaryMenuItems = useMemo<MainLayoutMenu[]>(() => {
-    // Wait for the flag-gated primary menu so these links don't render first
-    // and then jump down when it appears.
-    if (!flags._isInitialized) {
-      return [];
-    }
-
     return [
       {
         label: t("menu.vote"),
@@ -175,7 +185,7 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="help-circle" className="h-6 w-6" />,
       },
     ];
-  }, [flags._isInitialized, t, osmosisWallet?.walletInfo?.governanceUrl]);
+  }, [t, osmosisWallet?.walletInfo?.governanceUrl]);
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>

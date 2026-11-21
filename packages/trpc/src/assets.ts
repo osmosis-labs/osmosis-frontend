@@ -41,7 +41,11 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
-import { UserOsmoAddressSchema } from "./parameter-types";
+import {
+  CoinGeckoIdValueSchema,
+  PoolIdValueSchema,
+  UserOsmoAddressSchema,
+} from "./parameter-types";
 
 const GetInfiniteAssetsInputSchema =
   CursorPaginationSchema.merge(AssetFilterSchema);
@@ -474,7 +478,7 @@ export const assetsRouter = createTRPCRouter({
   getCoingeckoCoin: publicProcedure
     .input(
       z.object({
-        coinGeckoId: z.string(),
+        coinGeckoId: CoinGeckoIdValueSchema,
       })
     )
     .query(({ input: { coinGeckoId } }) =>
@@ -582,10 +586,13 @@ export const assetsRouter = createTRPCRouter({
           watchListDenoms: search && !sortInput ? watchListDenoms : undefined,
         });
 
-        // Sorting by a price field needs every row priced first.
+        // Sorting by a price field needs every row priced first, so cap when
+        // searching across hundreds of unheld assets to avoid flooding SQS
+        // and hitting Worker subrequest limits.
         if (
-          sortInput?.keyPath === "currentPrice" ||
-          sortInput?.keyPath === "priceChange24h"
+          (sortInput?.keyPath === "currentPrice" ||
+            sortInput?.keyPath === "priceChange24h") &&
+          !search
         ) {
           return maybeCachePaginatedItems({
             getFreshItems: async () =>
@@ -712,7 +719,7 @@ export const assetsRouter = createTRPCRouter({
         /**
          * Coingecko ID
          */
-        id: z.string(),
+        id: CoinGeckoIdValueSchema,
         timeFrame: z.union([
           z.object({
             custom: z.object({
@@ -733,7 +740,7 @@ export const assetsRouter = createTRPCRouter({
   getAssetPairHistoricalPrice: publicProcedure
     .input(
       z.object({
-        poolId: z.string(),
+        poolId: PoolIdValueSchema,
         quoteCoinMinimalDenom: z.string(),
         baseCoinMinimalDenom: z.string(),
         timeDuration: z

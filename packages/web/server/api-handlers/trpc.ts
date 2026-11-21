@@ -3,6 +3,7 @@ import {
   fetchRequestHandler,
 } from "@trpc/server/adapters/fetch";
 
+import { edgeLocalRouter } from "~/server/api/edge-local-router";
 import { edgeRouter } from "~/server/api/edge-router";
 import { nodeRouter } from "~/server/api/node-router";
 import { createTrpcContext } from "~/server/api/trpc";
@@ -12,7 +13,14 @@ import { constructEdgeUrlPathname } from "~/utils/trpc-edge";
 
 import { onTrpcError } from "./trpc-error-log";
 
-type TrpcRouter = typeof nodeRouter | typeof edgeRouter;
+type TrpcRouter =
+  typeof nodeRouter | typeof edgeRouter | typeof edgeLocalRouter;
+
+const LOCAL_PUBLIC_CDN_MAX_AGE_SECONDS: Record<string, number> = {
+  "cms.getSwapAdBanners": 300,
+  "cms.getTokenInfos": 300,
+  "params.getTransmuterParams": 60,
+};
 
 /**
  * Serves `router` at `endpoint` with the shared context and error logging.
@@ -103,6 +111,36 @@ export function edgeTrpcAssetsHandler(req: Request): Promise<Response> {
             },
           }
         : {};
+    },
+  });
+}
+
+/**
+ * Serves `local.*` procedures on the API Worker (previously executed in the
+ * browser via `localLink`), with CDN caching for public CMS/params reads.
+ */
+export function edgeTrpcLocalHandler(req: Request): Promise<Response> {
+  return serveTrpc({
+    endpoint: "/api/edge-trpc-local",
+    router: edgeLocalRouter,
+    req,
+    responseMeta: ({ paths, type, errors, eagerGeneration }) => {
+      if (
+        eagerGeneration ||
+        type !== "query" ||
+        errors.length > 0 ||
+        !paths?.length
+      ) {
+        return {};
+      }
+      const maxAges = paths.map((p) => LOCAL_PUBLIC_CDN_MAX_AGE_SECONDS[p]);
+      if (maxAges.some((age) => age === undefined)) return {};
+      return {
+        headers: {
+          "Cache-Control": `public, s-maxage=${Math.min(...(maxAges as number[]))}`,
+          Vary: "trpc-batch-mode",
+        },
+      };
     },
   });
 }

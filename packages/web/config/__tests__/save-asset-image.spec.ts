@@ -83,4 +83,36 @@ describe("saveAssetImageToTokensDir", () => {
     await expect(save()).rejects.toThrow();
     expect(fs.readFileSync(imagePath, "utf-8")).toBe("<svg>old</svg>");
   });
+
+  it("sanitizes executable content from downloaded SVGs", async () => {
+    mockBody([
+      '<svg onload="alert(1)"><script>evil()</script><foreignObject><b>x</b></foreignObject><a href="javascript:alert(2)"></a><circle r="1"/></svg>',
+    ]);
+
+    await save();
+    const content = fs.readFileSync(imagePath, "utf-8");
+    expect(content).not.toContain("<script");
+    expect(content).not.toContain("<foreignObject");
+    expect(content).not.toContain("onload=");
+    expect(content).not.toContain("javascript:");
+    expect(content).toContain('<circle r="1"/>');
+  });
+
+  it("rejects path traversal symbols and unsupported extensions", async () => {
+    await expect(
+      saveAssetImageToTokensDir({
+        imageUrl: IMAGE_URL,
+        asset: { symbol: "../../evil" },
+        currentAssetListHash: "not-the-stored-hash",
+      })
+    ).rejects.toThrow("Unsafe asset symbol");
+
+    await expect(
+      saveAssetImageToTokensDir({
+        imageUrl: "https://example.com/evil.html",
+        asset: { symbol: "ABC" },
+        currentAssetListHash: "not-the-stored-hash",
+      })
+    ).rejects.toThrow("Unsupported image extension");
+  });
 });

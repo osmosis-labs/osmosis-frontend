@@ -14,6 +14,7 @@ import { solanaRpcHandler } from "~/server/api-handlers/solana-rpc";
 import { swappedSignatureHandler } from "~/server/api-handlers/swapped-signature";
 import {
   edgeTrpcAssetsHandler,
+  edgeTrpcLocalHandler,
   edgeTrpcMainHandler,
   edgeTrpcPoolsHandler,
   trpcHandler,
@@ -27,6 +28,7 @@ export const apiHandlers: Record<ApiHandlerId, ApiHandler> = {
   edgeTrpcMain: edgeTrpcMainHandler,
   edgeTrpcPools: edgeTrpcPoolsHandler,
   edgeTrpcAssets: edgeTrpcAssetsHandler,
+  edgeTrpcLocal: edgeTrpcLocalHandler,
   pools: poolsHandler,
   pool: poolHandler,
   activeGauges: activeGaugesHandler,
