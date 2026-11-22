@@ -16,7 +16,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { useDisclosure, useTranslation } from "~/hooks";
 import { useForcedMigrations } from "~/hooks/use-forced-migrations";
 import { useWallet } from "~/hooks/use-wallet";

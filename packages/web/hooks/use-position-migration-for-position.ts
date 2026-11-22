@@ -3,7 +3,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { MultiEndpointClient } from "@osmosis-labs/utils";
 import { useCallback } from "react";
 
-import { ChainList } from "~/config/generated/chain-list";
+import { OsmosisChain } from "~/config/generated/osmosis-chain";
 import {
   USDC_ALLOYED_DENOM,
   USDC_NOBLE_DENOM,
@@ -39,7 +39,7 @@ import { api } from "~/utils/trpc";
 let lcdClient: MultiEndpointClient | undefined;
 export const getLcdClient = () => {
   if (lcdClient) return lcdClient;
-  const endpoints = (ChainList[0].apis?.rest ?? []).map(({ address }) => ({
+  const endpoints = (OsmosisChain.apis?.rest ?? []).map(({ address }) => ({
     address: address.replace(/\/+$/, ""),
   }));
   if (endpoints.length === 0) return undefined;

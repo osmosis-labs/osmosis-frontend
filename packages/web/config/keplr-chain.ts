@@ -128,7 +128,9 @@ function getCurrencies(chain: Chain): AppCurrency[] {
       coinDecimals: asset.coinDecimals,
       coinGeckoId: asset.coinGeckoId,
       coinImageUrl: imageUrl
-        ? getImageRelativeFilePath(imageUrl, asset.coinDenom)
+        ? imageUrl.startsWith("/")
+          ? imageUrl
+          : getImageRelativeFilePath(imageUrl, asset.coinDenom)
         : undefined,
       base: asset.coinMinimalDenom,
       gasPriceStep: getGasPriceStep(chain, coinMinimalDenom),
@@ -161,9 +163,11 @@ function getStakeCurrency(
     coinDenom: stakeAsset.symbol,
     coinMinimalDenom: stakeAsset.coinMinimalDenom,
     coinGeckoId: stakeAsset.coingeckoId,
-    coinImageUrl: imageUrl
-      ? getImageRelativeFilePath(imageUrl, stakeAsset.symbol)
-      : undefined,
+    coinImageUrl:
+      stakeAsset.relative_image_url ||
+      (imageUrl
+        ? getImageRelativeFilePath(imageUrl, stakeAsset.symbol)
+        : undefined),
     base: stakeAsset.coinMinimalDenom,
   };
 }
@@ -188,9 +192,11 @@ function getFeeCurrencies(chain: Chain, assetList: AssetList): FeeCurrency[] {
       contractAddress: isContractToken ? coinMinimalDenom.split(":")[1] : "",
       coinDecimals: asset.decimals,
       coinGeckoId: asset.coingeckoId,
-      coinImageUrl: imageUrl
-        ? getImageRelativeFilePath(imageUrl, asset.symbol)
-        : undefined,
+      coinImageUrl:
+        asset.relative_image_url ||
+        (imageUrl
+          ? getImageRelativeFilePath(imageUrl, asset.symbol)
+          : undefined),
       base: asset.coinMinimalDenom,
       gasPriceStep: getGasPriceStep(chain, coinMinimalDenom),
     };

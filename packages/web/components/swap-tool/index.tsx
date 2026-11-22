@@ -40,7 +40,7 @@ import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { OsmosisChainInfo } from "~/config/chain";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,

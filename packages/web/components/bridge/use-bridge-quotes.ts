@@ -35,7 +35,7 @@ import {
   priceImpactLoss,
 } from "~/components/loss-acknowledgement";
 import { useLossAcknowledgement } from "~/components/loss-acknowledgement/use-loss-acknowledgement";
-import { ChainList } from "~/config/generated/chain-list";
+import { ClientChainList as ChainList } from "~/config/generated/client-chain-list";
 import { HighPriceImpactGate, HighSlippageGate } from "~/config/trade-warnings";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";

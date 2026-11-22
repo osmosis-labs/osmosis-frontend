@@ -124,9 +124,23 @@ const config = {
           priority: 50,
           enforce: true,
         },
+        clientAssetLists: {
+          test: /[\\/]config[\\/]generated[\\/]client-asset-lists\.ts$/,
+          name: "client-asset-lists",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
         chainList: {
           test: /[\\/]config[\\/]generated[\\/]chain-list\.ts$/,
           name: "chain-list",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+        clientChainList: {
+          test: /[\\/]config[\\/]generated[\\/]client-chain-list\.ts$/,
+          name: "client-chain-list",
           chunks: "all",
           priority: 50,
           enforce: true,

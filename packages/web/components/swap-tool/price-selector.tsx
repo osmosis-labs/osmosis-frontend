@@ -20,7 +20,7 @@ import {
   VALID_QUOTES,
 } from "~/components/place-limit-tool/defaults";
 import { EntityImage } from "~/components/ui/entity-image";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import {
   Breakpoint,
   useDisclosure,
