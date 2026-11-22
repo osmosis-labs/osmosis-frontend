@@ -25,6 +25,7 @@ import { EthereumChainInfo } from "@osmosis-labs/utils";
 import { getAddress } from "viem";
 import { z } from "zod";
 
+import { MAX_BRIDGE_BALANCE_BATCH_SIZE } from "~/components/bridge/bridge-balance-batching";
 import { getClientEvmRpcUrls } from "~/utils/evm-rpc";
 import { clientSolanaRpc } from "~/utils/solana";
 
@@ -92,25 +93,28 @@ const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
   return z
     .object({
       type: z.literal(type),
-      assets: z.array(
-        bridgeChainSchema.and(bridgeSupportedAssetSchema).and(
-          z.object({
-            supportedVariants: z.record(
-              z.string(),
-              z.record(
-                z.string().transform((v) => v as Bridge),
-                z.array(
-                  z
-                    .string()
-                    .transform(
-                      (v) => v as BridgeSupportedAsset["transferTypes"][number]
-                    )
+      assets: z
+        .array(
+          bridgeChainSchema.and(bridgeSupportedAssetSchema).and(
+            z.object({
+              supportedVariants: z.record(
+                z.string(),
+                z.record(
+                  z.string().transform((v) => v as Bridge),
+                  z.array(
+                    z
+                      .string()
+                      .transform(
+                        (v) =>
+                          v as BridgeSupportedAsset["transferTypes"][number]
+                      )
+                  )
                 )
-              )
-            ),
-          })
+              ),
+            })
+          )
         )
-      ),
+        .max(MAX_BRIDGE_BALANCE_BATCH_SIZE),
     })
     .merge(schema);
 };
