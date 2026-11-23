@@ -136,13 +136,56 @@ async function findPositionHolder(poolId: string) {
 const units = (amount: bigint, decimals: number) =>
   Number(amount) / 10 ** decimals;
 
+const QUOTE_PROCEDURES = new Set([
+  "quoteRouter.routeTokenOutGivenIn",
+  "quoteRouter.routeTokenInGivenOut",
+]);
+
 /**
- * SQS returns the fixed leg of a quote as a coin and the computed leg as a
- * bare integer: amount_in is a coin on exact-in quotes, amount_out on
- * exact-out ones.
+ * Reads the quotes in one `/api/edge-trpc-local` response. The API Worker
+ * queries SQS, so the page only sees the tRPC result: `amount` is the computed
+ * leg (a superjson CoinPretty holding the minimal-denom integer) and the fixed
+ * leg is the request input. Exact-out routes already list their pools from
+ * the input side, the same order as the signed message.
  */
-const quoteAmount = (a: any): string | undefined =>
-  typeof a === "object" ? a?.amount : a;
+async function readTrpcQuotes(response: Response): Promise<Quote[]> {
+  const url = new URL(response.url());
+  const prefix = "/api/edge-trpc-local/";
+  if (!url.pathname.startsWith(prefix)) return [];
+  const procedures = decodeURIComponent(
+    url.pathname.slice(prefix.length)
+  ).split(",");
+  if (!procedures.some((p) => QUOTE_PROCEDURES.has(p))) return [];
+
+  const batched = url.searchParams.get("batch") === "1";
+  const rawInput = JSON.parse(url.searchParams.get("input") ?? "{}");
+  const body = await response.json().catch(() => undefined);
+  const results: any[] = batched ? (body ?? []) : [body];
+
+  return procedures.flatMap((procedure, i) => {
+    if (!QUOTE_PROCEDURES.has(procedure)) return [];
+    const input = (batched ? rawInput[i] : rawInput)?.json;
+    const route = results[i]?.result?.data?.json;
+    if (!input || !route?.split) return [];
+    const coin =
+      typeof route.amount === "string"
+        ? JSON.parse(route.amount)
+        : route.amount;
+    const poolIds = route.split.flatMap((s: any) =>
+      s.pools.map((p: any) => String(p.id))
+    );
+    return procedure === "quoteRouter.routeTokenOutGivenIn"
+      ? [
+          {
+            inDenom: input.tokenInDenom,
+            inAmount: input.tokenInAmount,
+            outAmount: coin?.amount,
+            poolIds,
+          },
+        ]
+      : [{ inAmount: coin?.amount, outAmount: input.tokenOutAmount, poolIds }];
+  });
+}
 
 /**
  * Checks the signed slippage bound against the quote for the traded amount:
@@ -202,26 +245,7 @@ test.describe("Wallet flows with a fake wallet", () => {
     });
     quotes = [];
     page.on("response", async (response: Response) => {
-      if (
-        !/\/router\/(quote|custom-direct-quote)$/.test(
-          new URL(response.url()).pathname
-        )
-      )
-        return;
-      const body = await response.json().catch(() => undefined);
-      if (!body?.route) return;
-      const exactIn = typeof body.amount_in === "object";
-      quotes.push({
-        inDenom: exactIn ? body.amount_in?.denom : undefined,
-        inAmount: quoteAmount(body.amount_in),
-        outAmount: quoteAmount(body.amount_out),
-        // Exact-out quotes list each route's pools from the output side; the
-        // signed message lists them from the input side.
-        poolIds: body.route.flatMap((r: any) => {
-          const ids = r.pools.map((p: any) => String(p.id));
-          return exactIn ? ids : ids.reverse();
-        }),
-      });
+      quotes.push(...(await readTrpcQuotes(response)));
     });
     tradePage = new TradePage(page);
     await tradePage.goto();
