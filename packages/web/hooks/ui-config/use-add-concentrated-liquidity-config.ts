@@ -870,6 +870,9 @@ export interface ZapInConfig {
    *  data for the marginal impact hasn't loaded; submission blocks on this so
    *  the gate never evaluates on the understated average-fill figure. */
   zapImpactPending: boolean;
+  /** `zapImpactPending` because the depth query failed or returned no ranges,
+   *  not because it is still loading. */
+  zapImpactUnavailable: boolean;
 }
 
 /** Portion of a quote's swap input routed through the destination pool. In an
@@ -963,7 +966,7 @@ function useZapIn({
   // tick liquidity. The same simulation runs at submit time for the minima.
   const destination = destinationRoutedInput(quote, poolId);
   const needsMarginalImpact = destination.amount.gt(new Int(0));
-  const { data: liquidityDepths } =
+  const { data: liquidityDepths, isError: liquidityDepthsError } =
     api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
       { poolId },
       { enabled: needsMarginalImpact }
@@ -991,6 +994,11 @@ function useZapIn({
     });
   }
   const zapImpactPending = needsMarginalImpact && marginalImpact === undefined;
+  // The depth query failed or came back empty: submit stays blocked (the gate
+  // needs the marginal figure), so the user is told why instead of facing a
+  // disabled button.
+  const zapImpactUnavailable =
+    zapImpactPending && (liquidityDepthsError || liquidityDepths?.length === 0);
 
   // Total cost: one fiat-free calculation shared by the breakdown rows, the
   // rust styling and the Confirm gate, so display and gate can't diverge and
@@ -1072,7 +1080,6 @@ function useZapIn({
               currency: singleAssetDepositAmountIn.sendCurrency,
               amount: singleAssetDepositAmountIn.amount,
             };
-            broadcastAttempted = true;
             const prepared =
               await prepareCreateConcentratedLiquidityPositionMsg(
                 transactionContext,
@@ -1087,6 +1094,7 @@ function useZapIn({
                 undefined,
                 onFulfill
               );
+            broadcastAttempted = true;
             await signAndBroadcast(...prepared);
             return;
           }
@@ -1167,7 +1175,6 @@ function useZapIn({
             slippage,
           });
 
-          broadcastAttempted = true;
           const prepared = await prepareZapInToConcentratedPositionMsg(
             transactionContext,
             poolId,
@@ -1186,6 +1193,7 @@ function useZapIn({
             undefined,
             onFulfill
           );
+          broadcastAttempted = true;
           await signAndBroadcast(...prepared);
         } catch (e: unknown) {
           console.error(e);
@@ -1232,5 +1240,6 @@ function useZapIn({
     zapTotalCostPercent,
     zapHighCost,
     zapImpactPending,
+    zapImpactUnavailable,
   };
 }

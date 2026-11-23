@@ -85,6 +85,7 @@ export type ZapInDisplay = Pick<
   | "zapValueOut"
   | "zapTotalCostPercent"
   | "zapHighCost"
+  | "zapImpactUnavailable"
 > & {
   /** The slippage tolerance is at or above the high-tolerance gate, so the
    *  Confirm tick is required even when the total cost is low. */
@@ -749,6 +750,14 @@ const SingleAssetDeposit: FunctionComponent<{
                   )}
                 </div>
               ))}
+
+            {needsSwap && quote && zap?.zapImpactUnavailable && (
+              <p className="caption py-2 text-center text-rust-300">
+                {t(
+                  "addConcentratedLiquidity.singleAsset.impactDataUnavailable"
+                )}
+              </p>
+            )}
 
             {(isCostHigh || zap?.slippageHigh) && zap && (
               <div className="flex items-center gap-3 rounded-xl border border-rust-500 bg-rust-800/40 p-3">

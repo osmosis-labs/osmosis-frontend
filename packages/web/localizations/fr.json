@@ -42,7 +42,8 @@
       "valueOut": "Valeur sortante",
       "totalCost": "Coût total",
       "totalCostWarning": "Le coût total de ce dépôt est de {totalCost}, incluant l'impact sur le prix et les frais d'échange, ce qui réduit la valeur qui atteint votre position.",
-      "quoteLoading": "Recherche du meilleur échange…"
+      "quoteLoading": "Recherche du meilleur échange…",
+      "impactDataUnavailable": "Les données de liquidité du pool nécessaires pour vérifier l'impact sur le prix de ce swap n'ont pas pu être chargées. Veuillez réessayer dans un instant."
     }
   },
   "addConcentratedLiquidityIntro": {

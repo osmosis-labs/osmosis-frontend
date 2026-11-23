@@ -68,6 +68,7 @@ export const AddLiquidityModal: FunctionComponent<
     zapTotalCostPercent,
     zapHighCost,
     zapImpactPending,
+    zapImpactUnavailable,
   } = useAddConcentratedLiquidityConfig(chainId, poolId);
 
   // High total-cost acknowledgement for the single-asset zap-in, on the
@@ -349,6 +350,7 @@ export const AddLiquidityModal: FunctionComponent<
               zapValueOut,
               zapTotalCostPercent,
               zapHighCost,
+              zapImpactUnavailable,
               slippageHigh: zapSlippageHigh,
               costAcknowledged: zapCostAcknowledged,
               onCostAcknowledgedChange: setZapCostAcknowledged,

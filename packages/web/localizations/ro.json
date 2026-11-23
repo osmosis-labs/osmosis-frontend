@@ -42,7 +42,8 @@
       "valueOut": "Valoare ieșire",
       "totalCost": "Cost total",
       "totalCostWarning": "Costul total al acestui depozit este {totalCost}, incluzând impactul asupra prețului și comisioanele de schimb, ceea ce reduce valoarea care ajunge în poziția ta.",
-      "quoteLoading": "Se caută cea mai bună schimbare…"
+      "quoteLoading": "Se caută cea mai bună schimbare…",
+      "impactDataUnavailable": "Datele de lichiditate ale pool-ului necesare pentru verificarea impactului asupra prețului acestui swap nu au putut fi încărcate. Încearcă din nou în curând."
     }
   },
   "addConcentratedLiquidityIntro": {

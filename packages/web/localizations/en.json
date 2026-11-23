@@ -42,7 +42,8 @@
       "valueOut": "Value out",
       "totalCost": "Total cost",
       "totalCostWarning": "The total cost of this deposit is {totalCost}, including price impact and swap fees, which reduces the value that reaches your position.",
-      "quoteLoading": "Finding the best swap…"
+      "quoteLoading": "Finding the best swap…",
+      "impactDataUnavailable": "Pool liquidity data needed to check this swap's price impact could not be loaded. Please try again shortly."
     }
   },
   "addConcentratedLiquidityIntro": {

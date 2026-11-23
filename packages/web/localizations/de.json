@@ -42,7 +42,8 @@
       "valueOut": "Ausgabewert",
       "totalCost": "Gesamtkosten",
       "totalCostWarning": "Die Gesamtkosten dieser Einzahlung betragen {totalCost}, einschließlich Preisauswirkung und Tauschgebühren, wodurch sich der Wert verringert, der deine Position erreicht.",
-      "quoteLoading": "Besten Tausch wird gesucht…"
+      "quoteLoading": "Besten Tausch wird gesucht…",
+      "impactDataUnavailable": "Die Liquiditätsdaten des Pools, die zur Prüfung der Preisauswirkung dieses Swaps benötigt werden, konnten nicht geladen werden. Bitte versuche es gleich erneut."
     }
   },
   "addConcentratedLiquidityIntro": {

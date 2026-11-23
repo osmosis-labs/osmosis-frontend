@@ -42,7 +42,8 @@
       "valueOut": "Wartość wyjściowa",
       "totalCost": "Koszt całkowity",
       "totalCostWarning": "Całkowity koszt tej wpłaty wynosi {totalCost}, wliczając wpływ na cenę i opłaty za wymianę, co zmniejsza wartość trafiającą do Twojej pozycji.",
-      "quoteLoading": "Szukanie najlepszej zamiany…"
+      "quoteLoading": "Szukanie najlepszej zamiany…",
+      "impactDataUnavailable": "Nie udało się wczytać danych o płynności puli potrzebnych do sprawdzenia wpływu tej wymiany na cenę. Spróbuj ponownie za chwilę."
     }
   },
   "addConcentratedLiquidityIntro": {
