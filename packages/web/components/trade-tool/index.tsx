@@ -199,9 +199,28 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
 
   const { isWalletConnected } = useWallet();
 
-  const { expanded, isExpandable, setExpanded } = useTradeViewExpanded();
-  const isBookBeside =
-    Boolean(orderbookPool) || (bookLayout === "expandable" && expanded);
+  const { expanded, expandedParam, isExpandable, setExpanded } =
+    useTradeViewExpanded();
+  // Swap has no expanded view: the expand control is Buy and Sell only.
+  const canExpand =
+    bookLayout === "expandable" && isExpandable && tab !== SwapToolTab.SWAP;
+  const isBookBeside = Boolean(orderbookPool) || (canExpand && expanded);
+  // Switching to Swap, or a link that opens Swap expanded, collapses the
+  // view, so the page's wide layout never shows around the plain widget.
+  // Cleared in the same URL update as the tab change, so the page never
+  // renders a frame with the two out of step.
+  const selectTab = (next: SwapToolTab) => {
+    if (next === SwapToolTab.SWAP && expandedParam) void setExpanded(null);
+    void setTab(next);
+  };
+  useEffect(() => {
+    if (
+      bookLayout === "expandable" &&
+      tab === SwapToolTab.SWAP &&
+      expandedParam
+    )
+      void setExpanded(null);
+  }, [bookLayout, tab, expandedParam, setExpanded]);
 
   // The book beside the widget matches the widget card's rendered height,
   // so they stay aligned whatever the widget shows; it scrolls inside.
@@ -278,7 +297,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
         <div className="flex w-full items-center justify-between md:gap-2">
           <SwapToolTabs
             activeTab={tab}
-            setTab={setTab}
+            setTab={selectTab}
             allowedTabs={allowedTabs}
           />
           <div className="flex items-center gap-2">
@@ -288,7 +307,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
                 initialQuoteDenom={limitToolPairProps.initialQuoteDenom}
               />
             )}
-            {bookLayout === "expandable" && isExpandable && (
+            {canExpand && (
               <button
                 type="button"
                 onClick={() => setExpanded(!expanded)}
@@ -441,18 +460,21 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     </div>
   );
 
-  // Expanded Buy and Sell also show the base asset's price chart, the same
-  // chart as the orderbook pool page; Swap shows widget and book only.
-  const showChart = isBookBeside && !orderbookPool && tab !== SwapToolTab.SWAP;
+  // The expanded view shows the base asset's price chart, the same chart as
+  // the orderbook pool page.
+  const showChart = isBookBeside && !orderbookPool;
   // The book's slot is kept while the orderbook list loads, so a pair that
   // has a book doesn't shift the row when the list arrives.
   const showBook =
     isBookBeside && (Boolean(pairOrderbook) || isOrderbooksLoading);
 
-  // Below 1024px the book stacks under the widget at a fixed height. At
-  // 1536px and below the chart takes its own row above widget and book.
+  // The expanded trade page (not an orderbook pool's page) puts the chart
+  // above the widget and book, and the widget in a centred column with the
+  // book on its right, so switching between Buy and Sell never moves it.
+  const isTradeView = isBookBeside && !orderbookPool;
+
+  // Below 1024px the book stacks under the widget at a fixed height.
   const { isMobile: isStacked } = useWindowSize(Breakpoint.lg);
-  const { isMobile: isChartOnOwnRow } = useWindowSize(Breakpoint.xxl);
   // The cards beside the widget's column run from the top of what is above
   // the widget (plus the column's 16px gap) to the bottom of the widget card.
   const sideHeight =
@@ -462,7 +484,6 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
             cardHeight + (aboveWidget && aboveHeight ? aboveHeight + 16 : 0),
         }
       : undefined;
-  const chartHeight = !isChartOnOwnRow ? sideHeight : undefined;
 
   // The widget keeps the same position in the tree in every layout (the
   // chart, book and orders are empty slots when not shown), so expanding,
@@ -472,30 +493,34 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     <div
       className={classNames({
         "flex flex-col gap-4": isBookBeside,
-        // Without the chart the row is only as wide as widget and book.
-        "mx-auto w-fit max-w-full":
-          isBookBeside && !orderbookPool && !showChart,
-        "w-full min-w-0": showChart,
+        "w-full min-w-0": isTradeView,
       })}
     >
       <div
         className={classNames({
-          "flex items-start gap-4 lg:flex-col": isBookBeside,
-          "2xl:flex-wrap": showChart,
+          // Widget in the middle column, book on its right. The page pads
+          // the expanded view clear of the sidebar, which would put the
+          // middle half a sidebar right of where the collapsed widget sits;
+          // an empty last column of the sidebar's width (less one gap)
+          // cancels that, so expanding moves the widget down, not sideways.
+          // The book keeps at least 360px, so a narrow window moves the
+          // widget left rather than squeezing the book. At 1280px and
+          // narrower the page sits beside the sidebar instead of padding
+          // past it, so there is nothing to cancel, and the book may go to
+          // 340px so the view still fits down to 1153px.
+          "grid grid-cols-[minmax(0,1fr)_512px_minmax(360px,1fr)_calc(theme(spacing.sidebar)-1rem)] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_512px_minmax(340px,1fr)] lg:grid-cols-1":
+            isTradeView,
+          "flex items-start gap-4 lg:flex-col": isBookBeside && !isTradeView,
         })}
       >
         {/* The chart and book slots are sized here, outside their lazily
-            loaded panels, so the row's layout is final on the first frame
-            of an expand and the panels fill their cards in place. The chart
-            takes all the width the widget and book leave. */}
+            loaded panels, so the layout is final on the first frame of an
+            expand and the panels fill their cards in place. The chart
+            spans the widget and book columns, as wide as the two together
+            (512px + gap + the book's 420px at most), whether or not this
+            pair has a book. */}
         {showChart && (
-          <div
-            style={chartHeight}
-            className={classNames(
-              "min-w-0 flex-1 overflow-hidden rounded-3xl bg-osmoverse-900 2xl:basis-full",
-              { "h-[420px]": !chartHeight }
-            )}
-          >
+          <div className="col-span-2 col-start-2 h-[420px] w-full min-w-0 max-w-[948px] overflow-hidden rounded-3xl bg-osmoverse-900 lg:col-span-1 lg:col-start-auto lg:max-w-none">
             <TradeViewChart base={pair.base} className="h-full w-full" />
           </div>
         )}
@@ -503,7 +528,8 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
             widget's column, so it stays with the widget in every layout. */}
         <div
           className={classNames("flex flex-col", {
-            "w-[512px] shrink-0 lg:w-full": isBookBeside,
+            "col-start-2 lg:col-start-auto": isTradeView,
+            "w-[512px] shrink-0 lg:w-full": isBookBeside && !isTradeView,
           })}
         >
           {aboveWidget && (
@@ -525,12 +551,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
               "overflow-hidden rounded-3xl bg-osmoverse-900",
               orderbookPool
                 ? "min-w-0 flex-1 lg:w-full"
-                : showChart
-                  ? // Beside the chart the book keeps its width, so the
-                    // chart gets the rest; with the chart on its own row
-                    // (1536px and below) the book fills beside the widget.
-                    "w-[380px] shrink-0 2xl:w-auto 2xl:min-w-0 2xl:flex-1 lg:w-full"
-                  : "w-[420px] shrink-0 lg:w-full",
+                : "w-full max-w-[420px] lg:max-w-none",
               { "h-[520px]": !sideHeight }
             )}
           >
