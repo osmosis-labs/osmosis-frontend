@@ -116,10 +116,22 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
     setLastGoodQuote(quote.selectedQuote);
   }
   const displayedQuote = quote.selectedQuote ?? lastGoodQuote;
-  // The live quote is gone (every provider errored a refetch) but we still have
-  // the previous terms to show while the 30s refetch keeps retrying. selectedQuote
-  // only drops to undefined on error here, so this is exactly the stranded case.
+  // The live quote is gone (the selected provider has no successful quote —
+  // every provider errored, or a pinned one did) but we still have the previous
+  // terms to show while the 30s refetch keeps retrying.
   const isQuoteOutdated = !quote.selectedQuote && Boolean(displayedQuote);
+  // Distinguish "the provider you pinned is unavailable, but others still work"
+  // from "nothing quotes this amount". In auto mode the hook switches to the
+  // best remaining provider, so an outdated state that still has other
+  // successful quotes means the user pinned the now-unavailable one — point them
+  // at the provider options rather than only the amount.
+  const hasAlternativeQuotes = (quote.successfulQuotes?.length ?? 0) > 0;
+  const outdatedHeading = hasAlternativeQuotes
+    ? t("transfer.quoteProviderUnavailableTitle")
+    : t("transfer.noQuotesAvailableTitle");
+  const outdatedDescription = hasAlternativeQuotes
+    ? t("transfer.quoteProviderUnavailableDescription")
+    : t("transfer.noQuotesAvailableDescription");
 
   const { data: assetsInOsmosis } =
     api.edge.assets.getBridgeAssetWithVariants.useQuery(
@@ -244,11 +256,13 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
         </div>
       )}
-      {/* When the quote is outdated (every provider failed a refetch), replace
-          the technical error with one plain "quote expired" message — the terms
-          above stay on screen, dimmed, and Confirm is disabled. Otherwise this
-          renders any other active error, with the loss checkbox when a high-loss
-          warning owns it. */}
+      {/* When the quote is outdated (the selected provider has no valid quote),
+          replace the technical error with a plain message: "no quotes available"
+          when nothing quotes this amount, or "this option is unavailable" when a
+          pinned provider died but others still work. The terms above stay on
+          screen, dimmed, and Confirm is disabled. Otherwise this renders any
+          other active error, with the loss checkbox when a high-loss warning
+          owns it. */}
       {(isQuoteOutdated || quote.errorBoxMessage) && (
         <div className="flex flex-col gap-3 pt-3">
           <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
@@ -256,12 +270,12 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
             <div className="flex flex-col">
               <h1 className="body2">
                 {isQuoteOutdated
-                  ? t("transfer.quoteExpiredTitle")
+                  ? outdatedHeading
                   : quote.errorBoxMessage?.heading}
               </h1>
               <p className="body2 text-osmoverse-300">
                 {isQuoteOutdated
-                  ? t("transfer.quoteExpiredDescription")
+                  ? outdatedDescription
                   : quote.errorBoxMessage?.description}
               </p>
             </div>

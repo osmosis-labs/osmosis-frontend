@@ -236,8 +236,9 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
 
   // Regression (MTN-351): a failed background refetch drops `selectedQuote`.
   // The screen must keep the last good quote on screen (dimmed) instead of
-  // unrendering it, and swap the technical error for the plain "expired" copy.
-  it("keeps the last good quote and shows the expired warning when a refetch drops it", () => {
+  // unrendering it, and swap the technical error for the plain "no quotes
+  // available" copy (this stub has no alternative providers).
+  it("keeps the last good quote and shows the no-quotes message when a refetch drops it", () => {
     const goodQuote = {
       quote: { input: { fiatValue: undefined, amount: { denom: "WETH" } } },
       expectedOutput: { denom: "WETH" },
@@ -270,12 +271,10 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
       element(makeQuote({ selectedQuote: goodQuote }))
     );
 
-    // Live quote: both asset boxes are on screen, no expired warning yet.
+    // Live quote: both asset boxes are on screen, no outdated message yet.
     expect(screen.getByText("From")).toBeInTheDocument();
     expect(screen.getByText("To")).toBeInTheDocument();
-    expect(
-      screen.queryByText(/your quote has expired/i)
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/no quotes available/i)).not.toBeInTheDocument();
 
     // A failed refetch: selectedQuote is gone and a technical error is set.
     rerender(
@@ -291,14 +290,69 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
       )
     );
 
-    // The boxes stay (retained from the last good quote), the plain expired
-    // copy replaces the technical error, no checkbox, and Confirm is disabled.
+    // The boxes stay (retained from the last good quote), the plain
+    // no-quotes-available copy replaces the technical error, no checkbox, and
+    // Confirm is disabled.
     expect(screen.getByText("From")).toBeInTheDocument();
     expect(screen.getByText("To")).toBeInTheDocument();
-    expect(screen.getByText(/your quote has expired/i)).toBeInTheDocument();
+    expect(screen.getByText(/no quotes available/i)).toBeInTheDocument();
     expect(
       screen.queryByText("Something isn't working")
     ).not.toBeInTheDocument();
+    expect(acknowledgementCheckbox()).not.toBeInTheDocument();
+    expect(confirmButton()).toBeDisabled();
+  });
+
+  // Case 2 (MTN-351): the user pinned a provider that then lost its quote, but
+  // another provider still has one. We keep the pin (no silent auto-switch) and
+  // show the "this option is unavailable" copy, pointing at the other options,
+  // rather than "no quotes available".
+  it("shows the pinned-option-unavailable message when alternatives exist", () => {
+    const goodQuote = {
+      quote: { input: { fiatValue: undefined, amount: { denom: "WETH" } } },
+      expectedOutput: { denom: "WETH" },
+      expectedOutputFiat: undefined,
+      estimatedTime: { humanize: () => "16 minutes" },
+    } as unknown as BridgeQuote["selectedQuote"];
+
+    const element = (quote: BridgeQuote) => (
+      <MultiLanguageProvider defaultLanguage="en">
+        <ReviewScreen
+          direction="withdraw"
+          selectedDenom="BTC"
+          fromChain={osmosis}
+          toChain={bitcoin}
+          fromAsset={{ address: "allBTC", decimals: 8, denom: "BTC" } as any}
+          toAsset={{ address: "sat", decimals: 8, denom: "BTC" } as any}
+          fromAddress="osmo1abc"
+          toAddress="bc1qxyz"
+          fromWalletIcon={undefined}
+          toWalletIcon={undefined}
+          quote={quote}
+          isManualAddress={false}
+          onCancel={jest.fn()}
+          onConfirm={jest.fn()}
+        />
+      </MultiLanguageProvider>
+    );
+
+    const { rerender } = render(
+      element(makeQuote({ selectedQuote: goodQuote }))
+    );
+
+    // The pinned provider drops its quote, but another provider still has one.
+    rerender(
+      element(
+        makeQuote({
+          selectedQuote: undefined,
+          userCanAdvance: false,
+          successfulQuotes: [{ data: { provider: { id: "Squid" } } }] as any,
+        })
+      )
+    );
+
+    expect(screen.getByText(/this option is unavailable/i)).toBeInTheDocument();
+    expect(screen.queryByText(/no quotes available/i)).not.toBeInTheDocument();
     expect(acknowledgementCheckbox()).not.toBeInTheDocument();
     expect(confirmButton()).toBeDisabled();
   });
