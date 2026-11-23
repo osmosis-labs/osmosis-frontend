@@ -14,6 +14,28 @@ jest.mock("~/utils/trpc", () => ({
   },
 }));
 
+// Keep the transfer-details subtree light so a quote with `selectedQuote` set
+// can render without a fully-formed quote: the retention cases below only need
+// the From/To asset boxes and the warning area.
+jest.mock("../quote-detail", () => {
+  const Stub = () => null;
+  return {
+    BridgeProviderDropdownRow: Stub,
+    EstimatedTimeRow: Stub,
+    ExpandDetailsControlContent: Stub,
+    NetworkFeeRow: Stub,
+    ProviderFeesRow: Stub,
+    QuoteDetailRow: Stub,
+    TotalFeesRow: Stub,
+  };
+});
+jest.mock("../query-remaining-time", () => ({
+  QueryRemainingTime: () => null,
+}));
+jest.mock("~/utils/formatter", () => ({
+  formatPretty: (coin: { denom?: string }) => coin?.denom ?? "",
+}));
+
 import { MultiLanguageProvider } from "~/hooks/language";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
@@ -208,6 +230,75 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
     );
 
     expect(screen.getByText("Insufficient funds for fees")).toBeInTheDocument();
+    expect(acknowledgementCheckbox()).not.toBeInTheDocument();
+    expect(confirmButton()).toBeDisabled();
+  });
+
+  // Regression (MTN-351): a failed background refetch drops `selectedQuote`.
+  // The screen must keep the last good quote on screen (dimmed) instead of
+  // unrendering it, and swap the technical error for the plain "expired" copy.
+  it("keeps the last good quote and shows the expired warning when a refetch drops it", () => {
+    const goodQuote = {
+      quote: { input: { fiatValue: undefined, amount: { denom: "WETH" } } },
+      expectedOutput: { denom: "WETH" },
+      expectedOutputFiat: undefined,
+      estimatedTime: { humanize: () => "16 minutes" },
+    } as unknown as BridgeQuote["selectedQuote"];
+
+    const element = (quote: BridgeQuote) => (
+      <MultiLanguageProvider defaultLanguage="en">
+        <ReviewScreen
+          direction="withdraw"
+          selectedDenom="BTC"
+          fromChain={osmosis}
+          toChain={bitcoin}
+          fromAsset={{ address: "allBTC", decimals: 8, denom: "BTC" } as any}
+          toAsset={{ address: "sat", decimals: 8, denom: "BTC" } as any}
+          fromAddress="osmo1abc"
+          toAddress="bc1qxyz"
+          fromWalletIcon={undefined}
+          toWalletIcon={undefined}
+          quote={quote}
+          isManualAddress={false}
+          onCancel={jest.fn()}
+          onConfirm={jest.fn()}
+        />
+      </MultiLanguageProvider>
+    );
+
+    const { rerender } = render(
+      element(makeQuote({ selectedQuote: goodQuote }))
+    );
+
+    // Live quote: both asset boxes are on screen, no expired warning yet.
+    expect(screen.getByText("From")).toBeInTheDocument();
+    expect(screen.getByText("To")).toBeInTheDocument();
+    expect(
+      screen.queryByText(/your quote has expired/i)
+    ).not.toBeInTheDocument();
+
+    // A failed refetch: selectedQuote is gone and a technical error is set.
+    rerender(
+      element(
+        makeQuote({
+          selectedQuote: undefined,
+          userCanAdvance: false,
+          errorBoxMessage: {
+            heading: "Something isn't working",
+            description: "Sorry for the inconvenience, try again later.",
+          },
+        })
+      )
+    );
+
+    // The boxes stay (retained from the last good quote), the plain expired
+    // copy replaces the technical error, no checkbox, and Confirm is disabled.
+    expect(screen.getByText("From")).toBeInTheDocument();
+    expect(screen.getByText("To")).toBeInTheDocument();
+    expect(screen.getByText(/your quote has expired/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText("Something isn't working")
+    ).not.toBeInTheDocument();
     expect(acknowledgementCheckbox()).not.toBeInTheDocument();
     expect(confirmButton()).toBeDisabled();
   });

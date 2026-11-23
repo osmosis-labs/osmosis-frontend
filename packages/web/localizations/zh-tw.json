@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "是的，我明白這可能導致資金嚴重損失，我仍希望繼續。",
     "quoteUpdatedTitle": "報價已更新",
     "quoteUpdatedCaption": "自您確認以來報價已發生變化。請查看更新後的詳情並重新確認。",
+    "quoteExpiredTitle": "您的報價已過期",
+    "quoteExpiredDescription": "此轉賬可能會失敗。如果沒有自動更新，請返回修改金額。",
     "slippageTooHighTitle": "滑點偏高",
     "slippageTooHighDescription": "此轉賬的滑點偏高。請嘗試較小的金額，或接受損失風險以繼續。",
     "priceImpactTooHighTitle": "價格影響偏高",

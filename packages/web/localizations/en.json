@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "Yes, I understand this could cause heavy loss of funds and I wish to proceed.",
     "quoteUpdatedTitle": "Quote updated",
     "quoteUpdatedCaption": "The quote changed since you confirmed. Please review the updated details and confirm again.",
+    "quoteExpiredTitle": "Your quote has expired",
+    "quoteExpiredDescription": "This transfer may fail. If it doesn't update automatically, go back to change your amount.",
     "slippageTooHighTitle": "Slippage is high",
     "slippageTooHighDescription": "Slippage on this transfer is high. Try a smaller amount, or accept the risk of loss to proceed.",
     "priceImpactTooHighTitle": "Price impact is high",

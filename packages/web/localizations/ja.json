@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "はい、これにより資金が大きく失われる可能性があることを理解した上で続行します。",
     "quoteUpdatedTitle": "見積もりが更新されました",
     "quoteUpdatedCaption": "確認後に見積もりが変更されました。更新された内容を確認のうえ、もう一度確定してください。",
+    "quoteExpiredTitle": "見積もりの有効期限が切れました",
+    "quoteExpiredDescription": "この送金は失敗する可能性があります。自動的に更新されない場合は、前の画面に戻って金額を変更してください。",
     "slippageTooHighTitle": "スリッページが高くなっています",
     "slippageTooHighDescription": "この送金のスリッページが高くなっています。金額を減らすか、損失のリスクを受け入れて続行してください。",
     "priceImpactTooHighTitle": "価格への影響が大きくなっています",

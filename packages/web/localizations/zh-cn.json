@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "是的，我明白这可能导致资金严重损失，我仍希望继续。",
     "quoteUpdatedTitle": "报价已更新",
     "quoteUpdatedCaption": "自您确认以来报价已发生变化。请查看更新后的详情并重新确认。",
+    "quoteExpiredTitle": "您的报价已过期",
+    "quoteExpiredDescription": "此转账可能会失败。如果没有自动更新，请返回修改金额。",
     "slippageTooHighTitle": "滑点偏高",
     "slippageTooHighDescription": "此转账的滑点偏高。请尝试较小的金额，或接受损失风险以继续。",
     "priceImpactTooHighTitle": "价格影响偏高",

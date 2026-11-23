@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "Oui, je comprends que cela pourrait entraîner une perte importante de fonds et je souhaite continuer.",
     "quoteUpdatedTitle": "Cotation mise à jour",
     "quoteUpdatedCaption": "La cotation a changé depuis votre confirmation. Veuillez vérifier les détails mis à jour et confirmer à nouveau.",
+    "quoteExpiredTitle": "Votre cotation a expiré",
+    "quoteExpiredDescription": "Ce transfert peut échouer. S'il ne se met pas à jour automatiquement, revenez en arrière pour modifier le montant.",
     "slippageTooHighTitle": "Le slippage est élevé",
     "slippageTooHighDescription": "Le slippage de ce transfert est élevé. Essayez un montant plus faible ou acceptez le risque de perte pour continuer.",
     "priceImpactTooHighTitle": "L'impact sur le prix est élevé",

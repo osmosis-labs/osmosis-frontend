@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "Da, înțeleg că acest lucru ar putea cauza pierderi mari de fonduri și doresc să continui.",
     "quoteUpdatedTitle": "Cotație actualizată",
     "quoteUpdatedCaption": "Cotația s-a schimbat de la confirmarea dvs. Verificați detaliile actualizate și confirmați din nou.",
+    "quoteExpiredTitle": "Cotația dvs. a expirat",
+    "quoteExpiredDescription": "Acest transfer poate eșua. Dacă nu se actualizează automat, reveniți pentru a modifica suma.",
     "slippageTooHighTitle": "Slippage-ul este mare",
     "slippageTooHighDescription": "Slippage-ul pentru acest transfer este mare. Încercați o sumă mai mică sau acceptați riscul de pierdere pentru a continua.",
     "priceImpactTooHighTitle": "Impactul asupra prețului este mare",

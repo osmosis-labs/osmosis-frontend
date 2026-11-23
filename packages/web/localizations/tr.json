@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "Evet, bunun ciddi fon kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
     "quoteUpdatedTitle": "Teklif güncellendi",
     "quoteUpdatedCaption": "Onayınızdan sonra teklif değişti. Lütfen güncellenen ayrıntıları inceleyip yeniden onaylayın.",
+    "quoteExpiredTitle": "Teklifinizin süresi doldu",
+    "quoteExpiredDescription": "Bu transfer başarısız olabilir. Otomatik olarak güncellenmezse, tutarı değiştirmek için geri dönün.",
     "slippageTooHighTitle": "Kayma yüksek",
     "slippageTooHighDescription": "Bu transfer için kayma yüksek. Daha küçük bir tutar deneyin veya devam etmek için kayıp riskini kabul edin.",
     "priceImpactTooHighTitle": "Fiyat etkisi yüksek",

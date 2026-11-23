@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "Sim, entendo que isso pode causar uma grande perda de fundos e desejo continuar.",
     "quoteUpdatedTitle": "Cotação atualizada",
     "quoteUpdatedCaption": "A cotação mudou desde a sua confirmação. Revise os detalhes atualizados e confirme novamente.",
+    "quoteExpiredTitle": "Sua cotação expirou",
+    "quoteExpiredDescription": "Esta transferência pode falhar. Se não for atualizada automaticamente, volte para alterar o valor.",
     "slippageTooHighTitle": "O deslizamento está alto",
     "slippageTooHighDescription": "O deslizamento desta transferência está alto. Tente um valor menor ou aceite o risco de perda para continuar.",
     "priceImpactTooHighTitle": "O impacto no preço está alto",

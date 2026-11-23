@@ -1007,6 +1007,8 @@
     "lossAcknowledgement": "Tak, rozumiem, że może to spowodować znaczną utratę środków i chcę kontynuować.",
     "quoteUpdatedTitle": "Wycena zaktualizowana",
     "quoteUpdatedCaption": "Wycena zmieniła się od czasu potwierdzenia. Sprawdź zaktualizowane szczegóły i potwierdź ponownie.",
+    "quoteExpiredTitle": "Twoja wycena wygasła",
+    "quoteExpiredDescription": "Ten transfer może się nie powieść. Jeśli nie zaktualizuje się automatycznie, wróć, aby zmienić kwotę.",
     "slippageTooHighTitle": "Poślizg jest wysoki",
     "slippageTooHighDescription": "Poślizg dla tego transferu jest wysoki. Spróbuj mniejszej kwoty lub zaakceptuj ryzyko straty, aby kontynuować.",
     "priceImpactTooHighTitle": "Wpływ na cenę jest wysoki",
