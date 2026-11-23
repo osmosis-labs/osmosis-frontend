@@ -438,8 +438,10 @@ export const useOrderbookOrders = ({
   };
 };
 
-/** Delays (ms) after a confirmed order at which the user's orders refetch. */
-const ORDER_REFETCH_DELAYS_MS = [0, 1500, 4000];
+/** Delays (ms) after a confirmed order at which the user's orders refetch.
+ *  SQS has the order about a block after it lands, so the first refetch waits
+ *  a second; the later ones cover a slower SQS. */
+const ORDER_REFETCH_DELAYS_MS = [1000, 2000, 4000];
 
 /**
  * Refetches the user's orders wherever a list of them is mounted, so a new
