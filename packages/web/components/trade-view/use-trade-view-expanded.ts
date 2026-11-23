@@ -5,7 +5,7 @@ import { Breakpoint, useWindowSize } from "~/hooks";
 /**
  * Whether the trade widget is expanded into the trade view. The state lives
  * in the URL (`expanded=true`) so it can be shared and survives reloads.
- * The expanded view is desktop only: below the `xl` breakpoint it is neither
+ * The expanded view is desktop only: at 1152px and narrower it is neither
  * offered nor shown, even if the URL asks for it.
  */
 /**
@@ -19,10 +19,11 @@ export function useTradeViewExpandedParam() {
 
 export function useTradeViewExpanded() {
   const [expandedParam, setExpanded] = useTradeViewExpandedParam();
-  const { isMobile: isBelowDesktop } = useWindowSize(Breakpoint.xl);
+  const { isMobile: isBelowDesktop } = useWindowSize(Breakpoint.xlg);
 
   return {
     expanded: expandedParam && !isBelowDesktop,
+    expandedParam,
     isExpandable: !isBelowDesktop,
     setExpanded,
   };

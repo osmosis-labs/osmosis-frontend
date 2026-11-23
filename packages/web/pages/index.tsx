@@ -35,9 +35,9 @@ const Home = () => {
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
-  // Expanded, the trade tool lays out chart, widget and book side by side.
-  // The view is desktop only; the `xl:` classes below undo the wide layout
-  // at 1280px and narrower, where the trade tool ignores the flag.
+  // Expanded, the trade tool lays out chart, widget and book.
+  // The view is desktop only; the `1.5lg:` classes below undo the wide
+  // layout at 1152px and narrower, where the trade tool ignores the flag.
   const [expanded] = useTradeViewExpandedParam();
 
   return (
@@ -73,7 +73,7 @@ const Home = () => {
             className={classNames(
               "flex flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5",
               expanded
-                ? "w-full min-w-0 px-8 xl:w-[512px] xl:px-0"
+                ? "w-full min-w-0 px-8 xl:px-4 1.5lg:w-[512px] 1.5lg:px-0"
                 : "w-[512px]"
             )}
           >
