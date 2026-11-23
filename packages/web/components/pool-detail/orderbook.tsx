@@ -27,6 +27,7 @@ import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { Spinner } from "~/components/loaders/spinner";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
+import { TRADE_PAIR_QUERY_OPTIONS } from "~/components/place-limit-tool/defaults";
 import {
   OrderTypeSelector,
   TRADE_TYPES,
@@ -76,18 +77,23 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
   const { isLoading: isWalletLoading } = useWalletSelect();
   const featureFlags = useFeatureFlags();
 
-  // Buy / Sell tab — write to URL on mount so PlaceLimitTool picks up the default
+  // Buy / Sell tab, written to the URL on mount so PlaceLimitTool picks up
+  // the default. Kept in the URL even when it equals the default: nuqs would
+  // otherwise drop it, and PlaceLimitTool reads a missing tab as Sell.
   const [tradeTab, setTradeTab] = useQueryState(
     "tab",
-    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
-      SwapToolTab.BUY
-    )
+    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab))
+      .withDefault(SwapToolTab.BUY)
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
 
-  // Default to limit order type on this page
+  // Default to limit order type on this page, kept in the URL for the same
+  // reason (a missing type reads as market).
   const [, setTradeType] = useQueryState(
     "type",
-    parseAsStringLiteral(TRADE_TYPES).withDefault("limit")
+    parseAsStringLiteral(TRADE_TYPES)
+      .withDefault("limit")
+      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
   );
 
   useEffect(() => {
@@ -380,7 +386,8 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
                       )?.currency.coinDenom
                     }
                     onPriceSelect={(p) => setSelectedPrice(String(p))}
-                    isLive={!isDepthRefetching}
+                    // A failed poll keeps the last book on screen, but not as live.
+                    isLive={!isDepthRefetching && !isDepthError}
                     isRefetching={isDepthRefetching}
                     isLoading={isDepthLoading && !depthData}
                     isError={isDepthError || depthData?.unavailable}
