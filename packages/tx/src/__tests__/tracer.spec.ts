@@ -200,3 +200,18 @@ it("rejects new lookups and subscriptions once every endpoint has failed", async
   await expect(tracer.subscribeTx(Uint8Array.from([1]))).rejects.toBe(error);
   tracer.close();
 });
+
+it("rejects an unrepresentable query without leaving a reconnect listener", async () => {
+  const tracer = new TestTracer();
+  const addEventListener = jest.spyOn(tracer, "addEventListener");
+
+  await expect(tracer.traceTx({ "message.sender": "O'Brien" })).rejects.toThrow(
+    "invalid character"
+  );
+  await expect(
+    tracer.subscribeTx({ "message.sender": "O'Brien" })
+  ).rejects.toThrow("invalid character");
+  expect(addEventListener).not.toHaveBeenCalled();
+  // A later reconnect must not throw from a leftover listener.
+  expect(() => tracer.reopen()).not.toThrow();
+});

@@ -17,11 +17,24 @@ import type { CW20Currency, Secret20Currency } from "@osmosis-labs/unit";
  */
 
 const tokensDir = "/tokens/generated";
+
+/** Lowercased extension of the URL's last path segment, ignoring query and hash. */
+export function getImageFileExtension(imageUrl: string) {
+  let pathname: string;
+  try {
+    pathname = new URL(imageUrl).pathname;
+  } catch {
+    pathname = imageUrl.split(/[?#]/)[0];
+  }
+  const lastSegment = pathname.split("/").pop() ?? "";
+  const dotIndex = lastSegment.lastIndexOf(".");
+  return dotIndex >= 0 ? lastSegment.slice(dotIndex + 1).toLowerCase() : "";
+}
+
 export function getImageRelativeFilePath(imageUrl: string, symbol: string) {
-  const urlParts = imageUrl.split("/");
-  const fileNameSplit = urlParts[urlParts.length - 1].split(".");
-  const fileType = fileNameSplit[fileNameSplit.length - 1].toLowerCase();
-  return `${tokensDir}/${symbol.toLowerCase()}.${fileType}`;
+  return `${tokensDir}/${symbol.toLowerCase()}.${getImageFileExtension(
+    imageUrl
+  )}`;
 }
 
 /** Adds the chain-registry `fees` and `staking` fields CosmosKit reads when suggesting chains. */

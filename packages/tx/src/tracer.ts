@@ -20,6 +20,26 @@ type Listeners = {
   [K in keyof TxEventMap]?: TxEventMap[K][];
 };
 
+/**
+ * Joins `key='value'` conditions for a Tendermint event query. CometBFT's
+ * query grammar has no escape for `'` inside a string literal, so values
+ * containing one (or a line break) are rejected rather than sent malformed.
+ */
+function formatTxQueryConditions(
+  query: Record<string, string | number | boolean>
+): string {
+  return Object.entries(query)
+    .map(([key, value]) => {
+      if (typeof value === "string" && /['\r\n]/.test(value)) {
+        throw new Error(
+          `TxTracer: invalid character in query value for "${key}"`
+        );
+      }
+      return `${key}=${typeof value === "string" ? `'${value}'` : value}`;
+    })
+    .join(" AND ");
+}
+
 /** How often {@link TxTracer.traceTx} looks the tx up while it has no live
  *  subscription. */
 const TRACE_POLL_INTERVAL_MS = 3000;
@@ -463,6 +483,16 @@ export class TxTracer {
     query: Uint8Array | Record<string, string | number | boolean>,
     { timeoutMs }: { timeoutMs?: number } = {}
   ): Promise<any> {
+    // Reject invalid queries before any listener or timer is installed, so
+    // nothing is left registered (and later thrown from `onOpen`).
+    if (!(query instanceof Uint8Array)) {
+      try {
+        formatTxQueryConditions(query);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }
+
     return new Promise<any>((resolve, reject) => {
       let settled = false;
       let pollTimeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -549,29 +579,16 @@ export class TxTracer {
         this.sendSubscribeTxRpc(id, params);
       });
     } else {
+      let conditions: string;
+      try {
+        conditions = formatTxQueryConditions(query);
+      } catch (e) {
+        return Promise.reject(e);
+      }
       const id = this.createRandomId();
 
       const params = {
-        query:
-          `tm.event='Tx' AND ` +
-          Object.keys(query)
-            .map((key) => {
-              return {
-                key,
-                value: query[key],
-              };
-            })
-            .map((obj) => {
-              if (typeof obj.value === "string" && /['\r\n]/.test(obj.value)) {
-                throw new Error(
-                  `TxTracer: invalid character in query value for "${obj.key}"`
-                );
-              }
-              return `${obj.key}=${
-                typeof obj.value === "string" ? `'${obj.value}'` : obj.value
-              }`;
-            })
-            .join(" AND "),
+        query: `tm.event='Tx' AND ${conditions}`,
         page: "1",
         per_page: "1",
         order_by: "asc",
@@ -615,25 +632,14 @@ export class TxTracer {
         prove: false,
       });
     } else {
+      let conditions: string;
+      try {
+        conditions = formatTxQueryConditions(query);
+      } catch (e) {
+        return Promise.reject(e);
+      }
       const params = {
-        query: Object.keys(query)
-          .map((key) => {
-            return {
-              key,
-              value: query[key],
-            };
-          })
-          .map((obj) => {
-            if (typeof obj.value === "string" && /['\r\n]/.test(obj.value)) {
-              throw new Error(
-                `TxTracer: invalid character in query value for "${obj.key}"`
-              );
-            }
-            return `${obj.key}=${
-              typeof obj.value === "string" ? `'${obj.value}'` : obj.value
-            }`;
-          })
-          .join(" AND "),
+        query: conditions,
         page: "1",
         per_page: "1",
         order_by: "asc",
