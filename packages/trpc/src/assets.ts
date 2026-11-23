@@ -582,8 +582,8 @@ export const assetsRouter = createTRPCRouter({
           sort: sortInput,
           categories,
           includePreview,
-          // only affects ordering while searching without a column sort
-          watchListDenoms: search && !sortInput ? watchListDenoms : undefined,
+          // affects ordering whenever a search falls back to relevance order
+          watchListDenoms: search ? watchListDenoms : undefined,
         });
 
         const isPriceSort =

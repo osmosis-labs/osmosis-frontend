@@ -19,7 +19,6 @@ type TrpcRouter =
 const LOCAL_PUBLIC_CDN_MAX_AGE_SECONDS: Record<string, number> = {
   "cms.getSwapAdBanners": 300,
   "cms.getTokenInfos": 300,
-  "params.getTransmuterParams": 60,
 };
 
 /**
