@@ -38,11 +38,20 @@ const Pool: FunctionComponent = () => {
     useMemo(
       () => ({
         title: t("pool.title", { id: poolId }),
-        ctas: [
-          { label: t("pool.swap"), onClick: () => setShowTradeModal(true) },
-        ],
+        // An orderbook pool's page trades its pair with its own Buy and Sell
+        // widget, so it has no Trade Pair button. The button waits for the
+        // pool to load, so it never flashes up on an orderbook pool's page.
+        ctas:
+          pool && !isOrderbookPool
+            ? [
+                {
+                  label: t("pool.swap"),
+                  onClick: () => setShowTradeModal(true),
+                },
+              ]
+            : [],
       }),
-      [poolId, t]
+      [poolId, t, pool, isOrderbookPool]
     )
   );
 
@@ -96,7 +105,7 @@ const Pool: FunctionComponent = () => {
         />
       )}
       <NextSeo title={t("seo.pool.title", { id: poolId })} />
-      {pool && Boolean(poolId) && (
+      {pool && Boolean(poolId) && !isOrderbookPool && (
         <TradeTokens
           className="md:!p-0"
           isOpen={showTradeModal}
