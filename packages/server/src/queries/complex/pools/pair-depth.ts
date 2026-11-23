@@ -344,6 +344,16 @@ async function computePairDepth({
       poolId,
       reason: ticksResult.reason,
     });
+    // Ticks not ingested yet (503) or malformed (500) may clear on the next
+    // poll: throw, so neither the cache nor React Query replaces the last
+    // good book with "unavailable". With no book yet, the client shows the
+    // error as unavailable. A pool SQS doesn't know as an orderbook (404)
+    // won't change, so it is returned and cached as unavailable.
+    if (ticksResult.reason !== "not-orderbook") {
+      throw new Error(
+        `SQS orderbook ticks unavailable for pool ${poolId}: ${ticksResult.reason}`
+      );
+    }
     return { ...empty, unavailable: true };
   }
 
@@ -382,11 +392,13 @@ async function computePairDepth({
     quoteDecimals,
   });
 
-  // The contract's pointers can sit past real liquidity, so the spread and
-  // mid come from the best levels when the book has any.
-  if (rawBids.length > 0 || rawAsks.length > 0) {
-    ({ bidPrice, askPrice, midPrice } = bestPricesFromLevels(rawBids, rawAsks));
-  }
+  // The contract's pointers can sit past real liquidity, so best bid and ask
+  // always come from the levels: an empty side has no best price. Only an
+  // entirely empty book keeps the pointers' mid, to size grouping options.
+  const best = bestPricesFromLevels(rawBids, rawAsks);
+  bidPrice = best.bidPrice;
+  askPrice = best.askPrice;
+  if (rawBids.length > 0 || rawAsks.length > 0) midPrice = best.midPrice;
 
   // Asks: cumulative builds from outermost inward so fill bar grows toward mid.
   // aggregateLevels handles this internally when bucketing; do it manually otherwise.

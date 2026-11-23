@@ -134,7 +134,8 @@ export const OrderBook: FunctionComponent<{
           baseSymbol={baseSymbol}
           quoteSymbol={quoteSymbol}
           onPriceSelect={onPriceSelect}
-          isLive={!isRefetching}
+          // A failed poll keeps the last book on screen, but not as live.
+          isLive={!isRefetching && !isError}
           isRefetching={isRefetching}
           isLoading={(isLoading || !poolId) && !depthData}
           isError={isError || Boolean(depthData?.unavailable)}

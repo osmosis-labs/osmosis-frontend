@@ -139,6 +139,13 @@ export const OrderbookYourOrders: FunctionComponent<{
           <p className="caption text-osmoverse-500">
             {t("pool.orderbookPool.noOrdersDesc")}
           </p>
+          {/* The wallet's orders are paged across every book, so this book's
+              orders can all be on a later page. */}
+          <LoadMoreButton
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+          />
         </div>
       ) : (
         <OrdersTable
@@ -233,21 +240,32 @@ const OrdersTable: FunctionComponent<{
           })}
         </tbody>
       </table>
-      {hasNextPage && (
-        <div className="flex justify-center pt-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fetchNextPage?.()}
-            disabled={isFetchingNextPage}
-          >
-            {isFetchingNextPage ? <Spinner className="h-4 w-4" /> : "Load more"}
-          </Button>
-        </div>
-      )}
+      <LoadMoreButton
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+      />
     </div>
   );
 };
+
+const LoadMoreButton: FunctionComponent<{
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  fetchNextPage?: () => void;
+}> = ({ hasNextPage, isFetchingNextPage, fetchNextPage }) =>
+  hasNextPage ? (
+    <div className="flex justify-center pt-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => fetchNextPage?.()}
+        disabled={isFetchingNextPage}
+      >
+        {isFetchingNextPage ? <Spinner className="h-4 w-4" /> : "Load more"}
+      </Button>
+    </div>
+  ) : null;
 
 const PoolOrderGroupHeader: FunctionComponent<{
   group: "filled" | "pending" | "past";
