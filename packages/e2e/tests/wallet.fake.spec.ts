@@ -402,7 +402,10 @@ test.describe("Wallet flows with a fake wallet", () => {
   test("Stake OSMO with a new validator squad", async () => {
     await page.goto("/stake");
     await page.locator("main input").first().fill("1");
-    await page.getByText("Stake", { exact: true }).last().click();
+    await page
+      .locator("main")
+      .getByRole("button", { name: "Stake", exact: true })
+      .click();
     // An address with no validator set builds a squad first; setting it and
     // staking is one tx.
     const modal = page.locator(".ReactModal__Content").last();

@@ -5,10 +5,13 @@
  * determined script; method allowlists and body caps bound the rest.
  */
 
+const TRUSTED_FORWARDED_HOST =
+  /^(?:(?:[a-z0-9-]+\.)*osmosis\.zone|(?:[a-z0-9-]+\.)+workers\.dev|(?:localhost|127\.0\.0\.1)(?::\d+)?)$/;
+
 /** The origins this request could legitimately have come from: the scheme
- *  the browser used (forwarded by the CDN) with the request's own
- *  host, including the public host in `x-forwarded-host`. Localhost also
- *  accepts plain http for development. */
+ *  the browser used with the request's own host. `x-forwarded-host` is
+ *  accepted only for known first-party/preview/local hosts so a spoofed
+ *  header cannot add an attacker's domain to the trusted set. */
 function trustedOrigins(req: Request): Set<string> {
   let requestUrl: URL | undefined;
   try {
@@ -16,16 +19,31 @@ function trustedOrigins(req: Request): Set<string> {
   } catch {
     // req.url may be relative in tests
   }
+  const forwardedProto = req.headers
+    .get("x-forwarded-proto")
+    ?.split(",")[0]
+    ?.trim()
+    .toLowerCase();
   const scheme =
-    req.headers.get("x-forwarded-proto")?.split(",")[0]!.trim().toLowerCase() ??
-    requestUrl?.protocol.replace(":", "") ??
-    "https";
+    forwardedProto === "https"
+      ? "https"
+      : (requestUrl?.protocol.replace(":", "") ?? "https");
 
   const hosts = new Set<string>();
-  for (const header of ["x-forwarded-host", "host"]) {
-    const value = req.headers.get(header);
-    if (value) hosts.add(value.split(",")[0]!.trim().toLowerCase());
+  const forwardedHost = req.headers
+    .get("x-forwarded-host")
+    ?.split(",")[0]
+    ?.trim()
+    .toLowerCase();
+  if (forwardedHost && TRUSTED_FORWARDED_HOST.test(forwardedHost)) {
+    hosts.add(forwardedHost);
   }
+  const hostHeader = req.headers
+    .get("host")
+    ?.split(",")[0]
+    ?.trim()
+    .toLowerCase();
+  if (hostHeader) hosts.add(hostHeader);
   if (requestUrl) hosts.add(requestUrl.host.toLowerCase());
 
   const origins = new Set<string>();

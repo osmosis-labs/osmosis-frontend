@@ -128,7 +128,7 @@ export async function getAssetPrice({
       } not found in asset list registry.`
     );
 
-  const key = `asset-price-${foundAsset.coinMinimalDenom}`;
+  const key = `asset-price-${currency}-${foundAsset.coinMinimalDenom}`;
   const failure = priceFailures.get(key);
   if (failure) throw failure;
 

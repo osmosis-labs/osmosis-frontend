@@ -20,6 +20,26 @@ type Listeners = {
   [K in keyof TxEventMap]?: TxEventMap[K][];
 };
 
+/**
+ * Joins `key='value'` conditions for a Tendermint event query. CometBFT's
+ * query grammar has no escape for `'` inside a string literal, so values
+ * containing one (or a line break) are rejected rather than sent malformed.
+ */
+function formatTxQueryConditions(
+  query: Record<string, string | number | boolean>
+): string {
+  return Object.entries(query)
+    .map(([key, value]) => {
+      if (typeof value === "string" && /['\r\n]/.test(value)) {
+        throw new Error(
+          `TxTracer: invalid character in query value for "${key}"`
+        );
+      }
+      return `${key}=${typeof value === "string" ? `'${value}'` : value}`;
+    })
+    .join(" AND ");
+}
+
 /** How often {@link TxTracer.traceTx} looks the tx up while it has no live
  *  subscription. */
 const TRACE_POLL_INTERVAL_MS = 3000;
@@ -136,18 +156,35 @@ export class TxTracer {
   }
 
   open() {
+    this.isManualClose = false;
     const wsUrl = this.getWsEndpoint();
     if (process.env.NODE_ENV !== "production") {
       console.log(`[TxTracer] Connecting to WebSocket: ${wsUrl}`);
     }
 
-    this.ws = this.options.wsObject
+    const ws = this.options.wsObject
       ? new this.options.wsObject(wsUrl)
       : new WebSocket(wsUrl);
-    this.ws.onopen = this.onOpen;
-    this.ws.onmessage = this.onMessage;
-    this.ws.onclose = this.onClose;
-    this.ws.onerror = this.onError;
+    this.ws = ws;
+    ws.onopen = (e) => {
+      if (ws !== this.ws || this.isManualClose) {
+        ws.close();
+        return;
+      }
+      this.onOpen(e);
+    };
+    ws.onmessage = (e) => {
+      if (ws !== this.ws) return;
+      this.onMessage(e);
+    };
+    ws.onclose = (e) => {
+      if (ws !== this.ws) return;
+      this.onClose(e);
+    };
+    ws.onerror = (e) => {
+      if (ws !== this.ws) return;
+      this.onError(e);
+    };
   }
 
   close() {
@@ -275,6 +312,12 @@ export class TxTracer {
   }
 
   protected readonly onOpen = (e: Event) => {
+    // If close() was called while CONNECTING, honor it instead of re-arming reconnects.
+    if (this.isManualClose) {
+      this.ws.close();
+      return;
+    }
+
     if (process.env.NODE_ENV !== "production") {
       console.log(`[TxTracer] WebSocket connected successfully to ${this.url}`);
     }
@@ -282,7 +325,6 @@ export class TxTracer {
     // Reset reconnect state on successful connection
     this.reconnectAttempts = 0;
     this.cycleCount = 0;
-    this.isManualClose = false;
 
     if (this.newBlockSubscribes.length > 0) {
       this.sendSubscribeBlockRpc();
@@ -441,6 +483,16 @@ export class TxTracer {
     query: Uint8Array | Record<string, string | number | boolean>,
     { timeoutMs }: { timeoutMs?: number } = {}
   ): Promise<any> {
+    // Reject invalid queries before any listener or timer is installed, so
+    // nothing is left registered (and later thrown from `onOpen`).
+    if (!(query instanceof Uint8Array)) {
+      try {
+        formatTxQueryConditions(query);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }
+
     return new Promise<any>((resolve, reject) => {
       let settled = false;
       let pollTimeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -527,24 +579,16 @@ export class TxTracer {
         this.sendSubscribeTxRpc(id, params);
       });
     } else {
+      let conditions: string;
+      try {
+        conditions = formatTxQueryConditions(query);
+      } catch (e) {
+        return Promise.reject(e);
+      }
       const id = this.createRandomId();
 
       const params = {
-        query:
-          `tm.event='Tx' AND ` +
-          Object.keys(query)
-            .map((key) => {
-              return {
-                key,
-                value: query[key],
-              };
-            })
-            .map((obj) => {
-              return `${obj.key}=${
-                typeof obj.value === "string" ? `'${obj.value}'` : obj.value
-              }`;
-            })
-            .join(" AND "),
+        query: `tm.event='Tx' AND ${conditions}`,
         page: "1",
         per_page: "1",
         order_by: "asc",
@@ -588,20 +632,14 @@ export class TxTracer {
         prove: false,
       });
     } else {
+      let conditions: string;
+      try {
+        conditions = formatTxQueryConditions(query);
+      } catch (e) {
+        return Promise.reject(e);
+      }
       const params = {
-        query: Object.keys(query)
-          .map((key) => {
-            return {
-              key,
-              value: query[key],
-            };
-          })
-          .map((obj) => {
-            return `${obj.key}=${
-              typeof obj.value === "string" ? `'${obj.value}'` : obj.value
-            }`;
-          })
-          .join(" AND "),
+        query: conditions,
         page: "1",
         per_page: "1",
         order_by: "asc",

@@ -156,7 +156,6 @@ export async function getRouteTokenInGivenOut({
     ...quote,
     split: makeDisplayableInGivenOutSplit(quote.split, assetLists),
     // supplementary data with display types
-    name,
     timeMs,
     amount: new CoinPretty(tokenInAsset, quote.amount),
     priceImpactTokenOut: quote.priceImpactTokenOut

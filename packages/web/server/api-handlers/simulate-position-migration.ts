@@ -24,6 +24,19 @@ import { readJsonBody } from "~/server/api-handlers/request-body";
  * Exists as an endpoint for the same reason as the gas route: many nodes do
  * not send CORS headers, so the browser cannot query simulate directly.
  */
+const MAX_MESSAGES = 50;
+
+function isEncodedAny(
+  value: unknown
+): value is { typeUrl: string; value: string } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as { typeUrl?: unknown }).typeUrl === "string" &&
+    typeof (value as { value?: unknown }).value === "string"
+  );
+}
+
 export async function simulatePositionMigrationHandler(req: Request) {
   // Body content is sent from the client, so this has to be a POST.
   if (req.method !== "POST") {
@@ -31,17 +44,26 @@ export async function simulatePositionMigrationHandler(req: Request) {
   }
 
   const parsed = await readJsonBody<{
-    chainId: string;
-    messages: { typeUrl: string; value: string }[];
-    bech32Address: string;
+    chainId?: unknown;
+    messages?: unknown;
+    bech32Address?: unknown;
   }>(req);
   if ("errorResponse" in parsed) return parsed.errorResponse;
 
-  const { chainId, messages, bech32Address } = parsed.body;
+  const { chainId, messages, bech32Address } = parsed.body ?? {};
 
-  if (!chainId || !messages?.length || !bech32Address) {
+  if (
+    typeof chainId !== "string" ||
+    chainId.length === 0 ||
+    typeof bech32Address !== "string" ||
+    !/^[a-z0-9]{1,32}1[a-z0-9]{1,83}$/.test(bech32Address) ||
+    !Array.isArray(messages) ||
+    messages.length === 0 ||
+    messages.length > MAX_MESSAGES ||
+    !messages.every(isEncodedAny)
+  ) {
     return Response.json(
-      { error: "Missing required parameters" },
+      { error: "Invalid or missing required parameters" },
       { status: 400 }
     );
   }
