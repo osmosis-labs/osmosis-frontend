@@ -966,6 +966,52 @@ describe("SkipBridgeProvider", () => {
       expect(last).toEqual(first);
     });
 
+    it("takes an alloy's family candidates from its transmuter members only", async () => {
+      const allAssets = MockAssetLists.flatMap(({ assets }) => assets);
+      const alloy = allAssets.find(
+        (a) =>
+          a.coinMinimalDenom ===
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
+      )!;
+      // USDC.axl: same variant family, counterparties on Axelar and Ethereum.
+      const nonMember = allAssets.find(
+        (a) =>
+          a.coinMinimalDenom ===
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858"
+      )!;
+      const assetLists = [
+        {
+          ...MockAssetLists[0],
+          assets: [
+            { ...alloy, isAlloyed: true, counterparty: [] },
+            { ...nonMember, variantGroupKey: alloy.variantGroupKey },
+          ],
+        },
+      ];
+      const request = {
+        chain: { chainId: "osmosis-1", chainType: "cosmos" as const },
+        asset: { denom: "USDC", address: alloy.coinMinimalDenom, decimals: 6 },
+        direction: "withdraw" as const,
+      };
+      const chainIds = async (extra: Partial<BridgeProviderContext>) =>
+        (
+          await new SkipBridgeProvider({
+            ...ctx,
+            assetLists,
+            ...extra,
+          }).getSupportedAssets(request)
+        ).map(({ chainId }) => chainId);
+
+      // Membership unknown: the whole variant family, as before.
+      expect(await chainIds({})).toContain(1);
+      // USDC.axl is not a member, so its counterparties are not offered.
+      const memberOnly = await chainIds({
+        getAlloyMemberDenoms: jest.fn().mockResolvedValue(["uosmo"]),
+      });
+      expect(memberOnly).not.toContain(1);
+      expect(memberOnly).not.toContain("axelar-dojo-1");
+    });
+
     it("returns Solana as an in-app quote chain for withdrawals of SPL-counterparty assets", async () => {
       const sourceVariants = await provider.getSupportedAssets({
         allowSolana: true,

@@ -20,6 +20,11 @@ export interface BridgeProviderContext {
    *  absent or failing, route-checking of withdraw destinations is skipped. */
   getAssetUsdPrice?(coinMinimalDenom: string): Promise<Dec>;
 
+  /** Minimal denoms an alloy's transmuter holds and takes in (its members,
+   *  minus corrupted ones), by alloyed denom. Optional: when absent, failing
+   *  or `undefined`, alloy route discovery falls back to the variant family. */
+  getAlloyMemberDenoms?(alloyedDenom: string): Promise<string[] | undefined>;
+
   /** Provides current timeout height for a chain of given chainId.
    *  If a destination address is provided, the bech32Prefix will be used to get the chain. */
   getTimeoutHeight(params: {

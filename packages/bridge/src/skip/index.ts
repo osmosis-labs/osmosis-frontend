@@ -53,6 +53,7 @@ import {
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
 import { getSolanaTxFeeLamports, SOLANA_NATIVE_DENOM } from "../utils/solana";
+import { getAlloyTransferEndpoints } from "./alloy-endpoints";
 import { SkipApiClient } from "./client";
 import { SkipProviderId } from "./constants";
 import {
@@ -999,13 +1000,27 @@ export class SkipBridgeProvider implements BridgeProvider {
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
+        // For an alloy, only the variants its transmuter holds: the variant
+        // family also keeps assets the pool dropped long ago, and their
+        // counterparties are mostly dead routes Skip is slow to refuse.
+        const memberDenoms = assetListAsset.isAlloyed
+          ? await this.getAlloyMemberDenoms(assetListAsset.coinMinimalDenom)
+          : undefined;
         const variantAssets = this.ctx.assetLists.flatMap(({ assets }) =>
-          assets.filter(
-            (asset) => asset.variantGroupKey === assetListAsset.variantGroupKey
+          assets.filter((asset) =>
+            memberDenoms
+              ? memberDenoms.has(asset.coinMinimalDenom)
+              : asset.variantGroupKey === assetListAsset.variantGroupKey
           )
         );
         counterparties.push(
-          ...variantAssets.flatMap((asset) => asset.counterparty)
+          ...variantAssets.flatMap((asset) => asset.counterparty),
+          ...(assetListAsset.isAlloyed
+            ? getAlloyTransferEndpoints(
+                assetListAsset.coinMinimalDenom,
+                direction
+              )
+            : [])
         );
       }
 
@@ -1212,6 +1227,22 @@ export class SkipBridgeProvider implements BridgeProvider {
       );
       return [];
     }
+  }
+
+  /**
+   * The alloy's transmuter members, or undefined when unknown (no lookup in
+   * the context, a failure or a timeout), in which case route discovery falls
+   * back to the variant family as before.
+   */
+  protected async getAlloyMemberDenoms(
+    alloyedDenom: string
+  ): Promise<Set<string> | undefined> {
+    if (!this.ctx.getAlloyMemberDenoms) return undefined;
+    const members = await withTimeout(
+      this.ctx.getAlloyMemberDenoms(alloyedDenom),
+      ROUTE_PROBE_REQUEST_TIMEOUT_MS
+    ).catch(() => undefined);
+    return members?.length ? new Set(members) : undefined;
   }
 
   /**
