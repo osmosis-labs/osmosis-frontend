@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import { captureErrorAndReturn } from "../../../utils/error";
 import { search, SearchSchema } from "../../../utils/search";
+import { getAssetListIndex } from "./asset-list-index";
 import { isAssetInCategories } from "./categories";
 
 export const AssetFilterSchema = z.object({
@@ -123,31 +124,30 @@ function filterAssetList(
     findMinDenomOrSymbol?: string;
   } & AssetFilter
 ): MinimalAsset[] {
-  // Create new array with just assets
-  const coinMinimalDenomSet = new Set<string>();
-
-  const listedAssets = assetLists
-    .flatMap(({ assets }) => assets)
-    .filter((asset) => params.includePreview || !asset.preview);
-
-  let assetListAssets = listedAssets.filter((asset) => {
-    if (params.findMinDenomOrSymbol) {
-      return (
-        params.findMinDenomOrSymbol.toUpperCase() ===
-          asset.coinMinimalDenom.toUpperCase() ||
-        params.findMinDenomOrSymbol.toUpperCase() === asset.symbol.toUpperCase()
-      );
-    }
-
+  let assetListAssets: AssetListAsset[];
+  if (params.findMinDenomOrSymbol) {
+    // Exact match on base denom or symbol, case-insensitive, every match in list order.
+    // Indexed since this runs per pool reserve and per coin on most requests.
+    const matches =
+      getAssetListIndex(assetLists).byUpperDenomOrSymbol.get(
+        params.findMinDenomOrSymbol.toUpperCase()
+      ) ?? [];
+    assetListAssets = params.includePreview
+      ? matches
+      : matches.filter((asset) => !asset.preview);
+  } else {
     // Ensure denoms are unique on Osmosis chain
     // In the case the asset list has the same asset twice
-    if (coinMinimalDenomSet.has(asset.coinMinimalDenom)) {
-      return false;
-    } else {
-      coinMinimalDenomSet.add(asset.coinMinimalDenom);
-      return true;
-    }
-  });
+    const coinMinimalDenomSet = new Set<string>();
+    assetListAssets = assetLists
+      .flatMap(({ assets }) => assets)
+      .filter((asset) => {
+        if (!params.includePreview && asset.preview) return false;
+        if (coinMinimalDenomSet.has(asset.coinMinimalDenom)) return false;
+        coinMinimalDenomSet.add(asset.coinMinimalDenom);
+        return true;
+      });
+  }
 
   // Search raw asset list before reducing type to minimal Asset type
   if (params.search && !params.findMinDenomOrSymbol) {

@@ -24,6 +24,9 @@ class TestTracer extends TxTracer {
   reopen() {
     this.onOpen({} as Event);
   }
+  openListenerCount() {
+    return this.listeners.open?.length ?? 0;
+  }
 }
 
 it("accepts an already indexed transaction while handling a failed subscription", async () => {
@@ -159,6 +162,18 @@ it("looks the tx up again after a reconnect", async () => {
   tracer.close();
 });
 
+it("rejects an invalid query without leaving a reconnect listener", async () => {
+  const tracer = new TestTracer();
+  const listenersBefore = tracer.openListenerCount();
+  await expect(tracer.traceTx({ "tx.hash": "a'b" })).rejects.toThrow(
+    "invalid character in query value"
+  );
+  expect(tracer.openListenerCount()).toBe(listenersBefore);
+  // A reconnect must not re-run the failing lookup and throw.
+  expect(() => tracer.reopen()).not.toThrow();
+  tracer.close();
+});
+
 it("rejects JSON-RPC subscription errors without waiting for a transaction event", async () => {
   const tracer = new TestTracer();
   const pending = tracer.subscribeTx(Uint8Array.from([1]));
@@ -199,4 +214,19 @@ it("rejects new lookups and subscriptions once every endpoint has failed", async
   await expect(tracer.queryTx(Uint8Array.from([1]))).rejects.toBe(error);
   await expect(tracer.subscribeTx(Uint8Array.from([1]))).rejects.toBe(error);
   tracer.close();
+});
+
+it("rejects an unrepresentable query without leaving a reconnect listener", async () => {
+  const tracer = new TestTracer();
+  const addEventListener = jest.spyOn(tracer, "addEventListener");
+
+  await expect(tracer.traceTx({ "message.sender": "O'Brien" })).rejects.toThrow(
+    "invalid character"
+  );
+  await expect(
+    tracer.subscribeTx({ "message.sender": "O'Brien" })
+  ).rejects.toThrow("invalid character");
+  expect(addEventListener).not.toHaveBeenCalled();
+  // A later reconnect must not throw from a leftover listener.
+  expect(() => tracer.reopen()).not.toThrow();
 });

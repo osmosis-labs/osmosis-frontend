@@ -2,7 +2,8 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 
-import { saveAssetImageToTokensDir } from "../utils";
+import { getImageRelativeFilePath } from "../keplr-chain";
+import { sanitizeSvgContent, saveAssetImageToTokensDir } from "../utils";
 
 const IMAGE_URL = "https://example.com/logo.svg";
 
@@ -82,5 +83,97 @@ describe("saveAssetImageToTokensDir", () => {
 
     await expect(save()).rejects.toThrow();
     expect(fs.readFileSync(imagePath, "utf-8")).toBe("<svg>old</svg>");
+  });
+
+  it("sanitizes executable content from downloaded SVGs", async () => {
+    mockBody([
+      '<svg onload="alert(1)"><scr<script>ipt>evil()</script><script>evil()</script><foreignObject><b>x</b></foreignObject><a href="javascript:alert(2)"></a><a xlink:href="java&#x73;cript:alert(3)"></a><circle r="1"/></svg>',
+    ]);
+
+    await save();
+    const content = fs.readFileSync(imagePath, "utf-8");
+    expect(content).not.toContain("<script");
+    expect(content).not.toContain("<foreignObject");
+    expect(content).not.toContain("onload=");
+    expect(content).not.toContain("javascript:");
+    expect(content).not.toContain("java&#x73;cript:");
+    expect(content).toContain('<circle r="1"></circle>');
+  });
+
+  it("does not let attribute removal reconstruct an event handler", () => {
+    const out = sanitizeSvgContent(
+      '<svg xmlns="http://www.w3.org/2000/svg"><a onlo href="javascript:x"ad="alert(1)"/><circle r="1"/></svg>'
+    );
+    expect(out).not.toMatch(/onload|javascript:/i);
+    expect(out).toContain("<circle");
+  });
+
+  it("allows only raster data URLs and same-document <use> references", () => {
+    const out = sanitizeSvgContent(
+      '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+        '<a href="data:text/html,x">a</a>' +
+        '<a href="data:application/xhtml+xml,x">b</a>' +
+        '<image href="data:image/png;base64,AAAA"/>' +
+        '<use xlink:href="https://evil.example/x.svg#a"/>' +
+        '<use xlink:href="#shape"/>' +
+        "</svg>"
+    );
+    expect(out).not.toContain("data:text/html");
+    expect(out).not.toContain("data:application");
+    expect(out).not.toContain("evil.example");
+    expect(out).toContain('href="data:image/png;base64,AAAA"');
+    expect(out).toContain('xlink:href="#shape"');
+  });
+
+  it("keeps gradient links bound to a custom XLink prefix", () => {
+    const out = sanitizeSvgContent(
+      '<svg xmlns="http://www.w3.org/2000/svg" xmlns:ns1="http://www.w3.org/1999/xlink"><defs><linearGradient id="a"><stop offset="0"/></linearGradient><linearGradient id="b" ns1:href="#a"/></defs></svg>'
+    );
+    expect(out).toContain('href="#a"');
+  });
+
+  it("derives the same file name for downloads and references when the URL has a query", async () => {
+    mockBody(["<svg></svg>"]);
+    const imageUrl = "https://example.com/logo.svg?v=1.2";
+    const saved = await saveAssetImageToTokensDir({
+      imageUrl,
+      asset: { symbol: "ABC" },
+      currentAssetListHash: "not-the-stored-hash",
+    });
+    expect(saved).toBe("abc.svg");
+    expect(getImageRelativeFilePath(imageUrl, "ABC")).toBe(
+      "/tokens/generated/abc.svg"
+    );
+  });
+
+  it("matches lowercased extension casing between downloads and generated references", async () => {
+    mockBody(["<svg></svg>"]);
+    const saved = await saveAssetImageToTokensDir({
+      imageUrl: "https://example.com/logo.SVG",
+      asset: { symbol: "ABC" },
+      currentAssetListHash: "not-the-stored-hash",
+    });
+    expect(saved).toBe("abc.svg");
+    expect(
+      getImageRelativeFilePath("https://example.com/logo.SVG", "ABC")
+    ).toBe("/tokens/generated/abc.svg");
+  });
+
+  it("rejects path traversal symbols and unsupported extensions", async () => {
+    await expect(
+      saveAssetImageToTokensDir({
+        imageUrl: IMAGE_URL,
+        asset: { symbol: "../../evil" },
+        currentAssetListHash: "not-the-stored-hash",
+      })
+    ).rejects.toThrow("Unsafe asset symbol");
+
+    await expect(
+      saveAssetImageToTokensDir({
+        imageUrl: "https://example.com/evil.html",
+        asset: { symbol: "ABC" },
+        currentAssetListHash: "not-the-stored-hash",
+      })
+    ).rejects.toThrow("Unsupported image extension");
   });
 });

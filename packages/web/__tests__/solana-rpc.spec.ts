@@ -229,6 +229,21 @@ describe("same-origin check", () => {
     expect(result.status).toBe(200);
   });
 
+  it("refuses a spoofed foreign x-forwarded-host", async () => {
+    const calls = spyOnPublicRpc();
+
+    const result = await solanaRpcHandler(
+      post(
+        allowedRequest,
+        { "x-forwarded-host": "evil.test" },
+        { origin: "https://evil.test" }
+      )
+    );
+
+    expect(result.status).toBe(403);
+    expect(calls).toHaveLength(0);
+  });
+
   it("falls back to a same-origin Referer", async () => {
     spyOnPublicRpc();
 

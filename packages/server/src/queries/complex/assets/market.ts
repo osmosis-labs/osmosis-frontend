@@ -11,9 +11,10 @@ import { LRUCache } from "lru-cache";
 import {
   DATA_SERVICES_MARKET_MAX_AGE,
   DEFAULT_LRU_OPTIONS,
+  PER_ASSET_LRU_OPTIONS,
 } from "../../../utils/cache";
 import { cached, type CacheEntry } from "../../../utils/cached";
-import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
+import { captureErrorAndReturn } from "../../../utils/error";
 import { getRequestScoped } from "../../../utils/request-scope";
 import {
   type CoingeckoVsCurrencies,
@@ -111,7 +112,7 @@ function getCachedTotalSupply(params: {
   });
 }
 
-const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const marketInfoCache = new LRUCache<string, CacheEntry>(PER_ASSET_LRU_OPTIONS);
 /** Cached function that returns an asset with market info from the data services only. */
 async function getDataServicesMarketAsset<TAsset extends MinimalAsset>({
   asset,
@@ -283,20 +284,22 @@ export async function getAssetCoingeckoCoin({
   return cached({
     cache: assetCoingeckoCoinCache,
     key: `assetCoingeckoCoinCache-${coinGeckoId}-${currency}`,
-    ttl: 1000 * 60 * 30, // 15 minutes
-    getFreshValue: async () => {
-      const [coingeckoCoin, volumes] = await Promise.all([
-        captureIfError(() => queryCoingeckoCoin(coinGeckoId)),
-        captureIfError(() =>
-          getCoinGeckoPricesBatchLoader({
-            currency,
-          })
-        ),
+    ttl: 1000 * 60 * 30, // 30 minutes
+    getFreshValue: async ({ metadata }) => {
+      // Either source may fail without failing the other's data. A failure is
+      // unavailable data, not absent: retry soon instead of holding the gap for the
+      // full ttl.
+      const tolerate = (e: unknown) => {
+        metadata.ttl = 1000 * 30; // 30 seconds
+        return captureErrorAndReturn(e as Error, undefined);
+      };
+      const [coingeckoCoin, volume24h] = await Promise.all([
+        queryCoingeckoCoin(coinGeckoId).catch(tolerate),
+        getCoinGeckoPricesBatchLoader({ currency })
+          .then((volumes) => volumes.load(coinGeckoId))
+          .then(({ volume24h }) => volume24h)
+          .catch(tolerate),
       ]);
-
-      const volume24h = volumes
-        ? (await volumes.load(coinGeckoId)).volume24h
-        : undefined;
 
       return {
         links: coingeckoCoin?.links,

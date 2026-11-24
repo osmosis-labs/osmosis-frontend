@@ -10,7 +10,6 @@ import {
   AssetHighlights,
   highlightPrice24hChangeAsset,
 } from "~/components/assets/highlights-categories";
-import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { useTradeViewExpandedParam } from "~/components/trade-view/use-trade-view-expanded";
@@ -77,22 +76,19 @@ const Home = () => {
                 : "w-[512px]"
             )}
           >
-            {/** Hydration issues need to be investigated before this client wrapper can be removed. */}
-            <ClientOnly>
-              <TradeTool
-                bookLayout="expandable"
-                previousTrade={previousTrade}
-                setPreviousTrade={setPreviousTrade}
-                // Banner and Top gainers sit in the widget's column, so they
-                // stay with the widget when the trade view is expanded.
-                aboveWidget={
-                  featureFlags.swapsAdBanner ? <SwapAdsBanner /> : undefined
-                }
-                belowWidget={
-                  featureFlags.swapToolTopGainers ? <TopGainers /> : undefined
-                }
-              />
-            </ClientOnly>
+            <TradeTool
+              bookLayout="expandable"
+              previousTrade={previousTrade}
+              setPreviousTrade={setPreviousTrade}
+              // Banner and Top gainers sit in the widget's column, so they
+              // stay with the widget when the trade view is expanded.
+              aboveWidget={
+                featureFlags.swapsAdBanner ? <SwapAdsBanner /> : undefined
+              }
+              belowWidget={
+                featureFlags.swapToolTopGainers ? <TopGainers /> : undefined
+              }
+            />
           </div>
         </div>
       </div>
