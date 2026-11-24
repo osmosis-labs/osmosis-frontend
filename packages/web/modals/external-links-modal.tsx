@@ -23,6 +23,15 @@ function setDoNotShowAgainExcludedUrls(url: string, value: boolean) {
   );
 }
 
+function isSafeHttpUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 export function handleExternalLink({
   url,
   openModal,
@@ -30,11 +39,13 @@ export function handleExternalLink({
   url: string;
   openModal: () => void;
 }) {
+  if (!isSafeHttpUrl(url)) return;
+
   try {
     const doNotShowModalExcludedUrls = getDoNotShowAgainExcludedUrls();
 
     if (doNotShowModalExcludedUrls[url]) {
-      window.open(url, "_blank");
+      window.open(url, "_blank", "noopener,noreferrer");
     } else {
       openModal();
     }

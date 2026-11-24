@@ -130,6 +130,7 @@
       }
     },
     "table": {
+      "showVariants": "Varyantları göster",
       "marketDataUnavailable": "Piyasa verileri şu anda kullanılamıyor. Lütfen birazdan tekrar deneyin.",
       "depositButton": "Yatır",
       "search": "Arama",

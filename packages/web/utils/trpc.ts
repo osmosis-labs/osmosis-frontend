@@ -1,9 +1,5 @@
 import { superjson } from "@osmosis-labs/server";
-import {
-  createTRPCRouter,
-  localLink,
-  makeSkipBatchLink,
-} from "@osmosis-labs/trpc";
+import { makeSkipBatchLink } from "@osmosis-labs/trpc";
 import { makeIndexedKVStore } from "@osmosis-labs/utils";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
@@ -12,9 +8,6 @@ import { loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
-import { localRouter } from "~/server/api/local-router";
 import { type AppRouter } from "~/server/api/root-router";
 import {
   isCdnCacheableAssetsQuery,
@@ -31,14 +24,6 @@ const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
-
-/**
- * Create a minimal local router to avoid importing
- * server packages in the client.
- */
-const trpcLocalRouter = createTRPCRouter({
-  local: localRouter,
-});
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
@@ -100,21 +85,20 @@ export const api = createTRPCNext<AppRouter>({
               (opts.direction === "down" && opts.result instanceof Error)),
         }),
         /**
-         * Select the API Worker endpoint for each router, or execute local queries
-         * in the browser. The endpoint names preserve the existing tRPC URLs.
+         * Select the API Worker endpoint for each router. Procedures under
+         * `local.*` now run on the API Worker (`/api/edge-trpc-local`) instead
+         * of inside the browser bundle.
          */
         (runtime) => {
-          // Initialize the links for the API endpoints and local router.
+          // Initialize the links for the API endpoints.
           const servers = {
             node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
             [constructEdgeRouterKey("main")]: makeSkipBatchLink(
               `${getBaseUrl()}${constructEdgeUrlPathname("main")}`
             )(runtime),
-            local: localLink({
-              router: trpcLocalRouter,
-              assetLists: AssetLists,
-              chainList: ChainList,
-            })(runtime),
+            local: makeSkipBatchLink(`${getBaseUrl()}/api/edge-trpc-local`)(
+              runtime
+            ),
 
             /**
              * Keep the existing per-router endpoints for API compatibility.
@@ -134,17 +118,14 @@ export const api = createTRPCNext<AppRouter>({
             const { op } = ctx;
 
             const pathParts = op.path.split(".");
-            const basePath = pathParts.shift() as string | "edge";
+            const basePath = pathParts.shift() as string | "edge" | "local";
 
             /**
-             * Combine the rest of the parts of the paths. This is what we're actually calling on the edge server.
-             * E.g. It will convert `edge.pools.getPool` to `pools.getPool`
+             * Combine the rest of the parts of the paths. This is what we're actually calling on the API Worker.
+             * E.g. It will convert `edge.pools.getPool` to `pools.getPool`, and `local.cms.getTokenInfos` to `cms.getTokenInfos`.
              */
-            const possibleEdgePath = pathParts.join(".");
+            const strippedPath = pathParts.join(".");
 
-            /**
-             * If the base path is not `edge`, we can just call the node server directly.
-             */
             const isEdge = basePath === "edge";
             const isLocal = basePath === "local";
 
@@ -160,13 +141,13 @@ export const api = createTRPCNext<AppRouter>({
               link = servers["node"];
             }
 
-            return isEdge
+            return isEdge || isLocal
               ? link({
                   ...ctx,
                   op: {
                     ...op,
                     // override the target path with the prefix removed
-                    path: possibleEdgePath,
+                    path: strippedPath,
                   },
                 })
               : link(ctx);

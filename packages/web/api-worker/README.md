@@ -3,8 +3,10 @@
 The Cloudflare frontend's own backend. The OpenNext pages Worker keeps pages and
 `/_next/image` and forwards `/api/*` here over its `API` service binding
 (`worker.ts`), so the traffic router only picks a frontend and never routes API
-calls. API handlers live in `server/api-handlers`; `routes.ts` is the route table
-and `handlers.ts` maps its IDs to Fetch handlers. There are no Next API wrappers.
+calls. API handlers live in `server/api-handlers`; `routes.ts` is the route table,
+keyed by handler ID (exact paths, the tRPC prefixes, and the one `/api/pools/:id`
+pattern), and `handlers.ts` maps each ID to a Fetch handler. TypeScript requires
+an entry for every ID. There are no Next API wrappers.
 
 | Branch   | Pages Worker                  | API Worker                        |
 | -------- | ----------------------------- | --------------------------------- |
@@ -40,6 +42,19 @@ does not select this config and would write the pages Worker instead. Add
 - `EVM_RPC_URL_<chainId>` for chains `1`, `10`, `56`, `137`, `250`, `314`, `1284`,
   `8453`, `42161`, `43114`, and `81457` (comma-separated URLs; omit a chain to use
   its public endpoint only)
+
+## Request scope
+
+On Workers a promise may only settle in the request that created it, so in-flight
+work must never be shared through module state. `worker.ts` runs every request in
+one request scope (`utils/request-scope.ts`, read by `getRequestScope` and
+`getRequestScoped` in `@osmosis-labs/server`). The upstream cache
+(`upstream-cache.ts`, allowlist in `upstream-cache-rules.ts`) keeps its per-request
+state there: the hit/miss/bypass counters, the misses that concurrent callers in
+the same request share, and the `waitUntil` that keeps cache writes alive. Every
+response gets `Server-Timing: upstream;desc="hit=… miss=… bypass=…"`, zeros
+included (a 404 or an edge-cache hit makes no upstream calls). Outside a scope the
+wrapped `fetch` still reads warm entries but shares, writes and counts nothing.
 
 ## Bundle
 

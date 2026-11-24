@@ -1,7 +1,6 @@
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { DEFAULT_LRU_OPTIONS } from "./cache";
 import { cached, type CacheEntry } from "./cached";
 
 /** Include this in your function's input, and return the correct `nextCursor` value
@@ -10,8 +9,8 @@ import { cached, type CacheEntry } from "./cached";
  *  See: https://trpc.io/docs/client/react/useInfiniteQuery
  */
 export const CursorPaginationSchema = z.object({
-  limit: z.number().min(1).max(100).nullish(),
-  cursor: z.number().nullish(), // <-- "cursor" needs to exist, but can be any type
+  limit: z.number().int().min(1).max(100).nullish(),
+  cursor: z.number().int().min(0).nullish(),
 });
 
 /** Uses numerical cursor-based pagination that is compatible with and similar to offest pagination.
@@ -36,7 +35,7 @@ export function maybeCursorPaginatedItems<TItem>(
 } {
   if (!cursor && !limit) return { items, nextCursor: undefined };
 
-  cursor = cursor || 0;
+  cursor = Math.max(0, cursor || 0);
   limit = limit || 50;
   const startIndex = cursor;
 
@@ -53,27 +52,48 @@ export function maybeCursorPaginatedItems<TItem>(
   };
 }
 
-const paginationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/**
+ * Size-bounded LRU for paginated lists. Each entry holds a full unpaginated
+ * array (up to ~1,350 hydrated asset objects); bounding by total item count
+ * rather than entry count keeps the cache well inside a Cloudflare Worker's
+ * 128 MB heap even under diverse search/address traffic.
+ */
+const paginationCache = new LRUCache<string, CacheEntry>({
+  max: 100,
+  maxSize: 15_000,
+  sizeCalculation: (entry) => {
+    const items = (entry.value as { items?: unknown[] } | undefined)?.items;
+    return Array.isArray(items) ? items.length + 1 : 1;
+  },
+});
 
 export type CachedPaginationParams<TItem> = {
   /** Call `markIncomplete` when the list is known to be missing items (e.g. one data
    *  source failed): the result then carries `incomplete: true`, on later pages too. */
   getFreshItems: (context: { markIncomplete: () => void }) => Promise<TItem[]>;
+  /** Unique across all callers: the cache is shared, so prefix it with the procedure. */
   cacheKey: string;
+  /** Fetch the list again when the first page (cursor 0) is requested, so a reload
+   *  shows changes right away. Only for lists scoped to one user (balances, orders),
+   *  which change with the user's own actions: a shared list would be refetched on
+   *  every user's first page, and the ttl governs its freshness instead. */
+  reloadOnFirstPage?: boolean;
   cursor?: number | null | undefined;
   limit?: number | null | undefined;
   ttl?: number;
 };
 
 /** Returns cached items while the user is paginating the list.
- *  If the input changes or the cursor is reset, the cache is invalidated.
- *  With useInfiniteQuery, the cursor will be reset to 0 when input to the query changes or the query is invalidated. */
+ *  The list is cached per key for the ttl. With `reloadOnFirstPage`, a reset cursor also
+ *  refetches it: with useInfiniteQuery, the cursor is reset to 0 when input to the query
+ *  changes or the query is invalidated. */
 export async function maybeCachePaginatedItems<TItem>({
   getFreshItems,
   cacheKey,
   cursor,
   limit,
   ttl = 30 * 1000, // 30 seconds
+  reloadOnFirstPage = false,
 }: CachedPaginationParams<TItem>): Promise<{
   items: TItem[];
   nextCursor: number | undefined;
@@ -95,14 +115,13 @@ export async function maybeCachePaginatedItems<TItem>({
     };
   }
 
-  // If cursor is 0, delete the cache entry for the given key
-  if (cursor === 0) {
+  if (reloadOnFirstPage && cursor === 0) {
     paginationCache.delete(cacheKey);
   }
 
   // The incomplete flag is cached with its list, so later pages are cut from the same
   // snapshot as the first and every request sharing a fetch reports that fetch's status.
-  // A reload (cursor 0) fetches again.
+  // A reload (cursor 0) of a `reloadOnFirstPage` list fetches again.
   const { items, incomplete } = await cached({
     key: cacheKey,
     cache: paginationCache,

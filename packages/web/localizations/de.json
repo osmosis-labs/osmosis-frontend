@@ -130,6 +130,7 @@
       }
     },
     "table": {
+      "showVariants": "Varianten anzeigen",
       "marketDataUnavailable": "Marktdaten sind derzeit nicht verfügbar. Bitte versuchen Sie es gleich noch einmal.",
       "depositButton": "Kaution",
       "search": "Suchen",

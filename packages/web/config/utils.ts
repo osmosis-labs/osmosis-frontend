@@ -1,5 +1,7 @@
 import type { Asset, AssetList, Chain } from "@osmosis-labs/types";
+import createDOMPurify from "dompurify";
 import fs from "fs";
+import { JSDOM } from "jsdom";
 import path from "path";
 import { Readable } from "stream";
 import { pipeline } from "stream/promises";
@@ -10,6 +12,7 @@ import {
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
 } from "./env";
+import { getImageFileExtension } from "./keplr-chain";
 
 export function getOsmosisChainId(environment: "testnet" | "mainnet") {
   return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
@@ -17,11 +20,90 @@ export function getOsmosisChainId(environment: "testnet" | "mainnet") {
 
 const tokensDir = "/tokens/generated";
 
+const ALLOWED_IMAGE_EXTENSIONS = new Set(["svg", "png", "webp", "jpg", "jpeg"]);
+
+type DOMPurifyInstance = ReturnType<typeof createDOMPurify>;
+let svgPurifier: DOMPurifyInstance | undefined;
+
+/** A DOMPurify instance backed by a jsdom window, created on first use. */
+function getSvgPurifier(): DOMPurifyInstance {
+  if (svgPurifier) return svgPurifier;
+  const purifier = createDOMPurify(
+    new JSDOM("").window as unknown as Parameters<typeof createDOMPurify>[0]
+  );
+
+  // Some editors bind the XLink namespace to a custom prefix (e.g. `ns1:href`)
+  // to link gradients. The HTML parser can't resolve those prefixes, so
+  // rewrite same-document references to a plain `href` and drop the rest.
+  purifier.addHook("beforeSanitizeAttributes", (node) => {
+    for (const attr of Array.from(node.attributes ?? [])) {
+      const name = attr.name.toLowerCase();
+      if (!name.endsWith(":href") || name === "xlink:href") continue;
+      node.removeAttribute(attr.name);
+      if (attr.value.trim().startsWith("#") && !node.hasAttribute("href")) {
+        node.setAttribute("href", attr.value);
+      }
+    }
+  });
+
+  // `<use>` may only reference elements inside the same file.
+  purifier.addHook("uponSanitizeAttribute", (node, data) => {
+    if (
+      node.nodeName.toLowerCase() === "use" &&
+      (data.attrName === "href" || data.attrName === "xlink:href") &&
+      !data.attrValue.trim().startsWith("#")
+    ) {
+      data.keepAttr = false;
+    }
+  });
+
+  svgPurifier = purifier;
+  return purifier;
+}
+
+/**
+ * Strips active/executable content (scripts, event handlers, `javascript:`
+ * and non-image `data:` URLs, `foreignObject`, ...) from third-party SVGs
+ * before they are written into `public/tokens/generated/`. Defense-in-depth
+ * alongside the `default-src 'none'; sandbox` CSP in `public/_headers`.
+ */
+export function sanitizeSvgContent(svg: string): string {
+  const fragment = getSvgPurifier().sanitize(svg, {
+    USE_PROFILES: { svg: true, svgFilters: true },
+    // Logos commonly reuse gradients, paths and embedded images via `<use>`.
+    ADD_TAGS: ["use"],
+    RETURN_DOM_FRAGMENT: true,
+  });
+  // Serialize only the root element: prolog leftovers (e.g. the `]>` of a
+  // DOCTYPE internal subset) would otherwise precede it and make the file
+  // invalid XML, which browsers refuse to render as an image.
+  return fragment.querySelector("svg")?.outerHTML ?? "";
+}
+
 function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
-  const urlParts = imageUrl.split("/");
-  const fileNameSplit = urlParts[urlParts.length - 1].split(".");
-  const fileType = fileNameSplit[fileNameSplit.length - 1];
-  return path.join("/public", tokensDir, `${symbol.toLowerCase()}.${fileType}`);
+  try {
+    new URL(imageUrl);
+  } catch {
+    throw new Error(`Invalid image URL: ${imageUrl}`);
+  }
+  // Shared with `getImageRelativeFilePath` so the saved file and the
+  // generated reference always agree.
+  const fileType = getImageFileExtension(imageUrl);
+  if (!ALLOWED_IMAGE_EXTENSIONS.has(fileType)) {
+    throw new Error(
+      `Unsupported image extension "${fileType}" for ${imageUrl}`
+    );
+  }
+  const safeSymbol = symbol.toLowerCase();
+  if (
+    !safeSymbol ||
+    safeSymbol.includes("/") ||
+    safeSymbol.includes("\\") ||
+    safeSymbol.includes("..")
+  ) {
+    throw new Error(`Unsafe asset symbol for filename: ${symbol}`);
+  }
+  return path.join("/public", tokensDir, `${safeSymbol}.${fileType}`);
 }
 
 export const codegenDir = "config/generated";
@@ -173,13 +255,20 @@ export async function saveAssetImageToTokensDir({
   asset: Pick<Asset, "symbol">;
   currentAssetListHash: string;
 }) {
+  const tokensRoot = path.resolve(path.resolve() + "/public" + tokensDir);
   // Ensure the tokens directory exists.
-  if (!fs.existsSync(path.resolve() + "/public" + tokensDir)) {
-    fs.mkdirSync(path.resolve() + "/public" + tokensDir, { recursive: true });
+  if (!fs.existsSync(tokensRoot)) {
+    fs.mkdirSync(tokensRoot, { recursive: true });
   }
 
-  const filePath =
-    path.resolve() + getNodeImageRelativeFilePath(imageUrl, asset.symbol);
+  const filePath = path.resolve(
+    path.resolve() + getNodeImageRelativeFilePath(imageUrl, asset.symbol)
+  );
+  if (!filePath.startsWith(tokensRoot + path.sep)) {
+    throw new Error(
+      `Resolved image path escapes tokens directory: ${filePath}`
+    );
+  }
 
   if (process.env.NODE_ENV === "test") {
     console.info("Skipping image download for test environment");
@@ -214,6 +303,10 @@ export async function saveAssetImageToTokensDir({
       ),
       fs.createWriteStream(tempFilePath, { flags: "w" })
     );
+    if (filePath.endsWith(".svg")) {
+      const rawSvg = fs.readFileSync(tempFilePath, "utf-8");
+      fs.writeFileSync(tempFilePath, sanitizeSvgContent(rawSvg), "utf-8");
+    }
     fs.renameSync(tempFilePath, filePath);
   } catch (e) {
     fs.rmSync(tempFilePath, { force: true });

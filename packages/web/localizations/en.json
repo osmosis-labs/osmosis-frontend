@@ -130,6 +130,7 @@
       }
     },
     "table": {
+      "showVariants": "Show variants",
       "marketDataUnavailable": "Market data is unavailable right now. Please try again in a moment.",
       "depositButton": "Deposit",
       "search": "Search",
