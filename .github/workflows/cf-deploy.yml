@@ -118,7 +118,7 @@ jobs:
         run: |
           set -euo pipefail
           jq -nr 'env.VARS_JSON | fromjson | to_entries[]
-            | select(.key | test("^NEXT_PUBLIC_") or . == "ASSET_LIST_COMMIT_HASH")
+            | select(.key | test("^NEXT_PUBLIC_") or . == "ASSET_LIST_COMMIT_HASH" or . == "CSP_MODE")
             | select(.value != "") | .key' |
           while read -r key; do
             value=$(jq -nr --arg k "$key" 'env.VARS_JSON | fromjson | .[$k]')

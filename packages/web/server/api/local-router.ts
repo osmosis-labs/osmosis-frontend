@@ -8,16 +8,19 @@ import {
   paramsRouter,
   poolsRouter,
   portfolioRouter,
-  swappedRouter,
   swapRouter,
   tokenfactoryRouter,
 } from "@osmosis-labs/trpc";
 
 import { localBridgeTransferRouter } from "~/server/api/routers/local-bridge-transfer";
+import { swappedRouter } from "~/server/api/routers/swapped";
 
 /**
- * This section includes tRPC functions that execute on the client-side.
- * Caution: Ensure no sensitive data is exposed through these functions. */
+ * Procedures previously executed in the browser (`local.*`), now served by
+ * the API Worker at `/api/edge-trpc-local` so they benefit from edge caching,
+ * upstream request coalescing, and server-side RPC keys without shipping
+ * `@trpc/server` or `@osmosis-labs/server` in the client bundle.
+ */
 export const localRouter = createTRPCRouter({
   balances: balancesRouter,
   quoteRouter: swapRouter,

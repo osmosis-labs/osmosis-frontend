@@ -4,23 +4,25 @@
  * Installed by wrapping `globalThis.fetch` from `worker.ts`. Shared packages
  * keep calling `fetch` unchanged. Only the API Worker loads this module. The allowlist is `upstream-cache-rules.ts`.
  *
- * Cache failures and a missing request context fall through to the network.
+ * Per-request state (counters, shared misses) lives on the request scope the
+ * Worker entry opens (`utils/request-scope.ts`). Outside a scope, a call still
+ * reads warm entries but shares nothing, writes nothing and counts nothing.
+ * Cache failures fall through to the network.
  */
-import { AsyncLocalStorage } from "node:async_hooks";
+import { getRequestScope, getRequestScoped } from "@osmosis-labs/server";
+
+import { parseCacheControl } from "~/utils/edge-cache";
 
 import {
   matchUpstreamRule,
-  ruleTtlBounds,
+  ruleTtlSeconds,
   type UpstreamCacheRule,
 } from "./upstream-cache-rules";
-
-type WaitUntil = (promise: Promise<unknown>) => void;
 
 type RequestState = {
   hit: number;
   miss: number;
   bypass: number;
-  waitUntil: WaitUntil;
   /**
    * One upstream read per cache key, shared by concurrent misses within this request (a tRPC
    * batch often needs the same upstream several times). Never shared across requests: the
@@ -37,7 +39,18 @@ type CachedBody = {
   body: ArrayBuffer;
 };
 
-const requestStore = new AsyncLocalStorage<RequestState>();
+/** The request-scope slot for this module's `RequestState`. */
+const STATE_KEY = {};
+
+/** This request's state, or `undefined` outside a request scope. */
+function requestState(): RequestState | undefined {
+  return getRequestScoped<RequestState>(STATE_KEY, () => ({
+    hit: 0,
+    miss: 0,
+    bypass: 0,
+    inflight: new Map(),
+  }));
+}
 
 /**
  * Caps concurrent distinct misses per request. Past this, callers fetch on
@@ -45,7 +58,7 @@ const requestStore = new AsyncLocalStorage<RequestState>();
  */
 const MAX_INFLIGHT = 100;
 
-const PRIVATE_DIRECTIVES = new Set(["private", "no-store", "no-cache"]);
+const PRIVATE_DIRECTIVES = ["private", "no-store", "no-cache"] as const;
 
 let nativeFetch: typeof fetch | undefined;
 let cacheStore: Cache | undefined;
@@ -73,22 +86,12 @@ export function bindUpstreamCache(cache: Cache): void {
 }
 
 /**
- * Per-request counters and `waitUntil`. Concurrent requests get separate
- * stores, so `Server-Timing` cannot leak across them.
+ * Appends `upstream;desc="hit=… miss=… bypass=…"` from the current request, zeros included.
+ * Concurrent requests have separate scopes, so counts cannot leak across them. Outside a
+ * request scope the response is returned unchanged.
  */
-export function runWithUpstreamCache<T>(
-  waitUntil: WaitUntil,
-  fn: () => Promise<T>
-): Promise<T> {
-  return requestStore.run(
-    { hit: 0, miss: 0, bypass: 0, waitUntil, inflight: new Map() },
-    fn
-  );
-}
-
-/** Appends `upstream;desc="hit=… miss=… bypass=…"` from the current request. */
 export function applyUpstreamServerTiming(response: Response): Response {
-  const counts = requestStore.getStore();
+  const counts = requestState();
   if (!counts) return response;
   const headers = new Headers(response.headers);
   const desc = `hit=${counts.hit} miss=${counts.miss} bypass=${counts.bypass}`;
@@ -149,7 +152,7 @@ async function cachedFetch(
   // any other caller in this request that is still waiting on it.
   if (request.signal.aborted) throw abortReason(request.signal);
   const body = await whenNotAborted(
-    loadShared(key, () => readUpstream(native, request, rule, url)),
+    loadShared(key, () => readUpstream(native, request, rule, url, key)),
     request.signal
   );
   return toResponse(body);
@@ -222,7 +225,8 @@ async function readUpstream(
   native: typeof fetch,
   request: Request,
   rule: UpstreamCacheRule,
-  url: URL
+  url: URL,
+  key: string
 ): Promise<CachedBody> {
   // The caller's signal is not forwarded: one aborted consumer must not
   // cancel the shared read the others are waiting on. `cachedFetch` rejects
@@ -240,7 +244,9 @@ async function readUpstream(
     body,
   };
   const ttl = cacheableTtl(response, rule, url);
-  if (ttl !== undefined) storeSnapshot(normalizedKey(url), snapshot, ttl);
+  if (ttl !== undefined && (!rule.acceptBody || rule.acceptBody(body))) {
+    storeSnapshot(key, snapshot, ttl);
+  }
   return snapshot;
 }
 
@@ -252,7 +258,7 @@ function loadShared(
   key: string,
   loader: () => Promise<CachedBody>
 ): Promise<CachedBody> {
-  const inflight = requestStore.getStore()?.inflight;
+  const inflight = requestState()?.inflight;
   if (!inflight) return loader();
   const existing = inflight.get(key);
   if (existing) return existing;
@@ -273,8 +279,8 @@ function loadShared(
 
 function storeSnapshot(key: string, snapshot: CachedBody, ttl: number): void {
   const cache = cacheStore;
-  const counts = requestStore.getStore();
-  if (!cache || !counts) return;
+  const scope = getRequestScope();
+  if (!cache || !scope) return;
 
   const headers = storedHeaders(snapshot.headers, ttl);
   const stored = new Response(snapshot.body.slice(0), {
@@ -286,7 +292,7 @@ function storeSnapshot(key: string, snapshot: CachedBody, ttl: number): void {
     console.error("Upstream cache write failed", key, error);
   });
   try {
-    counts.waitUntil(write);
+    scope.waitUntil(write);
   } catch (error) {
     console.error("Upstream cache waitUntil failed", key, error);
   }
@@ -317,14 +323,14 @@ function cacheableTtl(
 ): number | undefined {
   if (response.status < 200 || response.status >= 300) return undefined;
   const directives = parseCacheControl(response.headers.get("cache-control"));
-  if ([...PRIVATE_DIRECTIVES].some((name) => directives.has(name))) {
+  if (PRIVATE_DIRECTIVES.some((name) => directives.has(name))) {
     return undefined;
   }
-  const { fallback, cap } = ruleTtlBounds(rule, url);
+  const ruleTtl = ruleTtlSeconds(rule, url);
   const advertised =
     directiveSeconds(directives, "s-maxage") ??
     directiveSeconds(directives, "max-age");
-  const ttl = Math.min(advertised ?? fallback, cap);
+  const ttl = Math.min(advertised ?? ruleTtl, ruleTtl);
   if (!Number.isInteger(ttl) || ttl <= 0) return undefined;
   return ttl;
 }
@@ -382,17 +388,8 @@ function readRequest(
 }
 
 function count(kind: "hit" | "miss" | "bypass"): void {
-  const counts = requestStore.getStore();
+  const counts = requestState();
   if (counts) counts[kind] += 1;
-}
-
-function parseCacheControl(header: string | null): Map<string, string> {
-  const directives = new Map<string, string>();
-  for (const part of (header ?? "").split(",")) {
-    const [name, value = ""] = part.trim().split("=");
-    if (name) directives.set(name.toLowerCase(), value.trim());
-  }
-  return directives;
 }
 
 function directiveSeconds(
