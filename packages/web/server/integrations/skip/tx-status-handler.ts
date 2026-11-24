@@ -10,10 +10,10 @@ export function createSkipTxHandler(
     client: SkipApiClient,
     params: { chainID: string; txHash: string }
   ) => Promise<unknown>,
-  allowedMethods: readonly ("GET" | "POST")[] = ["GET"]
+  allowedMethod: "GET" | "POST" = "GET"
 ) {
   return async (req: Request) => {
-    if (!allowedMethods.includes(req.method as "GET" | "POST")) {
+    if (req.method !== allowedMethod) {
       return Response.json({ error: "Method not allowed" }, { status: 405 });
     }
 

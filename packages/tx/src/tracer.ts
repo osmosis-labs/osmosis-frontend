@@ -540,19 +540,26 @@ export class TxTracer {
         );
       }
 
-      // A reconnect resubscribes, but the node does not replay events missed
-      // while disconnected, so look the tx up again in case it landed then.
-      this.addEventListener("open", onReconnect);
-      // At first, try to query the tx at the same time of subscribing the tx.
-      lookUp();
+      try {
+        // A reconnect resubscribes, but the node does not replay events missed
+        // while disconnected, so look the tx up again in case it landed then.
+        this.addEventListener("open", onReconnect);
+        // At first, try to query the tx at the same time of subscribing the tx.
+        lookUp();
 
-      this.subscribeTx(query).then(
-        (result) => settle(() => resolve(result)),
-        // The tx was already accepted by the node, so a failed subscription
-        // must not report it as failed: it can still be included. Keep
-        // looking it up until it is indexed instead.
-        poll
-      );
+        this.subscribeTx(query).then(
+          (result) => settle(() => resolve(result)),
+          // The tx was already accepted by the node, so a failed subscription
+          // must not report it as failed: it can still be included. Keep
+          // looking it up until it is indexed instead.
+          poll
+        );
+      } catch (error) {
+        // queryTx/subscribeTx throw synchronously on an invalid query value.
+        // Settle so the reconnect listener and any timeout are released.
+        settle(() => reject(error));
+        return;
+      }
     });
   }
 

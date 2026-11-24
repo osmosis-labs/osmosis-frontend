@@ -6,8 +6,8 @@ import {
   fetchRequestHandler,
 } from "@trpc/server/adapters/fetch";
 
-import { edgeLocalRouter } from "~/server/api/edge-local-router";
 import { edgeRouter } from "~/server/api/edge-router";
+import { localRouter } from "~/server/api/local-router";
 import { nodeRouter } from "~/server/api/node-router";
 import { createTrpcContext } from "~/server/api/trpc";
 import {
@@ -44,12 +44,7 @@ describe("tRPC endpoints", () => {
     ["edge main", edgeTrpcMainHandler, "/api/edge-trpc-main", edgeRouter],
     ["edge pools", edgeTrpcPoolsHandler, "/api/edge-trpc-pools", edgeRouter],
     ["edge assets", edgeTrpcAssetsHandler, "/api/edge-trpc-assets", edgeRouter],
-    [
-      "edge local",
-      edgeTrpcLocalHandler,
-      "/api/edge-trpc-local",
-      edgeLocalRouter,
-    ],
+    ["edge local", edgeTrpcLocalHandler, "/api/edge-trpc-local", localRouter],
   ] as const)(
     "serves %s at its endpoint with the shared context and error log",
     async (_name, handler, endpoint, router) => {

@@ -28,8 +28,7 @@ import { EthereumChainInfo, getServerEvmRpcUrls } from "@osmosis-labs/utils";
 import { getAddress } from "viem";
 import { z } from "zod";
 
-import { getClientEvmRpcUrls } from "~/utils/evm-rpc";
-import { clientSolanaRpc } from "~/utils/solana";
+import { isServerFlagEnabled } from "~/utils/server-flags";
 
 /**
  * Normalizes an amount between different decimal precisions
@@ -181,11 +180,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 address: getAddress(asset.address),
                 userAddress: evmAddress,
                 chainId: asset.chainId,
-                rpcUrls: evmChain
-                  ? typeof window === "undefined"
-                    ? getServerEvmRpcUrls(evmChain)
-                    : getClientEvmRpcUrls(evmChain)
-                  : undefined,
+                rpcUrls: evmChain ? getServerEvmRpcUrls(evmChain) : undefined,
               });
 
               if (!balance) return emptyBalance;
@@ -223,76 +218,80 @@ export const localBridgeTransferRouter = createTRPCRouter({
         );
       } else if (input.source.type === "solana") {
         const solanaAddress = input.source.userSolanaAddress;
-        return Promise.all(
-          input.source.assets
-            .filter(
-              (
-                asset
-              ): asset is Extract<typeof asset, { chainType: "solana" }> =>
-                asset.chainType === "solana"
-            )
-            .map(async (asset) => {
-              const emptyBalance = {
-                ...asset,
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: asset.decimals,
-                    coinDenom: asset.denom,
-                    coinMinimalDenom: asset.address,
-                  },
-                  0
-                ),
-                usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
-              };
+        // The same kill switch `/api/solana-rpc` honors: while Solana routes
+        // are off, this keyed-RPC path must not be reachable either, so every
+        // balance reads as empty without touching the provider.
+        const solanaRoutesEnabled =
+          await isServerFlagEnabled(SOLANA_ROUTES_FLAG);
+        const solanaAssets = input.source.assets.filter(
+          (asset): asset is Extract<typeof asset, { chainType: "solana" }> =>
+            asset.chainType === "solana"
+        );
+        return mapWithConcurrency(
+          solanaAssets,
+          SOLANA_BALANCE_CONCURRENCY,
+          async (asset) => {
+            const emptyBalance = {
+              ...asset,
+              amount: new CoinPretty(
+                {
+                  coinDecimals: asset.decimals,
+                  coinDenom: asset.denom,
+                  coinMinimalDenom: asset.address,
+                },
+                0
+              ),
+              usdValue: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+            };
 
-              if (!solanaAddress) return emptyBalance;
+            if (!solanaAddress || !solanaRoutesEnabled) return emptyBalance;
 
-              // No catch: an RPC failure must fail the query, so React Query
-              // retries and the UI shows a balance error. Swallowing it into
-              // an empty balance would be a successful false zero that hides
-              // funded USDC and is never retried.
-              const balance = await getSolanaTokenBalance({
-                owner: solanaAddress,
-                mint: asset.address,
-              });
+            // No catch: an RPC failure must fail the query, so React Query
+            // retries and the UI shows a balance error. Swallowing it into
+            // an empty balance would be a successful false zero that hides
+            // funded USDC and is never retried.
+            const balance = await getSolanaTokenBalance({
+              owner: solanaAddress,
+              mint: asset.address,
+            });
 
-              const decAmount = new Dec(balance.toString());
-              // Price via the Osmosis-side variant. The SPL amount is in the
-              // SPL mint's decimals, so scale it to the variant's before
-              // pricing (equal for USDC, but never assume it).
-              const representativeAsset = getAsset({
-                ...ctx,
-                anyDenom: Object.keys(asset.supportedVariants)[0],
-              });
-              const usdValue = await calcAssetValue({
-                ...ctx,
-                anyDenom: representativeAsset.coinMinimalDenom,
-                amount:
-                  asset.decimals === representativeAsset.coinDecimals
-                    ? decAmount
-                    : normalizeDecimals({
-                        amount: balance.toString(),
-                        fromDecimals: asset.decimals,
-                        toDecimals: representativeAsset.coinDecimals,
-                      }),
-              }).catch((e) => captureErrorAndReturn(e, undefined));
+            const decAmount = new Dec(balance.toString());
+            // Price via the Osmosis-side variant. The SPL amount is in the
+            // SPL mint's decimals, so scale it to the variant's before
+            // pricing (equal for USDC, but never assume it).
+            const representativeAsset = getAsset({
+              ...ctx,
+              anyDenom: Object.keys(asset.supportedVariants)[0],
+            });
+            const usdValue = await calcAssetValue({
+              ...ctx,
+              anyDenom: representativeAsset.coinMinimalDenom,
+              amount:
+                asset.decimals === representativeAsset.coinDecimals
+                  ? decAmount
+                  : normalizeDecimals({
+                      amount: balance.toString(),
+                      fromDecimals: asset.decimals,
+                      toDecimals: representativeAsset.coinDecimals,
+                    }),
+            }).catch((e) => captureErrorAndReturn(e, undefined));
 
-              return {
-                ...asset,
-                amount: new CoinPretty(
-                  {
-                    coinDecimals: asset.decimals,
-                    coinDenom: asset.denom,
-                    coinMinimalDenom: asset.address,
-                  },
-                  decAmount
-                ),
-                usdValue: new PricePretty(
-                  DEFAULT_VS_CURRENCY,
-                  usdValue ?? new Dec(0)
-                ),
-              };
-            })
+            return {
+              ...asset,
+              amount: new CoinPretty(
+                {
+                  coinDecimals: asset.decimals,
+                  coinDenom: asset.denom,
+                  coinMinimalDenom: asset.address,
+                },
+                decAmount
+              ),
+              usdValue: new PricePretty(
+                DEFAULT_VS_CURRENCY,
+                usdValue ?? new Dec(0)
+              ),
+            };
+          }
         );
       } else if (input.source.type === "cosmos") {
         const cosmosAddress = input.source.userCosmosAddress;
@@ -430,6 +429,32 @@ export const localBridgeTransferRouter = createTRPCRouter({
 });
 
 const SERVER_SOLANA_RPC_TIMEOUT_MS = 8_000;
+/** LaunchDarkly kill switch for Solana routes (`solana-skip-routes`). */
+const SOLANA_ROUTES_FLAG = "solana-skip-routes";
+/** Upstream calls in flight per request: a source list can hold hundreds of
+ *  mints, and the keyed RPC must not see them all at once. */
+const SOLANA_BALANCE_CONCURRENCY = 6;
+
+/** `Promise.all(items.map(fn))` with at most `limit` calls in flight. A
+ *  rejection fails the whole call, as `Promise.all` would. */
+async function mapWithConcurrency<T, R>(
+  items: readonly T[],
+  limit: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < items.length) {
+      const index = next++;
+      results[index] = await fn(items[index]);
+    }
+  };
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, worker)
+  );
+  return results;
+}
 
 async function serverSolanaRpc<T>(
   method: string,
@@ -469,9 +494,7 @@ async function getSolanaTokenBalance({
   owner: string;
   mint: string;
 }): Promise<bigint> {
-  const solanaRpc =
-    typeof window === "undefined" ? serverSolanaRpc : clientSolanaRpc;
-  const result = await solanaRpc<{
+  const result = await serverSolanaRpc<{
     value?: {
       pubkey?: string;
       account?: {

@@ -24,6 +24,9 @@ class TestTracer extends TxTracer {
   reopen() {
     this.onOpen({} as Event);
   }
+  openListenerCount() {
+    return this.listeners.open?.length ?? 0;
+  }
 }
 
 it("accepts an already indexed transaction while handling a failed subscription", async () => {
@@ -156,6 +159,18 @@ it("looks the tx up again after a reconnect", async () => {
   // Settled traces stop listening, so a reused tracer doesn't accumulate them.
   tracer.reopen();
   expect(queryTx).toHaveBeenCalledTimes(2);
+  tracer.close();
+});
+
+it("rejects an invalid query without leaving a reconnect listener", async () => {
+  const tracer = new TestTracer();
+  const listenersBefore = tracer.openListenerCount();
+  await expect(tracer.traceTx({ "tx.hash": "a'b" })).rejects.toThrow(
+    "invalid character in query value"
+  );
+  expect(tracer.openListenerCount()).toBe(listenersBefore);
+  // A reconnect must not re-run the failing lookup and throw.
+  expect(() => tracer.reopen()).not.toThrow();
   tracer.close();
 });
 
