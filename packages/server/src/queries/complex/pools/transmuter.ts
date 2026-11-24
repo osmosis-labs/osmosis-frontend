@@ -1,9 +1,9 @@
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { captureIfError, DEFAULT_LRU_OPTIONS } from "../../../utils";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { queryTransmuterTotalPoolLiquidity } from "../../contracts";
 import { getAsset } from "../assets";
 
@@ -16,7 +16,7 @@ export async function getCachedTransmuterTotalPoolLiquidity(
   chainList: Chain[],
   assetLists: AssetList[]
 ) {
-  return await cachified({
+  return await cached({
     cache: transmuterTotalPoolLiquidityCache,
     ttl: 1000 * 30, // 30 seconds
     key: `transmuter-total-pool-liquidity-${contractAddress}`,

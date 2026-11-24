@@ -51,7 +51,12 @@ export async function queryPrices(
 ) {
   const url = new URL("/tokens/prices", SIDECAR_BASE_URL);
 
-  url.searchParams.append("base", coinMinimalDenoms.join(","));
+  // Sorted and deduped, so the same set of denoms is always the same URL and shares
+  // one upstream cache entry regardless of the order callers asked in.
+  url.searchParams.append(
+    "base",
+    [...new Set(coinMinimalDenoms)].sort().join(",")
+  );
 
   return await apiClient<PriceMap>(url.toString(), { signal });
 }

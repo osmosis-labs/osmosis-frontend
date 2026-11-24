@@ -90,29 +90,7 @@ class OsmosisSidecarRemoteRouter {
         tokens,
       };
     } catch (e) {
-      // handle error JSON as it comes from sidecar
-      const error = e as { data: { message: string } };
-
-      const errorMessage = error.data?.message;
-
-      if (
-        errorMessage?.includes("no routes were provided") ||
-        errorMessage?.includes("no candidate routes found")
-      ) {
-        throw new NoRouteError(errorMessage);
-      }
-
-      if (errorMessage?.includes("not enough liquidity")) {
-        throw new NotEnoughLiquidityError(errorMessage);
-      }
-
-      if (
-        errorMessage?.includes("amount out is zero, try increasing amount in")
-      ) {
-        throw new NotEnoughQuotedError(errorMessage);
-      }
-
-      throw new Error(errorMessage ?? "Unexpected sidecar router error " + e);
+      throw toSidecarRouterError(e);
     }
   }
 
@@ -175,31 +153,41 @@ class OsmosisSidecarRemoteRouter {
         tokens,
       };
     } catch (e) {
-      // handle error JSON as it comes from sidecar
-      const error = e as { data: { message: string } };
-
-      const errorMessage = error.data?.message;
-
-      if (
-        errorMessage?.includes("no routes were provided") ||
-        errorMessage?.includes("no candidate routes found")
-      ) {
-        throw new NoRouteError(errorMessage);
-      }
-
-      if (errorMessage?.includes("not enough liquidity")) {
-        throw new NotEnoughLiquidityError(errorMessage);
-      }
-
-      if (
-        errorMessage?.includes("amount out is zero, try increasing amount in")
-      ) {
-        throw new NotEnoughQuotedError(errorMessage);
-      }
-
-      throw new Error(errorMessage ?? "Unexpected sidecar router error " + e);
+      throw toSidecarRouterError(e);
     }
   }
+}
+
+/** Matches messages of swaps a transmuter refuses: a paused transmuter, or a swap that
+ *  would increase one of its corrupted denoms. No route can fill them right now. */
+const TRANSMUTER_REFUSAL_MESSAGES = [
+  "is not active",
+  "does not allow swaps that increase corrupted denom",
+];
+
+/** Maps an error from a sidecar quote request (error JSON as sidecar returns it) to the
+ *  matching quote error, so the UI can show a localized message. */
+function toSidecarRouterError(e: unknown): Error {
+  const errorMessage = (e as { data?: { message?: string } }).data?.message;
+
+  if (
+    errorMessage?.includes("no routes were provided") ||
+    errorMessage?.includes("no candidate routes found") ||
+    (errorMessage?.includes("transmuter pool") &&
+      TRANSMUTER_REFUSAL_MESSAGES.some((m) => errorMessage.includes(m)))
+  ) {
+    return new NoRouteError(errorMessage);
+  }
+
+  if (errorMessage?.includes("not enough liquidity")) {
+    return new NotEnoughLiquidityError(errorMessage);
+  }
+
+  if (errorMessage?.includes("amount out is zero, try increasing amount in")) {
+    return new NotEnoughQuotedError(errorMessage);
+  }
+
+  return new Error(errorMessage ?? "Unexpected sidecar router error " + e);
 }
 
 function translatePoolTypeFromSidecar(

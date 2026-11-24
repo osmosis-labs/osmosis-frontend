@@ -1,3 +1,4 @@
+import { cached } from "@osmosis-labs/server";
 import {
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
@@ -13,7 +14,6 @@ import {
   NativeEVMTokenConstantAddress,
   redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
-import { cachified } from "cachified";
 import Long from "long";
 import {
   Address,
@@ -83,7 +83,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     toChain,
     slippage = 1,
   }: GetBridgeQuoteParams): Promise<BridgeQuote> {
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: JSON.stringify({
         id: SquidBridgeProvider.ID,
@@ -648,7 +648,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   }
 
   getChains() {
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: SquidBridgeProvider.ID + "_chains",
       ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
@@ -672,8 +672,8 @@ export class SquidBridgeProvider implements BridgeProvider {
       // body) must not be cached as 30 minutes of truth: an empty registry
       // reads as "asset unsupported" downstream, which silently bypasses
       // the client's retry and re-poll machinery. Failing the check makes
-      // cachified throw instead, so it propagates as a provider failure
-      // the client retries. (cachified types the checked value as {}.)
+      // `cached` throw instead, so it propagates as a provider failure
+      // the client retries. (`cached` types the checked value as unknown.)
       checkValue: (value) => {
         const chains = value as SquidChainsResponse["chains"];
         return (chains?.length ?? 0) > 0 || "empty Squid chains response";
@@ -682,7 +682,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   }
 
   getTokens() {
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: SquidBridgeProvider.ID + "_tokens",
       ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes

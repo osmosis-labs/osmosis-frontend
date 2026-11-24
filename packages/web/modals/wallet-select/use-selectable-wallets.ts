@@ -3,6 +3,7 @@ import { Mutable } from "utility-types";
 import { Connector } from "wagmi";
 
 import { AvailableCosmosWallets } from "~/config/generated/cosmos-kit-wallet-list";
+import { useEnsureEvmConnectors } from "~/config/wagmi";
 import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useConnectEvmWallet } from "~/hooks/evm-wallet";
 
@@ -52,10 +53,12 @@ export const useSelectableWallets = ({
   isMobile: boolean;
   includedWallets: ("cosmos" | "evm")[];
 }) => {
+  const includeEvm = includedWallets.includes("evm");
+  useEnsureEvmConnectors(includeEvm);
   const { connectors } = useConnectEvmWallet();
 
   const evmWallets = useMemo(() => {
-    if (!includedWallets.includes("evm")) return [];
+    if (!includeEvm) return [];
 
     return (
       connectors
@@ -73,7 +76,7 @@ export const useSelectableWallets = ({
           return 0;
         })
     );
-  }, [connectors, includedWallets]);
+  }, [connectors, includeEvm]);
 
   const cosmosWallets = useMemo(() => {
     if (!includedWallets.includes("cosmos")) return [];

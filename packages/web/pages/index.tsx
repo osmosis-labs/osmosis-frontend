@@ -9,7 +9,6 @@ import {
   AssetHighlights,
   highlightPrice24hChangeAsset,
 } from "~/components/assets/highlights-categories";
-import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { useFeatureFlags, useTranslation } from "~/hooks";
@@ -59,13 +58,10 @@ const Home = () => {
         >
           <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
-            {/** Hydration issues need to be investigated before this client wrapper can be removed. */}
-            <ClientOnly>
-              <TradeTool
-                previousTrade={previousTrade}
-                setPreviousTrade={setPreviousTrade}
-              />
-            </ClientOnly>
+            <TradeTool
+              previousTrade={previousTrade}
+              setPreviousTrade={setPreviousTrade}
+            />
             {featureFlags.swapToolTopGainers && <TopGainers />}
           </div>
         </div>

@@ -1,9 +1,6 @@
 import { activeGaugesHandler } from "~/server/api-handlers/active-gauges";
 import { broadcastTransactionHandler } from "~/server/api-handlers/broadcast-transaction";
 import { cspReportHandler } from "~/server/api-handlers/csp-report";
-import { edgeTrpcAssetsHandler } from "~/server/api-handlers/edge-trpc-assets";
-import { edgeTrpcMainHandler } from "~/server/api-handlers/edge-trpc-main";
-import { edgeTrpcPoolsHandler } from "~/server/api-handlers/edge-trpc-pools";
 import { estimateGasFeeHandler } from "~/server/api-handlers/estimate-gas-fee";
 import { evmRpcHandler } from "~/server/api-handlers/evm-rpc";
 import { poolHandler } from "~/server/api-handlers/pool";
@@ -15,16 +12,23 @@ import {
 } from "~/server/api-handlers/skip-tx";
 import { solanaRpcHandler } from "~/server/api-handlers/solana-rpc";
 import { swappedSignatureHandler } from "~/server/api-handlers/swapped-signature";
-import { trpcHandler } from "~/server/api-handlers/trpc";
+import {
+  edgeTrpcAssetsHandler,
+  edgeTrpcLocalHandler,
+  edgeTrpcMainHandler,
+  edgeTrpcPoolsHandler,
+  trpcHandler,
+} from "~/server/api-handlers/trpc";
 
 import type { ApiHandler, ApiHandlerId } from "./routes";
 
-/** Handler id → Fetch handler. Ids are checked against `API_HANDLER_IDS` by the route tests. */
+/** Handler id → Fetch handler. The type makes TypeScript require one entry per route in `routes.ts`. */
 export const apiHandlers: Record<ApiHandlerId, ApiHandler> = {
   trpc: trpcHandler,
   edgeTrpcMain: edgeTrpcMainHandler,
   edgeTrpcPools: edgeTrpcPoolsHandler,
   edgeTrpcAssets: edgeTrpcAssetsHandler,
+  edgeTrpcLocal: edgeTrpcLocalHandler,
   pools: poolsHandler,
   pool: poolHandler,
   activeGauges: activeGaugesHandler,

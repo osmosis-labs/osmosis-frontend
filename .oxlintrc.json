@@ -26,6 +26,17 @@
     "packages/proto-codecs/src/codegen/**"
   ],
   "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "cachified",
+            "message": "Use `cached` from @osmosis-labs/server (utils/cached.ts): cachified shares pending promises across requests and refreshes on timers, which break on Cloudflare Workers."
+          }
+        ]
+      }
+    ],
     "no-array-constructor": "error",
     "unicorn/filename-case": [
       "error",
@@ -119,6 +130,12 @@
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "cachified",
+                "message": "Use `cached` from @osmosis-labs/server (utils/cached.ts): cachified shares pending promises across requests and refreshes on timers, which break on Cloudflare Workers."
+              }
+            ],
             "patterns": [
               {
                 "group": [
@@ -167,6 +184,7 @@
               "**/*.spec.js",
               "**/setup-tests.js",
               "**/web/config/generate-*.ts",
+              "**/web/config/utils.ts",
               "**/web/open-next.config.ts",
               "**/web/scripts/*.mjs"
             ]

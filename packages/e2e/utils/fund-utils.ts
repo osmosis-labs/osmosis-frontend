@@ -9,11 +9,11 @@
  * Used by `scripts/migrate-funds.ts` and `scripts/topup-accounts.ts`.
  */
 
-import BigNumber from "bignumber.js";
 import type { Coin } from "@cosmjs/stargate";
+import BigNumber from "bignumber.js";
 
-import type { AccountBalanceRequirement } from "./balance-config";
 import { TOKEN_DENOMS } from "./balance-checker";
+import type { AccountBalanceRequirement } from "./balance-config";
 import { REST_ENDPOINT } from "./config";
 import { fetchTokenPrices } from "./price-utils";
 
@@ -266,12 +266,16 @@ export function calculateDistribution(
 
     if (b.symbol === "OSMO" && reserves.osmo > 0) {
       raw = raw.minus(
-        new BigNumber(reserves.osmo).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
+        new BigNumber(reserves.osmo)
+          .times(new BigNumber(10).pow(b.decimals))
+          .integerValue(BigNumber.ROUND_UP)
       );
     }
     if (b.symbol === "USDC" && reserves.usdc > 0) {
       raw = raw.minus(
-        new BigNumber(reserves.usdc).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
+        new BigNumber(reserves.usdc)
+          .times(new BigNumber(10).pow(b.decimals))
+          .integerValue(BigNumber.ROUND_UP)
       );
     }
 
@@ -314,7 +318,9 @@ export function calculateDistribution(
       coins.push({ denom: tokenInfo.denom, amount: rawToSend.toFixed(0) });
       summary.push({
         symbol: req.token,
-        amount: Number(rawToSend.div(new BigNumber(10).pow(tokenInfo.decimals))),
+        amount: Number(
+          rawToSend.div(new BigNumber(10).pow(tokenInfo.decimals))
+        ),
       });
     }
 
@@ -368,12 +374,16 @@ export function calculateTopup(
 
     if (b.symbol === "OSMO" && reserves.osmo > 0) {
       raw = raw.minus(
-        new BigNumber(reserves.osmo).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
+        new BigNumber(reserves.osmo)
+          .times(new BigNumber(10).pow(b.decimals))
+          .integerValue(BigNumber.ROUND_UP)
       );
     }
     if (b.symbol === "USDC" && reserves.usdc > 0) {
       raw = raw.minus(
-        new BigNumber(reserves.usdc).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
+        new BigNumber(reserves.usdc)
+          .times(new BigNumber(10).pow(b.decimals))
+          .integerValue(BigNumber.ROUND_UP)
       );
     }
 
@@ -392,7 +402,7 @@ export function calculateTopup(
       const tokenInfo = TOKEN_DENOMS[req.token];
       if (!tokenInfo) continue;
 
-      let avail = distributableRaw[tokenInfo.denom];
+      const avail = distributableRaw[tokenInfo.denom];
       if (!avail || avail.lte(0)) continue;
 
       const scale = new BigNumber(10).pow(tokenInfo.decimals);
@@ -404,16 +414,15 @@ export function calculateTopup(
         .times(scale)
         .integerValue(BigNumber.ROUND_DOWN);
       const currentRaw = new BigNumber(
-        target.currentBalances.find((b) => b.symbol === req.token)?.rawAmount ?? "0"
+        target.currentBalances.find((b) => b.symbol === req.token)?.rawAmount ??
+          "0"
       );
 
       if (currentRaw.gte(warnRaw)) continue;
 
       const deficitRaw = targetRaw.minus(currentRaw);
       if (deficitRaw.lte(0)) continue;
-      const rawToSend = deficitRaw.lt(avail)
-        ? deficitRaw
-        : avail;
+      const rawToSend = deficitRaw.lt(avail) ? deficitRaw : avail;
 
       if (rawToSend.lte(0)) continue;
 
@@ -421,7 +430,9 @@ export function calculateTopup(
       coins.push({ denom: tokenInfo.denom, amount: rawToSend.toFixed(0) });
       summary.push({
         symbol: req.token,
-        amount: Number(rawToSend.div(new BigNumber(10).pow(tokenInfo.decimals))),
+        amount: Number(
+          rawToSend.div(new BigNumber(10).pow(tokenInfo.decimals))
+        ),
       });
     }
 
@@ -531,11 +542,7 @@ export function printSwapReport(gaps: SwapGap[]): void {
 
   for (const g of gaps) {
     const status =
-      g.gap < -0.0001
-        ? "SWAP NEEDED"
-        : g.gap > 0.0001
-          ? "surplus"
-          : "ok";
+      g.gap < -0.0001 ? "SWAP NEEDED" : g.gap > 0.0001 ? "surplus" : "ok";
     console.log(
       `    ${g.symbol.padEnd(maxSym)}  ${g.available.toFixed(4).padStart(12)}  ${g.needed.toFixed(4).padStart(12)}  ${(g.gap >= 0 ? "+" : "") + g.gap.toFixed(4).padStart(11)}  ${status}`
     );

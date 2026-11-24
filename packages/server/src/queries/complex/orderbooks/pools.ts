@@ -1,7 +1,8 @@
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
+import { getRequestScoped } from "../../../utils/request-scope";
 import { queryCanonicalOrderbooks } from "../../sidecar/orderbooks";
 
 const orderbookPoolsCache = new LRUCache<string, CacheEntry>(
@@ -16,11 +17,11 @@ export interface Orderbook {
 }
 
 function fetchOrderbookPools(forceFresh = false) {
-  return cachified({
+  return cached({
     cache: orderbookPoolsCache,
     key: `orderbookPools`,
     // A forced-fresh read exists to catch a just-created orderbook that the
-    // cached list predates, and cachified writes its result back to the
+    // cached list predates, and `cached` writes its result back to the
     // shared cache. Write it with a short TTL: if the sidecar hasn't ingested
     // the new pool yet, the pre-creation list re-caches for seconds instead
     // of re-poisoning every client on this instance for a full hour; if it
@@ -55,18 +56,29 @@ export function getOrderbookPools() {
  */
 const FRESH_MIN_INTERVAL_MS = 1500;
 let lastFreshReadAt = 0;
-let inFlightFreshRead: Promise<Orderbook[]> | undefined;
+
+/** The fresh read in flight. On Workers one per request: a read started by one
+ *  request can't settle in another (see `request-scope.ts`). */
+type FreshRead = { inFlight?: Promise<Orderbook[]> };
+const sharedFreshRead: FreshRead = {};
+const freshReadSlot = {};
 
 export function getOrderbookPoolsFresh(): Promise<Orderbook[]> {
+  const freshRead =
+    getRequestScoped<FreshRead>(freshReadSlot, () => ({})) ?? sharedFreshRead;
   // Concurrent fresh reads share one sidecar request.
-  if (inFlightFreshRead) return inFlightFreshRead;
-  // A fresh read just completed and wrote its result back: serve that.
+  if (freshRead.inFlight) return freshRead.inFlight;
+  // A fresh read started or completed just now: serve the cached list. Claiming the slot
+  // when the read starts keeps the floor across requests, which can't join each
+  // other's in-flight read on Workers.
   if (Date.now() - lastFreshReadAt < FRESH_MIN_INTERVAL_MS) {
     return fetchOrderbookPools(false);
   }
-  inFlightFreshRead = fetchOrderbookPools(true).finally(() => {
+  lastFreshReadAt = Date.now();
+  const read = fetchOrderbookPools(true).finally(() => {
     lastFreshReadAt = Date.now();
-    inFlightFreshRead = undefined;
+    freshRead.inFlight = undefined;
   });
-  return inFlightFreshRead;
+  freshRead.inFlight = read;
+  return read;
 }

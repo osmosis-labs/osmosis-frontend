@@ -1,5 +1,9 @@
-import { type Locator, type Page, expect } from '@playwright/test'
-import { waitForKeplrApproval } from './keplr-helper'
+import { expect, type Locator, type Page } from "@playwright/test";
+
+import { waitForKeplrApproval } from "./keplr-helper";
+
+/** Pages that already snooze the forced-migration popup; see below. */
+const pagesSnoozingForcedMigrations = new WeakSet<Page>();
 
 /**
  * Base page object shared by all E2E page classes.
@@ -11,26 +15,26 @@ import { waitForKeplrApproval } from './keplr-helper'
  *   treat TimeoutError as "auto-approved / 1CT active".
  */
 export class BasePage {
-  readonly page: Page
-  readonly connectWalletBtn: Locator
-  readonly kepltWalletBtn: Locator
-  readonly portfolioLink: Locator
-  readonly poolsLink: Locator
-  readonly walletBalance: Locator
-  readonly connectedWalletBtn: Locator
+  readonly page: Page;
+  readonly connectWalletBtn: Locator;
+  readonly kepltWalletBtn: Locator;
+  readonly portfolioLink: Locator;
+  readonly poolsLink: Locator;
+  readonly walletBalance: Locator;
+  readonly connectedWalletBtn: Locator;
 
   constructor(page: Page) {
-    this.page = page
+    this.page = page;
     // By text, not role: after a trade the app root can stay aria-hidden once
     // the review modal closes, which hides the button from role queries.
     this.connectWalletBtn = page
-      .locator('button', { hasText: /^Connect wallet$/ })
-      .first()
-    this.kepltWalletBtn = page.locator('button').filter({ hasText: /^Keplr$/ })
-    this.portfolioLink = page.getByText('Portfolio')
-    this.poolsLink = page.getByText('Pools')
-    this.walletBalance = page.locator('//span[@data-testid="wallet-balance"]')
-    this.connectedWalletBtn = page.locator('//button/div/span[@title]')
+      .locator("button", { hasText: /^Connect wallet$/ })
+      .first();
+    this.kepltWalletBtn = page.locator("button").filter({ hasText: /^Keplr$/ });
+    this.portfolioLink = page.getByText("Portfolio");
+    this.poolsLink = page.getByText("Pools");
+    this.walletBalance = page.locator('//span[@data-testid="wallet-balance"]');
+    this.connectedWalletBtn = page.locator("//button/div/span[@title]");
   }
 
   /**
@@ -39,15 +43,16 @@ export class BasePage {
    * or 1CT enabled), we continue without error.
    */
   async connectWallet() {
-    await this.fitWindowToMacRunnerDisplay()
+    await this.fitWindowToMacRunnerDisplay();
     // Keplr places its popup from the last focused window, which after setup
     // can be the wallet's own register tab rather than the app.
-    await this.page.bringToFront()
-    await this.connectWalletBtn.click()
-    await this.kepltWalletBtn.click()
-    await waitForKeplrApproval(this.page.context())
-    await this.getWalletBalance()
-    await this.dismissVariantsPopupIfPresent()
+    await this.page.bringToFront();
+    await this.snoozeForcedMigrationPopupWhenShown();
+    await this.connectWalletBtn.click();
+    await this.kepltWalletBtn.click();
+    await waitForKeplrApproval(this.page.context());
+    await this.getWalletBalance();
+    await this.dismissVariantsPopupIfPresent();
   }
 
   /**
@@ -55,16 +60,17 @@ export class BasePage {
    * a popup.
    */
   async connectFakeWallet() {
+    await this.snoozeForcedMigrationPopupWhenShown();
     // The visible one: on a phone the header's button is inside the menu.
     const connect = this.page
-      .locator('button', { hasText: /^Connect wallet$/ })
-      .filter({ visible: true })
-    await connect.first().click()
-    await this.kepltWalletBtn.click()
-    await expect(connect, 'Wallet should be connected.').toHaveCount(0, {
+      .locator("button", { hasText: /^Connect wallet$/ })
+      .filter({ visible: true });
+    await connect.first().click();
+    await this.kepltWalletBtn.click();
+    await expect(connect, "Wallet should be connected.").toHaveCount(0, {
       timeout: 15_000,
-    })
-    await this.dismissVariantsPopupIfPresent()
+    });
+    await this.dismissVariantsPopupIfPresent();
   }
 
   /**
@@ -76,18 +82,21 @@ export class BasePage {
    * is unaffected.
    */
   private async fitWindowToMacRunnerDisplay() {
-    if (process.platform !== 'darwin' || process.env.HEADLESS === 'true') return
-    const cdp = await this.page.context().newCDPSession(this.page)
+    if (process.platform !== "darwin" || process.env.HEADLESS === "true")
+      return;
+    const cdp = await this.page.context().newCDPSession(this.page);
     try {
-      const { windowId } = await cdp.send('Browser.getWindowForTarget')
-      await cdp.send('Browser.setWindowBounds', {
+      const { windowId } = await cdp.send("Browser.getWindowForTarget");
+      await cdp.send("Browser.setWindowBounds", {
         windowId,
         bounds: { left: 0, top: 0, width: 1000, height: 740 },
-      })
-      const { bounds } = await cdp.send('Browser.getWindowBounds', { windowId })
-      console.log(`Browser window bounds: ${JSON.stringify(bounds)}`)
+      });
+      const { bounds } = await cdp.send("Browser.getWindowBounds", {
+        windowId,
+      });
+      console.log(`Browser window bounds: ${JSON.stringify(bounds)}`);
     } finally {
-      await cdp.detach().catch(() => {})
+      await cdp.detach().catch(() => {});
     }
   }
 
@@ -100,62 +109,84 @@ export class BasePage {
    */
   async waitForTradeUi(timeout = 30_000) {
     await expect(
-      this.page.getByTestId('token-in'),
-      'Trade UI did not load.',
-    ).toBeVisible({ timeout })
+      this.page.getByTestId("token-in"),
+      "Trade UI did not load."
+    ).toBeVisible({ timeout });
   }
 
   async gotoPortfolio() {
-    await this.portfolioLink.click()
-    await this.page.waitForURL(/\/portfolio/, { waitUntil: 'commit' })
-    await this.printUrl()
+    await this.portfolioLink.click();
+    await this.page.waitForURL(/\/portfolio/, { waitUntil: "commit" });
+    await this.printUrl();
   }
 
   async gotoPools() {
-    await this.poolsLink.click()
+    await this.poolsLink.click();
   }
 
   async printUrl() {
-    const currentUrl = this.page.url()
-    console.log(`FE opened at: ${currentUrl}`)
+    const currentUrl = this.page.url();
+    console.log(`FE opened at: ${currentUrl}`);
   }
 
   async getWalletBalance() {
-    console.log('Wait for a wallet balance for 9s.')
-    await expect(this.walletBalance, 'Wallet should be connected.').toBeVisible(
-      { timeout: 9000 },
-    )
-    const balance = await this.walletBalance.textContent({ timeout: 2000 })
-    console.log(`Wallet balance: ${balance}`)
-    return balance
+    console.log("Wait for a wallet balance for 9s.");
+    await expect(this.walletBalance, "Wallet should be connected.").toBeVisible(
+      { timeout: 9000 }
+    );
+    const balance = await this.walletBalance.textContent({ timeout: 2000 });
+    console.log(`Wallet balance: ${balance}`);
+    return balance;
   }
 
   /** Dismisses the "Variants Detected" modal that may appear on staging deploys. */
   async dismissVariantsPopupIfPresent() {
     try {
       // By text, not role: see connectWalletBtn.
-      const dismissBtn = this.page.locator('button', { hasText: /^Dismiss$/ })
-      await dismissBtn.waitFor({ state: 'visible', timeout: 4000 })
-      await dismissBtn.click()
-      console.log('Dismissed "Variants Detected" popup.')
+      const dismissBtn = this.page.locator("button", { hasText: /^Dismiss$/ });
+      await dismissBtn.waitFor({ state: "visible", timeout: 4000 });
+      await dismissBtn.click();
+      console.log('Dismissed "Variants Detected" popup.');
     } catch {
       // Modal not present — continue normally
     }
   }
 
+  /**
+   * The forced-migration popup (fe-content `cms/forced-migrations.json`)
+   * opens for a connected wallet holding an asset being wound down, once its
+   * portfolio queries settle, so it can appear at any point after connecting
+   * and cover whatever the test clicks next. Snoozing it is the only way to
+   * close it. A locator handler clicks "Remind me later" whenever it is
+   * showing before an action, which also covers popups added to the CMS
+   * later without touching the tests.
+   */
+  async snoozeForcedMigrationPopupWhenShown() {
+    if (pagesSnoozingForcedMigrations.has(this.page)) return;
+    pagesSnoozingForcedMigrations.add(this.page);
+    // By text, not role: see connectWalletBtn.
+    const remindMeLater = this.page.locator(".ReactModal__Content button", {
+      hasText: /^Remind me later$/,
+    });
+    await this.page.addLocatorHandler(remindMeLater, async () => {
+      await remindMeLater.click();
+      console.log("Snoozed the forced-migration popup.");
+    });
+  }
+
   async logOut() {
-    await this.dismissAllToasts()
+    await this.dismissAllToasts();
     await expect(
       this.connectedWalletBtn,
-      'Wallet should be connected.',
-    ).toBeVisible({ timeout: 4000 })
+      "Wallet should be connected."
+    ).toBeVisible({ timeout: 4000 });
     // The profile panel can re-render as balances refresh after a trade,
     // detaching the button mid-click; the click retries within its timeout.
-    await this.connectedWalletBtn.click({ timeout: 10_000 })
-    const logoutBtn = this.page.locator('//button[@title="Log Out"]')
-    await logoutBtn.click({ timeout: 10_000 })
+    await this.connectedWalletBtn.click({ timeout: 10_000 });
+    const logoutBtn = this.page.locator('//button[@title="Log Out"]');
+    await logoutBtn.click({ timeout: 10_000 });
     // Logging out can take several seconds on a busy preview.
-    await expect(this.connectWalletBtn).toBeVisible({ timeout: 15_000 })
+    await expect(this.connectWalletBtn).toBeVisible({ timeout: 15_000 });
   }
 
   /**
@@ -168,9 +199,9 @@ export class BasePage {
     await this.page
       .evaluate(() => {
         document
-          .querySelectorAll('.Toastify__toast')
-          .forEach((el) => el.remove())
+          .querySelectorAll(".Toastify__toast")
+          .forEach((el) => el.remove());
       })
-      .catch(() => {})
+      .catch(() => {});
   }
 }

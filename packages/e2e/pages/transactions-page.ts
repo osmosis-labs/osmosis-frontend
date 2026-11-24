@@ -1,16 +1,16 @@
 import {
   type BrowserContext,
+  expect,
   type Locator,
   type Page,
-  expect,
   test,
 } from "@playwright/test";
 
 import {
-  SEQUENCE_RETRY_DELAY_MS,
   buildExplorerTxUrl,
   isSequenceMismatch,
   pollTxOnChain,
+  SEQUENCE_RETRY_DELAY_MS,
 } from "../utils/tx-confirm";
 import { BasePage } from "./base-page";
 import { getKeplrPopupPage } from "./keplr-helper";

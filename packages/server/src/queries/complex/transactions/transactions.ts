@@ -1,6 +1,5 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "../../../env";
@@ -11,6 +10,7 @@ import {
   Transaction,
 } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 import {
   FormattedTransfer,
@@ -172,7 +172,7 @@ export async function getTransactions({
   const selectedTypes = TRANSACTION_TYPES.filter((type) =>
     types.includes(type)
   );
-  return await cachified({
+  return await cached({
     cache: transactionsCache,
     ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
     key: `transactions-${address}-page-${page}-pageSize-${pageSize}-types-${selectedTypes.join(",")}`,
