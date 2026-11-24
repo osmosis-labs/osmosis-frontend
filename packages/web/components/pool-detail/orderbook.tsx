@@ -217,6 +217,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
     userAddress: userAddress ?? "",
     disabled: isOrdersLoading || isRefetching,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+    orderbookAddress: contractAddress,
   });
 
   const claimablePoolOrders = useMemo(
