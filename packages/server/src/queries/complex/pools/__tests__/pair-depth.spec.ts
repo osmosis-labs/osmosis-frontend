@@ -1,5 +1,9 @@
 import { SQSOrderbookTick } from "../../../sidecar/orderbooks";
-import { bestPricesFromLevels, buildOrderbookLevels } from "../pair-depth";
+import {
+  aggregateLevels,
+  bestPricesFromLevels,
+  buildOrderbookLevels,
+} from "../pair-depth";
 
 function tick(
   tickId: number,
@@ -137,5 +141,29 @@ describe("bestPricesFromLevels", () => {
       askPrice: 0,
       midPrice: bids[0].price,
     });
+  });
+});
+
+describe("aggregateLevels", () => {
+  it("rounds bids down and asks up, so a grouped book cannot cross", () => {
+    const bids = aggregateLevels(
+      [
+        { price: 0.99, quantity: 1, cumulative: 1 },
+        { price: 0.3, quantity: 2, cumulative: 3 },
+      ],
+      0.1,
+      "bid"
+    );
+    const asks = aggregateLevels(
+      [{ price: 1.01, quantity: 1, cumulative: 1 }],
+      0.1,
+      "ask"
+    );
+    // 0.3 sits on a bucket boundary despite 0.3 / 0.1 = 2.9999… in floats.
+    expect(bids.map((l) => l.price)).toEqual([
+      expect.closeTo(0.9),
+      expect.closeTo(0.3),
+    ]);
+    expect(asks[0].price).toBeCloseTo(1.1);
   });
 });
