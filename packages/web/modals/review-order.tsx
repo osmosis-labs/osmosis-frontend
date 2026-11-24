@@ -923,7 +923,11 @@ export function ReviewOrder({
                     />
                     {showLiquidityUnknown && (
                       <p className="caption text-ammelia-400">
-                        {t("swap.routeLiquidityUnknown")}
+                        {t(
+                          resolvedQuoteType === "in-given-out"
+                            ? "swap.routeLiquidityUnknownExactOut"
+                            : "swap.routeLiquidityUnknown"
+                        )}
                       </p>
                     )}
                     {isManualSlippageTooHigh && (
@@ -942,7 +946,11 @@ export function ReviewOrder({
                           </span>
                           <span className="body2 sm:caption text-osmoverse-300">
                             {showAutoAdjusted
-                              ? t("swap.slippageAutoAdjustedHigh")
+                              ? t(
+                                  resolvedQuoteType === "in-given-out"
+                                    ? "swap.slippageAutoAdjustedHighExactOut"
+                                    : "swap.slippageAutoAdjustedHigh"
+                                )
                               : t(
                                   "limitOrders.lowerSlippageToleranceRecommended"
                                 )}
