@@ -74,17 +74,23 @@ function formatGroupLabel(value: number): string {
   return s.includes("e") ? value.toFixed(20).replace(/\.?0+$/, "") : s;
 }
 
-function aggregateLevels(
+export function aggregateLevels(
   levels: OrderbookLevel[],
   bucketSize: number,
   side: "bid" | "ask"
 ): OrderbookLevel[] {
   if (bucketSize <= 0 || levels.length === 0) return levels;
 
-  // Group by rounded price bucket
+  // Bids round down and asks round up, so a bucket never shows a better
+  // price than its orders and the grouped book cannot cross. The epsilon
+  // keeps float error (0.3 / 0.1 = 2.9999…) from moving a price that sits
+  // exactly on a bucket boundary.
   const buckets = new Map<number, number>();
   for (const { price, quantity } of levels) {
-    const bucket = Math.round(price / bucketSize) * bucketSize;
+    const steps = price / bucketSize;
+    const bucket =
+      (side === "bid" ? Math.floor(steps + 1e-9) : Math.ceil(steps - 1e-9)) *
+      bucketSize;
     buckets.set(bucket, (buckets.get(bucket) ?? 0) + quantity);
   }
 

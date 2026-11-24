@@ -38,6 +38,7 @@ import {
 } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
+import { Breakpoint, useWindowSize } from "~/hooks/window/use-window-size";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
 import { createTrpcHelpers } from "~/utils/helpers";
 
@@ -105,6 +106,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
     [asset.coinMinimalDenom]
   );
   const [ref] = useQueryState("ref");
+
+  // The page lays the trade tool out in one of two places by width. Only the
+  // visible one is mounted, so the hidden copy doesn't poll depth and orders
+  // too. Nothing is mounted until the width is known.
+  const { width, isMobile: isBelowXl } = useWindowSize(Breakpoint.xl);
+  const showNarrowTradeTool = width > 0 && isBelowXl;
+  const showWideTradeTool = width > 0 && !isBelowXl;
 
   useNavBar({
     title: (
@@ -205,7 +213,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
                   book beside it under the chart, then the balance with the
                   user's orders beside it, spaced as one group. */}
               <div className="hidden flex-col gap-4 xl:flex">
-                <TradeTool {...tradeToolProps} bookLayout="beside" />
+                {showNarrowTradeTool && (
+                  <TradeTool {...tradeToolProps} bookLayout="beside" />
+                )}
                 {/* Balance under the widget and orders under the book, at
                     their widths. The balance sets the row's height; the orders
                     fill it and scroll, until the two stack below 1024px. */}
@@ -213,7 +223,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
                   <AssetBalance className="w-[420px] shrink-0 lg:w-full" />
                   <div className="relative min-w-0 flex-1 lg:w-full">
                     <div className="absolute inset-0 lg:static">
-                      <AssetOrderHistory />
+                      {showNarrowTradeTool && <AssetOrderHistory />}
                     </div>
                   </div>
                 </div>
@@ -253,10 +263,12 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
           <div className="flex flex-col gap-11 sm:gap-10">
             <div className="xl:hidden">
               {/* The balance sits in the widget's stack, at its spacing. */}
-              <TradeTool {...tradeToolProps} bookLayout="below">
-                <AssetOrderHistory />
-                <AssetBalance />
-              </TradeTool>
+              {showWideTradeTool && (
+                <TradeTool {...tradeToolProps} bookLayout="below">
+                  <AssetOrderHistory />
+                  <AssetBalance />
+                </TradeTool>
+              )}
             </div>
             <AssetStats className="xl:hidden" />
             {!asset.areTransfersDisabled && asset.contract ? (
