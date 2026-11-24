@@ -23,7 +23,8 @@ describe("client list transforms", () => {
     expect("counterparty" in sample!).toBe(false);
     expect("transferMethods" in sample!).toBe(false);
     expect("logoURIs" in sample!).toBe(false);
-    expect("categories" in sample!).toBe(false);
+    // Kept: the limit-order quote picker filters on it.
+    expect(Array.isArray(sample!.categories)).toBe(true);
     expect(JSON.stringify(clientAssetLists).length).toBeLessThan(
       JSON.stringify(AssetLists).length * 0.5
     );

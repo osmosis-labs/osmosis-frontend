@@ -4,7 +4,7 @@ import { getImageRelativeFilePath } from "~/config/keplr-chain";
 
 /**
  * Strips server-only fields (`counterparty`, `transferMethods`, `logoURIs`,
- * `categories`, `listingDate`, `sortWith`, `pegMechanism`, `preview`,
+ * `listingDate`, `sortWith`, `pegMechanism`, `preview`,
  * `chainName`) from the generated asset list so the browser bundle only ships
  * fields actually read by client lookup helpers, Keplr chain derivation, and
  * CosmosKit (`~65%` smaller raw JS).
@@ -25,6 +25,8 @@ export function toClientAssetLists(assetLists: AssetList[]): AssetList[] {
         isAlloyed: Boolean(asset.isAlloyed),
         unstable: Boolean(asset.unstable),
         disabled: Boolean(asset.disabled),
+        // Read by the limit-order quote picker to offer only stablecoins.
+        categories: asset.categories ?? [],
       };
       if (asset.coingeckoId) slim.coingeckoId = asset.coingeckoId;
       if (asset.price) slim.price = asset.price;
