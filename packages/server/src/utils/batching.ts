@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 
-/** Batching DataLoader with Vercel Edge compatible batching scheduler.
+/** Batching DataLoader with an edge-runtime compatible batching scheduler.
  *
  *  DataLoader creates a public API for loading data from a particular
  *  data back-end with unique keys such as the id column of a SQL table
@@ -14,8 +14,8 @@ import DataLoader from "dataloader";
 export class EdgeDataLoader<K, V, C = K> extends DataLoader<K, V, C> {
   constructor(...args: ConstructorParameters<typeof DataLoader<K, V, C>>) {
     super(args[0], {
-      // workaround to work on Vercel Edge runtime
-      // prevents access of process.nextTick
+      // edge runtimes may not provide process.nextTick, so schedule
+      // batches with setTimeout instead
       batchScheduleFn: (cb) => setTimeout(cb, 0),
       ...args[1],
     } as ConstructorParameters<typeof DataLoader<K, V, C>>[1]);

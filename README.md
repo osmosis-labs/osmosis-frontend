@@ -13,7 +13,7 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
 - [Tailwind CSS](https://tailwindcss.com/): styling, theming
 - [Next.js](https://nextjs.org/): scaffolding/SSR/CDN/SEO
   - Cloudflare Workers hosts the OpenNext frontend and a separate API Worker.
-- [Turbo Repo](https://turbo.build/repo): mono repo management with package script execution, with heavy emphasis on build caching (including shared remote caching in Vercel)
+- [Turbo Repo](https://turbo.build/repo): mono repo management with package script execution, with heavy emphasis on build caching
 
 ## Deployment 🚀
 
@@ -42,15 +42,6 @@ yarn
 ```
 
 Installing also points git at the tracked `.githooks/` directory (`core.hooksPath`), whose pre-commit hook runs `lint-staged` on staged files. Run `yarn hooks:install` if you installed with scripts disabled.
-
-**First time setup** If you're on the Osmosis foundation team and have a Vercel account set up, optionally sign into turbo repo using your Vercel account, and link the repo. This could give you instant builds by sharing the remote cache on our Vercel project:
-
-```bash
-npx turbo login
-...login via browser...
-npx turbo link
-...press y (yes) and choose "OsmoLabs" as the Vercel build scope...
-```
 
 2. Run an initial build to create packages build artifacts:
 
