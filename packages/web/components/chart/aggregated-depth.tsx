@@ -320,30 +320,115 @@ export const OrderbookDepthPanel: FunctionComponent<{
       ? visibleAsks[sweepIndex ?? 0]?.price
       : visibleBids[sweepIndex ?? 0]?.price;
 
+  // The controls stay up in the empty state too, so a toggle that hid every
+  // row can be switched back.
+  const controls = (
+    <div className="flex items-center border-b border-osmoverse-700 px-3 py-1">
+      <div className="flex gap-1">
+        <button
+          onClick={() => onBucketSizeChange?.(undefined)}
+          className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+            bucketSize === undefined
+              ? "bg-osmoverse-700 text-white-full"
+              : "text-osmoverse-400 hover:text-osmoverse-200"
+          }`}
+        >
+          {t("pool.orderbookPool.depthRaw")}
+        </button>
+        {groupingOptions.map(({ label, value }) => (
+          <button
+            key={value}
+            onClick={() => onBucketSizeChange?.(value)}
+            className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+              bucketSize === value
+                ? "bg-osmoverse-700 text-white-full"
+                : "text-osmoverse-400 hover:text-osmoverse-200"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {onShowEdgesChange && (
+        <button
+          type="button"
+          aria-pressed={showEdges}
+          aria-label={t("pool.orderbookPool.depthEdgesTooltip")}
+          onClick={() => onShowEdgesChange(!showEdges)}
+          title={t("pool.orderbookPool.depthEdgesTooltip")}
+          className={`ml-auto rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+            showEdges
+              ? "bg-osmoverse-700 text-white-full"
+              : "text-osmoverse-400 hover:text-osmoverse-200"
+          }`}
+        >
+          {"<>"}
+        </button>
+      )}
+      {onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) && (
+        <button
+          type="button"
+          aria-pressed={clEnabled}
+          onClick={() => onClEnabledChange(!clEnabled)}
+          title={t("pool.orderbookPool.depthClLegendTooltip")}
+          className={`${onShowEdgesChange ? "ml-1" : "ml-auto"} flex items-center gap-1 whitespace-nowrap rounded px-1.5 py-0.5 text-xs transition-colors ${
+            clEnabled
+              ? "bg-osmoverse-700 text-white-full"
+              : "text-osmoverse-400 hover:text-osmoverse-200"
+          }`}
+        >
+          <span
+            className="inline-block h-2 w-3 rounded-sm"
+            style={{
+              backgroundImage: `repeating-linear-gradient(135deg, ${theme.colors.osmoverse["300"]}${clEnabled ? "aa" : "44"} 0 2px, transparent 2px 4px)`,
+            }}
+          />
+          {t("pool.orderbookPool.depthClLegend")}
+        </button>
+      )}
+      {clEnabled && clUnavailable && (
+        <span className="ml-2 text-xs text-osmoverse-500">
+          {t("pool.orderbookPool.depthClUnavailable")}
+        </span>
+      )}
+      <span
+        className={`${onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) ? "ml-2" : "ml-auto"} mr-0.5 h-1.5 w-1.5 rounded-full ${
+          isLive ? "bg-bullish-400" : "animate-pulse bg-osmoverse-500"
+        }`}
+      />
+    </div>
+  );
+
   // Empty states follow the rows shown: with the "<" and ">" rows off, a
   // side holding only CL past the book's edge has nothing to show.
   if (!isLoading && visibleBids.length === 0 && visibleAsks.length === 0) {
     if (isError) {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-          <p className="body2 text-osmoverse-300">
-            {t("pool.orderbookPool.depthUnavailable")}
-          </p>
-          <p className="caption text-osmoverse-500">
-            {t("pool.orderbookPool.depthUnavailableDesc")}
-          </p>
+        <div className="flex h-full flex-col overflow-hidden">
+          {controls}
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+            <p className="body2 text-osmoverse-300">
+              {t("pool.orderbookPool.depthUnavailable")}
+            </p>
+            <p className="caption text-osmoverse-500">
+              {t("pool.orderbookPool.depthUnavailableDesc")}
+            </p>
+          </div>
         </div>
       );
     }
     if (!isRefetching) {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-          <p className="body2 text-osmoverse-300">
-            {t("pool.orderbookPool.depthNoOrders")}
-          </p>
-          <p className="caption text-osmoverse-500">
-            {t("pool.orderbookPool.depthNoOrdersDesc")}
-          </p>
+        <div className="flex h-full flex-col overflow-hidden">
+          {controls}
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+            <p className="body2 text-osmoverse-300">
+              {t("pool.orderbookPool.depthNoOrders")}
+            </p>
+            <p className="caption text-osmoverse-500">
+              {t("pool.orderbookPool.depthNoOrdersDesc")}
+            </p>
+          </div>
         </div>
       );
     }
@@ -364,81 +449,7 @@ export const OrderbookDepthPanel: FunctionComponent<{
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      {/* Aggregation selector + live indicator */}
-      <div className="flex items-center border-b border-osmoverse-700 px-3 py-1">
-        <div className="flex gap-1">
-          <button
-            onClick={() => onBucketSizeChange?.(undefined)}
-            className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
-              bucketSize === undefined
-                ? "bg-osmoverse-700 text-white-full"
-                : "text-osmoverse-400 hover:text-osmoverse-200"
-            }`}
-          >
-            {t("pool.orderbookPool.depthRaw")}
-          </button>
-          {groupingOptions.map(({ label, value }) => (
-            <button
-              key={value}
-              onClick={() => onBucketSizeChange?.(value)}
-              className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
-                bucketSize === value
-                  ? "bg-osmoverse-700 text-white-full"
-                  : "text-osmoverse-400 hover:text-osmoverse-200"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        {onShowEdgesChange && (
-          <button
-            type="button"
-            aria-pressed={showEdges}
-            aria-label={t("pool.orderbookPool.depthEdgesTooltip")}
-            onClick={() => onShowEdgesChange(!showEdges)}
-            title={t("pool.orderbookPool.depthEdgesTooltip")}
-            className={`ml-auto rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
-              showEdges
-                ? "bg-osmoverse-700 text-white-full"
-                : "text-osmoverse-400 hover:text-osmoverse-200"
-            }`}
-          >
-            {"<>"}
-          </button>
-        )}
-        {onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) && (
-          <button
-            type="button"
-            aria-pressed={clEnabled}
-            onClick={() => onClEnabledChange(!clEnabled)}
-            title={t("pool.orderbookPool.depthClLegendTooltip")}
-            className={`${onShowEdgesChange ? "ml-1" : "ml-auto"} flex items-center gap-1 whitespace-nowrap rounded px-1.5 py-0.5 text-xs transition-colors ${
-              clEnabled
-                ? "bg-osmoverse-700 text-white-full"
-                : "text-osmoverse-400 hover:text-osmoverse-200"
-            }`}
-          >
-            <span
-              className="inline-block h-2 w-3 rounded-sm"
-              style={{
-                backgroundImage: `repeating-linear-gradient(135deg, ${theme.colors.osmoverse["300"]}${clEnabled ? "aa" : "44"} 0 2px, transparent 2px 4px)`,
-              }}
-            />
-            {t("pool.orderbookPool.depthClLegend")}
-          </button>
-        )}
-        {clEnabled && clUnavailable && (
-          <span className="ml-2 text-xs text-osmoverse-500">
-            {t("pool.orderbookPool.depthClUnavailable")}
-          </span>
-        )}
-        <span
-          className={`${onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) ? "ml-2" : "ml-auto"} mr-0.5 h-1.5 w-1.5 rounded-full ${
-            isLive ? "bg-bullish-400" : "animate-pulse bg-osmoverse-500"
-          }`}
-        />
-      </div>
+      {controls}
       {/* Column headers */}
       <div className="grid grid-cols-3 px-3 py-0.5 font-mono text-xs text-osmoverse-500">
         <span>{t("pool.orderbookPool.depthPrice")}</span>
