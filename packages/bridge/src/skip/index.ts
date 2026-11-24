@@ -828,7 +828,16 @@ export class SkipBridgeProvider implements BridgeProvider {
             amount: route.amount_out,
             coinGeckoId: destinationAsset.coingecko_id,
             ...toAsset,
-            priceImpact: "0",
+            // Skip reports the impact of every swap in the route (Osmosis
+            // and EVM legs) as a percentage, positive for a loss; the
+            // interface wants a fraction, negative for a loss. Absent when
+            // the route does not swap.
+            priceImpact: route.swap_price_impact_percent
+              ? new Dec(route.swap_price_impact_percent)
+                  .quo(new Dec(100))
+                  .neg()
+                  .toString()
+              : "0",
           },
           fromChain,
           toChain,

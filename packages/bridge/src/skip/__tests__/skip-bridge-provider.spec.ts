@@ -225,6 +225,50 @@ describe("SkipBridgeProvider", () => {
     });
   });
 
+  it("converts Skip's swap price impact percentage to a negative fraction", async () => {
+    server.use(
+      http.post("https://api.skip.build/v2/fungible/route", () =>
+        HttpResponse.json({
+          ...ETH_OsmosisToEthereum_Route,
+          swap_price_impact_percent: "4.7392",
+        })
+      ),
+      http.post("https://api.skip.build/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
+      )
+    );
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "420000",
+      amount: [{ denom: "uosmo", amount: "1232" }],
+    });
+
+    const quote = await provider.getQuote({
+      fromAmount: "10000000000000000000",
+      fromAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    });
+
+    // A 4.7392% loss, as the fraction the high-impact gate reads.
+    expect(quote.expectedOutput.priceImpact).toBe("-0.047392000000000000");
+  });
+
   it("should get a quote - ETH.axl from Ethereum to Osmosis", async () => {
     server.use(
       http.post("https://api.skip.build/v2/fungible/route", () =>
