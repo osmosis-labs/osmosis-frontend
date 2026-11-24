@@ -222,7 +222,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
           <div className="relative min-w-0 flex-1 self-stretch lg:min-h-[500px]">
             <div className="absolute inset-0 flex flex-col overflow-hidden rounded-3xl border border-osmoverse-700 bg-osmoverse-1000">
               <OrderBook
-                poolId={poolId}
+                poolId={orderbook ? poolId : undefined}
                 baseSymbol={
                   pool?.reserveCoins.find(
                     (c) => c.currency.coinMinimalDenom === baseDenom
