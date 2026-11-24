@@ -309,6 +309,22 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => ({
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const denom = params?.denom as string[];
   const tokenDenom = denom.join("/");
+
+  // Reject unknown denoms with 404 before invoking tRPC. Returning
+  // `{ notFound: true }` passes `data: null` to OpenNext's cache adapter,
+  // which deletes rather than writes to R2, preventing unbounded cache growth.
+  const [{ getAsset }, { AssetLists }] = await Promise.all([
+    import("@osmosis-labs/server"),
+    import("~/config/generated/asset-lists"),
+  ]);
+  try {
+    getAsset({ assetLists: AssetLists, anyDenom: tokenDenom });
+  } catch {
+    return {
+      notFound: true as const,
+    };
+  }
+
   const trpcHelpers = createTrpcHelpers();
 
   try {

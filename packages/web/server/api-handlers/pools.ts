@@ -47,8 +47,11 @@ export async function poolsHandler(req: Request) {
       status: 200,
       headers:
         pools.length > 0
-          ? { "Cache-Control": "public, s-maxage=60" }
-          : undefined,
+          ? {
+              "Content-Type": "application/json",
+              "Cache-Control": "public, s-maxage=60",
+            }
+          : { "Content-Type": "application/json" },
     });
   }
   return new Response("", { status: 500 });

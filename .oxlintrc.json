@@ -184,6 +184,7 @@
               "**/*.spec.js",
               "**/setup-tests.js",
               "**/web/config/generate-*.ts",
+              "**/web/config/utils.ts",
               "**/web/open-next.config.ts",
               "**/web/scripts/*.mjs"
             ]
