@@ -21,7 +21,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import {
   USDC_ALLOYED_DENOM,
   USDC_NOBLE_DENOM,

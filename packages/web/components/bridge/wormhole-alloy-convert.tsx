@@ -4,7 +4,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { SwapTool } from "~/components/swap-tool";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { useTranslation } from "~/hooks";
 import { useWallet } from "~/hooks/use-wallet";
 import { api } from "~/utils/trpc";
