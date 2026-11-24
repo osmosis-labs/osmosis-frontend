@@ -229,20 +229,22 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
 
   // The pair the active widget has selected, reported by the widget itself
   // so it is right whether or not the widget keeps its pair in the URL.
-  // Tagged with the tab so a previous tab's pair is never shown while the
-  // new widget mounts.
+  // Tagged with the tab so Swap's pair is never shown while a limit widget
+  // mounts, or the other way round. Buy and Sell share their pair, so
+  // switching between them keeps it, and the chart and book stay mounted.
   const [selectedPair, setSelectedPair] = useState<{
     tab: SwapToolTab;
     base: string;
     quote: string;
   }>();
+  const isSwapTab = (t: SwapToolTab) => t === SwapToolTab.SWAP;
   const pair = orderbookPool
     ? {
         base: orderbookPool.baseDenom,
         quote: orderbookPool.quoteDenom,
         poolId: orderbookPool.poolId,
       }
-    : selectedPair?.tab === tab
+    : selectedPair && isSwapTab(selectedPair.tab) === isSwapTab(tab)
       ? { base: selectedPair.base, quote: selectedPair.quote }
       : { base: undefined, quote: undefined };
   // Price picked by clicking a book row, filled into the limit price only
