@@ -805,7 +805,9 @@
     "slippageAutoAdjustedTitle": "滑點已自動調整",
     "slippageAutoAdjustedBody": "由於價格影響較大或流動性較低，此交易的預設滑點已上調。",
     "routeLiquidityUnknown": "無法驗證此路徑的流動性。確認前請檢查「至少收到」的數量。",
-    "slippageAutoAdjustedHigh": "由於此交易的價格影響較大或流動性較低，滑點已自動提高。確認前請檢查「至少收到」的數量。"
+    "routeLiquidityUnknownExactOut": "無法驗證此路徑的流動性。確認前請檢查「最多付錢」的數量。",
+    "slippageAutoAdjustedHigh": "由於此交易的價格影響較大或流動性較低，滑點已自動提高。確認前請檢查「至少收到」的數量。",
+    "slippageAutoAdjustedHighExactOut": "由於此交易的價格影響較大或流動性較低，滑點已自動提高。確認前請檢查「最多付錢」的數量。"
   },
   "walletSelect": {
     "gettingStarted": "入門",

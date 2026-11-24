@@ -116,7 +116,6 @@ export function useSwapSlippage({
       : undefined,
     feeErrorSlippage: feeErrorState.slippage,
     autoSlippage: auto.slippage,
-    quoteType,
   });
 
   // Keep the config on the resolved value. Runs after every render and only
@@ -151,10 +150,7 @@ export function useSwapSlippage({
     /** True when the current quote's route liquidity is unknown. Read from
      *  the live quote even while the tier is latched for the review, so a
      *  refresh that loses the route's pricing still shows the warning. */
-    liquidityUnknown:
-      quoteType === "out-given-in" &&
-      quote !== undefined &&
-      liveAuto.liquidityUnknown,
+    liquidityUnknown: quote !== undefined && liveAuto.liquidityUnknown,
     resetForReview,
     reset,
   };
