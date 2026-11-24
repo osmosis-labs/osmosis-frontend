@@ -41,7 +41,11 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
-import { UserOsmoAddressSchema } from "./parameter-types";
+import {
+  CoinGeckoIdValueSchema,
+  PoolIdValueSchema,
+  UserOsmoAddressSchema,
+} from "./parameter-types";
 
 const GetInfiniteAssetsInputSchema =
   CursorPaginationSchema.merge(AssetFilterSchema);
@@ -474,7 +478,7 @@ export const assetsRouter = createTRPCRouter({
   getCoingeckoCoin: publicProcedure
     .input(
       z.object({
-        coinGeckoId: z.string(),
+        coinGeckoId: CoinGeckoIdValueSchema,
       })
     )
     .query(({ input: { coinGeckoId } }) =>
@@ -578,15 +582,21 @@ export const assetsRouter = createTRPCRouter({
           sort: sortInput,
           categories,
           includePreview,
-          // only affects ordering while searching without a column sort
-          watchListDenoms: search && !sortInput ? watchListDenoms : undefined,
+          // affects ordering whenever a search falls back to relevance order
+          watchListDenoms: search ? watchListDenoms : undefined,
         });
 
-        // Sorting by a price field needs every row priced first.
-        if (
+        const isPriceSort =
           sortInput?.keyPath === "currentPrice" ||
-          sortInput?.keyPath === "priceChange24h"
-        ) {
+          sortInput?.keyPath === "priceChange24h";
+        const MAX_SEARCH_PRICE_SORT_ASSETS = 50;
+
+        // Sorting by a price field needs every row priced first. When search
+        // matches a small set (<=50 assets) or when not searching (held assets
+        // only), price before sorting; for broad searches (>50 matches), avoid
+        // flooding SQS and fall back to search relevance rather than returning
+        // backend order as a price sort.
+        if (isPriceSort && !search) {
           return maybeCachePaginatedItems({
             getFreshItems: async () =>
               sort(
@@ -600,6 +610,35 @@ export const assetsRouter = createTRPCRouter({
             cursor,
             limit,
           });
+        }
+
+        if (isPriceSort && search) {
+          return maybeCachePaginatedItems({
+            getFreshItems: async () => {
+              const assets = await getUserAssets();
+              if (assets.length <= MAX_SEARCH_PRICE_SORT_ASSETS) {
+                return sort(
+                  await withPrices(assets),
+                  sortInput.keyPath,
+                  sortInput.direction
+                );
+              }
+              return sortAssetSearchResults(assets, {
+                search,
+                watchListDenoms,
+              });
+            },
+            cacheKey,
+            reloadOnFirstPage: Boolean(userOsmoAddress),
+            cursor,
+            limit,
+          }).then(async ({ items, nextCursor }) => ({
+            items:
+              items.length > 0 && "currentPrice" in items[0]
+                ? (items as Awaited<ReturnType<typeof withPrices>>)
+                : await withPrices(items),
+            nextCursor,
+          }));
         }
 
         // Otherwise price only the returned page. A search matches every
@@ -712,7 +751,7 @@ export const assetsRouter = createTRPCRouter({
         /**
          * Coingecko ID
          */
-        id: z.string(),
+        id: CoinGeckoIdValueSchema,
         timeFrame: z.union([
           z.object({
             custom: z.object({
@@ -733,7 +772,7 @@ export const assetsRouter = createTRPCRouter({
   getAssetPairHistoricalPrice: publicProcedure
     .input(
       z.object({
-        poolId: z.string(),
+        poolId: PoolIdValueSchema,
         quoteCoinMinimalDenom: z.string(),
         baseCoinMinimalDenom: z.string(),
         timeDuration: z

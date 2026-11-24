@@ -10,6 +10,10 @@
       "binding": "PRODUCTION",
       "service": "osmosis-frontend-production",
     },
+    {
+      "binding": "API",
+      "service": "osmosis-frontend-api-production",
+    },
   ],
   // Attach to app.osmosis.zone deliberately (see README), not on every deploy.
   "workers_dev": false,

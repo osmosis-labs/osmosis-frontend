@@ -103,10 +103,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
     const toAmountInputEl = useRef<HTMLInputElement | null>(null);
 
-    const [_, setType] = useQueryState("type");
+    const [type, setType] = useQueryState("type");
 
     useMount(() => {
-      setType(null);
+      // Clearing an absent param still makes nuqs replace the route, which
+      // cancels a navigation the user started while the swap tool mounted.
+      if (type !== null) setType(null);
     });
 
     useEffect(() => {

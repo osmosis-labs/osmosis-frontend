@@ -136,3 +136,18 @@ it("logs and propagates exceptions without retrying or exposing their messages",
     "private"
   );
 });
+
+it("routes /api/* directly to the API binding when present", async () => {
+  const apiFetch = jest.fn(async () => new Response("from api"));
+  const prodFetch = jest.fn(async () => new Response("from pages"));
+  const request = new Request("https://app.test/api/pools");
+
+  const response = await router.fetch(request, {
+    PRODUCTION: { fetch: prodFetch },
+    API: { fetch: apiFetch },
+  });
+
+  expect(await response.text()).toBe("from api");
+  expect(apiFetch).toHaveBeenCalledTimes(1);
+  expect(prodFetch).not.toHaveBeenCalled();
+});
