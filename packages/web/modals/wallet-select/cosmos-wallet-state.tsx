@@ -141,7 +141,10 @@ export const CosmosWalletState: FunctionComponent<
             Boolean(downloadInfo) && (
               <Button
                 onClick={() => {
-                  window.open(currentWallet?.downloadInfo?.link, "_blank");
+                  const link = currentWallet?.downloadInfo?.link;
+                  if (link && /^https?:\/\//i.test(link)) {
+                    window.open(link, "_blank", "noopener,noreferrer");
+                  }
                 }}
               >
                 {t("walletSelect.installWallet", {

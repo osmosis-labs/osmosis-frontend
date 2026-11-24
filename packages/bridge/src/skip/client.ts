@@ -15,7 +15,7 @@ export class SkipApiClient {
   constructor(
     readonly env: BridgeEnvironment,
     protected readonly apiKey = process.env.SKIP_API_KEY,
-    readonly baseUrl = "https://api.skip.money"
+    readonly baseUrl = "https://api.skip.build"
   ) {}
 
   async assets({ chainID }: { chainID?: string } = {}) {

@@ -507,4 +507,35 @@ describe("cached in a Worker request", () => {
       now.mockRestore();
     }
   });
+
+  it("coalesces concurrent Worker SWR refreshes per isolate", async () => {
+    const cache = newCache();
+    const options = { key: "k", cache, ttl: 10, staleWhileRevalidate: 60_000 };
+    await inRequest(() =>
+      cached({ ...options, getFreshValue: async () => "old" })
+    );
+    await tick(20);
+
+    const pending = deferred<string>();
+    const refresh = jest.fn(() => pending.promise);
+    const kept: Promise<unknown>[] = [];
+
+    const [a, b] = await Promise.all([
+      inRequest(
+        () => cached({ ...options, getFreshValue: refresh }),
+        jest.fn((p: Promise<unknown>) => kept.push(p))
+      ),
+      inRequest(
+        () => cached({ ...options, getFreshValue: refresh }),
+        jest.fn((p: Promise<unknown>) => kept.push(p))
+      ),
+    ]);
+
+    expect([a, b]).toEqual(["old", "old"]);
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(kept).toHaveLength(1);
+    pending.resolve("new");
+    await Promise.all(kept);
+    expect(cache.get("k")?.value).toBe("new");
+  });
 });

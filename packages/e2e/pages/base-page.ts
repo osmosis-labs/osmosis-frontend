@@ -2,6 +2,9 @@ import { expect, type Locator, type Page } from "@playwright/test";
 
 import { waitForKeplrApproval } from "./keplr-helper";
 
+/** Pages that already snooze the forced-migration popup; see below. */
+const pagesSnoozingForcedMigrations = new WeakSet<Page>();
+
 /**
  * Base page object shared by all E2E page classes.
  * Provides wallet connection/disconnection, navigation, and common UI helpers.
@@ -44,6 +47,7 @@ export class BasePage {
     // Keplr places its popup from the last focused window, which after setup
     // can be the wallet's own register tab rather than the app.
     await this.page.bringToFront();
+    await this.snoozeForcedMigrationPopupWhenShown();
     await this.connectWalletBtn.click();
     await this.kepltWalletBtn.click();
     await waitForKeplrApproval(this.page.context());
@@ -56,6 +60,7 @@ export class BasePage {
    * a popup.
    */
   async connectFakeWallet() {
+    await this.snoozeForcedMigrationPopupWhenShown();
     // The visible one: on a phone the header's button is inside the menu.
     const connect = this.page
       .locator("button", { hasText: /^Connect wallet$/ })
@@ -145,6 +150,28 @@ export class BasePage {
     } catch {
       // Modal not present — continue normally
     }
+  }
+
+  /**
+   * The forced-migration popup (fe-content `cms/forced-migrations.json`)
+   * opens for a connected wallet holding an asset being wound down, once its
+   * portfolio queries settle, so it can appear at any point after connecting
+   * and cover whatever the test clicks next. Snoozing it is the only way to
+   * close it. A locator handler clicks "Remind me later" whenever it is
+   * showing before an action, which also covers popups added to the CMS
+   * later without touching the tests.
+   */
+  async snoozeForcedMigrationPopupWhenShown() {
+    if (pagesSnoozingForcedMigrations.has(this.page)) return;
+    pagesSnoozingForcedMigrations.add(this.page);
+    // By text, not role: see connectWalletBtn.
+    const remindMeLater = this.page.locator(".ReactModal__Content button", {
+      hasText: /^Remind me later$/,
+    });
+    await this.page.addLocatorHandler(remindMeLater, async () => {
+      await remindMeLater.click();
+      console.log("Snoozed the forced-migration popup.");
+    });
   }
 
   async logOut() {

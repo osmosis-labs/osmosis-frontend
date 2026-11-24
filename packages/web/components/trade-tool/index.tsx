@@ -13,6 +13,7 @@ import {
 } from "react";
 
 import { Icon } from "~/components/assets";
+import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
 import {
   deferQueryCorrection,
@@ -124,7 +125,22 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   const { isReady } = useRouter();
   const isClient = useIsClient();
 
-  if (!isReady || !isClient) return null;
+  if (!isReady || !isClient) {
+    // Render an SSR-safe shell matching the live card dimensions so `/` paints
+    // immediately without CLS while preserving query-param deep links (`type=limit`).
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3 sm:px-4 sm:pt-4 sm:pb-2">
+          <div className="flex w-full items-center justify-between md:gap-2">
+            <SwapToolTabs activeTab={SwapToolTab.SWAP} setTab={() => {}} />
+          </div>
+          <SkeletonLoader className="h-[116px] w-full rounded-2xl" />
+          <SkeletonLoader className="h-[116px] w-full rounded-2xl" />
+          <SkeletonLoader className="h-14 w-full rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
 
   return <TradeToolContent {...props} />;
 };

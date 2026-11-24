@@ -1,11 +1,20 @@
-# Production ingress
+# Production ingress (legacy — ready to retire)
 
-`osmosis-frontend-router` forwards every request on `app.osmosis.zone/*` to
-`osmosis-frontend-production` through its `PRODUCTION` service binding. The
-frontend serves pages and forwards `/api/*` to its API Worker. Crawlers use the
-same path. Old rollout cookies and `osmo_backend` query parameters have no effect.
-Responses carry `x-osmosis-backend: cf`, except WebSocket upgrades, which pass
-through untouched.
+`osmosis-frontend-router` routes `app.osmosis.zone/api/*` directly to
+`osmosis-frontend-api-production` (via its `API` service binding) and all other
+requests on `app.osmosis.zone/*` to `osmosis-frontend-production` (via its
+`PRODUCTION` service binding).
+
+## Retiring this Worker
+
+Now that the Vercel monolith is retired, this pass-through Worker adds one extra
+Worker invocation on every production request. To remove it with zero downtime:
+
+1. In the Cloudflare dashboard for `osmosis.zone` → Workers Routes:
+   - Add `app.osmosis.zone/api/*` → `osmosis-frontend-api-production`
+   - Update `app.osmosis.zone/*` → `osmosis-frontend-production`
+2. Disable the Cloudflare Workers Builds trigger for `packages/web/router/*`.
+3. Delete `packages/web/router/` and the `cf:router:*` scripts in `packages/web/package.json`.
 
 The ingress makes one upstream attempt. Cloudflare errors and missing assets
 return directly; there is no origin fallback or traffic percentage setting.

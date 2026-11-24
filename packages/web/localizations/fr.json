@@ -130,6 +130,7 @@
       }
     },
     "table": {
+      "showVariants": "Afficher les variantes",
       "marketDataUnavailable": "Les données de marché sont indisponibles pour le moment. Veuillez réessayer dans un instant.",
       "depositButton": "Déposer",
       "search": "Chercher",
