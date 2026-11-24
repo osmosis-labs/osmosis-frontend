@@ -2067,6 +2067,20 @@ export const useBridgeQuotes = ({
       heading: t("transfer.somethingIsntWorking"),
       description: t("transfer.sorryForTheInconvenience"),
     };
+  } else if (
+    !selectedQuote &&
+    isBridgeProviderControlledMode &&
+    dropdownQuotes.length > 0 &&
+    !isSpeedQuoteHeld
+  ) {
+    // The user pinned a specific provider in the quote dropdown that now has no
+    // quote for this amount, while other providers still do. Point them at the
+    // other options rather than only the amount (MTN-351). Surfaced on both the
+    // amount (preview) and review screens.
+    errorBoxMessage = {
+      heading: t("transfer.quoteProviderUnavailableTitle"),
+      description: t("transfer.quoteProviderUnavailableDescription"),
+    };
   } else if (warnUserOfSlippage) {
     highLossWarningActive = true;
     errorBoxMessage = {
