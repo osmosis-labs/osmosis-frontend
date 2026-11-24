@@ -72,8 +72,15 @@ function foldLevels(
       clQuantity,
       beyond: true,
       quoteValue,
-      // CL is valued at the row's own price for the same reason.
-      totalQuoteValue: quoteValue + clQuantity * edge.price,
+      // CL is capped at the row's own price for the same reason. For bids
+      // each level's own price is the smaller, and the server's CL summary
+      // level is priced at the outermost bid, not at this row.
+      totalQuoteValue:
+        quoteValue +
+        Math.min(
+          rest.reduce((sum, l) => sum + (l.clQuantity ?? 0) * l.price, 0),
+          clQuantity * edge.price
+        ),
     },
   ];
 }
@@ -313,7 +320,9 @@ export const OrderbookDepthPanel: FunctionComponent<{
       ? visibleAsks[sweepIndex ?? 0]?.price
       : visibleBids[sweepIndex ?? 0]?.price;
 
-  if (!isLoading && bids.length === 0 && asks.length === 0) {
+  // Empty states follow the rows shown: with the "<" and ">" rows off, a
+  // side holding only CL past the book's edge has nothing to show.
+  if (!isLoading && visibleBids.length === 0 && visibleAsks.length === 0) {
     if (isError) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
@@ -344,14 +353,14 @@ export const OrderbookDepthPanel: FunctionComponent<{
     !isLoading &&
     !isRefetching &&
     !isError &&
-    asks.length === 0 &&
-    bids.length > 0;
+    visibleAsks.length === 0 &&
+    visibleBids.length > 0;
   const noBids =
     !isLoading &&
     !isRefetching &&
     !isError &&
-    bids.length === 0 &&
-    asks.length > 0;
+    visibleBids.length === 0 &&
+    visibleAsks.length > 0;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
