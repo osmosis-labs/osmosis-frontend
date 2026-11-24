@@ -55,16 +55,33 @@ export const createNodeQuery =
       ...((params as [PathParameters & { chainId?: string }]) ?? [])
     );
 
+    // Reject absolute or protocol-relative paths (`https://...`, `//host/...`)
+    // and path traversal segments so user-supplied params can never override the
+    // chain's REST host or escape its API prefix.
+    if (
+      typeof pathStr !== "string" ||
+      !pathStr.startsWith("/") ||
+      pathStr.startsWith("//")
+    ) {
+      throw new Error("Invalid node query path");
+    }
+
     // The URL is built per attempt (and inside an async function), so one
     // malformed registry address fails only its own attempt instead of the
     // whole query.
     const { data } = await hedgedRequest<Result>(
       restEndpoints.map(({ address }) => address),
-      async (address, signal) =>
-        apiClient<Result>(new URL(pathStr, address).toString(), {
+      async (address, signal) => {
+        const base = new URL(address);
+        const target = new URL(pathStr, base);
+        if (target.origin !== base.origin) {
+          throw new Error("Node query URL escaped base origin");
+        }
+        return apiClient<Result>(target.toString(), {
           ...opts,
           signal,
-        }),
+        });
+      },
       { ...hedgeOptions, name: "REST endpoints", target: `chain ${chainId}` }
     );
     return data;

@@ -37,6 +37,27 @@ function cacheableUrl(request: Request): URL | undefined {
   return new URL(request.url);
 }
 
+/** Canonical cache key for `/api/*` GETs so arbitrary query params can't bust the edge cache. */
+function apiCacheKey(url: URL): string {
+  const key = new URL(url.origin + url.pathname);
+  if (url.pathname === "/api/active-gauges") {
+    return key.toString();
+  }
+  if (url.pathname === "/api/pools") {
+    const minLiquidity = url.searchParams.get("min_liquidity");
+    if (minLiquidity !== null)
+      key.searchParams.set("min_liquidity", minLiquidity);
+    return key.toString();
+  }
+  // Sort by parameter name only (stable sort) so duplicate parameter values
+  // preserve their original order (tRPC reads the first `input`).
+  const params = [...url.searchParams.entries()].sort((a, b) =>
+    a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0
+  );
+  for (const [name, value] of params) key.searchParams.append(name, value);
+  return key.toString();
+}
+
 /** Cache policy for GET `/api/*` responses that opt in with `s-maxage`. */
 function apiCachePolicy(request: Request): CachePolicy | undefined {
   const url = cacheableUrl(request);
@@ -45,8 +66,20 @@ function apiCachePolicy(request: Request): CachePolicy | undefined {
   // The API Worker rejects these before the cache; this keeps a direct call to the policy honest.
   if (isBlockedApiUserAgent(request.headers.get("user-agent")))
     return undefined;
+  // tRPC streaming batches use JSONL (`trpc-accept` / `Accept: application/jsonl`,
+  // or legacy `trpc-batch-mode: stream`) and must never receive a cached JSON body.
+  const trpcAccept = request.headers.get("trpc-accept")?.toLowerCase() ?? "";
+  const accept = request.headers.get("accept")?.toLowerCase() ?? "";
+  if (
+    trpcAccept.includes("application/jsonl") ||
+    accept.includes("application/jsonl")
+  ) {
+    return undefined;
+  }
+  const batchMode = request.headers.get("trpc-batch-mode");
+  if (batchMode && batchMode.toLowerCase() !== "json") return undefined;
   return {
-    key: request.url,
+    key: apiCacheKey(url),
     edgeTtl: sharedMaxAge,
     toClientHeaders: (headers) => {
       const cacheControl = withoutSharedDirectives(
@@ -94,6 +127,10 @@ function applyEdgeCache(
     if (hit) return toClientResponse(hit, request, policy, "HIT");
 
     const response = await handler(request);
+    // Never write a HEAD miss into the GET cache key: handlers may return an
+    // empty body for HEAD, which would poison subsequent GET responses.
+    if (request.method === "HEAD") return response;
+
     const ttl = policy.edgeTtl(response);
     if (ttl === undefined) return response;
 

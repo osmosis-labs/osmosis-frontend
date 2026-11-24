@@ -22,7 +22,11 @@ import { sort } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
-import { UserOsmoAddressSchema } from "./parameter-types";
+import {
+  OsmoAddressValueSchema,
+  PoolIdValueSchema,
+  UserOsmoAddressSchema,
+} from "./parameter-types";
 
 const GetInfinitePoolsSchema = CursorPaginationSchema.merge(
   PoolFilterSchema
@@ -39,10 +43,10 @@ const marketIncentivePoolsSortKeys = [
 
 export const poolsRouter = createTRPCRouter({
   getPool: publicProcedure
-    .input(z.object({ poolId: z.string() }))
+    .input(z.object({ poolId: PoolIdValueSchema }))
     .query(({ input: { poolId }, ctx }) => getPool({ ...ctx, poolId })),
   getSharePool: publicProcedure
-    .input(z.object({ poolId: z.string() }))
+    .input(z.object({ poolId: PoolIdValueSchema }))
     .query(({ input: { poolId }, ctx }) => getSharePool({ ...ctx, poolId })),
   getUserPools: publicProcedure
     .input(UserOsmoAddressSchema.required())
@@ -53,7 +57,9 @@ export const poolsRouter = createTRPCRouter({
     ),
   getUserSharePool: publicProcedure
     .input(
-      z.object({ poolId: z.string() }).merge(UserOsmoAddressSchema.required())
+      z
+        .object({ poolId: PoolIdValueSchema })
+        .merge(UserOsmoAddressSchema.required())
     )
     .query(async ({ input: { poolId, userOsmoAddress }, ctx }) =>
       getUserSharePools({
@@ -73,7 +79,7 @@ export const poolsRouter = createTRPCRouter({
     .input(
       z
         .object({
-          poolId: z.string(),
+          poolId: PoolIdValueSchema,
         })
         .merge(UserOsmoAddressSchema)
     )
@@ -127,12 +133,12 @@ export const poolsRouter = createTRPCRouter({
   ),
   /** Superfluid staking APR of a pool; zero if the pool isn't superfluid. */
   getSuperfluidPoolApr: publicProcedure
-    .input(z.object({ poolId: z.string() }))
+    .input(z.object({ poolId: PoolIdValueSchema }))
     .query(({ input: { poolId }, ctx }) =>
       getSuperfluidPoolApr({ ...ctx, poolId })
     ),
   getPoolIncentives: publicProcedure
-    .input(z.object({ poolId: z.string() }))
+    .input(z.object({ poolId: PoolIdValueSchema }))
     .query(({ input: { poolId } }) =>
       getCachedPoolIncentivesMap().then((map) => map.get(poolId) ?? null)
     ),
@@ -140,7 +146,7 @@ export const poolsRouter = createTRPCRouter({
   getPriceRangeApr: publicProcedure
     .input(
       z.object({
-        poolId: z.string(),
+        poolId: PoolIdValueSchema,
         lowerTickIndex: z.number().int().optional(),
         upperTickIndex: z.number().int().optional(),
       })
@@ -157,12 +163,12 @@ export const poolsRouter = createTRPCRouter({
     ),
   getLockableDurations: publicProcedure.query(() => getLockableDurations()),
   getPoolGaugeIncentives: publicProcedure
-    .input(z.object({ poolId: z.string() }))
+    .input(z.object({ poolId: PoolIdValueSchema }))
     .query(({ input: { poolId }, ctx }) =>
       getPoolGaugeIncentives({ ...ctx, poolId })
     ),
   getTransmuterTotalPoolLiquidity: publicProcedure
-    .input(z.object({ contractAddress: z.string() }))
+    .input(z.object({ contractAddress: OsmoAddressValueSchema }))
     .query(({ ctx, input: { contractAddress } }) =>
       getCachedTransmuterTotalPoolLiquidity(
         contractAddress,
