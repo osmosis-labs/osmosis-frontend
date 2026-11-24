@@ -140,6 +140,7 @@
       }
     },
     "table": {
+      "showVariants": "Show variants",
       "marketDataUnavailable": "Market data is unavailable right now. Please try again in a moment.",
       "depositButton": "Deposit",
       "search": "Search",
@@ -814,7 +815,9 @@
     "slippageAutoAdjustedTitle": "Slippage auto-adjusted",
     "slippageAutoAdjustedBody": "This trade's default slippage has been raised due to high price impact or low liquidity.",
     "routeLiquidityUnknown": "Couldn't verify this route's liquidity. Check the \"Receive at least\" amount before confirming.",
-    "slippageAutoAdjustedHigh": "Slippage was raised automatically for this trade's high price impact or low liquidity. Check the \"Receive at least\" amount before confirming."
+    "routeLiquidityUnknownExactOut": "Couldn't verify this route's liquidity. Check the \"Sell at most\" amount before confirming.",
+    "slippageAutoAdjustedHigh": "Slippage was raised automatically for this trade's high price impact or low liquidity. Check the \"Receive at least\" amount before confirming.",
+    "slippageAutoAdjustedHighExactOut": "Slippage was raised automatically for this trade's high price impact or low liquidity. Check the \"Sell at most\" amount before confirming."
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",

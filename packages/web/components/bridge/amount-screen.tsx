@@ -24,6 +24,7 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { BridgeReceiveAssetDropdown } from "~/components/bridge/bridge-receive-asset-dropdown";
+import { useSupportedAssetsBalances } from "~/components/bridge/use-supported-assets-balances";
 import { CryptoFiatInput } from "~/components/control/crypto-fiat-input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import {
@@ -560,78 +561,70 @@ export const AmountScreen = memo(
 
     const {
       data: assetsBalances,
+      allBalances: unfilteredAssetsBalances,
       isLoading: isLoadingAssetsBalance,
       isError: hasBalanceError,
       isFetching: isFetchingAssetsBalance,
       refetch: refetchAssetsBalance,
-    } = api.local.bridgeTransfer.getSupportedAssetsBalances.useQuery(
-      { source: balanceSource! },
-      {
-        enabled:
-          !isNil(fromChain) &&
-          !isNil(supportedSourceAssets) &&
-          supportedSourceAssets.length > 0 &&
-          !isNil(balanceSource),
+    } = useSupportedAssetsBalances({
+      source: balanceSource,
+      enabled:
+        !isNil(fromChain) &&
+        !isNil(supportedSourceAssets) &&
+        supportedSourceAssets.length > 0 &&
+        !isNil(balanceSource),
+    });
 
-        select: (data) => {
-          let nextData: typeof data = data;
-
-          // Filter out assets with no balance
-          if (nextData && nextData.length) {
-            const filteredData = nextData.filter((asset) =>
-              asset.amount.toDec().isPositive()
-            );
-
-            // If there are no assets with balance, leave one to be selected
-            if (filteredData.length === 0) {
-              nextData = [nextData[0]];
-            } else {
-              nextData = filteredData;
-            }
-
-            if (
-              !fromAsset ||
-              (nextData[0].denom === fromAsset.denom &&
-                nextData[0].amount.toDec().gt(fromAsset.amount.toDec()))
-            ) {
-              const highestBalance = nextData.reduce(
-                (acc, curr) =>
-                  curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
-                nextData[0]
-              );
-
-              setFromAsset(highestBalance);
-            } else {
-              // Keep the selected asset's balance in sync with the refetch in
-              // BOTH directions. The branch above only upgrades to a larger
-              // balance, so switching to a poorer account (e.g. another
-              // Phantom account, which re-keys this query) would otherwise
-              // keep showing the previous account's spendable amount. Look
-              // up the unfiltered data: a now-empty balance is filtered out
-              // of `nextData` but must still replace the stale one.
-              // Also take a changed variant list: it grows as each bridge's
-              // lookup finishes, and the deposit destination follows its
-              // first entry.
-              const refreshed = data?.find(
-                (asset) =>
-                  asset.address === fromAsset.address &&
-                  asset.denom === fromAsset.denom
-              );
-              if (
-                refreshed &&
-                (!refreshed.amount.toDec().equals(fromAsset.amount.toDec()) ||
-                  Object.keys(refreshed.supportedVariants).join() !==
-                    Object.keys(fromAsset.supportedVariants).join())
-              ) {
-                setFromAsset(refreshed);
-              }
-            }
-          }
-
-          return nextData;
-        },
+    // Keep the selected source asset synced with the merged balance batches:
+    // pick the highest balance initially, and reflect balance or variant
+    // updates in both directions on subsequent refetches.
+    useEffect(() => {
+      if (
+        !assetsBalances ||
+        assetsBalances.length === 0 ||
+        !unfilteredAssetsBalances
+      ) {
+        return;
       }
-    );
+
+      if (
+        !fromAsset ||
+        (assetsBalances[0].denom === fromAsset.denom &&
+          assetsBalances[0].amount.toDec().gt(fromAsset.amount.toDec()))
+      ) {
+        const highestBalance = assetsBalances.reduce(
+          (acc, curr) =>
+            curr.amount.toDec().gt(acc.amount.toDec()) ? curr : acc,
+          assetsBalances[0]
+        );
+
+        setFromAsset(highestBalance);
+      } else {
+        // Keep the selected asset's balance in sync with the refetch in
+        // BOTH directions. The branch above only upgrades to a larger
+        // balance, so switching to a poorer account (e.g. another
+        // Phantom account, which re-keys this query) would otherwise
+        // keep showing the previous account's spendable amount. Look
+        // up the unfiltered data: a now-empty balance is filtered out
+        // of `assetsBalances` but must still replace the stale one.
+        // Also take a changed variant list: it grows as each bridge's
+        // lookup finishes, and the deposit destination follows its
+        // first entry.
+        const refreshed = unfilteredAssetsBalances.find(
+          (asset) =>
+            asset.address === fromAsset.address &&
+            asset.denom === fromAsset.denom
+        );
+        if (
+          refreshed &&
+          (!refreshed.amount.toDec().equals(fromAsset.amount.toDec()) ||
+            Object.keys(refreshed.supportedVariants).join() !==
+              Object.keys(fromAsset.supportedVariants).join())
+        ) {
+          setFromAsset(refreshed);
+        }
+      }
+    }, [assetsBalances, unfilteredAssetsBalances, fromAsset, setFromAsset]);
 
     /** The deposit variants offered for the source asset, first one
      *  recommended. Halted variants can't receive a deposit, so they are left

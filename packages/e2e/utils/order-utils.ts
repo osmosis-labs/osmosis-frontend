@@ -20,8 +20,8 @@
  */
 
 import {
-  SigningCosmWasmClient,
   type ExecuteInstruction,
+  SigningCosmWasmClient,
 } from "@cosmjs/cosmwasm-stargate";
 import { type OfflineDirectSigner } from "@cosmjs/proto-signing";
 import { GasPrice } from "@cosmjs/stargate";
@@ -169,9 +169,7 @@ export function buildClaimMessages(
   orders: SQSActiveOrder[]
 ): ExecuteInstruction[] {
   return orders
-    .filter(
-      (o) => parseFloat(o.percentFilled) > parseFloat(o.percentClaimed)
-    )
+    .filter((o) => parseFloat(o.percentFilled) > parseFloat(o.percentClaimed))
     .map((order) => ({
       contractAddress: order.orderbookAddress,
       msg: {

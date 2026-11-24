@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { POOL_CREATION_FEE_COIN } from "~/components/complex/pool/create";
 import { OsmosisChainInfo } from "~/config/chain";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { useWalletSelect } from "~/hooks";
 import { useTranslation } from "~/hooks/language";
 import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";

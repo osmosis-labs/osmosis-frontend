@@ -123,11 +123,15 @@ export const SlippageToleranceRow: FunctionComponent<{
   /** True when an automatic slippage was chosen without knowing the route's
    *  liquidity. */
   slippageLiquidityUnknown?: boolean;
+  /** True for an exact-out (in-given-out) quote, whose notes name the input
+   *  side. */
+  isExactOut?: boolean;
 }> = ({
   slippageConfig,
   input,
   slippageSource,
   slippageLiquidityUnknown = false,
+  isExactOut = false,
 }) => {
   const { t } = useTranslation();
   const {
@@ -214,7 +218,11 @@ export const SlippageToleranceRow: FunctionComponent<{
       />
       {showLiquidityUnknown && (
         <p className="caption text-ammelia-400">
-          {t("swap.routeLiquidityUnknown")}
+          {t(
+            isExactOut
+              ? "swap.routeLiquidityUnknownExactOut"
+              : "swap.routeLiquidityUnknown"
+          )}
         </p>
       )}
       {isTooHigh && (
@@ -231,7 +239,11 @@ export const SlippageToleranceRow: FunctionComponent<{
             </span>
             <span className="body2 sm:caption text-osmoverse-300">
               {showAutoAdjusted
-                ? t("swap.slippageAutoAdjustedHigh")
+                ? t(
+                    isExactOut
+                      ? "swap.slippageAutoAdjustedHighExactOut"
+                      : "swap.slippageAutoAdjustedHigh"
+                  )
                 : t("limitOrders.lowerSlippageToleranceRecommended")}
             </span>
           </div>

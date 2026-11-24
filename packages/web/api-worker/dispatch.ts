@@ -25,12 +25,11 @@ export async function handleApiRequest(
     return new Response("Forbidden", { status: 403 });
   }
 
-  const match = matchApiRoute(url.pathname);
-  if (!match) {
+  const handlerId = matchApiRoute(url.pathname);
+  if (!handlerId) {
     return Response.json({ error: "Not found" }, { status: 404 });
   }
 
-  const handlerId = match.handlerId;
   const cached = withApiEdgeCache(
     (req) => invokeHandler(handlers[handlerId], handlerId, req),
     cache,

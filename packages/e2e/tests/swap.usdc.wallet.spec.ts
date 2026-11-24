@@ -2,7 +2,7 @@ import { type BrowserContext, expect, test } from "@playwright/test";
 
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
-import { TOKEN_DENOMS, ensureBalances } from "../utils/balance-checker";
+import { ensureBalances, TOKEN_DENOMS } from "../utils/balance-checker";
 import { notice } from "../utils/github-notice";
 import { getTxReceivedAmount } from "../utils/tx-confirm";
 import { deriveAddress } from "../utils/wallet-utils";

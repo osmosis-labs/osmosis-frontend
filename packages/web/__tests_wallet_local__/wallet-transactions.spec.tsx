@@ -82,6 +82,48 @@ jest.mock("~/config/generated/asset-lists", () => {
   };
 });
 
+// The browser chain config (`~/config/chain`) and wallet runtime read the
+// client lists, so they need the same local-chain overrides as the server lists.
+jest.mock("~/config/generated/client-chain-list", () => {
+  const original = jest.requireActual("~/config/generated/client-chain-list");
+  const fixture = JSON.parse(
+    require("node:fs").readFileSync(
+      process.env.WALLET_LOCAL_CHAIN_FIXTURE!,
+      "utf8"
+    )
+  );
+  const osmosis = original.ClientChainList.find(
+    (chain: { chain_name: string }) => chain.chain_name === "osmosis"
+  );
+  return {
+    ClientChainList: [
+      {
+        ...osmosis,
+        chain_id: fixture.chainId,
+        apis: {
+          rpc: [{ address: "http://127.0.0.1:1" }, { address: fixture.rpc }],
+          rest: [{ address: "http://127.0.0.1:1" }, { address: fixture.rest }],
+        },
+      },
+    ],
+  };
+});
+
+jest.mock("~/config/generated/client-asset-lists", () => {
+  const original = jest.requireActual("~/config/generated/client-asset-lists");
+  const fixture = JSON.parse(
+    require("node:fs").readFileSync(
+      process.env.WALLET_LOCAL_CHAIN_FIXTURE!,
+      "utf8"
+    )
+  );
+  return {
+    ClientAssetLists: original.ClientAssetLists.filter(
+      (list: { chain_name: string }) => list.chain_name === "osmosis"
+    ).map((list: object) => ({ ...list, chain_id: fixture.chainId })),
+  };
+});
+
 const fixture = JSON.parse(
   readFileSync(process.env.WALLET_LOCAL_CHAIN_FIXTURE!, "utf8")
 ) as {

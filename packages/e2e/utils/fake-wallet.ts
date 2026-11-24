@@ -27,7 +27,7 @@ import { createHash } from "node:crypto";
 
 import type { BrowserContext, Page } from "@playwright/test";
 
-import { REST_ENDPOINT, lcdGet } from "./config";
+import { lcdGet, REST_ENDPOINT } from "./config";
 
 /**
  * The E2E topup account. It holds every token the flows trade, and its

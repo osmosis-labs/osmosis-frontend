@@ -13,6 +13,7 @@ export class BridgeQuoteError extends Error {
   }) {
     const id = bridgeId ? `(${bridgeId}) ` : "";
     super(`${id}${errorType}: ${message}`);
+    this.name = "BridgeQuoteError";
     this.errorType = errorType;
   }
 }

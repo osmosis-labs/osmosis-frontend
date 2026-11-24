@@ -25,6 +25,10 @@ import * as fs from "fs";
 import { generateTsFile } from "~/utils/codegen";
 
 import {
+  toClientAssetLists,
+  toClientChainList,
+} from "./client-list-transforms";
+import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
   IS_TESTNET,
@@ -118,6 +122,8 @@ async function queryAssetListFile<T>({
   );
 }
 
+const escapeTsComment = (value: string) => value.replace(/\*\//g, "* /");
+
 async function generateChainListFile({
   assetLists,
   chainList,
@@ -155,25 +161,76 @@ async function generateChainListFile({
     environment === "mainnet" ? "MainnetChainIds" : "TestnetChainIds";
 
   if (!onlyTypes) {
+    const generatedChains = getChainList({
+      assetLists,
+      environment,
+      chains: chainList.chains,
+    });
     content += `
       import type { Chain } from "@osmosis-labs/types";
       export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[] = ${JSON.stringify(
-        getChainList({ assetLists, environment, chains: chainList.chains }),
+        generatedChains,
         null,
         2
       )};
     `;
+
+    const clientChains = toClientChainList(generatedChains);
+    const clientChainContent = `
+      import type { Chain } from "@osmosis-labs/types";
+      import type { ${chainIdTypeName} } from "./chain-list";
+      export const ClientChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName} })[] = ${JSON.stringify(
+        clientChains,
+        null,
+        2
+      )};
+    `;
+    if (
+      !(await generateTsFile(
+        clientChainContent,
+        codegenDir,
+        "client-chain-list.ts",
+        true
+      ))
+    ) {
+      throw new Error("Failed to generate client chain list file");
+    }
+
+    const osmosisChain =
+      clientChains.find(
+        (c) => c.chain_name === "osmosis" || c.chain_name === "osmosistestnet"
+      ) ?? clientChains[0];
+    const osmosisChainContent = `
+      import type { Chain } from "@osmosis-labs/types";
+      export const OsmosisChain: Chain = ${JSON.stringify(osmosisChain, null, 2)};
+    `;
+    if (
+      !(await generateTsFile(
+        osmosisChainContent,
+        codegenDir,
+        "osmosis-chain.ts",
+        true
+      ))
+    ) {
+      throw new Error("Failed to generate osmosis chain file");
+    }
   }
 
-  content += `
-    export type ${chainIdTypeName} = ${Array.from(
-      new Set(allAvailableChains.map((c) => c.chain_id))
+  const availableChainIds = Array.from(
+    new Set(
+      allAvailableChains
+        .map((c) => c.chain_id)
+        .filter((id): id is string => typeof id === "string" && id.length > 0)
     )
+  );
+
+  content += `
+    export type ${chainIdTypeName} = ${availableChainIds
       .map(
         (chainId) =>
-          `"${chainId}" /** ${
+          `${JSON.stringify(chainId)} /** ${escapeTsComment(
             allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
-          } */`
+          )} */`
       )
       .join(" | ")};
   `;
@@ -364,10 +421,10 @@ async function generateAssetListFile({
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
       .map(
         (symbol) =>
-          `"${symbol}" /** source denom: ${
+          `${JSON.stringify(symbol)} /** source denom: ${escapeTsComment(
             assetList.assets.find((asset) => asset.symbol === symbol)!
               .sourceDenom
-          } */`
+          )} */`
       )
       .join(" | ")};
   `;
@@ -390,10 +447,12 @@ async function generateAssetListFile({
       })
       .map(
         (groupKey) =>
-          `"${groupKey}" /** Symbols: ${assetList.assets
-            .filter((asset) => asset.variantGroupKey === groupKey)!
-            .map((asset) => asset.symbol)
-            .join(",")} */`
+          `${JSON.stringify(groupKey)} /** Symbols: ${escapeTsComment(
+            assetList.assets
+              .filter((asset) => asset.variantGroupKey === groupKey)!
+              .map((asset) => asset.symbol)
+              .join(",")
+          )} */`
       )
       .join(" | ")};
   `;
@@ -404,6 +463,27 @@ async function generateAssetListFile({
     "asset-lists.ts",
     overwriteFile
   );
+
+  if (success && !onlyTypes) {
+    const clientAssetListContent = `
+      import type { AssetList } from "@osmosis-labs/types";
+      export const ClientAssetLists = ${JSON.stringify(
+        toClientAssetLists(assetLists),
+        null,
+        2
+      )} as unknown as AssetList[];
+    `;
+    if (
+      !(await generateTsFile(
+        clientAssetListContent,
+        codegenDir,
+        "client-asset-lists.ts",
+        true
+      ))
+    ) {
+      throw new Error("Failed to generate client asset list file.");
+    }
+  }
 
   if (success) {
     if (overwriteFile) {

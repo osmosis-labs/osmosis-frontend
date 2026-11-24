@@ -1,9 +1,9 @@
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import {
   querySuperfluidAssetMultiplier,
   querySuperfluidParams,
@@ -25,7 +25,7 @@ export async function calcOsmoSuperfluidEquivalent({
   chainList: Chain[];
   assetLists: AssetList[];
 }) {
-  return cachified({
+  return cached({
     cache: cache,
     key: `osmo-equivalent-${denom}-${amount}`,
     ttl: 1000 * 30, // 30 seconds

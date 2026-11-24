@@ -1,6 +1,11 @@
 import { Int } from "@osmosis-labs/unit";
 import { apiClient } from "@osmosis-labs/utils";
 
+import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+} from "../errors";
 import { getSidecarRouter } from "../router";
 
 jest.mock("@osmosis-labs/utils", () => ({
@@ -72,5 +77,79 @@ describe("sidecar router price impact", () => {
       );
       expect(quote.priceImpactUnknown).toBeUndefined();
     }
+  });
+});
+
+describe("sidecar router exact-out route liquidity", () => {
+  const tokenOut = { denom: "uosmo", amount: new Int(99) };
+
+  it("carries liquidity_cap and its overflow flag through, so exact-out quotes can pick a tier from it", async () => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+
+    mock.mockResolvedValueOnce(
+      response({ liquidity_cap: "29700", liquidity_cap_overflow: false }, "out")
+    );
+    const quote = await router.routeByTokenOut(tokenOut, "uatom");
+    expect(quote.liquidityCap).toBe("29700");
+    expect(quote.liquidityCapOverflow).toBe(false);
+
+    mock.mockResolvedValueOnce(
+      response({ liquidity_cap: "0", liquidity_cap_overflow: true }, "out")
+    );
+    const overflowed = await router.routeByTokenOut(tokenOut, "uatom");
+    expect(overflowed.liquidityCapOverflow).toBe(true);
+  });
+});
+
+describe("sidecar router errors", () => {
+  const tokenIn = { denom: "uatom", amount: new Int(100) };
+  const tokenOut = { denom: "uosmo", amount: new Int(99) };
+  const sidecarError = (message: string) => ({ data: { message } });
+
+  it.each([
+    "transmuter pool 1868 is not active",
+    "transmuter pool 1868 does not allow swaps that increase corrupted denom uatom",
+    "no candidate routes found",
+  ])("maps %p to NoRouteError, both directions", async (message) => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+
+    mock.mockRejectedValueOnce(sidecarError(message));
+    await expect(router.routeByTokenIn(tokenIn, "uosmo")).rejects.toThrow(
+      NoRouteError
+    );
+    mock.mockRejectedValueOnce(sidecarError(message));
+    await expect(router.routeByTokenOut(tokenOut, "uatom")).rejects.toThrow(
+      NoRouteError
+    );
+  });
+
+  it("keeps the liquidity and amount errors", async () => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+
+    mock.mockRejectedValueOnce(sidecarError("not enough liquidity"));
+    await expect(router.routeByTokenIn(tokenIn, "uosmo")).rejects.toThrow(
+      NotEnoughLiquidityError
+    );
+    mock.mockRejectedValueOnce(
+      sidecarError("amount out is zero, try increasing amount in")
+    );
+    await expect(router.routeByTokenOut(tokenOut, "uatom")).rejects.toThrow(
+      NotEnoughQuotedError
+    );
+  });
+
+  it("passes other sidecar messages through", async () => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+
+    mock.mockRejectedValueOnce(sidecarError("pool 7 is not active"));
+    const error = await router
+      .routeByTokenIn(tokenIn, "uosmo")
+      .catch((e: Error) => e);
+    expect(error).not.toBeInstanceOf(NoRouteError);
+    expect((error as Error).message).toBe("pool 7 is not active");
   });
 });

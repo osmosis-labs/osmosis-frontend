@@ -1,4 +1,7 @@
-import { maybeCursorPaginatedItems } from "../pagination";
+import {
+  maybeCachePaginatedItems,
+  maybeCursorPaginatedItems,
+} from "../pagination";
 
 describe("maybeCursorPaginatedItems", () => {
   const items = Array.from({ length: 100 }, (_, i) => i); // Create an array of 100 items
@@ -32,5 +35,36 @@ describe("maybeCursorPaginatedItems", () => {
     const result = maybeCursorPaginatedItems(lessItems, 0, 20);
     expect(result.items).toEqual(lessItems);
     expect(result.nextCursor).toEqual(undefined);
+  });
+});
+
+describe("maybeCachePaginatedItems", () => {
+  it("serves a shared list's first page from the cache", async () => {
+    const getFreshItems = jest.fn(async () => [1, 2, 3]);
+    const params = {
+      getFreshItems,
+      cacheKey: "test-shared-list",
+      cursor: 0,
+      limit: 2,
+    };
+    await maybeCachePaginatedItems(params);
+    const page = await maybeCachePaginatedItems(params);
+    expect(page).toEqual({ items: [1, 2], nextCursor: 2 });
+    expect(getFreshItems).toHaveBeenCalledTimes(1);
+  });
+
+  it("refetches a reloadOnFirstPage list on its first page only", async () => {
+    const getFreshItems = jest.fn(async () => [1, 2, 3]);
+    const params = {
+      getFreshItems,
+      cacheKey: "test-user-list",
+      limit: 2,
+      reloadOnFirstPage: true,
+    };
+    await maybeCachePaginatedItems({ ...params, cursor: 0 });
+    await maybeCachePaginatedItems({ ...params, cursor: 2 });
+    expect(getFreshItems).toHaveBeenCalledTimes(1);
+    await maybeCachePaginatedItems({ ...params, cursor: 0 });
+    expect(getFreshItems).toHaveBeenCalledTimes(2);
   });
 });

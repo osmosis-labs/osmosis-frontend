@@ -2,7 +2,6 @@ import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { Dec, Int, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import {
@@ -10,6 +9,7 @@ import {
   captureIfError,
   DEFAULT_LRU_OPTIONS,
 } from "../../../utils";
+import { cached, type CacheEntry } from "../../../utils/cached";
 import {
   queryTransmuterAssetConfigs,
   queryTransmuterCorruptedDenoms,
@@ -383,7 +383,7 @@ function getCachedAlloyStatus(
   contractAddress: string,
   chainList: Chain[]
 ): Promise<AlloyStatus> {
-  return cachified({
+  return cached({
     cache: alloyStatusCache,
     // A transmuter frozen within this window still shows Convert until the
     // entry expires, and the client's own one-minute stale time stacks on

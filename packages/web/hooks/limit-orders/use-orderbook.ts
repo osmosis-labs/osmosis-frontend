@@ -6,7 +6,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList, type SortDirection } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
 
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useSwapAsset } from "~/hooks/use-swap";
 import { useWallet } from "~/hooks/use-wallet";
