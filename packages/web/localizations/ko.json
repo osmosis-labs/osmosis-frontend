@@ -1010,7 +1010,7 @@
     "noQuotesAvailableTitle": "사용 가능한 견적이 없습니다",
     "noQuotesAvailableDescription": "이 금액에 대한 견적을 가져올 수 없습니다. 다른 금액을 시도하거나 잠시 후 다시 확인하세요.",
     "quoteProviderUnavailableTitle": "이 옵션은 사용할 수 없습니다",
-    "quoteProviderUnavailableDescription": "선택한 전송 옵션은 이 금액에 사용할 수 없습니다. 다른 금액을 시도하거나 전송 세부정보에서 다른 옵션을 선택하세요.",
+    "quoteProviderUnavailableDescription": "선택한 전송 옵션은 이 금액에 사용할 수 없습니다. 다른 금액을 시도하거나, 전송 세부정보에서 다른 옵션을 선택하거나, 잠시 후 다시 확인하세요.",
     "slippageTooHighTitle": "슬리피지가 높습니다",
     "slippageTooHighDescription": "이 전송의 슬리피지가 높습니다. 더 적은 금액을 시도하거나 손실 위험을 감수하고 계속 진행하세요.",
     "priceImpactTooHighTitle": "가격 영향이 큽니다",

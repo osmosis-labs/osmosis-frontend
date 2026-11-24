@@ -1010,7 +1010,7 @@
     "noQuotesAvailableTitle": "Nicio cotație disponibilă",
     "noQuotesAvailableDescription": "Nu am putut obține o cotație pentru această sumă. Încercați o altă sumă sau reveniți mai târziu.",
     "quoteProviderUnavailableTitle": "Această opțiune nu este disponibilă",
-    "quoteProviderUnavailableDescription": "Opțiunea de transfer pe care ați selectat-o nu este disponibilă pentru această sumă. Încercați o altă sumă sau alegeți o altă opțiune în detaliile transferului.",
+    "quoteProviderUnavailableDescription": "Opțiunea de transfer pe care ați selectat-o nu este disponibilă pentru această sumă. Încercați o altă sumă, alegeți o altă opțiune în detaliile transferului sau reveniți mai târziu.",
     "slippageTooHighTitle": "Slippage-ul este mare",
     "slippageTooHighDescription": "Slippage-ul pentru acest transfer este mare. Încercați o sumă mai mică sau acceptați riscul de pierdere pentru a continua.",
     "priceImpactTooHighTitle": "Impactul asupra prețului este mare",

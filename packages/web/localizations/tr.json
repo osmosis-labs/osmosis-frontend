@@ -1010,7 +1010,7 @@
     "noQuotesAvailableTitle": "Kullanılabilir teklif yok",
     "noQuotesAvailableDescription": "Bu tutar için teklif alamadık. Farklı bir tutar deneyin veya daha sonra tekrar kontrol edin.",
     "quoteProviderUnavailableTitle": "Bu seçenek kullanılamıyor",
-    "quoteProviderUnavailableDescription": "Seçtiğiniz transfer seçeneği bu tutar için kullanılamıyor. Farklı bir tutar deneyin veya transfer ayrıntılarından başka bir seçenek seçin.",
+    "quoteProviderUnavailableDescription": "Seçtiğiniz transfer seçeneği bu tutar için kullanılamıyor. Farklı bir tutar deneyin, transfer ayrıntılarından başka bir seçenek seçin veya daha sonra tekrar kontrol edin.",
     "slippageTooHighTitle": "Kayma yüksek",
     "slippageTooHighDescription": "Bu transfer için kayma yüksek. Daha küçük bir tutar deneyin veya devam etmek için kayıp riskini kabul edin.",
     "priceImpactTooHighTitle": "Fiyat etkisi yüksek",

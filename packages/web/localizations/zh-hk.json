@@ -1010,7 +1010,7 @@
     "noQuotesAvailableTitle": "暫無可用報價",
     "noQuotesAvailableDescription": "無法取得此金額的報價。請嘗試其他金額，或稍後再查看。",
     "quoteProviderUnavailableTitle": "此選項不可用",
-    "quoteProviderUnavailableDescription": "您所選的轉賬選項不適用於此金額。請嘗試其他金額，或在轉賬詳情中選擇其他選項。",
+    "quoteProviderUnavailableDescription": "您所選的轉賬選項不適用於此金額。請嘗試其他金額，在轉賬詳情中選擇其他選項，或稍後再查看。",
     "slippageTooHighTitle": "滑點偏高",
     "slippageTooHighDescription": "此轉賬的滑點偏高。請嘗試較小的金額，或接受損失風險以繼續。",
     "priceImpactTooHighTitle": "價格影響偏高",

@@ -1010,7 +1010,7 @@
     "noQuotesAvailableTitle": "Aucune cotation disponible",
     "noQuotesAvailableDescription": "Nous n'avons pas pu obtenir de cotation pour ce montant. Essayez un autre montant ou réessayez plus tard.",
     "quoteProviderUnavailableTitle": "Cette option n'est pas disponible",
-    "quoteProviderUnavailableDescription": "L'option de transfert que vous avez sélectionnée n'est pas disponible pour ce montant. Essayez un autre montant ou choisissez une autre option dans les détails du transfert.",
+    "quoteProviderUnavailableDescription": "L'option de transfert que vous avez sélectionnée n'est pas disponible pour ce montant. Essayez un autre montant, choisissez une autre option dans les détails du transfert ou réessayez plus tard.",
     "slippageTooHighTitle": "Le slippage est élevé",
     "slippageTooHighDescription": "Le slippage de ce transfert est élevé. Essayez un montant plus faible ou acceptez le risque de perte pour continuer.",
     "priceImpactTooHighTitle": "L'impact sur le prix est élevé",

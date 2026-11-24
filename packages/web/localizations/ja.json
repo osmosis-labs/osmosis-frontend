@@ -1010,7 +1010,7 @@
     "noQuotesAvailableTitle": "利用可能な見積もりがありません",
     "noQuotesAvailableDescription": "この金額の見積もりを取得できませんでした。別の金額を試すか、しばらくしてからもう一度ご確認ください。",
     "quoteProviderUnavailableTitle": "このオプションは利用できません",
-    "quoteProviderUnavailableDescription": "選択した送金オプションはこの金額では利用できません。別の金額を試すか、送金詳細で別のオプションを選択してください。",
+    "quoteProviderUnavailableDescription": "選択した送金オプションはこの金額では利用できません。別の金額を試すか、送金詳細で別のオプションを選択するか、しばらくしてからもう一度ご確認ください。",
     "slippageTooHighTitle": "スリッページが高くなっています",
     "slippageTooHighDescription": "この送金のスリッページが高くなっています。金額を減らすか、損失のリスクを受け入れて続行してください。",
     "priceImpactTooHighTitle": "価格への影響が大きくなっています",
