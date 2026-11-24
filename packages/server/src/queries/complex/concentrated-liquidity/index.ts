@@ -295,9 +295,13 @@ export async function mapGetUserPositionDetails({
   const lockableDurations = getLockableDurations();
   const longestLockDuration = lockableDurations[lockableDurations.length - 1];
 
+  // One ID per pool, not per position: SQS caps the number of pool IDs per request,
+  // duplicates included.
   const pools = await getPools({
     ...params,
-    poolIds: positions.map(({ position }) => position.pool_id),
+    poolIds: Array.from(
+      new Set(positions.map(({ position }) => position.pool_id))
+    ),
   });
 
   if (!stakeCurrency) throw new Error(`Stake currency (OSMO) not found`);

@@ -1,22 +1,27 @@
-/** Production ingress for app.osmosis.zone. Every request goes to the Cloudflare frontend. */
+/** Production ingress for app.osmosis.zone. Routes `/api/*` directly to the API Worker when bound, and all other requests to the pages Worker. */
 export type RouterEnv = {
   /** Service binding to `osmosis-frontend-production`. */
   PRODUCTION: { fetch(request: Request): Promise<Response> };
+  /** Direct service binding to `osmosis-frontend-api-production`, avoiding a pages Worker hop for `/api/*`. */
+  API?: { fetch(request: Request): Promise<Response> };
 };
 
 const router = {
   async fetch(request: Request, env: RouterEnv): Promise<Response> {
     const started = Date.now();
+    const pathname = new URL(request.url).pathname;
+    const isApi = pathname.startsWith("/api/");
+    const target = isApi && env.API ? env.API : env.PRODUCTION;
     const context = {
       event: "router_upstream",
-      backend: "cf",
+      backend: isApi && env.API ? "cf-api" : "cf",
       method: request.method,
-      path: new URL(request.url).pathname.slice(0, 512),
+      path: pathname.slice(0, 512),
       rayId: request.headers.get("cf-ray"),
     };
     let response: Response;
     try {
-      response = await env.PRODUCTION.fetch(request);
+      response = await target.fetch(request);
     } catch (error) {
       console.error({
         ...context,
@@ -27,14 +32,14 @@ const router = {
       throw error;
     }
 
-    const log = {
-      ...context,
-      status: response.status,
-      durationMs: Date.now() - started,
-      outcome: response.status >= 500 ? "http_error" : "response",
-    };
-    if (response.status >= 500) console.error(log);
-    else console.log(log);
+    if (response.status >= 500) {
+      console.error({
+        ...context,
+        status: response.status,
+        durationMs: Date.now() - started,
+        outcome: "http_error",
+      });
+    }
 
     // Upgrade responses carry a socket that must be returned untouched.
     if (response.status === 101) return response;

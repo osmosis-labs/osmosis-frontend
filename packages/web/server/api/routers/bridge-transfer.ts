@@ -18,7 +18,11 @@ import {
 } from "@osmosis-labs/server";
 import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
 import { isInsufficientFeeError } from "@osmosis-labs/tx";
-import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
+import type {
+  AssetList,
+  Chain,
+  ExternalInterfaceBridgeTransferMethod,
+} from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
   BitcoinCashChainInfo,
@@ -74,6 +78,41 @@ const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
 
+const bridgeProvidersCache = new WeakMap<object, BridgeProviders>();
+
+function getBridgeProviders(ctx: {
+  assetLists: AssetList[];
+  chainList: Chain[];
+}) {
+  let instance = bridgeProvidersCache.get(ctx.assetLists);
+  if (!instance) {
+    instance = new BridgeProviders(
+      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+      {
+        ...ctx,
+        env: IS_TESTNET ? "testnet" : "mainnet",
+        cache: lruCache,
+        getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
+        getAssetUsdPrice: (coinMinimalDenom) =>
+          getAssetPrice({ ...ctx, asset: { coinMinimalDenom } }),
+      }
+    );
+    bridgeProvidersCache.set(ctx.assetLists, instance);
+  }
+  return instance;
+}
+
+function getBridgeProvider(bridgeProviders: BridgeProviders, bridgeId: string) {
+  if (
+    !Object.prototype.hasOwnProperty.call(bridgeProviders.bridges, bridgeId)
+  ) {
+    return undefined;
+  }
+  return bridgeProviders.bridges[
+    bridgeId as keyof typeof bridgeProviders.bridges
+  ];
+}
+
 /** Include decimals with decimal-included price. */
 const priceFromBridgeCoin = (coin: BridgeCoin, price: Dec) => {
   return new PricePretty(
@@ -89,20 +128,8 @@ export const bridgeTransferRouter = createTRPCRouter({
   getQuoteByBridge: publicProcedure
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
     .query(async ({ input, ctx }) => {
-      const bridgeProviders = new BridgeProviders(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        {
-          ...ctx,
-          env: IS_TESTNET ? "testnet" : "mainnet",
-          cache: lruCache,
-          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
-        }
-      );
-
-      const bridgeProvider =
-        bridgeProviders.bridges[
-          input.bridge as keyof typeof bridgeProviders.bridges
-        ];
+      const bridgeProviders = getBridgeProviders(ctx);
+      const bridgeProvider = getBridgeProvider(bridgeProviders, input.bridge);
 
       if (!bridgeProvider) {
         throw new Error("Invalid bridge provider id: " + input.bridge);
@@ -409,22 +436,8 @@ export const bridgeTransferRouter = createTRPCRouter({
   getSupportedAssetsByBridge: publicProcedure
     .input(getBridgeSupportedAssetsParams.extend({ bridge: z.string() }))
     .query(async ({ input, ctx }) => {
-      const bridgeProviders = new BridgeProviders(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        {
-          ...ctx,
-          env: IS_TESTNET ? "testnet" : "mainnet",
-          cache: lruCache,
-          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
-          getAssetUsdPrice: (coinMinimalDenom) =>
-            getAssetPrice({ ...ctx, asset: { coinMinimalDenom } }),
-        }
-      );
-
-      const bridgeProvider =
-        bridgeProviders.bridges[
-          input.bridge as keyof typeof bridgeProviders.bridges
-        ];
+      const bridgeProviders = getBridgeProviders(ctx);
+      const bridgeProvider = getBridgeProvider(bridgeProviders, input.bridge);
 
       if (!bridgeProvider) {
         throw new Error("Invalid bridge provider id: " + input.bridge);
@@ -577,20 +590,8 @@ export const bridgeTransferRouter = createTRPCRouter({
   getTransactionRequestByBridge: publicProcedure
     .input(getBridgeQuoteSchema.extend({ bridge: z.string() }))
     .query(async ({ input, ctx }) => {
-      const bridgeProviders = new BridgeProviders(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        {
-          ...ctx,
-          env: IS_TESTNET ? "testnet" : "mainnet",
-          cache: lruCache,
-          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
-        }
-      );
-
-      const bridgeProvider =
-        bridgeProviders.bridges[
-          input.bridge as keyof typeof bridgeProviders.bridges
-        ];
+      const bridgeProviders = getBridgeProviders(ctx);
+      const bridgeProvider = getBridgeProvider(bridgeProviders, input.bridge);
 
       if (!bridgeProvider) {
         throw new Error("Invalid bridge provider id");
@@ -617,20 +618,8 @@ export const bridgeTransferRouter = createTRPCRouter({
   getTransactionStepByBridge: publicProcedure
     .input(getBridgeTransactionStepSchema.extend({ bridge: z.string() }))
     .query(async ({ input, ctx }) => {
-      const bridgeProviders = new BridgeProviders(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        {
-          ...ctx,
-          env: IS_TESTNET ? "testnet" : "mainnet",
-          cache: lruCache,
-          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
-        }
-      );
-
-      const bridgeProvider =
-        bridgeProviders.bridges[
-          input.bridge as keyof typeof bridgeProviders.bridges
-        ];
+      const bridgeProviders = getBridgeProviders(ctx);
+      const bridgeProvider = getBridgeProvider(bridgeProviders, input.bridge);
 
       if (!bridgeProvider) {
         throw new Error("Invalid bridge provider id: " + input.bridge);
@@ -656,23 +645,15 @@ export const bridgeTransferRouter = createTRPCRouter({
       )
     )
     .query(async ({ input, ctx }) => {
-      const bridgeProviders = new BridgeProviders(
-        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-        {
-          ...ctx,
-          env: IS_TESTNET ? "testnet" : "mainnet",
-          cache: lruCache,
-          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
-        }
-      );
+      const bridgeProviders = getBridgeProviders(ctx);
 
       const bridgesToQuery = input.bridges
-        ? input.bridges.map(
-            (bridge) =>
-              bridgeProviders.bridges[
-                bridge as keyof typeof bridgeProviders.bridges
-              ]
-          )
+        ? input.bridges
+            .map((bridge) => getBridgeProvider(bridgeProviders, bridge))
+            .filter(
+              (provider): provider is NonNullable<typeof provider> =>
+                provider !== undefined
+            )
         : Object.values(bridgeProviders.bridges);
 
       const externalUrls = (

@@ -62,17 +62,19 @@ export function getPoolsFromSidecar({
 
   return cached({
     cache: poolsCache,
-    key:
-      (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
-      (notPoolIds?.join(",") ?? "") +
-      (types?.join(",") ?? "") +
-      (incentives?.join(",") ?? "") +
-      (denoms?.join(",") ?? "") +
-      (minLiquidityUsd ?? "") +
-      withMarketIncentives.toString() +
-      (pagination ? JSON.stringify(pagination) : "") +
-      (sort ? JSON.stringify(sort) : "") +
-      (search ? JSON.stringify(search) : ""),
+    key: JSON.stringify([
+      "sidecar-pools",
+      poolIds ?? null,
+      notPoolIds ?? null,
+      types ?? null,
+      incentives ?? null,
+      denoms ?? null,
+      minLiquidityUsd ?? null,
+      withMarketIncentives,
+      pagination ?? null,
+      sort ?? null,
+      search ?? null,
+    ]),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
