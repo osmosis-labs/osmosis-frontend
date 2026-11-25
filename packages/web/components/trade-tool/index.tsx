@@ -128,22 +128,27 @@ export const TradeTool: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   if (!isReady || !isClient) {
     // Render an SSR-safe shell matching the live card dimensions so `/` paints
     // immediately without CLS while preserving query-param deep links (`type=limit`).
-    return (
-      <div className="flex flex-col gap-3">
-        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3 sm:px-4 sm:pt-4 sm:pb-2">
-          <div className="flex w-full items-center justify-between md:gap-2">
-            <SwapToolTabs activeTab={SwapToolTab.SWAP} setTab={() => {}} />
-          </div>
-          <SkeletonLoader className="h-[116px] w-full rounded-2xl" />
-          <SkeletonLoader className="h-[116px] w-full rounded-2xl" />
-          <SkeletonLoader className="h-14 w-full rounded-2xl" />
-        </div>
-      </div>
-    );
+    return <TradeToolShell activeTab={DEFAULT_TAB} />;
   }
 
   return <TradeToolContent {...props} />;
 };
+
+/** Placeholder card the size of the live widget, so loading doesn't shift the page. */
+const TradeToolShell: FunctionComponent<{ activeTab: SwapToolTab }> = ({
+  activeTab,
+}) => (
+  <div className="flex flex-col gap-3">
+    <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3 sm:px-4 sm:pt-4 sm:pb-2">
+      <div className="flex w-full items-center justify-between md:gap-2">
+        <SwapToolTabs activeTab={activeTab} setTab={() => {}} />
+      </div>
+      <SkeletonLoader className="h-[116px] w-full rounded-2xl" />
+      <SkeletonLoader className="h-[116px] w-full rounded-2xl" />
+      <SkeletonLoader className="h-14 w-full rounded-2xl" />
+    </div>
+  </div>
+);
 
 const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
   props
@@ -169,7 +174,12 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     "tab",
     parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab))
   );
-  const tabParam = tabQuery ?? DEFAULT_TAB;
+  // Swap links carry `from` and `to` but no tab (Swap was the default tab, so
+  // the URL dropped it), e.g. Portfolio's Trade action and older shared
+  // links; keep opening those on Swap rather than buying `from`.
+  const [toParam] = useQueryState("to");
+  const defaultTab = !orderbookPool && toParam ? SwapToolTab.SWAP : DEFAULT_TAB;
+  const tabParam = tabQuery ?? defaultTab;
   const allowedTabs = orderbookPool ? ORDERBOOK_POOL_TABS : undefined;
   const tab =
     allowedTabs && !allowedTabs.includes(tabParam) ? allowedTabs[0] : tabParam;
@@ -516,7 +526,9 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
         }
       : undefined;
 
-  if (!isTabInUrl) return null;
+  // Hold the widget's place until the URL catches up, so the page below it
+  // doesn't jump.
+  if (!isTabInUrl) return <TradeToolShell activeTab={tab} />;
 
   // The widget keeps the same position in the tree in every layout (the
   // chart, book and orders are empty slots when not shown), so expanding,
