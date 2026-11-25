@@ -29,7 +29,7 @@
     "typecheck": "next typegen && tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "prettier --check \"**/*\" && oxlint .",
     "lint:fix": "prettier --write \"**/*\" && oxlint . --fix",
-    "generate": "yarn generate:lists && yarn generate:cosmos-kit-wallet-list && yarn generate:sprite-ids",
+    "generate": "concurrently --raw --kill-others-on-fail \"yarn generate:lists\" \"yarn generate:cosmos-kit-wallet-list\" \"yarn generate:sprite-ids\"",
     "generate:lists": "dotenv -c -- tsx config/generate-lists.ts",
     "generate:cosmos-kit-wallet-list": "dotenv -c -- tsx config/generate-cosmos-kit-wallet-list.ts",
     "generate:sprite-ids": "dotenv -c -- tsx config/generate-sprite-ids.ts",

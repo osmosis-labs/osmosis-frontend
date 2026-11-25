@@ -575,9 +575,7 @@ async function getLatestCommitHash() {
 }
 
 async function main() {
-  if (!fs.existsSync(codegenDir)) {
-    fs.mkdirSync(codegenDir);
-  }
+  fs.mkdirSync(codegenDir, { recursive: true });
 
   const mainnetOsmosisChainId = getOsmosisChainId("mainnet");
   const testnetOsmosisChainId = getOsmosisChainId("testnet");
@@ -627,12 +625,18 @@ async function main() {
     }),
   ]);
 
-  await generateAssetImages({
-    assetList: IS_TESTNET ? testnetResponseAssetList : mainnetResponseAssetList,
-    commitHash: mainLatestCommitHash,
-  });
+  if (process.env.SKIP_ASSET_IMAGES === "true") {
+    console.info("Skipping asset image downloads (SKIP_ASSET_IMAGES=true)");
+  } else {
+    await generateAssetImages({
+      assetList: IS_TESTNET
+        ? testnetResponseAssetList
+        : mainnetResponseAssetList,
+      commitHash: mainLatestCommitHash,
+    });
 
-  writeCurrentAssetListHash(mainLatestCommitHash);
+    writeCurrentAssetListHash(mainLatestCommitHash);
+  }
 
   let mainnetAssetLists: AssetList[] | undefined;
   let testnetAssetLists: AssetList[] | undefined;

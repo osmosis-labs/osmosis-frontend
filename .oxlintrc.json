@@ -23,6 +23,7 @@
     "**/build/**",
     "**/dist/**",
     "packages/web/public/tradingview/**",
+    "packages/web/config/generated/**",
     "packages/proto-codecs/src/codegen/**"
   ],
   "rules": {

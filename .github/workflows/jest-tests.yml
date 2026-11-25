@@ -43,15 +43,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache dependencies
+        id: cache-deps
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'package.json', 'packages/*/package.json') }}
           restore-keys: |
-            ${{ runner.OS }}-${{ matrix.node-version }}
-            ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}
+            ${{ runner.OS }}-${{ matrix.node-version }}-
 
       - name: Install Dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
       - name: Run ${{ matrix.package }} tests
@@ -60,6 +61,7 @@ jobs:
         # latest assetlists commit; the token avoids the shared unauthenticated rate limit.
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKIP_ASSET_IMAGES: "true"
 
   # Signs real transactions in amino and direct mode against a throwaway
   # single-validator chain started on the runner (swaps, pool joins and exits,
@@ -85,14 +87,16 @@ jobs:
           node-version: 24.x
 
       - name: Cache dependencies
+        id: cache-deps
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('yarn.lock', 'package.json', 'packages/*/package.json') }}
           restore-keys: |
             ${{ runner.OS }}-24.x-
 
       - name: Install Dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
       - name: Download osmosisd
@@ -112,6 +116,7 @@ jobs:
         run: corepack yarn workspace @osmosis-labs/web generate
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKIP_ASSET_IMAGES: "true"
 
       - name: Run local-chain wallet tests
         run: corepack yarn workspace @osmosis-labs/web test:wallet-local-chain
