@@ -151,13 +151,15 @@ jobs:
             packages/web/config/generated/asset-lock.json
           key: ${{ runner.os }}-asset-images-${{ env.ASSET_LIST_COMMIT_HASH }}
 
-      - name: Cache Turbo build
+      - name: Cache workspace packages build
         uses: actions/cache@v5
         with:
-          path: .turbo/cache
-          key: ${{ runner.os }}-turbo-cf-${{ github.ref_name == 'master' && 'prod' || 'stage' }}-${{ env.ASSET_LIST_COMMIT_HASH }}-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.os }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-turbo-cf-${{ github.ref_name == 'master' && 'prod' || 'stage' }}-
+            ${{ runner.os }}-packages-build-
 
       # Restore the latest warm webpack/React Compiler cache from stage/master.
       # Only non-PR pushes save back to avoid churning the 10 GB repo cache budget.

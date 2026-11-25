@@ -6,7 +6,7 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint": "oxlint src && prettier --check \"src/**/*\"",

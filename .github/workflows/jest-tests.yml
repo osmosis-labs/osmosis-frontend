@@ -39,16 +39,18 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
-      - name: Cache Turbo build
+      - name: Cache workspace packages build
         uses: actions/cache@v5
         with:
-          path: .turbo/cache
-          key: ${{ runner.OS }}-turbo-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-turbo-build-
+            ${{ runner.OS }}-packages-build-
 
       - name: Run web tests
-        run: corepack yarn test --filter=@osmosis-labs/web
+        run: corepack yarn build:packages && corepack yarn workspace @osmosis-labs/web test
         # web's test script runs generate, which queries the GitHub API for the
         # latest assetlists commit; the token avoids the shared unauthenticated rate limit.
         env:
@@ -80,16 +82,18 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
-      - name: Cache Turbo build
+      - name: Cache workspace packages build
         uses: actions/cache@v5
         with:
-          path: .turbo/cache
-          key: ${{ runner.OS }}-turbo-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-turbo-build-
+            ${{ runner.OS }}-packages-build-
 
       - name: Run workspace package tests
-        run: corepack yarn test --filter='!@osmosis-labs/web' --filter='!app-osmosis-e2e'
+        run: corepack yarn test:packages
 
   # Signs real transactions in amino and direct mode against a throwaway
   # single-validator chain started on the runner (swaps, pool joins and exits,
@@ -127,13 +131,15 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
-      - name: Cache Turbo build
+      - name: Cache workspace packages build
         uses: actions/cache@v5
         with:
-          path: .turbo/cache
-          key: ${{ runner.OS }}-turbo-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-turbo-build-
+            ${{ runner.OS }}-packages-build-
 
       - name: Cache osmosisd
         id: cache-osmosisd
@@ -157,7 +163,7 @@ jobs:
           echo "OSMOSISD_BINARY=$bin" >> "$GITHUB_ENV"
 
       - name: Build workspace packages
-        run: corepack yarn turbo run build --filter=@osmosis-labs/web^...
+        run: corepack yarn build:packages
 
       - name: Generate web config
         run: corepack yarn workspace @osmosis-labs/web generate

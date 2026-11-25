@@ -17,7 +17,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "test:e2e": "yarn with-env jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)'",

@@ -13,7 +13,7 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
 - [Tailwind CSS](https://tailwindcss.com/): styling, theming
 - [Next.js](https://nextjs.org/): scaffolding/SSR/CDN/SEO
   - Cloudflare Workers hosts the OpenNext frontend and a separate API Worker.
-- [Turbo Repo](https://turbo.build/repo): mono repo management with package script execution, with heavy emphasis on build caching
+- [Yarn Workspaces](https://yarnpkg.com/features/workspaces) + TypeScript Project References (`tsc -b`): monorepo workspace management and incremental package builds
 
 ## Deployment 🚀
 
