@@ -180,7 +180,7 @@ export const poolsRouter = createTRPCRouter({
   getPairDepth: publicProcedure
     .input(
       z.object({
-        poolId: z.string(),
+        poolId: PoolIdValueSchema,
         bucketSize: z.number().positive().optional(),
         /** Include concentrated-liquidity pool depth for the pair. Off unless asked for. */
         includeCl: z.boolean().default(false),
