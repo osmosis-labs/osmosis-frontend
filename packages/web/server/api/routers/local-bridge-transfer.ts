@@ -28,6 +28,7 @@ import { EthereumChainInfo, getServerEvmRpcUrls } from "@osmosis-labs/utils";
 import { getAddress } from "viem";
 import { z } from "zod";
 
+import { MAX_BRIDGE_BALANCE_BATCH_SIZE } from "~/components/bridge/bridge-balance-batching";
 import { isServerFlagEnabled } from "~/utils/server-flags";
 
 /**
@@ -115,7 +116,7 @@ const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
             })
           )
         )
-        .max(500),
+        .max(MAX_BRIDGE_BALANCE_BATCH_SIZE),
     })
     .merge(schema);
 };

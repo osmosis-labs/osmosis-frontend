@@ -4,10 +4,6 @@ const nextJest = require("next/jest");
 // (e.g. `utcOffset(now.utcOffset() - 60)`), which degenerate in some zones:
 // at UTC+1 that offset is 0, dayjs switches to UTC mode and drops it.
 process.env.TZ = "UTC";
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
-const { pathsToModuleNameMapper } = require("ts-jest");
-
-const { compilerOptions } = require("./tsconfig");
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
@@ -22,8 +18,8 @@ const config = {
   setupFiles: ["jest-launchdarkly-mock"],
   testMatch: ["**/__tests__/?(*.)+(spec|test).[jt]s?(x)"],
   moduleNameMapper: {
-    // Resolve absolute imports
-    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+    // Resolve absolute imports (matches `~/*` in tsconfig.json)
+    "^~/(.*)$": "<rootDir>/$1",
     "^msw/node$": require.resolve("msw/node"),
   },
   watchPlugins: [

@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  lint-workspace:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -25,18 +25,23 @@ jobs:
           node-version: 24.x
 
       - name: Cache dependencies
+        id: cache-deps
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('yarn.lock', 'package.json', 'packages/*/package.json') }}
           restore-keys: |
             ${{ runner.OS }}-24.x-
 
       - name: Install Dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
       - name: Lint workspace
         run: corepack yarn lint:workspace
+
+      - name: Lint all packages
+        run: corepack yarn lint
 
   typecheck-web:
     runs-on: ubuntu-latest
@@ -51,19 +56,29 @@ jobs:
           node-version: 24.x
 
       - name: Cache dependencies
+        id: cache-deps
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('yarn.lock', 'package.json', 'packages/*/package.json') }}
           restore-keys: |
             ${{ runner.OS }}-24.x-
 
       - name: Install Dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
+
+      - name: Cache workspace packages build
+        uses: actions/cache@v5
+        with:
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
 
       # Web resolves workspace packages through their build/ output and imports generated config.
       - name: Build workspace packages
-        run: corepack yarn turbo run build --filter=@osmosis-labs/web^...
+        run: corepack yarn build:packages
 
       # generate queries the GitHub API for the latest assetlists commit; the
       # token avoids the unauthenticated rate limit shared across runners.
@@ -71,51 +86,9 @@ jobs:
         run: corepack yarn workspace @osmosis-labs/web generate
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKIP_ASSET_IMAGES: "true"
 
       # Replaces the type check skipped by `next build` (see next.config.js),
       # and also covers test files, which `next build` skipped and Jest (swc) never checks.
       - name: Type check web
         run: corepack yarn workspace @osmosis-labs/web typecheck
-
-  lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [24.x]
-        package:
-          [
-            "web",
-            "utils",
-            "server",
-            "math",
-            "bridge",
-            "tx",
-            "trpc",
-            "types",
-            "unit",
-            "proto-codecs",
-          ]
-
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          package-manager-cache: false
-          node-version: ${{ matrix.node-version }}
-
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-${{ matrix.node-version }}-
-
-      - name: Install Dependencies
-        run: corepack yarn install --immutable
-
-      - name: Lint ${{ matrix.package }} package
-        run: corepack yarn lint --filter=@osmosis-labs/${{ matrix.package }}

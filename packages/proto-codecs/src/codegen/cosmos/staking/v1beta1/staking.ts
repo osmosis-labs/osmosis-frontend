@@ -260,7 +260,8 @@ export interface ValidatorProtoMsg {
 }
 export type ValidatorEncoded = Omit<Validator, "consensusPubkey"> & {
   /** consensus_pubkey is the consensus public key of the validator, as a Protobuf Any. */ consensusPubkey?:
-    AnyProtoMsg | undefined;
+    | AnyProtoMsg
+    | undefined;
 };
 /**
  * Validator defines a validator, together with the total amount of the

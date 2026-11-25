@@ -11,7 +11,7 @@ import {
   USDC_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { useTranslation } from "~/hooks";
 import {
   clearJustCreatedOrderbook,

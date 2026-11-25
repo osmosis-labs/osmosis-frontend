@@ -6,7 +6,7 @@ It exports queries for the Osmosis (or Cosmos) node(s), as well as Osmosis index
 
 It also exports tRPC routers composed of these queries, which can be used to create tRPC contexts.
 
-These queries and utils have minimal dependencies and can be run in the browser, Node.js, or Vercel (or other) edge runtimes.
+These queries and utils have minimal dependencies and can be run in the browser, Node.js, or edge runtimes such as Cloudflare Workers.
 
 ## Queries
 
@@ -20,7 +20,7 @@ This module contains raw queries for accessing indexing services for the Osmosis
 
 ### Complex
 
-The folder composes the above queries into more complex query functions. It also includes in memory and remote caching of function return values.
+The folder composes the above queries into more complex query functions. It also includes in-memory caching of function return values.
 
 ## Utils
 
@@ -30,7 +30,6 @@ Various utils for working queries and tRPC. All utils are compatible with popula
 - Utils for common Osmosis types:
   - Superjson transformers
 - Async utils, such as timeouts
-- Remote cache client for Vercel KV
 - Search
 - Pagination via tRPC & React Queries infinite query (cursor-based)
 - Error handling and reporting via Opentelemetry

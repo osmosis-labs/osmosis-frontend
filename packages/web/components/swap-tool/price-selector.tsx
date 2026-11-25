@@ -20,7 +20,7 @@ import {
   VALID_QUOTES,
 } from "~/components/place-limit-tool/defaults";
 import { EntityImage } from "~/components/ui/entity-image";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import {
   Breakpoint,
   useDisclosure,
@@ -35,9 +35,25 @@ import { useWallet } from "~/hooks/use-wallet";
 import { AddFundsModal } from "~/modals/add-funds";
 import { CreateOrderbookModal } from "~/modals/create-orderbook";
 import { formatFiatPrice } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
+
+/**
+ * Raw asset from the client asset list. That list omits `logoURIs` to keep the
+ * browser bundle small, so rebuild them from the local image path.
+ */
+function findRawAsset(
+  query: Omit<Parameters<typeof getAssetFromAssetList>[0], "assetLists">
+): Asset | undefined {
+  const asset = getAssetFromAssetList({
+    assetLists: AssetLists,
+    ...query,
+  })?.rawAsset;
+  if (!asset) return undefined;
+  return { ...asset, logoURIs: getLogoURIs(asset.relative_image_url) };
+}
 
 function sortByAmount(
   assetA?: MaybeUserAssetCoin,
@@ -61,10 +77,7 @@ export function getUserQuotes(
 ): AssetWithBalance[] {
   return (tab === "sell" ? SELL_QUOTES : VALID_QUOTES)
     .map((coinMinimalDenom) => {
-      const asset = getAssetFromAssetList({
-        assetLists: AssetLists,
-        coinMinimalDenom,
-      })?.rawAsset;
+      const asset = findRawAsset({ coinMinimalDenom });
       // In the future, we might want to pass every coin instead of just stables.
       if (!asset?.categories.includes("stablecoin")) return undefined;
 
@@ -133,11 +146,7 @@ export const PriceSelector = memo(
         // "quote" may hold a symbol (?quote=USDT) or a minimal denom, like
         // "from" below; resolve either so a symbol-form quote is not mistaken
         // for an unknown asset and reset to USDC.
-        getAssetFromAssetList({
-          assetLists: AssetLists,
-          coinMinimalDenom: quote,
-          symbol: quote,
-        })?.rawAsset as Asset | undefined,
+        findRawAsset({ coinMinimalDenom: quote, symbol: quote }),
       [quote]
     );
     const quoteMinimalDenom = quoteAsset?.coinMinimalDenom;
@@ -146,11 +155,7 @@ export const PriceSelector = memo(
       () =>
         // "from" may hold a symbol (?from=ATOM) or a minimal denom; resolve
         // either so all orderbook logic below keys on real minimal denoms.
-        getAssetFromAssetList({
-          assetLists: AssetLists,
-          coinMinimalDenom: base,
-          symbol: base,
-        })?.rawAsset as Asset | undefined,
+        findRawAsset({ coinMinimalDenom: base, symbol: base }),
       [base]
     );
     const baseMinimalDenom = baseRawAsset?.coinMinimalDenom;
@@ -179,12 +184,8 @@ export const PriceSelector = memo(
 
     const defaultQuotes = useMemo(
       () =>
-        UI_DEFAULT_QUOTES.map(
-          (coinMinimalDenom) =>
-            getAssetFromAssetList({
-              assetLists: AssetLists,
-              coinMinimalDenom,
-            })?.rawAsset
+        UI_DEFAULT_QUOTES.map((coinMinimalDenom) =>
+          findRawAsset({ coinMinimalDenom })
         ).filter(Boolean) as Asset[],
       []
     );
@@ -484,10 +485,7 @@ function HighestBalanceAssetsIcons({
         select: (balances) =>
           balances
             .flatMap(({ denom, coin }) => {
-              const asset = getAssetFromAssetList({
-                assetLists: AssetLists,
-                coinMinimalDenom: denom,
-              })?.rawAsset;
+              const asset = findRawAsset({ coinMinimalDenom: denom });
               return asset && coin ? [{ ...asset, amount: coin }] : [];
             })
             .sort(sortByAmount)
@@ -680,11 +678,7 @@ const SelectableQuotes = ({
       // "from" may hold a symbol or a minimal denom; resolve either so the
       // creatable rows key on real minimal denoms (an unresolvable base
       // leaves the rows fail-closed).
-      getAssetFromAssetList({
-        assetLists: AssetLists,
-        coinMinimalDenom: base,
-        symbol: base,
-      })?.rawAsset as Asset | undefined,
+      findRawAsset({ coinMinimalDenom: base, symbol: base }),
     [base]
   );
   const baseMinimalDenom = baseAsset?.coinMinimalDenom;

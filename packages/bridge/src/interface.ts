@@ -20,6 +20,11 @@ export interface BridgeProviderContext {
    *  absent or failing, route-checking of withdraw destinations is skipped. */
   getAssetUsdPrice?(coinMinimalDenom: string): Promise<Dec>;
 
+  /** Minimal denoms an alloy's transmuter holds and takes in (its members,
+   *  minus corrupted ones), by alloyed denom. Optional: when absent, failing
+   *  or `undefined`, alloy route discovery falls back to the variant family. */
+  getAlloyMemberDenoms?(alloyedDenom: string): Promise<string[] | undefined>;
+
   /** Provides current timeout height for a chain of given chainId.
    *  If a destination address is provided, the bech32Prefix will be used to get the chain. */
   getTimeoutHeight(params: {
@@ -537,11 +542,9 @@ export interface BridgeQuote {
      * fraction (e.g. "-0.1" = a 10% loss), NOT a percentage. Negative is a
      * loss and positive is in the user's favour, matching the Osmosis swap
      * router; a provider whose API uses another convention converts at its
-     * boundary (Squid reports a loss as a positive percentage, so its
-     * provider divides by 100 and negates). "0" when the quote involves no
-     * swap — except Skip, which
-     * reports "0" even when its route swaps internally (known gap; the
-     * fiat-loss check is its only defense).
+     * boundary (Squid and Skip report a loss as a positive percentage, so
+     * their providers divide by 100 and negate). "0" when the quote involves
+     * no swap.
      */
     priceImpact: string;
     /**

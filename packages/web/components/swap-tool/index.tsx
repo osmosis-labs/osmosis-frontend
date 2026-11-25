@@ -40,7 +40,7 @@ import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { OsmosisChainInfo } from "~/config/chain";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { HighPriceImpactGate } from "~/config/trade-warnings";
 import {
   useDisclosure,
@@ -177,21 +177,42 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
       }
     }
 
-    const outputDifference = useMemo(
-      () =>
-        new RatePretty(
-          swapState.inAmountInput?.fiatValue
-            ?.toDec()
-            .sub(swapState.tokenOutFiatValue?.toDec())
-            .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
-        ),
-      [swapState.inAmountInput?.fiatValue, swapState.tokenOutFiatValue]
-    );
+    const outputDifference = useMemo(() => {
+      // Without a price impact from SQS, only the fiat comparison below can
+      // say anything; the fee alone would read as a real difference.
+      if (
+        quoteType === "in-given-out" &&
+        !swapState.quote?.priceImpactUnknown
+      ) {
+        // priceImpactTokenOut is (effectivePrice / spotPrice) - 1, negative
+        // for an adverse trade, and excludes the swap fee. Negate the impact
+        // and add the fee so the figure matches the exact-in fiat branch
+        // below, whose output amount is already net of fees.
+        return new RatePretty(
+          (swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0))
+            .neg()
+            .add(swapState.quote?.swapFee?.toDec() ?? new Dec(0))
+        );
+      }
+      // Without a fiat value on both sides the difference is unknown, not
+      // zero: return undefined so neither the swap tool nor the review shows
+      // a figure for it. An unpriced output arrives as a zero fiat value
+      // (see tokenOutFiatValue in use-swap), so zero counts as missing too.
+      const inFiat = swapState.inAmountInput?.fiatValue?.toDec();
+      const outFiat = swapState.tokenOutFiatValue?.toDec();
+      if (!inFiat?.isPositive() || !outFiat?.isPositive()) return undefined;
+      return new RatePretty(inFiat.sub(outFiat).quo(inFiat));
+    }, [
+      quoteType,
+      swapState.inAmountInput?.fiatValue,
+      swapState.tokenOutFiatValue,
+      swapState.quote?.priceImpactTokenOut,
+      swapState.quote?.priceImpactUnknown,
+      swapState.quote?.swapFee,
+    ]);
 
-    const showOutputDifferenceWarning = outputDifference
-      .toDec()
-      .abs()
-      .gt(new Dec(0.05));
+    const showOutputDifferenceWarning =
+      outputDifference?.toDec().abs().gt(new Dec(0.05)) ?? false;
 
     const quotedPriceImpact = swapState.quote?.priceImpactTokenOut;
 
@@ -357,7 +378,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
     } = useDisclosure();
 
     const displayedOutputDifference = outputDifference
-      .toDec()
+      ?.toDec()
       .abs()
       .mul(new Dec(100))
       .toString(4);
@@ -659,7 +680,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
                             body={t("tradeDetails.outputDifference.content")}
                             childWrapperClassName="ml-1"
                           >{`(${
-                            outputDifference.toDec().isNegative() ? "+" : "-"
+                            outputDifference?.toDec().isNegative() ? "+" : "-"
                           }${displayedOutputDifference}%)`}</GenericDisclaimer>
                         </span>
                       </>

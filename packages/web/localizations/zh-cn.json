@@ -831,7 +831,9 @@
     "slippageAutoAdjustedTitle": "滑点已自动调整",
     "slippageAutoAdjustedBody": "由于价格影响较大或流动性较低，此交易的默认滑点已上调。",
     "routeLiquidityUnknown": "无法验证此路径的流动性。确认前请检查“至少收到”的数量。",
-    "slippageAutoAdjustedHigh": "由于此交易的价格影响较大或流动性较低，滑点已自动提高。确认前请检查“至少收到”的数量。"
+    "routeLiquidityUnknownExactOut": "无法验证此路径的流动性。确认前请检查“最多支付”的数量。",
+    "slippageAutoAdjustedHigh": "由于此交易的价格影响较大或流动性较低，滑点已自动提高。确认前请检查“至少收到”的数量。",
+    "slippageAutoAdjustedHighExactOut": "由于此交易的价格影响较大或流动性较低，滑点已自动提高。确认前请检查“最多支付”的数量。"
   },
   "walletSelect": {
     "gettingStarted": "入门",

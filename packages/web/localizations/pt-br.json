@@ -831,7 +831,9 @@
     "slippageAutoAdjustedTitle": "Deslizamento ajustado automaticamente",
     "slippageAutoAdjustedBody": "O deslizamento padrão desta operação foi aumentado devido ao alto impacto no preço ou à baixa liquidez.",
     "routeLiquidityUnknown": "Não foi possível verificar a liquidez desta rota. Confira o valor de \"Receba pelo menos\" antes de confirmar.",
-    "slippageAutoAdjustedHigh": "O deslizamento foi aumentado automaticamente devido ao alto impacto no preço ou à baixa liquidez desta negociação. Confira o valor de \"Receba pelo menos\" antes de confirmar."
+    "routeLiquidityUnknownExactOut": "Não foi possível verificar a liquidez desta rota. Confira o valor de \"Pague no máximo\" antes de confirmar.",
+    "slippageAutoAdjustedHigh": "O deslizamento foi aumentado automaticamente devido ao alto impacto no preço ou à baixa liquidez desta negociação. Confira o valor de \"Receba pelo menos\" antes de confirmar.",
+    "slippageAutoAdjustedHighExactOut": "O deslizamento foi aumentado automaticamente devido ao alto impacto no preço ou à baixa liquidez desta negociação. Confira o valor de \"Pague no máximo\" antes de confirmar."
   },
   "walletSelect": {
     "gettingStarted": "Começando",
