@@ -531,17 +531,17 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
     >
       <div
         className={classNames({
-          // Widget in the middle column, book on its right. The page pads
-          // the expanded view clear of the sidebar, which would put the
-          // middle half a sidebar right of where the collapsed widget sits;
-          // an empty last column of the sidebar's width (less one gap)
-          // cancels that, so expanding moves the widget down, not sideways.
-          // The book keeps at least 360px, so a narrow window moves the
-          // widget left rather than squeezing the book. At 1280px and
-          // narrower the page sits beside the sidebar instead of padding
-          // past it, so there is nothing to cancel, and the book may go to
-          // 340px so the view still fits down to 1153px.
-          "grid grid-cols-[minmax(0,1fr)_512px_minmax(360px,1fr)_calc(theme(spacing.sidebar)-1rem)] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_512px_minmax(340px,1fr)] lg:grid-cols-1":
+          // Widget in the middle column, book on its right. Above 1280px
+          // the page spans the whole viewport, sidebar included, so equal
+          // outer columns keep the widget where the collapsed one sits
+          // (expanding moves it down, not sideways), and the first column's
+          // minimum keeps the widget clear of the sidebar. The book keeps
+          // at least 340px, so a narrow window moves the widget left rather
+          // than squeezing the book. At 1280px and narrower the page sits
+          // beside the sidebar, so the first column needs no minimum; with
+          // the same book minimum and page padding the widget moves only a
+          // few pixels across 1280px, and the view fits down to 1153px.
+          "grid grid-cols-[minmax(calc(theme(spacing.sidebar)-1rem),1fr)_512px_minmax(340px,1fr)] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_512px_minmax(340px,1fr)] lg:grid-cols-1":
             isTradeView,
           "flex items-start gap-4 lg:flex-col": isBookBeside && !isTradeView,
         })}
