@@ -1,5 +1,3 @@
-/* eslint-disable import-compat/no-extraneous-dependencies -- @testing-library/react is a
-   devDependency of this package; other hook tests here import it the same way. */
 import { act, renderHook } from "@testing-library/react";
 
 import {

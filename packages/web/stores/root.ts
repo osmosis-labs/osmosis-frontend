@@ -7,8 +7,8 @@ import {
 } from "~/components/alert/tx-event-toast";
 import { WALLETCONNECT_PROJECT_KEY, WALLETCONNECT_RELAY_URL } from "~/config";
 import { OsmosisChainInfo, StaticChainGetter } from "~/config/chain";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
+import { ClientAssetLists } from "~/config/generated/client-asset-lists";
+import { ClientChainList } from "~/config/generated/client-chain-list";
 import { withCosmosKitFields } from "~/config/keplr-chain";
 import { markWalletSigned } from "~/integrations/core-walletconnect/pending-request";
 import { WalletRuntime } from "~/stores/wallet-runtime";
@@ -48,8 +48,8 @@ export class RootStore {
 
     this.walletRuntime = new WalletRuntime(
       {
-        chains: ChainList.map(withCosmosKitFields),
-        assets: AssetLists,
+        chains: ClientChainList.map(withCosmosKitFields),
+        assets: ClientAssetLists,
         osmosisChainId: OsmosisChainInfo.chainId,
         walletConnectOptions: {
           signClient: {

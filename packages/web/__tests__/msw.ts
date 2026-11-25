@@ -1,4 +1,3 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import { superjson } from "@osmosis-labs/server";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";

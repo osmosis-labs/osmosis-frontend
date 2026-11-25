@@ -1,4 +1,3 @@
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 
 import { MockChains } from "../../__tests__/mock-chains";

@@ -42,6 +42,7 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 function groupOrdersByStatus(orders: MappedLimitOrder[]) {
   const filledOrders = orders.filter((o) => o.status === "filled");
@@ -760,9 +761,7 @@ const TableOrderRow = memo(
                   <EntityImage
                     width={20}
                     height={20}
-                    logoURIs={
-                      lineAsset?.rawAsset.logoURIs ?? { png: undefined }
-                    }
+                    logoURIs={getLogoURIs(lineAsset?.currency.coinImageUrl)}
                     name={lineAsset?.rawAsset.name ?? ""}
                     symbol={lineAsset?.rawAsset.symbol ?? ""}
                   />

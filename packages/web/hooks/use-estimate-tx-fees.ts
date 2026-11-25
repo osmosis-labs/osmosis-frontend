@@ -150,7 +150,8 @@ async function getFallbackFeeEstimate({
   }
 
   const baseFeeCurrency = chain?.feeCurrencies?.[0] as
-    { gasPriceStep?: { high?: number } } | undefined;
+    | { gasPriceStep?: { high?: number } }
+    | undefined;
   const baseGasPrice =
     baseFeeDenom === BASE_GAS_DENOM_UOSMO
       ? DEFAULT_GAS_PRICE_UOSMO

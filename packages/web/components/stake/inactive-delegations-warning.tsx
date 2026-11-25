@@ -46,9 +46,8 @@ export function useInactiveStatusLabel() {
 
 /** Jailed validators read as a problem; ones merely outside the active set
  *  may still be working their way back in, so they get a neutral label. */
-export const inactiveStatusTextClass = (
-  status: InactiveDelegation["status"]
-) => (status === "jailed" ? "text-rust-300" : "text-osmoverse-300");
+export const inactiveStatusTextClass = (status: InactiveDelegation["status"]) =>
+  status === "jailed" ? "text-rust-300" : "text-osmoverse-300";
 
 /** Red when any delegation is jailed, the softer rust-400 tone otherwise. */
 const inactiveWarningToneClasses = (hasJailed: boolean) =>

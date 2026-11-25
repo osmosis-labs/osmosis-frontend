@@ -855,7 +855,8 @@ export function settleIbcWithdrawals({
       if (type !== MSG_ACKNOWLEDGEMENT && type !== MSG_TIMEOUT) return [];
       const packet = asRecord(message.packet);
       const data = decodePacketData(message) as
-        (PacketData & { amount?: string }) | undefined;
+        | (PacketData & { amount?: string })
+        | undefined;
       if (!packet || data?.sender !== address) return [];
       return [
         {

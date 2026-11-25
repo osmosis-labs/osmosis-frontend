@@ -24,7 +24,7 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useMemo, useReducer, useRef } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { api } from "~/utils/trpc";
 
 import { useWallet, type WalletSnapshot } from "../use-wallet";
