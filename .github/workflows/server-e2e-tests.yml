@@ -47,8 +47,6 @@ jobs:
             packages/*/build
             packages/*/tsconfig.tsbuildinfo
           key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-packages-build-
 
       - name: Run production server E2E tests
         id: prod

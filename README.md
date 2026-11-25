@@ -23,10 +23,10 @@ Install deps:
 yarn
 ```
 
-Start web server
+Build and start web server
 
 ```bash
-yarn start
+yarn build && yarn start
 ```
 
 ## Contributing 👨‍💻

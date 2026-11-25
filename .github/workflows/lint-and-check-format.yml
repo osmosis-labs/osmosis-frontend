@@ -75,8 +75,6 @@ jobs:
             packages/*/build
             packages/*/tsconfig.tsbuildinfo
           key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-packages-build-
 
       # Web resolves workspace packages through their build/ output and imports generated config.
       - name: Build workspace packages
