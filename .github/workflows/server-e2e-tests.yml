@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master') && github.sha || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/master' }}
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Server E2E
