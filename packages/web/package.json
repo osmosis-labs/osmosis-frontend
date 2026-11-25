@@ -1,7 +1,9 @@
 {
   "name": "@osmosis-labs/web",
   "version": "5.1.0",
-  "sideEffects": false,
+  "sideEffects": [
+    "./config/zod.ts"
+  ],
   "private": true,
   "scripts": {
     "knip": "knip",

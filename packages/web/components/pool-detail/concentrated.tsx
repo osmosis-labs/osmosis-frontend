@@ -556,7 +556,8 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{
         poolId,
       },
       {
-        enabled: featureFlags.aprBreakdown,
+        // Flags are undefined until LaunchDarkly loads; undefined would enable the query.
+        enabled: Boolean(featureFlags.aprBreakdown),
       }
     );
 
