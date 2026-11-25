@@ -30,6 +30,7 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Slider } from "~/components/ui/slider";
 import { OsmosisChainInfo } from "~/config/chain";
+import { HighSlippageToleranceGate } from "~/config/trade-warnings";
 import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import {
   getTokenInFeeAmountFiatValue,
@@ -139,6 +140,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // The quote describes the live target: the debounce has caught up and it is
   // not a held quote for an older amount.
   const quoteCurrent = quoteInSync && !zapQuote.isRefreshing;
+  // The latest fetch failed: a kept quote from before the failure must not be
+  // shown or submitted as live.
+  const quoteFailed = zapQuote.isError || Boolean(zapQuote.routerError);
 
   // Whole-position value in vs out: the total value being withdrawn, and the
   // total value the user ends holding after the swap (the retained side at full
@@ -278,11 +282,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // High price-impact guard, mirroring the zap-in: a large-loss swap requires an
   // explicit Confirm before it can be submitted. An impact SQS could not
   // compute counts as high cost.
-  const highCost = Boolean(
-    needsSwap &&
-    quote &&
-    (swapImpactUnknown || effectiveImpact?.lt(new Dec(-0.1)))
+  // A tolerance at or above the shared gate also needs the Confirm, as on the
+  // zap-in and the swap review (the slippage row shows its warning).
+  const slippageHigh = zapSlippageConfig.slippage
+    .toDec()
+    .gte(HighSlippageToleranceGate);
+  const highImpact = Boolean(
+    swapImpactUnknown || effectiveImpact?.lt(new Dec(-0.1))
   );
+  const highCost = Boolean(needsSwap && quote && (highImpact || slippageHigh));
 
   // The acknowledgement holds only for the trade context it was given in, so a
   // prior confirm can't carry over to a different high-impact swap. Keyed on the
@@ -294,7 +302,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     requiredSwap?.tokenInCurrency.coinMinimalDenom ?? ""
   }>${requiredSwap?.tokenOutCurrency.coinMinimalDenom ?? ""}:${
     requiredSwap?.swapInAmount.toString() ?? ""
-  }:${highCost}`;
+  }:${zapSlippageConfig.slippage.toDec().toString()}:${highCost}`;
   const [acknowledgedCostContext, setAcknowledgedCostContext] = useState<
     string | null
   >(null);
@@ -312,7 +320,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // needs the pool's tick depths to derive a safe min-out, and the plan
         // fails closed until they load.
         (needsSwap &&
-          (zapQuote.isLoading || !quote || !quoteCurrent || !swapMinOut)) ||
+          (zapQuote.isLoading ||
+            !quote ||
+            !quoteCurrent ||
+            quoteFailed ||
+            !swapMinOut)) ||
         // The user chose a real target mix but the swap can't be computed
         // (pool data loading, failed, or unusable). NEVER fall through to a
         // plain withdrawal while a mix is selected — that silently discards
@@ -488,9 +500,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     zapSlippageConfig={zapSlippageConfig}
                     slippageInput={slippageInput}
                   />
-                ) : !quote ? (
+                ) : !quote || quoteFailed ? (
+                  // No quote, or the latest fetch failed: show the typed router
+                  // error (no route / insufficient liquidity / amount too
+                  // small). Submit stays disabled.
                   <p className="caption py-2 text-center text-rust-300">
-                    {t("transfer.transferAmountTooLowValueLoss")}
+                    {zapQuote.routerError
+                      ? t(...tError(zapQuote.routerError))
+                      : t("errors.generic")}
                   </p>
                 ) : zapOutBlockedReason === "mixedOwnPoolRoute" ? (
                   // The execution plan is deliberately withheld: a split
@@ -526,13 +543,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     <p className="body2 flex-1 text-left text-rust-300">
                       {/* The EFFECTIVE impact (quoted x own-pool
                           degradation) — the figure the gate trips on. */}
-                      {effectiveImpact
-                        ? t("transfer.priceImpactWarning", {
-                            priceImpact: formatPretty(
-                              new RatePretty(effectiveImpact)
-                            ),
-                          })
-                        : t("transfer.unknownSwapImpactTitle")}
+                      {!highImpact
+                        ? t("limitOrders.errors.tradeMayResultInLossOfValue")
+                        : effectiveImpact
+                          ? t("transfer.priceImpactWarning", {
+                              priceImpact: formatPretty(
+                                new RatePretty(effectiveImpact)
+                              ),
+                            })
+                          : t("transfer.unknownSwapImpactTitle")}
                     </p>
                     <label
                       htmlFor="cl-zap-out-cost-ack"

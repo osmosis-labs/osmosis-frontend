@@ -285,6 +285,8 @@ export function useRemoveConcentratedLiquidityConfig(
     // amount, so a non-refreshing quote is the current one. Same rule as the
     // zap-in.
     if (zapQuote.isRefreshing) return undefined;
+    // A failed refetch keeps the last data; never build a plan from it.
+    if (zapQuote.isError || zapQuote.routerError) return undefined;
 
     // Each leg's tokenIn is the conservative LOWER BOUND of the projected
     // withdrawn amount of the sold side, fixed at sign time. NOTE the swap
