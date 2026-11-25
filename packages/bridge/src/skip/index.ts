@@ -53,6 +53,7 @@ import {
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
 import { getSolanaTxFeeLamports, SOLANA_NATIVE_DENOM } from "../utils/solana";
+import { getAlloyTransferEndpoints } from "./alloy-endpoints";
 import { SkipApiClient } from "./client";
 import { SkipProviderId } from "./constants";
 import {
@@ -828,7 +829,16 @@ export class SkipBridgeProvider implements BridgeProvider {
             amount: route.amount_out,
             coinGeckoId: destinationAsset.coingecko_id,
             ...toAsset,
-            priceImpact: "0",
+            // Skip reports the impact of every swap in the route (Osmosis
+            // and EVM legs) as a percentage, positive for a loss; the
+            // interface wants a fraction, negative for a loss. Absent when
+            // the route does not swap.
+            priceImpact: route.swap_price_impact_percent
+              ? new Dec(route.swap_price_impact_percent)
+                  .quo(new Dec(100))
+                  .neg()
+                  .toString()
+              : "0",
           },
           fromChain,
           toChain,
@@ -999,13 +1009,27 @@ export class SkipBridgeProvider implements BridgeProvider {
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
+        // For an alloy, only the variants its transmuter holds: the variant
+        // family also keeps assets the pool dropped long ago, and their
+        // counterparties are mostly dead routes Skip is slow to refuse.
+        const memberDenoms = assetListAsset.isAlloyed
+          ? await this.getAlloyMemberDenoms(assetListAsset.coinMinimalDenom)
+          : undefined;
         const variantAssets = this.ctx.assetLists.flatMap(({ assets }) =>
-          assets.filter(
-            (asset) => asset.variantGroupKey === assetListAsset.variantGroupKey
+          assets.filter((asset) =>
+            memberDenoms
+              ? memberDenoms.has(asset.coinMinimalDenom)
+              : asset.variantGroupKey === assetListAsset.variantGroupKey
           )
         );
         counterparties.push(
-          ...variantAssets.flatMap((asset) => asset.counterparty)
+          ...variantAssets.flatMap((asset) => asset.counterparty),
+          ...(assetListAsset.isAlloyed
+            ? getAlloyTransferEndpoints(
+                assetListAsset.coinMinimalDenom,
+                direction
+              )
+            : [])
         );
       }
 
@@ -1212,6 +1236,22 @@ export class SkipBridgeProvider implements BridgeProvider {
       );
       return [];
     }
+  }
+
+  /**
+   * The alloy's transmuter members, or undefined when unknown (no lookup in
+   * the context, a failure or a timeout), in which case route discovery falls
+   * back to the variant family as before.
+   */
+  protected async getAlloyMemberDenoms(
+    alloyedDenom: string
+  ): Promise<Set<string> | undefined> {
+    if (!this.ctx.getAlloyMemberDenoms) return undefined;
+    const members = await withTimeout(
+      this.ctx.getAlloyMemberDenoms(alloyedDenom),
+      ROUTE_PROBE_REQUEST_TIMEOUT_MS
+    ).catch(() => undefined);
+    return members?.length ? new Set(members) : undefined;
   }
 
   /**

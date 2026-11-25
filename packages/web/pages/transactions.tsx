@@ -26,11 +26,6 @@ import {
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
 import { useWallet } from "~/hooks/use-wallet";
 
-// @ts-ignore
-const EXAMPLE = {
-  ADDRESS: "osmo1pasgjwaqy8sarsgw7a0plrwlauaqx8jxrqymd3",
-};
-
 const Transactions: React.FC = memo(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
 

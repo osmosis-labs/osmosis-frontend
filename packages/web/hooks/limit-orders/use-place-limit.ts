@@ -1093,10 +1093,12 @@ export const useLimitPrice = ({
       return "limitOrders.priceTooHigh";
     }
 
-    if (!(
-      isValidInputPrice ||
-      ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice))
-    )) {
+    if (
+      !(
+        isValidInputPrice ||
+        ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice))
+      )
+    ) {
       return "limitOrders.invalidPrice";
     }
   }, [

@@ -116,7 +116,8 @@ function withResponseReason<T>(request: Promise<T>): Promise<T> {
   return request.catch((e: unknown) => {
     if (axios.isAxiosError(e) && e.response) {
       const data = e.response.data as
-        { error?: unknown; message?: unknown } | undefined;
+        | { error?: unknown; message?: unknown }
+        | undefined;
       const reason =
         typeof data?.error === "string"
           ? data.error
