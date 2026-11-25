@@ -6,4 +6,5 @@ import { z } from "zod";
 //
 // This must run before any `z.object(...)` is constructed, since the probe runs
 // (and is cached) at schema construction. Import this module first in `_app`.
+// It is listed in package.json `sideEffects`, or webpack would drop the import.
 z.config({ jitless: true });
