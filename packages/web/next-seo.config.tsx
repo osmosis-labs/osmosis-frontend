@@ -32,7 +32,8 @@ export const SEO: React.FC = () => {
       },
       {
         rel: "preload",
-        as: "image/svg+xml",
+        as: "image",
+        type: "image/svg+xml",
         href: spriteSVGURL,
       },
     ],

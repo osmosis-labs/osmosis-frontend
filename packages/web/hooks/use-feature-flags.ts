@@ -1,5 +1,9 @@
 import { AvailableFlags } from "@osmosis-labs/types";
-import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
+import {
+  type LDClient,
+  useFlags,
+  useLDClient,
+} from "launchdarkly-react-client-sdk";
 import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
@@ -38,6 +42,32 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   forcedMigrations: true,
 };
 
+/** Seconds to wait before falling back to LaunchDarkly's `initialized` event. */
+const LD_INIT_TIMEOUT_SECONDS = 5;
+
+/**
+ * One init promise per client, shared by every `useFeatureFlags` caller.
+ *
+ * A bounded `waitForInitialization` avoids the SDK warning it logs on every
+ * call without a timeout. On timeout or failure (slow network, blocked by an
+ * ad blocker) keep waiting for a late successful init instead of leaving an
+ * unhandled rejection; a client that never initializes stays uninitialized.
+ */
+const initPromises = new WeakMap<LDClient, Promise<void>>();
+
+function waitForLdInitialization(client: LDClient): Promise<void> {
+  let promise = initPromises.get(client);
+  if (!promise) {
+    promise = client
+      .waitForInitialization(LD_INIT_TIMEOUT_SECONDS)
+      .catch(
+        () => new Promise<void>((resolve) => client.on("initialized", resolve))
+      );
+    initPromises.set(client, promise);
+  }
+  return promise;
+}
+
 export function useFeatureFlags() {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
@@ -45,8 +75,14 @@ export function useFeatureFlags() {
   const client = useLDClient();
 
   useEffect(() => {
-    if (!isInitialized && client && process.env.NODE_ENV !== "test")
-      client.waitForInitialization().then(() => setIsInitialized(true));
+    if (isInitialized || !client || process.env.NODE_ENV === "test") return;
+    let cancelled = false;
+    void waitForLdInitialization(client).then(() => {
+      if (!cancelled) setIsInitialized(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [isInitialized, client]);
 
   const isDevModeWithoutClientID =

@@ -7,9 +7,14 @@ import { SplitTokenInQuote, SplitTokenOutQuote } from "../sidecar/quote";
 import { getSidecarRouter } from "../sidecar/router";
 import { getAsset, getCosmwasmPoolTypeFromCodeId, Pool } from ".";
 
+/** Base-unit integer amount; anything else would throw in `new Int` and surface as a 500. */
+const baseUnitAmount = z
+  .string()
+  .regex(/^\d+$/, "Amount must be a non-negative integer string");
+
 export const getRouteTokenOutGivenInParams = z.object({
   tokenInDenom: z.string(),
-  tokenInAmount: z.string(),
+  tokenInAmount: baseUnitAmount,
   tokenOutDenom: z.string(),
   forcePoolId: z.string().optional(),
 });
@@ -111,7 +116,7 @@ function makeDisplayableOutGivenInSplit(
 
 export const getRouteTokenInGivenOutParams = z.object({
   tokenInDenom: z.string(),
-  tokenOutAmount: z.string(),
+  tokenOutAmount: baseUnitAmount,
   tokenOutDenom: z.string(),
   forcePoolId: z.string().optional(),
 });
