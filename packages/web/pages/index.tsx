@@ -56,12 +56,7 @@ const Home = () => {
             sits under the navbar and its in-flow banner spacer, so only the
             32px gap applies; adding either height again double-counts it. */}
         <div
-          className={classNames(
-            "absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center xl:top-8 md:top-0",
-            // This layer is fixed to the viewport, so the wide expanded row
-            // must be kept clear of the sidebar.
-            { "pl-sidebar xl:pl-0": expanded }
-          )}
+          className="absolute inset-0 top-[calc(104px+var(--visible-banner-height))] flex h-auto w-full justify-center xl:top-8 md:top-0"
           style={
             {
               "--visible-banner-height": `${visibleBannerHeight}px`,
@@ -72,7 +67,7 @@ const Home = () => {
             className={classNames(
               "flex flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5",
               expanded
-                ? "w-full min-w-0 px-8 xl:px-4 1.5lg:w-[512px] 1.5lg:px-0"
+                ? "w-full min-w-0 px-4 1.5lg:w-[512px] 1.5lg:px-0"
                 : "w-[512px]"
             )}
           >
