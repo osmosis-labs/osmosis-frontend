@@ -18,7 +18,7 @@ import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useClipboard } from "~/hooks/use-clipboard";
-import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import type { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 

@@ -1,10 +1,26 @@
-import { getAsset, superjson } from "@osmosis-labs/server";
+import { superjson } from "@osmosis-labs/server";
+import { createCallerFactory } from "@osmosis-labs/trpc";
 import { hydrate, QueryClient } from "@tanstack/react-query";
-import { getQueryKey } from "@trpc/react-query";
 
 import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { getStaticProps } from "~/pages/assets/[...denom]";
-import { api } from "~/utils/trpc";
+import { edgeRouter } from "~/server/api/edge-router";
+
+const ATOM_IBC_DENOM =
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
+
+const edgeCaller = createCallerFactory(edgeRouter)({
+  assetLists: AssetLists,
+  chainList: ChainList,
+});
+
+function expectedQueryKey(findMinDenomOrSymbol: string) {
+  return [
+    ["edge", "assets", "getUserAsset"],
+    { input: { findMinDenomOrSymbol }, type: "query" },
+  ] as const;
+}
 
 describe("pages/assets/[...denom] getStaticProps", () => {
   it("returns notFound for an unknown denom", async () => {
@@ -15,12 +31,13 @@ describe("pages/assets/[...denom] getStaticProps", () => {
     expect(result).toEqual({ notFound: true });
   });
 
-  it("hydrates edge.assets.getUserAsset without leaking queries across calls", async () => {
+  it("matches edge.assets.getUserAsset and isolates cache across calls", async () => {
     const osmoResult = await getStaticProps({
       params: { denom: ["uosmo"] },
     });
-    expect("props" in osmoResult).toBe(true);
-    if (!("props" in osmoResult) || !osmoResult.props) return;
+    if (!("props" in osmoResult) || !osmoResult.props) {
+      throw new Error("Expected props for uosmo");
+    }
 
     expect(osmoResult.revalidate).toBe(7200);
 
@@ -32,44 +49,34 @@ describe("pages/assets/[...denom] getStaticProps", () => {
     const queryClient = new QueryClient();
     hydrate(queryClient, hydrated);
 
-    const key = getQueryKey(
-      api.edge.assets.getUserAsset,
-      { findMinDenomOrSymbol: "uosmo" },
-      "query"
-    );
-    expect(queryClient.getQueryData(key)).toEqual(
-      getAsset({ assetLists: AssetLists, anyDenom: "uosmo" })
-    );
-
-    // A second call for another denom should contain only that denom's query.
-    const secondDenom = AssetLists[0].assets.find(
-      (a) => a.coinMinimalDenom !== "uosmo"
-    )?.coinMinimalDenom;
-    expect(secondDenom).toBeDefined();
-    if (!secondDenom) return;
-
-    const secondResult = await getStaticProps({
-      params: { denom: secondDenom.split("/") },
+    const osmoKey = expectedQueryKey("uosmo");
+    const expectedOsmo = await edgeCaller.assets.getUserAsset({
+      findMinDenomOrSymbol: "uosmo",
     });
-    expect("props" in secondResult).toBe(true);
-    if (!("props" in secondResult) || !secondResult.props) return;
+    expect(queryClient.getQueryData(osmoKey)).toEqual(expectedOsmo);
 
-    const secondHydrated = superjson.deserialize(
-      secondResult.props.trpcState
+    // A second call for a multi-segment IBC denom should match the real
+    // procedure and contain only that denom's query.
+    const atomResult = await getStaticProps({
+      params: { denom: ATOM_IBC_DENOM.split("/") },
+    });
+    if (!("props" in atomResult) || !atomResult.props) {
+      throw new Error(`Expected props for ${ATOM_IBC_DENOM}`);
+    }
+
+    const atomHydrated = superjson.deserialize(
+      atomResult.props.trpcState
     ) as Parameters<typeof hydrate>[1];
-    expect(secondHydrated?.queries).toHaveLength(1);
+    expect(atomHydrated?.queries).toHaveLength(1);
 
-    const secondClient = new QueryClient();
-    hydrate(secondClient, secondHydrated);
-    expect(
-      secondClient.getQueryData(
-        getQueryKey(
-          api.edge.assets.getUserAsset,
-          { findMinDenomOrSymbol: secondDenom },
-          "query"
-        )
-      )
-    ).toEqual(getAsset({ assetLists: AssetLists, anyDenom: secondDenom }));
-    expect(secondClient.getQueryData(key)).toBeUndefined();
+    const atomClient = new QueryClient();
+    hydrate(atomClient, atomHydrated);
+    const expectedAtom = await edgeCaller.assets.getUserAsset({
+      findMinDenomOrSymbol: ATOM_IBC_DENOM,
+    });
+    expect(atomClient.getQueryData(expectedQueryKey(ATOM_IBC_DENOM))).toEqual(
+      expectedAtom
+    );
+    expect(atomClient.getQueryData(osmoKey)).toBeUndefined();
   });
 });

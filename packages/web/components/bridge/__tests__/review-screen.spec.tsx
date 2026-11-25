@@ -15,7 +15,7 @@ jest.mock("~/utils/trpc", () => ({
 }));
 
 import { MultiLanguageProvider } from "~/hooks/language";
-import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import type { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
 import { ReviewScreen } from "../review-screen";
 import { BridgeQuote } from "../use-bridge-quotes";

@@ -1,3 +1,5 @@
+import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 import {
   GetStaticPathsResult,
   GetStaticPropsContext,
@@ -39,6 +41,7 @@ import {
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
+import { api } from "~/utils/trpc";
 
 type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -300,20 +303,11 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   // Reject unknown denoms with 404 before hydrating query state. Returning
   // `{ notFound: true }` passes `data: null` to OpenNext's cache adapter,
   // which deletes rather than writes to R2, preventing unbounded cache growth.
-  const [
-    { getAsset, superjson },
-    { AssetLists },
-    { QueryClient, dehydrate },
-    { getQueryKey },
-    { api },
-  ] = await Promise.all([
+  const [{ getAsset, superjson }, { AssetLists }] = await Promise.all([
     import("@osmosis-labs/server"),
     import("~/config/generated/asset-lists"),
-    import("@tanstack/react-query"),
-    import("@trpc/react-query"),
-    import("~/utils/trpc"),
   ]);
-  let asset;
+  let asset: ReturnType<typeof getAsset>;
   try {
     asset = getAsset({ assetLists: AssetLists, anyDenom: tokenDenom });
   } catch {
@@ -325,7 +319,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   // Seed the exact `edge.assets.getUserAsset` cache entry that `useAssetInfo`
   // reads on mount. Without a `userOsmoAddress`, the tRPC procedure just
   // returns `getAsset(...)`, so seeding directly avoids bundling `appRouter`
-  // and `@trpc/server` into the frontend Worker.
+  // and its server routers into the frontend Worker.
   const queryClient = new QueryClient();
   queryClient.setQueryData(
     getQueryKey(
