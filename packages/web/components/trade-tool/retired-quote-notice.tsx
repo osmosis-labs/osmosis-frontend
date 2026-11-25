@@ -4,7 +4,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { Button } from "~/components/ui/button";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { useTranslation } from "~/hooks";
 import { findOrderbookByDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { useOrderbookCreationFlow } from "~/hooks/limit-orders/use-orderbook-creation-flow";
@@ -83,12 +83,8 @@ export const RetiredQuoteNotice: FunctionComponent<{
         baseSymbol={baseSymbol}
         quoteDenom={USDC_BASE_DENOM}
         quoteSymbol={usdcSymbol}
-        baseCoinImageUrl={
-          baseAsset?.rawAsset.logoURIs?.png ?? baseAsset?.rawAsset.logoURIs?.svg
-        }
-        quoteCoinImageUrl={
-          usdcAsset?.rawAsset.logoURIs?.png ?? usdcAsset?.rawAsset.logoURIs?.svg
-        }
+        baseCoinImageUrl={baseAsset?.currency.coinImageUrl}
+        quoteCoinImageUrl={usdcAsset?.currency.coinImageUrl}
       />
     </div>
   );
