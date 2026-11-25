@@ -1,4 +1,3 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
 import "~/__mocks__/intersection-observer";

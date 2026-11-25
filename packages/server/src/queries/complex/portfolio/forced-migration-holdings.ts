@@ -26,7 +26,10 @@ type RawCoin = { denom: string; amount: string };
  *  withdrawn now, `locked` / `superfluidStaked` need an unlock first, and
  *  `unlocking` is already on its way out, so it isn't nagged about. */
 export type HoldingLockState =
-  "available" | "locked" | "superfluidStaked" | "unlocking";
+  | "available"
+  | "locked"
+  | "superfluidStaked"
+  | "unlocking";
 
 /** A classic (weighted or stable) pool share balance in one lock state. */
 export type ShareHolding = {
@@ -101,7 +104,9 @@ export type OrderHolding = {
 };
 
 export type ForcedMigrationHolding =
-  ShareHolding | ConcentratedHolding | OrderHolding;
+  | ShareHolding
+  | ConcentratedHolding
+  | OrderHolding;
 
 const GAMM_PREFIX = "gamm/pool/";
 const SUPERBONDING = "/superbonding/";

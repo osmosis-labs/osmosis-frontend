@@ -4,7 +4,6 @@ const nextJest = require("next/jest");
 // (e.g. `utcOffset(now.utcOffset() - 60)`), which degenerate in some zones:
 // at UTC+1 that offset is 0, dayjs switches to UTC mode and drops it.
 process.env.TZ = "UTC";
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
 const { pathsToModuleNameMapper } = require("ts-jest");
 
 const { compilerOptions } = require("./tsconfig");

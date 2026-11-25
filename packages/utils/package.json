@@ -9,8 +9,8 @@
     "build": "tsc -b",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "lint": "oxlint src && prettier --check \"src/**/*\"",
-    "lint:fix": "oxlint --fix src && prettier --write \"src/**/*\"",
+    "lint": "oxlint src && oxfmt --check src",
+    "lint:fix": "oxlint --fix src && oxfmt src",
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
@@ -29,8 +29,8 @@
     "fake-indexeddb": "5.0.2",
     "jest": "^30.5.2",
     "jest-in-case": "^1.0.2",
+    "oxfmt": "^0.79.0",
     "oxlint": "^1.90.0",
-    "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
     "typescript": "6.0.3",
     "whatwg-fetch": "^3.6.2"
@@ -38,7 +38,7 @@
   "lint-staged": {
     "*": [
       "oxlint --no-error-on-unmatched-pattern",
-      "prettier --check --ignore-unknown"
+      "oxfmt --check --no-error-on-unmatched-pattern"
     ]
   }
 }

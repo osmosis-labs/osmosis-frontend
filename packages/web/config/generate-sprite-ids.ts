@@ -1,5 +1,4 @@
 import fs from "fs";
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { JSDOM } from "jsdom";
 import path from "path";
 

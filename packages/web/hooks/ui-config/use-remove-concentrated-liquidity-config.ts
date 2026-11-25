@@ -17,7 +17,8 @@ export type RemoveConcentratedLiquidityConfig = {
   readonly percentage: number;
   readonly effectiveLiquidity: Dec | undefined;
   readonly effectiveLiquidityAmounts:
-    { base: CoinPretty; quote: CoinPretty } | undefined;
+    | { base: CoinPretty; quote: CoinPretty }
+    | undefined;
   readonly error: Error | undefined;
   setPercentage: (percentage: number) => void;
 };

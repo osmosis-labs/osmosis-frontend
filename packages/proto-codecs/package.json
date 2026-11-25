@@ -25,8 +25,8 @@
     "build": "tsc -b",
     "dev": "tsc --watch",
     "test": "jest",
-    "lint": "oxlint src && prettier --check \"src/**/*\"",
-    "lint:fix": "oxlint --fix src && prettier --write \"src/**/*\"",
+    "lint": "oxlint src && oxfmt --check src",
+    "lint:fix": "oxlint --fix src && oxfmt src",
     "prepublishOnly": "yarn build",
     "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
     "generate:proto": "./scripts/get-proto.sh",
@@ -36,7 +36,7 @@
   "lint-staged": {
     "*": [
       "oxlint --no-error-on-unmatched-pattern",
-      "prettier --check --ignore-unknown"
+      "oxfmt --check --no-error-on-unmatched-pattern"
     ]
   },
   "devDependencies": {
@@ -44,8 +44,8 @@
     "@cosmology/telescope": "^1.10.0",
     "@types/node": "^20.14.1",
     "jest": "^30.5.2",
+    "oxfmt": "^0.79.0",
     "oxlint": "^1.90.0",
-    "prettier": "^3.6.2",
     "rimraf": "^5.0.0",
     "ts-jest": "^29.4.14",
     "tsx": "^4.22.4",

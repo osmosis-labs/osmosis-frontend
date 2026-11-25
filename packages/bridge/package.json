@@ -21,8 +21,8 @@
     "build": "tsc -b",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "lint": "oxlint src && prettier --check \"src/**/*.+(js|ts|tsx|json)\"",
-    "lint:fix": "oxlint --fix src && prettier --write \"src/**/*.+(js|ts|tsx|json)\"",
+    "lint": "oxlint src && oxfmt --check src",
+    "lint:fix": "oxlint --fix src && oxfmt src",
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
@@ -41,15 +41,15 @@
   },
   "devDependencies": {
     "jest": "^30.5.2",
+    "oxfmt": "^0.79.0",
     "oxlint": "^1.90.0",
-    "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
     "typescript": "6.0.3"
   },
   "lint-staged": {
     "*": [
       "oxlint --no-error-on-unmatched-pattern",
-      "prettier --check --ignore-unknown"
+      "oxfmt --check --no-error-on-unmatched-pattern"
     ]
   }
 }

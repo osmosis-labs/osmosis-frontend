@@ -12,7 +12,11 @@ import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
 
 type UpdateWalletMode =
-  "ledger" | "extension" | "wallet-connect" | "social-login" | undefined;
+  | "ledger"
+  | "extension"
+  | "wallet-connect"
+  | "social-login"
+  | undefined;
 
 interface Wallet extends Omit<DefaultWallet, "mode"> {
   mode: UpdateWalletMode;

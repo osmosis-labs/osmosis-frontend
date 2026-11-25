@@ -57,7 +57,7 @@ const config = {
       "**/node_modules/workerd/**",
       "**/node_modules/typescript/**",
       "**/node_modules/oxlint*/**",
-      "**/node_modules/prettier/**",
+      "**/node_modules/oxfmt*/**",
       "**/node_modules/jest*/**",
       "**/node_modules/playwright*/**",
       "./public/tokens/generated/**",
