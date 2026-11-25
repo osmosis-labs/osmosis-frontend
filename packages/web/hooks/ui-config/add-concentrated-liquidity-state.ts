@@ -6,6 +6,7 @@ import {
   BigDec,
   calcAmount0,
   calcAmount1,
+  calcZapInSwapAmount,
   maxSpotPrice,
   maxTick,
   minSpotPrice,
@@ -13,6 +14,7 @@ import {
   priceToTick,
   roundPriceToNearestTick,
   roundToNearestDivisible,
+  tickToSqrtPrice,
 } from "@osmosis-labs/math";
 import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import {
@@ -641,6 +643,99 @@ export function planCounterpartyUpdate({
 }
 
 // ---------------------------------------------------------------------------
+// Single-asset deposit (zap-in)
+// ---------------------------------------------------------------------------
+
+/** The swap leg that converts part of a single provided asset into the
+ *  counterparty, so the post-swap amounts match the position's ratio. */
+export interface SingleAssetSwap {
+  inputAmount: Int;
+  swapInAmount: Int;
+  tokenInCurrency: AppCurrency;
+  tokenOutCurrency: AppCurrency;
+  needsSwap: boolean;
+  /** True when spot is outside the chosen range, so the position is
+   *  genuinely one-sided and no swap is correct. Distinct from a two-sided
+   *  range whose swap split merely truncated to zero on a dust input. */
+  rangeIsOneSided: boolean;
+}
+
+/** Swap required for a single-asset deposit of `input` on `side`, or
+ *  undefined before the pool price is known or a positive amount is entered. */
+export function deriveSingleAssetSwap({
+  side,
+  input,
+  counterpartyCurrency,
+  pool,
+  tickRange,
+}: {
+  side: DepositSide;
+  input: ConcentratedDepositAmount;
+  counterpartyCurrency: AppCurrency;
+  pool: ConcentratedPoolParams | null;
+  tickRange: [Int, Int];
+}): SingleAssetSwap | undefined {
+  if (!pool || pool.currentSqrtPrice.isZero()) return undefined;
+
+  const inputAmount = new Int(input.getAmountPrimitive().amount);
+  if (inputAmount.lte(new Int(0))) return undefined;
+
+  const [lowerTick, upperTick] = tickRange;
+  const swapInAmount = calcZapInSwapAmount({
+    inputAmount,
+    inputSide: side,
+    lowerTick,
+    upperTick,
+    currentSqrtPrice: pool.currentSqrtPrice,
+  });
+
+  // Classify spot vs range the same way calcZapInSwapAmount does internally,
+  // so a genuinely one-sided range (no swap correct) is told apart from a
+  // two-sided range whose split truncated to zero on a tiny input.
+  const lowerSqrtPrice = new BigDec(tickToSqrtPrice(lowerTick));
+  const upperSqrtPrice = new BigDec(tickToSqrtPrice(upperTick));
+  const rangeIsOneSided =
+    pool.currentSqrtPrice.lte(lowerSqrtPrice) ||
+    pool.currentSqrtPrice.gte(upperSqrtPrice);
+
+  return {
+    inputAmount,
+    swapInAmount,
+    tokenInCurrency: input.sendCurrency,
+    tokenOutCurrency: counterpartyCurrency,
+    needsSwap: swapInAmount.gt(new Int(0)),
+    rangeIsOneSided,
+  };
+}
+
+/**
+ * Submit state of a single-asset deposit, the one source of truth for the
+ * message, the quote gating and the submit button:
+ * - `empty`      no positive amount typed yet
+ * - `too-small`  below the token's precision (rounds to 0 micro), or its swap
+ *                split rounds to zero on a two-sided range: not submittable
+ * - `one-sided`  spot is outside the range; deposit one asset, no swap
+ * - `swap`       a swap is required to reach the position ratio
+ */
+export type SingleAssetInputState =
+  "empty" | "too-small" | "one-sided" | "swap";
+
+export function deriveSingleAssetInputState(
+  input: ConcentratedDepositAmount,
+  swap: SingleAssetSwap | undefined
+): SingleAssetInputState {
+  // A non-empty typed value that floors to 0 micro is "too small", not "empty".
+  const rawAmount = input.amount.trim();
+  const hasTypedPositive = rawAmount !== "" && Number(rawAmount) > 0;
+  const microAmount = new Int(input.getAmountPrimitive().amount);
+
+  if (!hasTypedPositive && microAmount.lte(new Int(0))) return "empty";
+  if (microAmount.lte(new Int(0)) || !swap) return "too-small";
+  if (swap.needsSwap) return "swap";
+  return swap.rangeIsOneSided ? "one-sided" : "too-small";
+}
+
+// ---------------------------------------------------------------------------
 // User input state
 // ---------------------------------------------------------------------------
 
@@ -653,6 +748,12 @@ export interface AddConcentratedLiquidityState {
   quote: DepositInputState;
   anchor: DepositSide;
   superfluidStakingElected: boolean;
+  /** The user deposits one asset and part of it is swapped (zap-in) to match
+   *  the position's ratio. Distinct from `anchor`, which only drives the
+   *  two-asset counterparty autocalc. */
+  singleAssetMode: boolean;
+  /** Which side is provided in single-asset mode. */
+  singleAssetSide: DepositSide;
   /** The initial range (moderate) was applied once historical prices loaded. */
   rangeInitialized: boolean;
 }
@@ -665,6 +766,8 @@ export const INITIAL_ADD_CL_STATE: AddConcentratedLiquidityState = {
   quote: INITIAL_DEPOSIT_INPUT,
   anchor: "base",
   superfluidStakingElected: false,
+  singleAssetMode: false,
+  singleAssetSide: "base",
   rangeInitialized: false,
 };
 
@@ -679,7 +782,9 @@ export type AddConcentratedLiquidityAction =
   | { type: "setFraction"; side: DepositSide; fraction: number | undefined }
   /** Anchor on `side` at max, releasing the other side's max. */
   | { type: "setMax"; side: DepositSide }
-  | { type: "setSuperfluid"; elected: boolean };
+  | { type: "setSuperfluid"; elected: boolean }
+  | { type: "setSingleAssetMode"; enabled: boolean }
+  | { type: "setSingleAssetSide"; side: DepositSide };
 
 function updateSide(
   state: AddConcentratedLiquidityState,
@@ -756,6 +861,31 @@ export function addConcentratedLiquidityReducer(
     case "setSuperfluid":
       if (state.superfluidStakingElected === action.elected) return state;
       return { ...state, superfluidStakingElected: action.elected };
+    case "setSingleAssetMode": {
+      if (state.singleAssetMode === action.enabled) return state;
+      if (!action.enabled) return { ...state, singleAssetMode: false };
+      // The counterparty comes from the swap in single-asset mode: clear any
+      // amount the two-asset autocalc wrote so it isn't sent as a deposit.
+      const other: DepositSide =
+        state.singleAssetSide === "base" ? "quote" : "base";
+      return {
+        ...state,
+        singleAssetMode: true,
+        [other]: typeDepositAmount(state[other], "0"),
+      };
+    }
+    case "setSingleAssetSide": {
+      if (state.singleAssetSide === action.side) return state;
+      const other: DepositSide = action.side === "base" ? "quote" : "base";
+      return {
+        ...state,
+        singleAssetSide: action.side,
+        anchor: action.side,
+        [action.side]: setDepositFraction(state[action.side], undefined),
+        // zero the previously provided side so it doesn't linger
+        [other]: typeDepositAmount(state[other], "0"),
+      };
+    }
   }
 }
 
