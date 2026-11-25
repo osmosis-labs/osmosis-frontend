@@ -236,9 +236,10 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
 
   // Regression (MTN-351): a failed background refetch drops `selectedQuote`.
   // The screen must keep the last good quote on screen (dimmed) instead of
-  // unrendering it, and swap the technical error for the plain "no quotes
-  // available" copy (this stub has no alternative providers).
-  it("keeps the last good quote and shows the no-quotes message when a refetch drops it", () => {
+  // unrendering it, and render the hook's `errorBoxMessage` as-is. The hook's
+  // `someError` branch already resolves an all-providers failure to the plain
+  // "no quotes available" copy, so the screen does not second-guess it.
+  it("keeps the last good quote and shows the hook's no-quotes message when a refetch drops it", () => {
     const goodQuote = {
       quote: { input: { fiatValue: undefined, amount: { denom: "WETH" } } },
       expectedOutput: { denom: "WETH" },
@@ -276,29 +277,27 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
     expect(screen.getByText("To")).toBeInTheDocument();
     expect(screen.queryByText(/no quotes available/i)).not.toBeInTheDocument();
 
-    // A failed refetch: selectedQuote is gone and a technical error is set.
+    // A failed refetch: selectedQuote is gone and the hook has resolved the
+    // all-providers failure to its plain no-quotes copy.
     rerender(
       element(
         makeQuote({
           selectedQuote: undefined,
           userCanAdvance: false,
           errorBoxMessage: {
-            heading: "Something isn't working",
-            description: "Sorry for the inconvenience, try again later.",
+            heading: "No quotes available",
+            description:
+              "We couldn't get a quote for this amount. Try a different amount, or check again shortly.",
           },
         })
       )
     );
 
-    // The boxes stay (retained from the last good quote), the plain
-    // no-quotes-available copy replaces the technical error, no checkbox, and
-    // Confirm is disabled.
+    // The boxes stay (retained from the last good quote), the hook's no-quotes
+    // copy is shown, no checkbox, and Confirm is disabled.
     expect(screen.getByText("From")).toBeInTheDocument();
     expect(screen.getByText("To")).toBeInTheDocument();
     expect(screen.getByText(/no quotes available/i)).toBeInTheDocument();
-    expect(
-      screen.queryByText("Something isn't working")
-    ).not.toBeInTheDocument();
     expect(acknowledgementCheckbox()).not.toBeInTheDocument();
     expect(confirmButton()).toBeDisabled();
   });

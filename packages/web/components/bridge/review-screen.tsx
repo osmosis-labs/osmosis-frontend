@@ -256,27 +256,24 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
         </div>
       )}
-      {/* When the quote is outdated (the selected provider has no valid quote),
-          replace the technical error with a plain message: "no quotes available"
-          when nothing quotes this amount, or "this option is unavailable" when a
-          pinned provider died but others still work. The terms above stay on
-          screen, dimmed, and Confirm is disabled. Otherwise this renders any
-          other active error, with the loss checkbox when a high-loss warning
-          owns it. */}
+      {/* Render whatever message the hook set: `errorBoxMessage` already carries
+          the most specific copy (insufficient fees, account not found, invalid
+          address, withdrawals unavailable, no quotes, the pinned-option-
+          unavailable text, …), so prefer it. Fall back to the plain outdated
+          copy only for the transient gap where the quote is outdated but the
+          hook has set no message yet (e.g. a refetch still in flight). The terms
+          above stay on screen, dimmed, and Confirm is disabled. The loss
+          checkbox renders only when a high-loss warning owns the slot. */}
       {(isQuoteOutdated || quote.errorBoxMessage) && (
         <div className="flex flex-col gap-3 pt-3">
           <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
             <Icon id="alert-triangle" className="h-6 w-6 text-rust-600" />
             <div className="flex flex-col">
               <h1 className="body2">
-                {isQuoteOutdated
-                  ? outdatedHeading
-                  : quote.errorBoxMessage?.heading}
+                {quote.errorBoxMessage?.heading ?? outdatedHeading}
               </h1>
               <p className="body2 text-osmoverse-300">
-                {isQuoteOutdated
-                  ? outdatedDescription
-                  : quote.errorBoxMessage?.description}
+                {quote.errorBoxMessage?.description ?? outdatedDescription}
               </p>
             </div>
           </div>
