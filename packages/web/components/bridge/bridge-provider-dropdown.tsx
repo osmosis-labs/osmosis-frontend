@@ -81,13 +81,23 @@ export const BridgeProviderDropdown = ({
       : undefined;
   }, [quotes]);
 
+  // Enable the dropdown whenever a listed quote belongs to a different provider
+  // than the one on screen. When a pinned provider loses its quote, Review keeps
+  // showing its last good quote while `quotes` holds only the alternatives, so a
+  // plain `quotes.length <= 1` check would strand the user on a single remaining
+  // option they cannot select (MTN-351).
+  const hasAlternativeQuote = useMemo(
+    () => quotes.some((q) => q.data.provider.id !== selectedQuote.provider.id),
+    [quotes, selectedQuote]
+  );
+
   return (
     <Menu>
       {({ open }) => (
         <div className="relative">
           <MenuButton
             className="flex items-center gap-2"
-            disabled={quotes.length <= 1}
+            disabled={!hasAlternativeQuote}
           >
             <Image
               src={selectedQuote.provider.logoUrl}
@@ -96,7 +106,7 @@ export const BridgeProviderDropdown = ({
               height={isMobile ? 18 : 20}
             />
             <span>{selectedQuote.provider.id}</span>{" "}
-            {quotes.length > 1 && (
+            {hasAlternativeQuote && (
               <Icon
                 id="chevron-down"
                 width={12}
