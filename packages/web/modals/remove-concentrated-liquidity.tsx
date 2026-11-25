@@ -13,19 +13,17 @@ import {
   RatePretty,
 } from "@osmosis-labs/unit";
 import classNames from "classnames";
-import {
-  FunctionComponent,
-  memo,
-  ReactNode,
-  useCallback,
-  useState,
-} from "react";
+import { FunctionComponent, memo, ReactNode, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
-import { AutosizeInput } from "~/components/input/autosize-input";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
+import {
+  SlippageToleranceInput,
+  SlippageToleranceRow,
+  useSlippageToleranceInput,
+} from "~/components/swap-tool/slippage-tolerance-row";
 import { RouteLane } from "~/components/swap-tool/split-route";
 import { Checkbox } from "~/components/ui/checkbox";
 import { EntityImage } from "~/components/ui/entity-image";
@@ -39,6 +37,7 @@ import {
 } from "~/hooks/fiat-getters";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
+import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
@@ -80,9 +79,17 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     swapExpectedOut,
     swapExecutedFeeIn,
     swapEffectiveImpact,
+    swapImpactUnknown,
     zapOutBlockedReason,
     isPoolLoading,
   } = useRemoveConcentratedLiquidityConfig(chainId, poolId, props.position);
+
+  // Typed tolerance lives here, not in the breakdown rows, so swapping the
+  // breakdown for its skeleton can't reset the field while the typed value
+  // stays active.
+  const slippageInput = useSlippageToleranceInput({
+    slippageConfig: zapSlippageConfig,
+  });
 
   const baseAsset = config.effectiveLiquidityAmounts?.base;
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
@@ -129,6 +136,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
 
   const needsSwap = singleAssetExitEnabled && Boolean(requiredSwap?.needsSwap);
   const quote = zapQuote.quote;
+  // The quote describes the live target: the debounce has caught up and it is
+  // not a held quote for an older amount.
+  const quoteCurrent = quoteInSync && !zapQuote.isRefreshing;
 
   // Whole-position value in vs out: the total value being withdrawn, and the
   // total value the user ends holding after the swap (the retained side at full
@@ -148,7 +158,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // materially.
   const slippageMultiplier = new Dec(1).sub(zapSlippageConfig.slippage.toDec());
   const displayedSwapIn: CoinPretty | undefined = requiredSwap
-    ? (swapExecutedIn ??
+    ? ((quoteCurrent ? swapExecutedIn : undefined) ??
       new CoinPretty(
         requiredSwap.tokenInCurrency,
         new Dec(requiredSwap.swapInAmount).mul(slippageMultiplier).truncate()
@@ -174,14 +184,16 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // high-cost threshold; the raw quote figure alone would let that through
   // unconfirmed and overstate value out. Falls back to the quoted impact
   // while the execution plan isn't ready (submission is blocked then).
-  const effectiveImpact =
-    swapEffectiveImpact ?? quote?.priceImpactTokenOut?.toDec();
+  // Undefined when SQS could not compute the impact: never a 0% placeholder.
+  const effectiveImpact = swapImpactUnknown
+    ? undefined
+    : (swapEffectiveImpact ?? quote?.priceImpactTokenOut?.toDec());
 
   // Value lost on the swapped slice (impact + fee), then the whole-position
   // value out. Uses the swap tool's fiat method so value out can't exceed in.
   // The fee is the executed plan's (scaled) fee amount when available.
   const swapValueOut =
-    quote && swapInValue && swapSidePrice && requiredSwap
+    quote && effectiveImpact && swapInValue && swapSidePrice && requiredSwap
       ? getTokenOutFiatValue(effectiveImpact, swapInValue.toDec()).sub(
           getTokenInFeeAmountFiatValue(
             requiredSwap.tokenInCurrency,
@@ -196,19 +208,25 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     swapInValue && swapValueOut
       ? swapInValue.toDec().sub(swapValueOut.toDec())
       : undefined;
+  // No value out without a known cost: showing value in instead would read as
+  // a free swap.
   const positionValueOut =
     positionValueIn && swapCost
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
           positionValueIn.toDec().sub(swapCost)
         )
-      : positionValueIn;
-
-  // % of the position's value being swapped (not the slider position).
-  const swapPercentOfPosition =
-    swapInValue && positionValueIn && positionValueIn.toDec().isPositive()
-      ? new RatePretty(swapInValue.toDec().quo(positionValueIn.toDec()))
       : undefined;
+
+  // % of the withdrawn value being swapped (not the slider position), at pool
+  // spot so a missing fiat price can't show it as 0%.
+  const swapShare =
+    displayedSwapIn && requiredSwap
+      ? requiredSwap.shareOfWithdrawn(new Int(displayedSwapIn.toCoin().amount))
+      : undefined;
+  const swapPercentOfPosition = swapShare
+    ? new RatePretty(swapShare)
+    : undefined;
 
   // Estimated holdings after exit, per token: the retained (un-swapped) side
   // at its PROJECTED withdrawn amount, plus the target side's projected
@@ -250,14 +268,21 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // pool query is loading, failed, or returned no usable spot price. This
   // must block submission — dispatching would silently execute a PLAIN
   // withdrawal while the slider still shows the selected mix.
+  // At a 0% withdrawal there is nothing to swap, which is not a data problem.
   const mixUncomputable =
     singleAssetExitEnabled &&
+    config.percentage > 0 &&
     config.targetBaseValueFraction !== undefined &&
     !requiredSwap;
 
   // High price-impact guard, mirroring the zap-in: a large-loss swap requires an
-  // explicit Confirm before it can be submitted.
-  const highCost = Boolean(needsSwap && effectiveImpact?.lt(new Dec(-0.1)));
+  // explicit Confirm before it can be submitted. An impact SQS could not
+  // compute counts as high cost.
+  const highCost = Boolean(
+    needsSwap &&
+    quote &&
+    (swapImpactUnknown || effectiveImpact?.lt(new Dec(-0.1)))
+  );
 
   // The acknowledgement holds only for the trade context it was given in, so a
   // prior confirm can't carry over to a different high-impact swap. Keyed on the
@@ -287,7 +312,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         // needs the pool's tick depths to derive a safe min-out, and the plan
         // fails closed until they load.
         (needsSwap &&
-          (zapQuote.isLoading || !quote || !quoteInSync || !swapMinOut)) ||
+          (zapQuote.isLoading || !quote || !quoteCurrent || !swapMinOut)) ||
         // The user chose a real target mix but the swap can't be computed
         // (pool data loading, failed, or unusable). NEVER fall through to a
         // plain withdrawal while a mix is selected — that silently discards
@@ -402,10 +427,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   // Released within 2% of the current ratio: return to the
                   // explicit no-swap state (undefined) rather than a near-equal
                   // numeric target, so a near-miss never triggers a tiny swap.
+                  // The ends are always a deliberate all-one-asset choice. If
+                  // the current ratio is unknown, the handle renders at 50, so
+                  // releasing it there is the way back to a plain withdrawal.
+                  if (value[0] === 0 || value[0] === 100) return;
                   const target = 1 - value[0] / 100;
                   if (
-                    currentBaseValueFraction !== undefined &&
-                    Math.abs(target - currentBaseValueFraction) <= 0.02
+                    currentBaseValueFraction === undefined
+                      ? value[0] === 50
+                      : Math.abs(target - currentBaseValueFraction) <= 0.02
                   ) {
                     setTargetMix(undefined);
                   }
@@ -447,7 +477,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   })}
                 </p>
 
-                {zapQuote.isLoading || !quoteInSync ? (
+                {zapQuote.isLoading || !quoteCurrent ? (
                   // While the quote is fetching OR the debounced target is
                   // still catching up to the live slider, hold the card at its
                   // populated size (same rows, skeleton values) so the modal
@@ -456,6 +486,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   // rendered.
                   <ZapOutBreakdownSkeleton
                     zapSlippageConfig={zapSlippageConfig}
+                    slippageInput={slippageInput}
                   />
                 ) : !quote ? (
                   <p className="caption py-2 text-center text-rust-300">
@@ -480,10 +511,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     estimatedReceiveCoins={estimatedReceiveCoins}
                     swapExecutedFeeIn={swapExecutedFeeIn}
                     zapSlippageConfig={zapSlippageConfig}
+                    slippageInput={slippageInput}
                   />
                 )}
 
-                {highCost && quote && quoteInSync && (
+                {highCost && quote && quoteCurrent && (
                   <div className="flex items-center gap-3 rounded-xl border border-rust-500 bg-rust-800/40 p-3">
                     <Icon
                       id="alert-circle-filled"
@@ -494,11 +526,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     <p className="body2 flex-1 text-left text-rust-300">
                       {/* The EFFECTIVE impact (quoted x own-pool
                           degradation) — the figure the gate trips on. */}
-                      {t("transfer.priceImpactWarning", {
-                        priceImpact: formatPretty(
-                          new RatePretty(effectiveImpact ?? new Dec(0))
-                        ),
-                      })}
+                      {effectiveImpact
+                        ? t("transfer.priceImpactWarning", {
+                            priceImpact: formatPretty(
+                              new RatePretty(effectiveImpact)
+                            ),
+                          })
+                        : t("transfer.unknownSwapImpactTitle")}
                     </p>
                     <label
                       htmlFor="cl-zap-out-cost-ack"
@@ -565,9 +599,8 @@ const ZapOutBreakdown: FunctionComponent<{
   estimatedReceiveCoins: CoinPretty[];
   /** Swap fee on the executed (scaled) input; the row is hidden without it. */
   swapExecutedFeeIn: CoinPretty | undefined;
-  zapSlippageConfig: ReturnType<
-    typeof useRemoveConcentratedLiquidityConfig
-  >["zapSlippageConfig"];
+  zapSlippageConfig: SlippageConfig;
+  slippageInput: SlippageToleranceInput;
 }> = memo((props) => {
   const {
     quote,
@@ -576,6 +609,7 @@ const ZapOutBreakdown: FunctionComponent<{
     estimatedReceiveCoins,
     swapExecutedFeeIn,
     zapSlippageConfig,
+    slippageInput,
   } = props;
   const { t } = useTranslation();
 
@@ -626,9 +660,9 @@ const ZapOutBreakdown: FunctionComponent<{
           }
         />
       )}
-      <RecapRow
-        left={t("swap.settings.slippage")}
-        right={<SlippageInput slippageConfig={zapSlippageConfig} />}
+      <SlippageToleranceRow
+        slippageConfig={zapSlippageConfig}
+        input={slippageInput}
       />
       {quote.split.length > 0 && (
         <Disclosure>
@@ -675,10 +709,9 @@ const ZapOutBreakdown: FunctionComponent<{
  *  from a one-line spinner to the full card. The slippage input is
  *  quote-independent, so the live control renders even while loading. */
 const ZapOutBreakdownSkeleton: FunctionComponent<{
-  zapSlippageConfig: ReturnType<
-    typeof useRemoveConcentratedLiquidityConfig
-  >["zapSlippageConfig"];
-}> = memo(({ zapSlippageConfig }) => {
+  zapSlippageConfig: SlippageConfig;
+  slippageInput: SlippageToleranceInput;
+}> = memo(({ zapSlippageConfig, slippageInput }) => {
   const { t } = useTranslation();
 
   return (
@@ -699,9 +732,9 @@ const ZapOutBreakdownSkeleton: FunctionComponent<{
         left={t("pools.aprBreakdown.swapFees")}
         right={<SkeletonLoader className="h-4 w-28" />}
       />
-      <RecapRow
-        left={t("swap.settings.slippage")}
-        right={<SlippageInput slippageConfig={zapSlippageConfig} />}
+      <SlippageToleranceRow
+        slippageConfig={zapSlippageConfig}
+        input={slippageInput}
       />
       <div className="flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]">
         <span className="sm:caption text-osmoverse-300">
@@ -709,63 +742,6 @@ const ZapOutBreakdownSkeleton: FunctionComponent<{
         </span>
         <SkeletonLoader className="h-4 w-16" />
       </div>
-    </div>
-  );
-});
-
-/** Editable slippage-tolerance input for the zap-out swap leg, mirroring the
- *  zap-in / swap-tool slippage box. Copied to keep the exit feature independent
- *  from the zap-in PR; can DRY once both have shipped. */
-const SlippageInput: FunctionComponent<{
-  slippageConfig: ReturnType<
-    typeof useRemoveConcentratedLiquidityConfig
-  >["zapSlippageConfig"];
-}> = memo(({ slippageConfig }) => {
-  const [manualSlippage, setManualSlippage] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleChange = useCallback(
-    (value: string) => {
-      const parsed = Number(value);
-      if (value === "" || !Number.isFinite(parsed)) {
-        setManualSlippage("");
-        slippageConfig.setManualSlippage(slippageConfig.defaultManualSlippage);
-        return;
-      }
-      // Clamp to a sane range so a negative / huge / non-finite entry can't
-      // produce a nonsensical minimum or break the Dec math.
-      const clamped = Math.max(0, Math.min(50, parsed));
-      setManualSlippage(clamped.toString());
-      slippageConfig.setManualSlippage(new Dec(clamped).toString());
-    },
-    [slippageConfig]
-  );
-
-  return (
-    <div
-      className={classNames(
-        "body2 flex w-fit items-center justify-center overflow-hidden rounded-lg px-2 py-0.5 text-center transition-all",
-        isEditing
-          ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900"
-          : "border border-osmoverse-700 bg-osmoverse-850"
-      )}
-    >
-      <AutosizeInput
-        type="text"
-        inputMode="decimal"
-        minWidth={36}
-        placeholder={slippageConfig.defaultManualSlippage + "%"}
-        className="body2 w-fit bg-transparent px-0"
-        inputClassName="body2 !bg-transparent text-right placeholder:text-wosmongton-300 focus:text-center transition-all focus-visible:outline-none"
-        value={manualSlippage}
-        onFocus={() => {
-          slippageConfig.setIsManualSlippage(true);
-          setIsEditing(true);
-        }}
-        onBlur={() => setIsEditing(false)}
-        onChange={(e) => handleChange(e.target.value)}
-      />
-      {manualSlippage !== "" && <span className="body2">%</span>}
     </div>
   );
 });

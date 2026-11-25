@@ -57,6 +57,10 @@ export interface ZapOutRequiredSwap {
   tokenInCurrency: UserPosition["currentCoins"][number]["currency"];
   tokenOutCurrency: UserPosition["currentCoins"][number]["currency"];
   needsSwap: boolean;
+  /** Share of the withdrawn value (at pool spot, no fiat prices needed) that a
+   *  given micro amount of `swapSide` represents. Undefined when the withdrawn
+   *  value is zero. */
+  shareOfWithdrawn: (swapSideAmount: Int) => Dec | undefined;
 }
 
 export function useRemoveConcentratedLiquidityConfig(
@@ -96,6 +100,10 @@ export function useRemoveConcentratedLiquidityConfig(
    *  The high-cost guard and value display must use this, not the quoted
    *  impact. Undefined when no swap is needed or the plan isn't ready. */
   swapEffectiveImpact: Dec | undefined;
+  /** SQS could not compute the swap's price impact. The consumer must treat
+   *  this as high cost (explicit confirm) and must not derive a value-out
+   *  from a 0% placeholder. */
+  swapImpactUnknown: boolean;
   /** Set when the execution plan is deliberately withheld: a split route
    *  passes partly through the position's own pool and no safe min-out can
    *  be derived for it (see `swapExecution`). Submission stays blocked while
@@ -190,12 +198,27 @@ export function useRemoveConcentratedLiquidityConfig(
     const tokenInCurrency = swapSide === "base" ? baseCurrency : quoteCurrency;
     const tokenOutCurrency = swapSide === "base" ? quoteCurrency : baseCurrency;
 
+    // Withdrawn value in quote micro units at spot (base x price + quote).
+    const spot = currentSqrtPrice.mul(currentSqrtPrice);
+    const withdrawnValue = new BigDec(baseWithdrawn)
+      .mul(spot)
+      .add(new BigDec(quoteWithdrawn));
+    const shareOfWithdrawn = (swapSideAmount: Int) => {
+      if (withdrawnValue.lte(new BigDec(0))) return undefined;
+      const value =
+        swapSide === "base"
+          ? new BigDec(swapSideAmount).mul(spot)
+          : new BigDec(swapSideAmount);
+      return new Dec(value.quo(withdrawnValue).toString());
+    };
+
     return {
       swapSide,
       swapInAmount,
       tokenInCurrency,
       tokenOutCurrency,
       needsSwap: swapInAmount.gt(new Int(0)),
+      shareOfWithdrawn,
     };
   };
 
@@ -256,6 +279,12 @@ export function useRemoveConcentratedLiquidityConfig(
   let zapOutBlockedReason: "mixedOwnPoolRoute" | undefined;
   const swapExecution = (() => {
     if (!quotedSwap?.needsSwap || !zapQuote.quote) return undefined;
+    // A held quote for an older amount (shown while the current amount is
+    // fetching) must never build a plan: its legs would sell the old amount
+    // against the current withdrawal. The fresh quote is keyed on the exact
+    // amount, so a non-refreshing quote is the current one. Same rule as the
+    // zap-in.
+    if (zapQuote.isRefreshing) return undefined;
 
     // Each leg's tokenIn is the conservative LOWER BOUND of the projected
     // withdrawn amount of the sold side, fixed at sign time. NOTE the swap
@@ -382,10 +411,14 @@ export function useRemoveConcentratedLiquidityConfig(
        *  avoids the own pool. A direct own-pool route can quote ~1% impact
        *  while the thinned book degrades the output by far more, so the
        *  high-cost guard and the value display must use THIS figure. */
-      swapEffectiveImpact: combineImpactWithDegradation({
-        quotedImpact: zapQuote.quote.priceImpactTokenOut?.toDec() ?? new Dec(0),
-        degradation: degradationFactor,
-      }),
+      // Unknown when SQS could not compute the quoted impact: never read
+      // its absence as 0%.
+      swapEffectiveImpact: zapQuote.quote.priceImpactTokenOut
+        ? combineImpactWithDegradation({
+            quotedImpact: zapQuote.quote.priceImpactTokenOut.toDec(),
+            degradation: degradationFactor,
+          })
+        : undefined,
     };
   })();
 
@@ -535,6 +568,10 @@ export function useRemoveConcentratedLiquidityConfig(
     swapExpectedOut: swapExecution?.swapExpectedOut,
     swapExecutedFeeIn: swapExecution?.swapExecutedFeeIn,
     swapEffectiveImpact: swapExecution?.swapEffectiveImpact,
+    swapImpactUnknown: Boolean(
+      zapQuote.quote &&
+      (zapQuote.quote.priceImpactUnknown || !zapQuote.quote.priceImpactTokenOut)
+    ),
     zapOutBlockedReason,
     isPoolLoading,
   };
