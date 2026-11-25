@@ -1,6 +1,6 @@
 import { apiClient, camelCaseToSnakeCase } from "@osmosis-labs/utils";
 
-import { authHeaders, DETAILS_API_URL } from ".";
+import { authHeaders, DETAILS_API_URL } from "./constants";
 
 export interface CoingeckoReposUrl {
   github: string[];

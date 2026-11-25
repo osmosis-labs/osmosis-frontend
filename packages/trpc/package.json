@@ -40,7 +40,6 @@
     "jest": "^30.5.2",
     "oxfmt": "^0.79.0",
     "oxlint": "^1.90.0",
-    "ts-jest": "^29.4.14",
     "typescript": "6.0.3"
   },
   "lint-staged": {

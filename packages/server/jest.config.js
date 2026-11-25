@@ -1,5 +1,6 @@
+const { swcTransform } = require("../../jest.swc");
+
 module.exports = {
-  preset: "ts-jest",
   roots: ["<rootDir>/src/"],
   testMatch: ["**/__tests__/?(*.)+(spec|test).[jt]s?(x)"],
   testTimeout: 100000,
@@ -9,18 +10,7 @@ module.exports = {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  transform: {
-    "^.+\\.(js|jsx|mjs)?$": [
-      "babel-jest",
-      { configFile: "../../babel.config.json" },
-    ],
-    "^.+\\.(ts|tsx)?$": [
-      "ts-jest",
-      {
-        useESM: true,
-      },
-    ],
-  },
+  transform: swcTransform,
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",

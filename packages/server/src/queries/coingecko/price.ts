@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { PRICES_API_URL } from ".";
+import { PRICES_API_URL } from "./constants";
 
 export type CoingeckoVsCurrencies = "usd";
 
