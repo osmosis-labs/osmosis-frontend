@@ -131,7 +131,8 @@ export function useAddConcentratedLiquidityState({
   // pool
   const concentratedPool = pool?.type === "concentrated" ? pool : null;
   const rawPool = concentratedPool?.raw as
-    ConcentratedPoolRawResponse | undefined;
+    | ConcentratedPoolRawResponse
+    | undefined;
   const currentSqrtPriceStr = rawPool?.current_sqrt_price;
   const tickSpacing = rawPool ? Number(rawPool.tick_spacing) : undefined;
   const poolBaseCurrency = useStableCurrency(

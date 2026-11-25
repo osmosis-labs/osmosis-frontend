@@ -1590,7 +1590,10 @@ function useQueryRouterBestQuote(
 function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
   | {
       error:
-        NoRouteError | NotEnoughLiquidityError | NotEnoughQuotedError | Error;
+        | NoRouteError
+        | NotEnoughLiquidityError
+        | NotEnoughQuotedError
+        | Error;
       isUnexpected: boolean;
     }
   | undefined {
