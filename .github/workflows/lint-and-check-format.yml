@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  lint-workspace:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -40,6 +40,9 @@ jobs:
       - name: Lint workspace
         run: corepack yarn lint:workspace
 
+      - name: Lint all packages
+        run: corepack yarn lint --filter='!app-osmosis-e2e'
+
   typecheck-web:
     runs-on: ubuntu-latest
     steps:
@@ -65,6 +68,14 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
+      - name: Cache Turbo build
+        uses: actions/cache@v5
+        with:
+          path: .turbo/cache
+          key: ${{ runner.OS }}-turbo-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-turbo-build-
+
       # Web resolves workspace packages through their build/ output and imports generated config.
       - name: Build workspace packages
         run: corepack yarn turbo run build --filter=@osmosis-labs/web^...
@@ -81,48 +92,3 @@ jobs:
       # and also covers test files, which `next build` skipped and Jest (swc) never checks.
       - name: Type check web
         run: corepack yarn workspace @osmosis-labs/web typecheck
-
-  lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [24.x]
-        package:
-          [
-            "web",
-            "utils",
-            "server",
-            "math",
-            "bridge",
-            "tx",
-            "trpc",
-            "types",
-            "unit",
-            "proto-codecs",
-          ]
-
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          package-manager-cache: false
-          node-version: ${{ matrix.node-version }}
-
-      - name: Cache dependencies
-        id: cache-deps
-        uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('yarn.lock', 'package.json', 'packages/*/package.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-${{ matrix.node-version }}-
-
-      - name: Install Dependencies
-        if: steps.cache-deps.outputs.cache-hit != 'true'
-        run: corepack yarn install --immutable
-
-      - name: Lint ${{ matrix.package }} package
-        run: corepack yarn lint --filter=@osmosis-labs/${{ matrix.package }}
