@@ -45,7 +45,8 @@
       "quoteLoading": "Recherche du meilleur échange…",
       "estimatedTotalReceive": "Total estimé à recevoir",
       "poolDataUnavailable": "Les données du pool nécessaires au mélange sélectionné sont indisponibles. Ramenez le curseur à sa position initiale pour un retrait standard.",
-      "mixedOwnPoolRoute": "Cette cotation passe en partie par le pool de la position elle-même, un minimum sûr ne peut donc pas être calculé. En attente d'une nouvelle cotation ; un montant ou un mélange différent peut aussi changer la route."
+      "mixedOwnPoolRoute": "Cette cotation passe en partie par le pool de la position elle-même, un minimum sûr ne peut donc pas être calculé. En attente d'une nouvelle cotation ; un montant ou un mélange différent peut aussi changer la route.",
+      "impactDataUnavailable": "Les données de liquidité du pool nécessaires pour vérifier l'impact sur le prix de ce swap n'ont pas pu être chargées. Veuillez réessayer dans un instant."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -144,6 +145,7 @@
       }
     },
     "table": {
+      "showVariants": "Afficher les variantes",
       "marketDataUnavailable": "Les données de marché sont indisponibles pour le moment. Veuillez réessayer dans un instant.",
       "depositButton": "Déposer",
       "search": "Chercher",
@@ -818,7 +820,9 @@
     "slippageAutoAdjustedTitle": "Slippage ajusté automatiquement",
     "slippageAutoAdjustedBody": "Le slippage par défaut de cette transaction a été augmenté en raison d'un fort impact sur le prix ou d'une faible liquidité.",
     "routeLiquidityUnknown": "Impossible de vérifier la liquidité de cet itinéraire. Vérifiez le montant « Recevez au moins » avant de confirmer.",
-    "slippageAutoAdjustedHigh": "Le slippage a été augmenté automatiquement en raison du fort impact sur le prix ou de la faible liquidité de cette transaction. Vérifiez le montant « Recevez au moins » avant de confirmer."
+    "routeLiquidityUnknownExactOut": "Impossible de vérifier la liquidité de cet itinéraire. Vérifiez le montant « Payer au maximum » avant de confirmer.",
+    "slippageAutoAdjustedHigh": "Le slippage a été augmenté automatiquement en raison du fort impact sur le prix ou de la faible liquidité de cette transaction. Vérifiez le montant « Recevez au moins » avant de confirmer.",
+    "slippageAutoAdjustedHighExactOut": "Le slippage a été augmenté automatiquement en raison du fort impact sur le prix ou de la faible liquidité de cette transaction. Vérifiez le montant « Payer au maximum » avant de confirmer."
   },
   "walletSelect": {
     "gettingStarted": "Commencer",

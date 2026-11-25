@@ -21,6 +21,5 @@
     "jsdom",
     "jest-watch-typeahead",
     "@chain-registry/client"
-  ],
-  "ignoreBinaries": ["turbo"]
+  ]
 }

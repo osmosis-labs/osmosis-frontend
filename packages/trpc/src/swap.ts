@@ -16,11 +16,7 @@ export const swapRouter = createTRPCRouter({
         ...input,
       });
 
-      return {
-        ...route,
-        // supplementary data with display types
-        name,
-      };
+      return route;
     }),
   routeTokenInGivenOut: publicProcedure
     .input(getRouteTokenInGivenOutParams)
@@ -30,10 +26,6 @@ export const swapRouter = createTRPCRouter({
         ...input,
       });
 
-      return {
-        ...route,
-        // supplementary data with display types
-        name,
-      };
+      return route;
     }),
 });

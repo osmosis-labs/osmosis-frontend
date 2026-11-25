@@ -2,7 +2,6 @@ import type { PoolRawResponse } from "@osmosis-labs/types";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { timeout } from "@osmosis-labs/utils";
-import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
@@ -14,6 +13,7 @@ import {
 } from "../../../../queries/complex/pools";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
+import { cached, type CacheEntry } from "../../../../utils/cached";
 import { getAsset, isHoldingValueUnknown } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
@@ -60,19 +60,21 @@ export function getPoolsFromSidecar({
     return Promise.resolve({ data: [], total: 0, nextCursor: undefined });
   }
 
-  return cachified({
+  return cached({
     cache: poolsCache,
-    key:
-      (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
-      (notPoolIds?.join(",") ?? "") +
-      (types?.join(",") ?? "") +
-      (incentives?.join(",") ?? "") +
-      (denoms?.join(",") ?? "") +
-      (minLiquidityUsd ?? "") +
-      withMarketIncentives.toString() +
-      (pagination ? JSON.stringify(pagination) : "") +
-      (sort ? JSON.stringify(sort) : "") +
-      (search ? JSON.stringify(search) : ""),
+    key: JSON.stringify([
+      "sidecar-pools",
+      poolIds ?? null,
+      notPoolIds ?? null,
+      types ?? null,
+      incentives ?? null,
+      denoms ?? null,
+      minLiquidityUsd ?? null,
+      withMarketIncentives,
+      pagination ?? null,
+      sort ?? null,
+      search ?? null,
+    ]),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(

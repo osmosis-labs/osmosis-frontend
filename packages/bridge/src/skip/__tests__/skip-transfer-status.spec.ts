@@ -1,4 +1,3 @@
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 
 import { MockChains } from "../../__tests__/mock-chains";
@@ -111,7 +110,7 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle successful transfer status", async () => {
     server.use(
-      http.get("https://api.skip.money/v2/tx/status", () => {
+      http.get("https://api.skip.build/v2/tx/status", () => {
         return HttpResponse.json({ state: "STATE_COMPLETED_SUCCESS" });
       })
     );
@@ -129,7 +128,7 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle failed transfer status", async () => {
     server.use(
-      http.get("https://api.skip.money/v2/tx/status", () => {
+      http.get("https://api.skip.build/v2/tx/status", () => {
         return HttpResponse.json({ state: "STATE_COMPLETED_ERROR" });
       })
     );
@@ -173,7 +172,7 @@ describe("SkipTransferStatusProvider", () => {
 
     const skipState = (state: string) =>
       server.use(
-        http.get("https://api.skip.money/v2/tx/status", () =>
+        http.get("https://api.skip.build/v2/tx/status", () =>
           HttpResponse.json({ state })
         )
       );
@@ -225,7 +224,7 @@ describe("SkipTransferStatusProvider", () => {
       // Skip can't see a Solana tx that hasn't landed; its error must not
       // end tracking, or a later dropped proof could never resolve it.
       server.use(
-        http.get("https://api.skip.money/v2/tx/status", () =>
+        http.get("https://api.skip.build/v2/tx/status", () =>
           HttpResponse.json({ message: "tx not found" }, { status: 404 })
         )
       );
@@ -269,7 +268,7 @@ describe("SkipTransferStatusProvider", () => {
 
     it("resolves as failed when the receipt shows a revert", async () => {
       server.use(
-        http.get("https://api.skip.money/v2/tx/status", () =>
+        http.get("https://api.skip.build/v2/tx/status", () =>
           HttpResponse.json({ state: "STATE_PENDING" })
         )
       );
@@ -287,7 +286,7 @@ describe("SkipTransferStatusProvider", () => {
 
     it("keeps polling when Skip errors and no receipt has turned up", async () => {
       server.use(
-        http.get("https://api.skip.money/v2/tx/status", () =>
+        http.get("https://api.skip.build/v2/tx/status", () =>
           HttpResponse.json({ message: "tx not found" }, { status: 404 })
         )
       );
@@ -316,7 +315,7 @@ describe("SkipTransferStatusProvider", () => {
 
   it("should handle undefined transfer status", async () => {
     server.use(
-      http.get("https://api.skip.money/v2/tx/status", () => {
+      http.get("https://api.skip.build/v2/tx/status", () => {
         return new HttpResponse(null, { status: 404 });
       })
     );

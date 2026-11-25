@@ -45,7 +45,8 @@
       "quoteLoading": "En iyi takas bulunuyor…",
       "estimatedTotalReceive": "Tahmini toplam alınacak tutar",
       "poolDataUnavailable": "Seçilen oran için gereken havuz verileri kullanılamıyor. Standart çekim için kaydırıcıyı başlangıç konumuna geri getirin.",
-      "mixedOwnPoolRoute": "Bu teklif kısmen pozisyonun kendi havuzundan geçtiği için güvenli bir minimum hesaplanamıyor. Yeni teklif bekleniyor; farklı bir tutar veya oran da rotayı değiştirebilir."
+      "mixedOwnPoolRoute": "Bu teklif kısmen pozisyonun kendi havuzundan geçtiği için güvenli bir minimum hesaplanamıyor. Yeni teklif bekleniyor; farklı bir tutar veya oran da rotayı değiştirebilir.",
+      "impactDataUnavailable": "Bu takasın fiyat etkisini kontrol etmek için gereken havuz likidite verileri yüklenemedi. Lütfen birazdan tekrar deneyin."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -144,6 +145,7 @@
       }
     },
     "table": {
+      "showVariants": "Varyantları göster",
       "marketDataUnavailable": "Piyasa verileri şu anda kullanılamıyor. Lütfen birazdan tekrar deneyin.",
       "depositButton": "Yatır",
       "search": "Arama",
@@ -818,7 +820,9 @@
     "slippageAutoAdjustedTitle": "Kayma otomatik ayarlandı",
     "slippageAutoAdjustedBody": "Yüksek fiyat etkisi veya düşük likidite nedeniyle bu işlemin varsayılan kayması artırıldı.",
     "routeLiquidityUnknown": "Bu rotanın likiditesi doğrulanamadı. Onaylamadan önce \"En azından al\" tutarını kontrol edin.",
-    "slippageAutoAdjustedHigh": "Bu işlemin yüksek fiyat etkisi veya düşük likiditesi nedeniyle kayma otomatik olarak artırıldı. Onaylamadan önce \"En azından al\" tutarını kontrol edin."
+    "routeLiquidityUnknownExactOut": "Bu rotanın likiditesi doğrulanamadı. Onaylamadan önce \"En fazla öde\" tutarını kontrol edin.",
+    "slippageAutoAdjustedHigh": "Bu işlemin yüksek fiyat etkisi veya düşük likiditesi nedeniyle kayma otomatik olarak artırıldı. Onaylamadan önce \"En azından al\" tutarını kontrol edin.",
+    "slippageAutoAdjustedHighExactOut": "Bu işlemin yüksek fiyat etkisi veya düşük likiditesi nedeniyle kayma otomatik olarak artırıldı. Onaylamadan önce \"En fazla öde\" tutarını kontrol edin."
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",

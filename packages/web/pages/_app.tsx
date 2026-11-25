@@ -1,3 +1,5 @@
+// Must stay first: configures zod before any imported module builds a schema.
+import "~/config/zod";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import "../styles/globals.css";
 
@@ -12,7 +14,13 @@ import utc from "dayjs/plugin/utc";
 import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import type { AppProps } from "next/app";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";
-import { ComponentType, FunctionComponent, ReactNode, useMemo } from "react";
+import {
+  ComponentType,
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
@@ -21,7 +29,11 @@ import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
-import { wagmiConfig } from "~/config/wagmi";
+import {
+  ensureEvmConnectorsLoaded,
+  hasPersistedEvmSdkSession,
+  wagmiConfig,
+} from "~/config/wagmi";
 import { MultiLanguageProvider, useTranslation } from "~/hooks";
 import { ImmersiveBridge } from "~/hooks/bridge";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -49,6 +61,12 @@ dayjs.updateLocale("ko", dayjsLocaleKo);
 const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    if (hasPersistedEvmSdkSession()) {
+      void ensureEvmConnectorsLoaded();
+    }
+  }, []);
+
   return (
     <NuqsAdapter>
       <WagmiProvider config={wagmiConfig}>

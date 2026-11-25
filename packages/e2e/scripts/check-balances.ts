@@ -33,11 +33,11 @@
 
 import "dotenv/config";
 
+import { getAllBalances, TOKEN_DENOMS } from "../utils/balance-checker";
 import {
   ACCOUNT_REQUIREMENTS,
   type AccountBalanceRequirement,
 } from "../utils/balance-config";
-import { getAllBalances, TOKEN_DENOMS } from "../utils/balance-checker";
 import { fetchTokenPrices } from "../utils/price-utils";
 import { deriveAddress } from "../utils/wallet-utils";
 
@@ -70,13 +70,12 @@ async function main(): Promise<void> {
   console.log(`Address:  ${address}\n`);
 
   // Look up requirements
-  const requirements: AccountBalanceRequirement[] | undefined =
-    ACCOUNT_LABEL ? ACCOUNT_REQUIREMENTS[ACCOUNT_LABEL] : undefined;
+  const requirements: AccountBalanceRequirement[] | undefined = ACCOUNT_LABEL
+    ? ACCOUNT_REQUIREMENTS[ACCOUNT_LABEL]
+    : undefined;
 
   if (ACCOUNT_LABEL && !requirements) {
-    console.log(
-      `No balance requirements found for label "${ACCOUNT_LABEL}".`
-    );
+    console.log(`No balance requirements found for label "${ACCOUNT_LABEL}".`);
     console.log(
       `Available labels: ${Object.keys(ACCOUNT_REQUIREMENTS).join(", ")}\n`
     );
@@ -110,7 +109,9 @@ async function main(): Promise<void> {
   const usdRequiredDenoms = (requirements ?? [])
     .filter((r) => r.unit === "usd" && TOKEN_DENOMS[r.token])
     .map((r) => TOKEN_DENOMS[r.token].denom);
-  const denomsToPrice = [...new Set([...denomsWithBalance, ...usdRequiredDenoms])];
+  const denomsToPrice = [
+    ...new Set([...denomsWithBalance, ...usdRequiredDenoms]),
+  ];
 
   let prices: Record<string, number> = {};
   let priceFetchFailed = false;
@@ -147,7 +148,9 @@ async function main(): Promise<void> {
     (d) => !knownDenoms.includes(d)
   );
   if (unknownDenoms.length > 0) {
-    console.log(`\n(${unknownDenoms.length} other denom(s) with balance not shown)`);
+    console.log(
+      `\n(${unknownDenoms.length} other denom(s) with balance not shown)`
+    );
   }
 
   if (!requirements) {
@@ -200,8 +203,7 @@ async function main(): Promise<void> {
         const cause = priceFetchFailed
           ? "price service unavailable"
           : "no price available for USD conversion";
-        const line =
-          `  ⚠️  ${req.token.padEnd(14)} ${cause} — couldn't verify, dispatching topup as precaution`;
+        const line = `  ⚠️  ${req.token.padEnd(14)} ${cause} — couldn't verify, dispatching topup as precaution`;
         console.log(line);
         reportLines.push(line);
         hasWarning = true;
@@ -215,12 +217,14 @@ async function main(): Promise<void> {
     if (balance < minTokens) {
       hasCritical = true;
       const shortfall = minTokens - balance;
-      const minDisplay = req.unit === "usd"
-        ? `$${req.minAmount} (${minTokens.toFixed(d)} ${req.token})`
-        : `${minTokens}`;
-      const needDisplay = req.unit === "usd"
-        ? `$${(shortfall * price!).toFixed(2)} / ${shortfall.toFixed(d)} ${req.token}`
-        : `${shortfall.toFixed(d)} more`;
+      const minDisplay =
+        req.unit === "usd"
+          ? `$${req.minAmount} (${minTokens.toFixed(d)} ${req.token})`
+          : `${minTokens}`;
+      const needDisplay =
+        req.unit === "usd"
+          ? `$${(shortfall * price!).toFixed(2)} / ${shortfall.toFixed(d)} ${req.token}`
+          : `${shortfall.toFixed(d)} more`;
       const line =
         `  🚨 ${req.token.padEnd(14)} ` +
         `${balance.toFixed(d)}${usdStr} < min ${minDisplay} ` +
@@ -230,9 +234,10 @@ async function main(): Promise<void> {
       criticalTokens.push(`${req.token} (need ${needDisplay})`);
     } else if (balance < warnTokens) {
       hasWarning = true;
-      const warnDisplay = req.unit === "usd"
-        ? `$${req.warnAmount} (${warnTokens.toFixed(d)} ${req.token})`
-        : `${warnTokens}`;
+      const warnDisplay =
+        req.unit === "usd"
+          ? `$${req.warnAmount} (${warnTokens.toFixed(d)} ${req.token})`
+          : `${warnTokens}`;
       const line =
         `  ⚠️  ${req.token.padEnd(14)} ` +
         `${balance.toFixed(d)}${usdStr} < warn ${warnDisplay}`;
@@ -240,9 +245,10 @@ async function main(): Promise<void> {
       reportLines.push(line);
       lowTokens.push(req.token);
     } else {
-      const passDisplay = req.unit === "usd"
-        ? `$${req.warnAmount} (${warnTokens.toFixed(d)} ${req.token})`
-        : `${warnTokens}`;
+      const passDisplay =
+        req.unit === "usd"
+          ? `$${req.warnAmount} (${warnTokens.toFixed(d)} ${req.token})`
+          : `${warnTokens}`;
       console.log(
         `  ✅ ${req.token.padEnd(14)} ` +
           `${balance.toFixed(d)}${usdStr} >= ${passDisplay}`

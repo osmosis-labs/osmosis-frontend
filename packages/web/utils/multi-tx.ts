@@ -1,7 +1,7 @@
 import { apiClient } from "@osmosis-labs/utils";
 
 import { IS_TESTNET } from "~/config";
-import { ChainList } from "~/config/generated/chain-list";
+import { ClientChainList as ChainList } from "~/config/generated/client-chain-list";
 
 /**
  * Pure helpers for multi-transaction bridge routes. Kept free of store and
@@ -57,7 +57,8 @@ export async function waitForSkipStepArrival({
   const env = IS_TESTNET ? "testnet" : "mainnet";
   // prompt Skip to index the tx; the polling below tolerates failures
   await fetch(
-    `/api/skip-track-tx?chainID=${chainId}&txHash=${txHash}&env=${env}`
+    `/api/skip-track-tx?chainID=${encodeURIComponent(chainId)}&txHash=${encodeURIComponent(txHash)}&env=${encodeURIComponent(env)}`,
+    { method: "POST" }
   ).catch(() => undefined);
 
   for (let attempt = 0; !maxAttempts || attempt < maxAttempts; attempt++) {

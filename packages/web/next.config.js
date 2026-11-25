@@ -44,6 +44,27 @@ const config = {
   // than under Node, so Next's file tracing only copies their Node entrypoints. Keeping them external
   // lets OpenNext copy the whole package and rewrite the exports for `workerd`.
   serverExternalPackages: ["isows", "uncrypto"],
+  // Exclude build-time tools, native image binaries (Cloudflare Images handles `/_next/image`),
+  // and static public assets from standalone NFT tracing so `Collecting build traces` skips them.
+  outputFileTracingExcludes: {
+    "*": [
+      "**/node_modules/babel-plugin-react-compiler/**",
+      "**/node_modules/sharp/**",
+      "**/node_modules/@img/**",
+      "**/node_modules/@swc/core*/**",
+      "**/node_modules/esbuild/**",
+      "**/node_modules/wrangler/**",
+      "**/node_modules/workerd/**",
+      "**/node_modules/typescript/**",
+      "**/node_modules/oxlint*/**",
+      "**/node_modules/oxfmt*/**",
+      "**/node_modules/jest*/**",
+      "**/node_modules/playwright*/**",
+      "./public/tokens/generated/**",
+      "./public/tradingview/**",
+      "./public/datafeeds/**",
+    ],
+  },
   images: {
     // Preserve the Next 15 cache interval and 16px icons across the default changes in Next 16.
     minimumCacheTTL: 60,
@@ -124,9 +145,23 @@ const config = {
           priority: 50,
           enforce: true,
         },
+        clientAssetLists: {
+          test: /[\\/]config[\\/]generated[\\/]client-asset-lists\.ts$/,
+          name: "client-asset-lists",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
         chainList: {
           test: /[\\/]config[\\/]generated[\\/]chain-list\.ts$/,
           name: "chain-list",
+          chunks: "all",
+          priority: 50,
+          enforce: true,
+        },
+        clientChainList: {
+          test: /[\\/]config[\\/]generated[\\/]client-chain-list\.ts$/,
+          name: "client-chain-list",
           chunks: "all",
           priority: 50,
           enforce: true,

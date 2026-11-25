@@ -45,7 +45,8 @@
       "quoteLoading": "尋找最佳兌換…",
       "estimatedTotalReceive": "預計總接收額",
       "poolDataUnavailable": "所選比例所需的資金池數據不可用。將滑桿移回起始位置以進行標準提取。",
-      "mixedOwnPoolRoute": "此報價部分經由該倉位自身的資金池，因此無法計算安全最小值。正在等待新報價；更改金額或比例也可能改變路由。"
+      "mixedOwnPoolRoute": "此報價部分經由該倉位自身的資金池，因此無法計算安全最小值。正在等待新報價；更改金額或比例也可能改變路由。",
+      "impactDataUnavailable": "無法載入檢查此兌換價格影響所需的池流動性數據。請稍後再試。"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -144,6 +145,7 @@
       }
     },
     "table": {
+      "showVariants": "顯示變體",
       "marketDataUnavailable": "市場數據暫時無法使用。請稍後再試。",
       "depositButton": "存入",
       "search": "搜索",
@@ -818,7 +820,9 @@
     "slippageAutoAdjustedTitle": "滑點已自動調整",
     "slippageAutoAdjustedBody": "由於價格影響較大或流動性較低，此交易的預設滑點已上調。",
     "routeLiquidityUnknown": "無法驗證此路徑的流動性。確認前請檢查「至少收到」的數量。",
-    "slippageAutoAdjustedHigh": "由於此交易的價格影響較大或流動性較低，滑點已自動提高。確認前請檢查「至少收到」的數量。"
+    "routeLiquidityUnknownExactOut": "無法驗證此路徑的流動性。確認前請檢查「最多付錢」的數量。",
+    "slippageAutoAdjustedHigh": "由於此交易的價格影響較大或流動性較低，滑點已自動提高。確認前請檢查「至少收到」的數量。",
+    "slippageAutoAdjustedHighExactOut": "由於此交易的價格影響較大或流動性較低，滑點已自動提高。確認前請檢查「最多付錢」的數量。"
   },
   "walletSelect": {
     "gettingStarted": "入門",

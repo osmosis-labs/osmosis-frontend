@@ -1,4 +1,5 @@
 import type { Registry } from "@cosmjs/proto-signing";
+import { cached } from "@osmosis-labs/server";
 import {
   estimateGasFee,
   getDefaultGasPrice,
@@ -16,7 +17,6 @@ import {
   NativeEVMTokenConstantAddress,
   redactConfiguredEvmRpcUrls,
 } from "@osmosis-labs/utils";
-import cachified from "cachified";
 import {
   Address,
   createPublicClient,
@@ -53,6 +53,7 @@ import {
 } from "../interface";
 import { BridgeAssetMap } from "../utils/asset";
 import { getSolanaTxFeeLamports, SOLANA_NATIVE_DENOM } from "../utils/solana";
+import { getAlloyTransferEndpoints } from "./alloy-endpoints";
 import { SkipApiClient } from "./client";
 import { SkipProviderId } from "./constants";
 import {
@@ -334,7 +335,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       });
     }
 
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: JSON.stringify({
         id: SkipBridgeProvider.ID,
@@ -828,7 +829,16 @@ export class SkipBridgeProvider implements BridgeProvider {
             amount: route.amount_out,
             coinGeckoId: destinationAsset.coingecko_id,
             ...toAsset,
-            priceImpact: "0",
+            // Skip reports the impact of every swap in the route (Osmosis
+            // and EVM legs) as a percentage, positive for a loss; the
+            // interface wants a fraction, negative for a loss. Absent when
+            // the route does not swap.
+            priceImpact: route.swap_price_impact_percent
+              ? new Dec(route.swap_price_impact_percent)
+                  .quo(new Dec(100))
+                  .neg()
+                  .toString()
+              : "0",
           },
           fromChain,
           toChain,
@@ -999,13 +1009,27 @@ export class SkipBridgeProvider implements BridgeProvider {
       // since skip supports cosmos swap, we can include other asset list
       // counterparties of the same variant
       if (assetListAsset) {
+        // For an alloy, only the variants its transmuter holds: the variant
+        // family also keeps assets the pool dropped long ago, and their
+        // counterparties are mostly dead routes Skip is slow to refuse.
+        const memberDenoms = assetListAsset.isAlloyed
+          ? await this.getAlloyMemberDenoms(assetListAsset.coinMinimalDenom)
+          : undefined;
         const variantAssets = this.ctx.assetLists.flatMap(({ assets }) =>
-          assets.filter(
-            (asset) => asset.variantGroupKey === assetListAsset.variantGroupKey
+          assets.filter((asset) =>
+            memberDenoms
+              ? memberDenoms.has(asset.coinMinimalDenom)
+              : asset.variantGroupKey === assetListAsset.variantGroupKey
           )
         );
         counterparties.push(
-          ...variantAssets.flatMap((asset) => asset.counterparty)
+          ...variantAssets.flatMap((asset) => asset.counterparty),
+          ...(assetListAsset.isAlloyed
+            ? getAlloyTransferEndpoints(
+                assetListAsset.coinMinimalDenom,
+                direction
+              )
+            : [])
         );
       }
 
@@ -1198,7 +1222,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       // in production too: a silent catch here hid the counterparty
       // mutation bug as unexplainable empty results for months.
       // Uses the already-resolved assets/skipChains from above: re-awaiting
-      // the cachified getters here could itself throw (evicted entry plus a
+      // the cached getters here could itself throw (evicted entry plus a
       // failed refresh), which would escape this catch and turn the
       // intended empty-result degradation into a rejection.
       console.warn(
@@ -1212,6 +1236,22 @@ export class SkipBridgeProvider implements BridgeProvider {
       );
       return [];
     }
+  }
+
+  /**
+   * The alloy's transmuter members, or undefined when unknown (no lookup in
+   * the context, a failure or a timeout), in which case route discovery falls
+   * back to the variant family as before.
+   */
+  protected async getAlloyMemberDenoms(
+    alloyedDenom: string
+  ): Promise<Set<string> | undefined> {
+    if (!this.ctx.getAlloyMemberDenoms) return undefined;
+    const members = await withTimeout(
+      this.ctx.getAlloyMemberDenoms(alloyedDenom),
+      ROUTE_PROBE_REQUEST_TIMEOUT_MS
+    ).catch(() => undefined);
+    return members?.length ? new Set(members) : undefined;
   }
 
   /**
@@ -1277,7 +1317,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         .toString();
 
       const isRoutable = (fast: boolean) =>
-        cachified({
+        cached({
           cache: this.ctx.cache,
           key: `${SkipBridgeProvider.ID}_route_probe_${direction}${
             multiTx ? "_multi" : ""
@@ -2026,7 +2066,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   getAssets(chainID?: string) {
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: SkipBridgeProvider.ID + `_assets_${chainID}`,
       ttl: 1000 * 60 * 30, // 30 minutes
@@ -2035,14 +2075,14 @@ export class SkipBridgeProvider implements BridgeProvider {
       // reads as "asset unsupported" downstream, which silently bypasses the
       // client's retry and re-poll machinery (observed in QA as a Skip-only
       // asset intermittently rendering external-only). Failing the check
-      // makes cachified throw instead, so it propagates as a provider
+      // makes `cached` throw instead, so it propagates as a provider
       // failure the client retries.
       getFreshValue: () =>
         this.skipClient.assets({
           chainID,
         }),
       checkValue: (value) => {
-        // cachified types the checked value as {}; it is the fresh/cached
+        // `cached` types the checked value as unknown; it is the fresh/cached
         // return of skipClient.assets. A scoped request must return the
         // requested chain with a POPULATED asset list: a genuinely
         // unsupported asset is a denom absent from a populated registry,
@@ -2061,7 +2101,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   getChains() {
-    return cachified({
+    return cached({
       cache: this.ctx.cache,
       key: SkipBridgeProvider.ID + "_chains",
       ttl: 1000 * 60 * 30, // 30 minutes

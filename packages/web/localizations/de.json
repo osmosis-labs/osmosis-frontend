@@ -45,7 +45,8 @@
       "quoteLoading": "Besten Tausch wird gesucht…",
       "estimatedTotalReceive": "Geschätzter Gesamterhalt",
       "poolDataUnavailable": "Die für die gewählte Aufteilung benötigten Pool-Daten sind nicht verfügbar. Schiebe den Regler zurück in die Ausgangsposition für eine normale Auszahlung.",
-      "mixedOwnPoolRoute": "Diese Quote verläuft teilweise über den Pool der Position selbst, daher kann kein sicheres Minimum berechnet werden. Es wird auf eine neue Quote gewartet; ein anderer Betrag oder eine andere Aufteilung kann die Route ebenfalls ändern."
+      "mixedOwnPoolRoute": "Diese Quote verläuft teilweise über den Pool der Position selbst, daher kann kein sicheres Minimum berechnet werden. Es wird auf eine neue Quote gewartet; ein anderer Betrag oder eine andere Aufteilung kann die Route ebenfalls ändern.",
+      "impactDataUnavailable": "Die Liquiditätsdaten des Pools, die zur Prüfung der Preisauswirkung dieses Swaps benötigt werden, konnten nicht geladen werden. Bitte versuche es gleich erneut."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -144,6 +145,7 @@
       }
     },
     "table": {
+      "showVariants": "Varianten anzeigen",
       "marketDataUnavailable": "Marktdaten sind derzeit nicht verfügbar. Bitte versuchen Sie es gleich noch einmal.",
       "depositButton": "Kaution",
       "search": "Suchen",
@@ -818,7 +820,9 @@
     "slippageAutoAdjustedTitle": "Slippage automatisch angepasst",
     "slippageAutoAdjustedBody": "Die Standard-Slippage für diesen Trade wurde aufgrund hoher Preisauswirkung oder geringer Liquidität erhöht.",
     "routeLiquidityUnknown": "Die Liquidität dieser Route konnte nicht überprüft werden. Prüfen Sie vor dem Bestätigen den Betrag unter „Erhalten Sie mindestens“.",
-    "slippageAutoAdjustedHigh": "Die Slippage wurde wegen hoher Preisauswirkung oder geringer Liquidität automatisch erhöht. Prüfen Sie vor dem Bestätigen den Betrag unter „Erhalten Sie mindestens“."
+    "routeLiquidityUnknownExactOut": "Die Liquidität dieser Route konnte nicht überprüft werden. Prüfen Sie vor dem Bestätigen den Betrag unter „Bezahlen Sie höchstens“.",
+    "slippageAutoAdjustedHigh": "Die Slippage wurde wegen hoher Preisauswirkung oder geringer Liquidität automatisch erhöht. Prüfen Sie vor dem Bestätigen den Betrag unter „Erhalten Sie mindestens“.",
+    "slippageAutoAdjustedHighExactOut": "Die Slippage wurde wegen hoher Preisauswirkung oder geringer Liquidität automatisch erhöht. Prüfen Sie vor dem Bestätigen den Betrag unter „Bezahlen Sie höchstens“."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",

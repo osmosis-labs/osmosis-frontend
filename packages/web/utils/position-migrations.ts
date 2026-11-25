@@ -501,7 +501,8 @@ export const getRangeMaxWithdrawAmounts = ({
   lowerTick: Int;
   upperTick: Int;
 }):
-  { maxAmount0: Int; maxAmount1: Int; isInformative: boolean } | undefined => {
+  | { maxAmount0: Int; maxAmount1: Int; isInformative: boolean }
+  | undefined => {
   let liquidityDec: Dec;
   try {
     liquidityDec = new Dec(liquidity);

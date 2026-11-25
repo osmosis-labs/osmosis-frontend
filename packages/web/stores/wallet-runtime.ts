@@ -105,6 +105,31 @@ type WalletRuntimeOptions = WalletTxDependencies["options"] & {
   findCurrency?: (chainId: string, denom: string) => Currency | undefined;
 };
 
+/**
+ * axios's own message ("Request failed with status code 400") drops the
+ * response body, which is where the broadcast proxy and the REST node say why
+ * they refused the request. Append that reason so it reaches the failed-tx
+ * toast. The AxiosError itself is kept: callers read `isAxiosError` and
+ * `response.status`.
+ */
+function withResponseReason<T>(request: Promise<T>): Promise<T> {
+  return request.catch((e: unknown) => {
+    if (axios.isAxiosError(e) && e.response) {
+      const data = e.response.data as
+        | { error?: unknown; message?: unknown }
+        | undefined;
+      const reason =
+        typeof data?.error === "string"
+          ? data.error
+          : typeof data?.message === "string"
+            ? data.message
+            : undefined;
+      if (reason) e.message = `${e.message}: ${reason.slice(0, 200)}`;
+    }
+    throw e;
+  });
+}
+
 function equalSnapshot(a: WalletSnapshot, b: WalletSnapshot) {
   return (Object.keys(a) as (keyof WalletSnapshot)[]).every((key) =>
     Object.is(a[key], b[key])
@@ -164,8 +189,8 @@ export class WalletRuntime {
       chains: config.chains,
       getWallet: this.getWallet,
       transport: transport ?? {
-        post: (url, data) => axios.post(url, data),
-        get: (url, options) => axios.get(url, options),
+        post: (url, data) => withResponseReason(axios.post(url, data)),
+        get: (url, options) => withResponseReason(axios.get(url, options)),
         request: apiClient,
       },
       hash: (bytes) => Hash.sha256(bytes),

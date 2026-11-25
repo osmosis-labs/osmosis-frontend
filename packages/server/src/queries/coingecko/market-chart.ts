@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { authHeaders, DETAILS_API_URL } from "../coingecko";
+import { authHeaders, DETAILS_API_URL } from "./constants";
 
 export interface QueryMarketChartRequest {
   id: string;
@@ -35,8 +35,12 @@ export async function queryMarketChart(
 ): Promise<QueryMarketChartResponse> {
   const { id, from, to, vsCurrency = "USD" } = props;
 
+  if (!/^[a-z0-9][a-z0-9._-]{0,127}$/i.test(id) || id.includes("..")) {
+    throw new Error("Invalid CoinGecko coin id");
+  }
+
   const url = new URL(
-    `/api/v3/coins/${id}/market_chart/range`,
+    `/api/v3/coins/${encodeURIComponent(id)}/market_chart/range`,
     DETAILS_API_URL
   );
 

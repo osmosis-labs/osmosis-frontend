@@ -1,7 +1,6 @@
 import { DefaultSeo, DefaultSeoProps } from "next-seo";
 
 import { useTranslation } from "~/hooks";
-import spriteSVGURL from "~/public/icons/sprite.svg";
 
 const SEO_VALUES = {
   SITE_URL: "https://osmosis.zone",
@@ -29,11 +28,6 @@ export const SEO: React.FC = () => {
           typeof window !== "undefined"
             ? `${window?.origin || ""}/osmosis-logo-wc.png`
             : "",
-      },
-      {
-        rel: "preload",
-        as: "image/svg+xml",
-        href: spriteSVGURL,
       },
     ],
     additionalMetaTags: [

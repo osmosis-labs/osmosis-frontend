@@ -1,14 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "import"],
-  "jsPlugins": [
-    "eslint-plugin-simple-import-sort",
-    "eslint-plugin-unused-imports",
-    {
-      "name": "import-compat",
-      "specifier": "eslint-plugin-import"
-    }
-  ],
+  "jsPlugins": ["eslint-plugin-simple-import-sort"],
   "categories": {
     "correctness": "off"
   },
@@ -23,9 +16,21 @@
     "**/build/**",
     "**/dist/**",
     "packages/web/public/tradingview/**",
+    "packages/web/config/generated/**",
     "packages/proto-codecs/src/codegen/**"
   ],
   "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "cachified",
+            "message": "Use `cached` from @osmosis-labs/server (utils/cached.ts): cachified shares pending promises across requests and refreshes on timers, which break on Cloudflare Workers."
+          }
+        ]
+      }
+    ],
     "no-array-constructor": "error",
     "unicorn/filename-case": [
       "error",
@@ -35,7 +40,19 @@
     ],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "unused-imports/no-unused-imports": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "local",
+        "varsIgnorePattern": "^_",
+        "args": "none",
+        "caughtErrors": "none",
+        "ignoreRestSiblings": true,
+        "fix": {
+          "imports": "fix"
+        }
+      }
+    ],
     "import/no-default-export": "error",
     "typescript/no-duplicate-enum-values": "error",
     "typescript/no-extra-non-null-assertion": "error",
@@ -44,13 +61,7 @@
     "typescript/no-this-alias": "error",
     "typescript/no-unsafe-declaration-merging": "error",
     "typescript/prefer-namespace-keyword": "error",
-    "typescript/triple-slash-reference": "error",
-    "import-compat/no-extraneous-dependencies": [
-      "error",
-      {
-        "devDependencies": true
-      }
-    ]
+    "typescript/triple-slash-reference": "error"
   },
   "overrides": [
     {
@@ -119,6 +130,12 @@
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "cachified",
+                "message": "Use `cached` from @osmosis-labs/server (utils/cached.ts): cachified shares pending promises across requests and refreshes on timers, which break on Cloudflare Workers."
+              }
+            ],
             "patterns": [
               {
                 "group": [
@@ -158,24 +175,8 @@
         "prefer-const": "off",
         "prefer-rest-params": "off",
         "prefer-spread": "off",
-        "import-compat/no-extraneous-dependencies": [
-          "error",
-          {
-            "devDependencies": [
-              "**/*.spec.ts",
-              "**/*.spec.tsx",
-              "**/*.spec.js",
-              "**/setup-tests.js",
-              "**/web/config/generate-*.ts",
-              "**/web/open-next.config.ts",
-              "**/web/scripts/*.mjs"
-            ]
-          }
-        ],
         "hooks-compat/config": "error",
         "hooks-compat/gating": "error",
-        "react-compat/require-render-return": "error",
-        "react-compat/no-deprecated": "error",
         "hooks-compat/static-components": "error",
         "hooks-compat/use-memo": "error",
         "hooks-compat/void-use-memo": "error",
@@ -197,14 +198,9 @@
       },
       "jsPlugins": [
         "eslint-plugin-simple-import-sort",
-        "eslint-plugin-unused-imports",
         {
           "name": "hooks-compat",
           "specifier": "eslint-plugin-react-hooks"
-        },
-        {
-          "name": "react-compat",
-          "specifier": "eslint-plugin-react"
         }
       ]
     },

@@ -1,6 +1,6 @@
 import { apiClient, camelCaseToSnakeCase } from "@osmosis-labs/utils";
 
-import { authHeaders, DETAILS_API_URL } from ".";
+import { authHeaders, DETAILS_API_URL } from "./constants";
 
 export interface CoingeckoReposUrl {
   github: string[];
@@ -130,7 +130,14 @@ export async function queryCoingeckoCoin(
     return;
   }
 
-  const url = new URL(`/api/v3/coins/${id}`, DETAILS_API_URL);
+  if (!/^[a-z0-9][a-z0-9._-]{0,127}$/i.test(id) || id.includes("..")) {
+    throw new Error("Invalid CoinGecko coin id");
+  }
+
+  const url = new URL(
+    `/api/v3/coins/${encodeURIComponent(id)}`,
+    DETAILS_API_URL
+  );
 
   url.searchParams.append("locale", lang);
 

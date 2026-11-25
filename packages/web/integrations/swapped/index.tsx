@@ -26,6 +26,7 @@ export const Swapped: FunctionComponent<
       src={signature.url}
       width="420"
       height="700"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
       allow="clipboard-write; payment; accelerometer; gyroscope; camera; geolocation; autoplay; fullscreen;"
     />
   );

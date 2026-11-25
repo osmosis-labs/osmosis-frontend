@@ -32,7 +32,8 @@ export type RemoveConcentratedLiquidityConfig = {
   readonly percentage: number;
   readonly effectiveLiquidity: Dec | undefined;
   readonly effectiveLiquidityAmounts:
-    { base: CoinPretty; quote: CoinPretty } | undefined;
+    | { base: CoinPretty; quote: CoinPretty }
+    | undefined;
   readonly error: Error | undefined;
   /** Target fraction of the withdrawn *value* to end holding in base (token0),
    *  in `[0, 1]`, or `undefined` for the explicit no-swap state (withdraw at

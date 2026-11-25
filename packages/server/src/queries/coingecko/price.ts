@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { PRICES_API_URL } from ".";
+import { PRICES_API_URL } from "./constants";
 
 export type CoingeckoVsCurrencies = "usd";
 
@@ -19,7 +19,9 @@ export async function querySimplePrice(
 ): Promise<SimplePriceResponse> {
   const url = new URL("/api/v3/simple/price", PRICES_API_URL);
 
-  const idsString = ids.join(",");
+  // Sorted and deduped, so the same ids are always the same URL and share one upstream
+  // cache entry regardless of the order callers asked in.
+  const idsString = [...new Set(ids)].sort().join(",");
   const vsCurrenciesString = vsCurrencies.join(",");
 
   url.searchParams.append("ids", idsString);

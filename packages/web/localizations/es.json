@@ -45,7 +45,8 @@
       "quoteLoading": "Buscando el mejor intercambio…",
       "estimatedTotalReceive": "Total estimado a recibir",
       "poolDataUnavailable": "Los datos del pool necesarios para la mezcla seleccionada no están disponibles. Mueve el control deslizante a su posición inicial para un retiro estándar.",
-      "mixedOwnPoolRoute": "Esta cotización pasa parcialmente por el propio pool de la posición, por lo que no se puede calcular un mínimo seguro. Esperando una nueva cotización; otro monto u otra mezcla también puede cambiar la ruta."
+      "mixedOwnPoolRoute": "Esta cotización pasa parcialmente por el propio pool de la posición, por lo que no se puede calcular un mínimo seguro. Esperando una nueva cotización; otro monto u otra mezcla también puede cambiar la ruta.",
+      "impactDataUnavailable": "No se pudieron cargar los datos de liquidez del pool necesarios para comprobar el impacto en el precio de este intercambio. Inténtalo de nuevo en breve."
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -144,6 +145,7 @@
       }
     },
     "table": {
+      "showVariants": "Mostrar variantes",
       "marketDataUnavailable": "Los datos del mercado no están disponibles en este momento. Inténtalo de nuevo en un momento.",
       "depositButton": "Depositar",
       "search": "Buscar",
@@ -818,7 +820,9 @@
     "slippageAutoAdjustedTitle": "Deslizamiento ajustado automáticamente",
     "slippageAutoAdjustedBody": "El deslizamiento predeterminado de esta operación se ha aumentado debido al alto impacto en el precio o la baja liquidez.",
     "routeLiquidityUnknown": "No se pudo verificar la liquidez de esta ruta. Revisa el importe de «Recibir al menos» antes de confirmar.",
-    "slippageAutoAdjustedHigh": "El deslizamiento se aumentó automáticamente por el alto impacto en el precio o la baja liquidez de esta operación. Revisa el importe de «Recibir al menos» antes de confirmar."
+    "routeLiquidityUnknownExactOut": "No se pudo verificar la liquidez de esta ruta. Revisa el importe de «Pagar como máximo» antes de confirmar.",
+    "slippageAutoAdjustedHigh": "El deslizamiento se aumentó automáticamente por el alto impacto en el precio o la baja liquidez de esta operación. Revisa el importe de «Recibir al menos» antes de confirmar.",
+    "slippageAutoAdjustedHighExactOut": "El deslizamiento se aumentó automáticamente por el alto impacto en el precio o la baja liquidez de esta operación. Revisa el importe de «Pagar como máximo» antes de confirmar."
   },
   "walletSelect": {
     "gettingStarted": "Empezando",

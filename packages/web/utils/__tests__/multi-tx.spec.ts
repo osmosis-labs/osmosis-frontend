@@ -2,7 +2,6 @@ import {
   BridgeFeeExceedsBudgetMessage,
   BridgeRouteExpiredMessage,
 } from "@osmosis-labs/bridge";
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";
@@ -39,7 +38,7 @@ describe("bridge error message constants", () => {
 describe("waitForSkipStepArrival", () => {
   const skipState = (state: string) =>
     server.use(
-      http.get("*/api/skip-track-tx", () => HttpResponse.json({})),
+      http.post("*/api/skip-track-tx", () => HttpResponse.json({})),
       http.get("*/api/skip-tx-status", () => HttpResponse.json({ state }))
     );
 
@@ -69,7 +68,7 @@ describe("waitForSkipStepArrival", () => {
     // live signing flow passes none) the poller must not spin on it.
     let statusCalls = 0;
     server.use(
-      http.get("*/api/skip-track-tx", () => HttpResponse.json({})),
+      http.post("*/api/skip-track-tx", () => HttpResponse.json({})),
       http.get("*/api/skip-tx-status", () => {
         statusCalls++;
         return HttpResponse.json({ state: "STATE_ABANDONED" });

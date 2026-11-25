@@ -44,7 +44,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { OsmosisChainInfo } from "~/config/chain";
-import { AssetLists } from "~/config/generated/asset-lists";
+import { ClientAssetLists as AssetLists } from "~/config/generated/client-asset-lists";
 import { DefaultSlippage } from "~/config/swap";
 import {
   getTokenInFeeAmountFiatValue,
@@ -1172,8 +1172,10 @@ function useSwapAmountInput({
     gasAmount: gasAmount,
   });
 
+  // Flags are undefined until LaunchDarkly loads, so coerce to keep this a
+  // boolean: an undefined `enabled` would let the quote query run.
   const balanceQuoteQueryEnabled =
-    featureFlags.swapToolSimulateFee &&
+    Boolean(featureFlags.swapToolSimulateFee) &&
     !isLoadingWallet &&
     !txTypeInProgress &&
     Boolean(swapAssets.fromAsset) &&
@@ -1444,6 +1446,10 @@ function useQueryRouterBestQuote(
   const { address } = useWallet();
   const trpcReact = createTRPCReact<AppRouter>();
 
+  // Callers' `enabled` can be undefined at runtime despite its type, which
+  // React Query treats as enabled; never quote without an amount either.
+  const canQuote = enabled === true && Boolean(input.tokenInAmount);
+
   const queryOptions = {
     // quotes should not be considered fresh for long, otherwise
     // the gas simulation will fail due to slippage and the user would see errors
@@ -1478,7 +1484,7 @@ function useQueryRouterBestQuote(
       },
       {
         ...queryOptions,
-        enabled: enabled && quoteType === "in-given-out",
+        enabled: canQuote && quoteType === "in-given-out",
 
         // Longer refetch and cache times due to query inefficiencies. Can be removed once that is fixed.
         staleTime: 10_000,
@@ -1497,7 +1503,7 @@ function useQueryRouterBestQuote(
       },
       {
         ...queryOptions,
-        enabled: enabled && quoteType === "out-given-in",
+        enabled: canQuote && quoteType === "out-given-in",
       }
     );
 
@@ -1592,7 +1598,10 @@ export function makeRouterErrorFromTrpcError(
 ):
   | {
       error:
-        NoRouteError | NotEnoughLiquidityError | NotEnoughQuotedError | Error;
+        | NoRouteError
+        | NotEnoughLiquidityError
+        | NotEnoughQuotedError
+        | Error;
       isUnexpected: boolean;
     }
   | undefined {

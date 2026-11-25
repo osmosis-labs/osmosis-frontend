@@ -45,7 +45,8 @@
       "quoteLoading": "正在寻找最优兑换…",
       "estimatedTotalReceive": "预计总接收额",
       "poolDataUnavailable": "所选比例所需的资金池数据不可用。将滑块移回起始位置以进行标准提取。",
-      "mixedOwnPoolRoute": "此报价部分经由该仓位自身的资金池，因此无法计算安全最小值。正在等待新报价；更改金额或比例也可能改变路由。"
+      "mixedOwnPoolRoute": "此报价部分经由该仓位自身的资金池，因此无法计算安全最小值。正在等待新报价；更改金额或比例也可能改变路由。",
+      "impactDataUnavailable": "无法加载检查此兑换价格影响所需的池流动性数据。请稍后重试。"
     }
   },
   "addConcentratedLiquidityIntro": {
@@ -144,6 +145,7 @@
       }
     },
     "table": {
+      "showVariants": "显示变体",
       "marketDataUnavailable": "市场数据暂时不可用。请稍后再试。",
       "depositButton": "存入",
       "search": "搜索",
@@ -818,7 +820,9 @@
     "slippageAutoAdjustedTitle": "滑点已自动调整",
     "slippageAutoAdjustedBody": "由于价格影响较大或流动性较低，此交易的默认滑点已上调。",
     "routeLiquidityUnknown": "无法验证此路径的流动性。确认前请检查“至少收到”的数量。",
-    "slippageAutoAdjustedHigh": "由于此交易的价格影响较大或流动性较低，滑点已自动提高。确认前请检查“至少收到”的数量。"
+    "routeLiquidityUnknownExactOut": "无法验证此路径的流动性。确认前请检查“最多支付”的数量。",
+    "slippageAutoAdjustedHigh": "由于此交易的价格影响较大或流动性较低，滑点已自动提高。确认前请检查“至少收到”的数量。",
+    "slippageAutoAdjustedHighExactOut": "由于此交易的价格影响较大或流动性较低，滑点已自动提高。确认前请检查“最多支付”的数量。"
   },
   "walletSelect": {
     "gettingStarted": "入门",

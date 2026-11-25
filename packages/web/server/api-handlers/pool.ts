@@ -23,5 +23,5 @@ export async function poolHandler(req: Request) {
     poolId,
   }).then(toLegacyPoolResponse);
   const response: Response = { pool };
-  return new Response(JSON.stringify(response), { status: 200 });
+  return Response.json(response, { status: 200 });
 }

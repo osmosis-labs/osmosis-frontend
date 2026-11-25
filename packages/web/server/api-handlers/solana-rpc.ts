@@ -40,6 +40,7 @@ const ALLOWED_SOLANA_RPC_METHODS = new Set([
 /** A Solana transaction is at most 1232 bytes; this leaves ample room for
  *  base64 and the JSON envelope. */
 const MAX_BODY_BYTES = 16 * 1024;
+const UPSTREAM_TIMEOUT_MS = 10_000;
 
 /** LaunchDarkly flag that offers Solana routes in the app (`solanaSkipRoutes`
  *  in code). The route is only reachable while it is on. */
@@ -113,6 +114,7 @@ export async function solanaRpcHandler(req: Request) {
         method,
         params: params ?? [],
       }),
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
 
     // JSON-RPC reports method errors inside a 200 body; pass those through

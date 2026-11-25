@@ -1422,7 +1422,8 @@ export const WormholeRedeem: FunctionComponent = () => {
         const latestBlockhash =
           await connection.getLatestBlockhash("confirmed");
         const innerTx = unsignedTx.transaction.transaction as
-          Transaction | VersionedTransaction;
+          | Transaction
+          | VersionedTransaction;
         const signers = unsignedTx.transaction.signers as Keypair[] | undefined;
         const PLACEHOLDER_BLOCKHASH = "11111111111111111111111111111111";
 

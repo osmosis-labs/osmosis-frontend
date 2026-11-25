@@ -8,6 +8,7 @@ import { useTranslation } from "~/hooks";
 import { useOrderbookOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useWallet } from "~/hooks/use-wallet";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 const OPEN_ORDERS_LIMIT = 5;
 
@@ -97,9 +98,7 @@ export const OpenOrders: FunctionComponent = () => {
                   <EntityImage
                     width={32}
                     height={32}
-                    logoURIs={
-                      baseAsset?.rawAsset.logoURIs ?? { png: undefined }
-                    }
+                    logoURIs={getLogoURIs(baseAsset?.currency.coinImageUrl)}
                     name={baseAsset?.rawAsset.name ?? ""}
                     symbol={baseAsset?.rawAsset.symbol ?? ""}
                   />
