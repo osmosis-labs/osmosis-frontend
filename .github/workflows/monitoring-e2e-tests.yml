@@ -33,14 +33,16 @@ jobs:
           node-version: 24.x
 
       - name: Cache dependencies
+        id: cache-deps
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-24.x-${{ hashFiles('yarn.lock', 'package.json', 'packages/*/package.json') }}
           restore-keys: |
             ${{ runner.OS }}-24.x-
 
       - name: Install Dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
       - name: Echo Current Server URL
@@ -48,7 +50,7 @@ jobs:
 
       - name: Run Tests
         id: tests
-        run: corepack yarn test:e2e --filter=@osmosis-labs/server
+        run: corepack yarn build:packages && corepack yarn workspaces foreach -A -p -i --include @osmosis-labs/server run test:e2e
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}

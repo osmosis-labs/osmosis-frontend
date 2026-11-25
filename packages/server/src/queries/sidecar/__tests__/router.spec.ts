@@ -80,6 +80,28 @@ describe("sidecar router price impact", () => {
   });
 });
 
+describe("sidecar router exact-out route liquidity", () => {
+  const tokenOut = { denom: "uosmo", amount: new Int(99) };
+
+  it("carries liquidity_cap and its overflow flag through, so exact-out quotes can pick a tier from it", async () => {
+    const router = getSidecarRouter();
+    const mock = apiClient as jest.Mock;
+
+    mock.mockResolvedValueOnce(
+      response({ liquidity_cap: "29700", liquidity_cap_overflow: false }, "out")
+    );
+    const quote = await router.routeByTokenOut(tokenOut, "uatom");
+    expect(quote.liquidityCap).toBe("29700");
+    expect(quote.liquidityCapOverflow).toBe(false);
+
+    mock.mockResolvedValueOnce(
+      response({ liquidity_cap: "0", liquidity_cap_overflow: true }, "out")
+    );
+    const overflowed = await router.routeByTokenOut(tokenOut, "uatom");
+    expect(overflowed.liquidityCapOverflow).toBe(true);
+  });
+});
+
 describe("sidecar router errors", () => {
   const tokenIn = { denom: "uatom", amount: new Int(100) };
   const tokenOut = { denom: "uosmo", amount: new Int(99) };

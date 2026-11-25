@@ -100,14 +100,16 @@ jobs:
           node-version: 24.x
 
       - name: Cache dependencies
+        id: cache-deps
         uses: actions/cache@v5
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-24.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-24.x-${{ hashFiles('yarn.lock', 'package.json', 'packages/*/package.json') }}
           restore-keys: |
-            ${{ runner.os }}-24.x
+            ${{ runner.os }}-24.x-
 
       - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
       # Public values only. Secrets never go to $GITHUB_ENV.
@@ -140,6 +142,34 @@ jobs:
             echo "ASSET_LIST_COMMIT_HASH=$hash" >> "$GITHUB_ENV"
           fi
           echo "asset lists at ${ASSET_LIST_COMMIT_HASH:-$hash}"
+
+      - name: Cache generated asset images
+        uses: actions/cache@v5
+        with:
+          path: |
+            packages/web/public/tokens/generated
+            packages/web/config/generated/asset-lock.json
+          key: ${{ runner.os }}-asset-images-${{ env.ASSET_LIST_COMMIT_HASH }}
+
+      - name: Cache workspace packages build
+        uses: actions/cache@v5
+        with:
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.os }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
+
+      # Restore the latest warm webpack/React Compiler cache from stage/master.
+      # Only non-PR pushes save back to avoid churning the 10 GB repo cache budget.
+      - name: Restore Next.js build cache
+        id: restore-next-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: packages/web/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock', 'packages/web/next.config.js') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock', 'packages/web/next.config.js') }}-
+            ${{ runner.os }}-nextjs-
 
       # Secret values stay in this step's env and the 0600 files it writes;
       # only the EVM chain ids (public) are exported. Each secret is named:
@@ -221,6 +251,13 @@ jobs:
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
           NUMIA_API_KEY: ${{ secrets.NUMIA_API_KEY }}
         run: corepack yarn cf:build
+
+      - name: Save Next.js build cache
+        if: github.event_name != 'pull_request' && steps.restore-next-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: packages/web/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock', 'packages/web/next.config.js') }}-${{ github.sha }}
 
       # Wrangler lets process env override the secrets file, and `dotenv -c
       # production` only fills keys that are unset, so the file values win.

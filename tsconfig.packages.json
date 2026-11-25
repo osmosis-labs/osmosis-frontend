@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/unit" },
+    { "path": "./packages/proto-codecs" },
+    { "path": "./packages/math" },
+    { "path": "./packages/types" },
+    { "path": "./packages/utils" },
+    { "path": "./packages/server" },
+    { "path": "./packages/trpc" },
+    { "path": "./packages/tx" },
+    { "path": "./packages/bridge" }
+  ]
+}

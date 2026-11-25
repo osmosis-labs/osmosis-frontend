@@ -20,26 +20,18 @@ concurrency:
 permissions:
   contents: read
 
-# Every other job needs resolve-deployment and checks its `run` output (the
-# ones behind check-balances inherit it), so a skip there skips the suite.
+# Every other job needs prepare and checks its `run` output, so a skip there
+# skips the suite. check-balances runs in parallel with resolve-deployment
+# since it only reads on-chain wallet balances and does not need the URL.
 jobs:
-  resolve-deployment:
+  prepare:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
-    timeout-minutes: 50
-    permissions:
-      actions: read
-      contents: read
     outputs:
       run: ${{ steps.resolve.outputs.run }}
       draft: ${{ steps.resolve.outputs.draft }}
       branch: ${{ steps.resolve.outputs.branch }}
-      environment_url: ${{ steps.deployment.outputs.environment_url }}
     steps:
-      - name: Check out deployment lookup
-        uses: actions/checkout@v6
-        with:
-          sparse-checkout: .github/scripts
       - id: resolve
         env:
           DRAFT: ${{ github.event.pull_request.draft }}
@@ -51,9 +43,24 @@ jobs:
           else
             echo "run=true" >> "$GITHUB_OUTPUT"
           fi
+
+  resolve-deployment:
+    needs: prepare
+    if: needs.prepare.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      environment_url: ${{ steps.deployment.outputs.environment_url }}
+    steps:
+      - name: Check out deployment lookup
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: .github/scripts
       - name: Wait for Cloudflare deployment
         id: deployment
-        if: steps.resolve.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -63,10 +70,10 @@ jobs:
 
   # The real-funds smoke test needs this job, so skipping it skips that too.
   check-balances:
-    needs: resolve-deployment
-    if: needs.resolve-deployment.outputs.run == 'true'
+    needs: prepare
+    if: needs.prepare.outputs.run == 'true'
     concurrency:
-      group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-check-balances
+      group: ${{ github.workflow }}-${{ needs.prepare.outputs.branch }}-check-balances
       cancel-in-progress: true
     runs-on: ubuntu-latest
     permissions:
@@ -224,12 +231,12 @@ jobs:
   # nothing broadcast (see packages/e2e/utils/fake-wallet.ts). Each test
   # checks the message the app asks the wallet to sign.
   preview-fake-wallet-tests:
-    if: needs.resolve-deployment.outputs.run == 'true'
+    if: needs.prepare.outputs.run == 'true'
     concurrency:
-      group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-fake-wallet-tests
+      group: ${{ github.workflow }}-${{ needs.prepare.outputs.branch }}-preview-fake-wallet-tests
       cancel-in-progress: true
     timeout-minutes: 15
-    needs: resolve-deployment
+    needs: [prepare, resolve-deployment]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -249,8 +256,17 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Install Playwright
-        run: yarn workspaces focus app-osmosis-e2e && npx playwright install chromium
+      - name: Install E2E dependencies
+        run: yarn workspaces focus app-osmosis-e2e
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock', 'packages/e2e/package.json') }}
+      - name: Install Playwright Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
       - name: Check E2E tooling
         working-directory: packages/e2e
         run: yarn typecheck && yarn test:tooling
@@ -270,12 +286,13 @@ jobs:
   # order placed and cancelled, and the transaction history. Everything else
   # the wallet does is covered by the fake wallet job above and in the full suite.
   preview-smoke-tests:
+    if: needs.prepare.outputs.run == 'true'
     concurrency:
-      group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-smoke-tests
+      group: ${{ github.workflow }}-${{ needs.prepare.outputs.branch }}-preview-smoke-tests
       cancel-in-progress: true
     timeout-minutes: 15
     runs-on: macos-26
-    needs: [resolve-deployment, check-balances]
+    needs: [prepare, resolve-deployment, check-balances]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -294,8 +311,17 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Install Playwright
-        run: yarn workspaces focus app-osmosis-e2e && npx playwright install chromium
+      - name: Install E2E dependencies
+        run: yarn workspaces focus app-osmosis-e2e
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock', 'packages/e2e/package.json') }}
+      - name: Install Playwright Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
@@ -320,9 +346,9 @@ jobs:
           path: packages/e2e/playwright-report
 
   preview-pools-and-select-pair-tests:
-    if: needs.resolve-deployment.outputs.run == 'true'
+    if: needs.prepare.outputs.run == 'true'
     concurrency:
-      group: ${{ github.workflow }}-${{ needs.resolve-deployment.outputs.branch }}-preview-pools-and-select-pair-tests
+      group: ${{ github.workflow }}-${{ needs.prepare.outputs.branch }}-preview-pools-and-select-pair-tests
       cancel-in-progress: true
     # 15, matching the other long suites. What pushed this job past 10 was the
     # two pool tests that hung once the Noble pools were renamed (fixed in this
@@ -334,7 +360,7 @@ jobs:
     # thin before any of that: the last consistently passing runs, on 26 August,
     # ranged from 5m31s to 9m17s, leaving 43 seconds under a 10 minute cap.
     timeout-minutes: 15
-    needs: resolve-deployment
+    needs: [prepare, resolve-deployment]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -354,9 +380,17 @@ jobs:
         with:
           package-manager-cache: false
           node-version: 24.x
-      - name: Install Playwright
-        run: |
-          yarn workspaces focus app-osmosis-e2e && npx playwright install chromium
+      - name: Install E2E dependencies
+        run: yarn workspaces focus app-osmosis-e2e
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock', 'packages/e2e/package.json') }}
+      - name: Install Playwright Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.resolve-deployment.outputs.environment_url }}"
@@ -375,11 +409,12 @@ jobs:
   # Keep the required check name and fail when deployment lookup or any suite
   # fails. Drafts fail the gate until marked ready; fork PRs skip the workflow.
   e2e-gate:
-    if: always() && needs.resolve-deployment.result != 'skipped'
+    if: always() && needs.prepare.result != 'skipped'
     # Reads only the results of the jobs it needs; the token is unused.
     permissions: {}
     needs:
       [
+        prepare,
         resolve-deployment,
         check-balances,
         preview-fake-wallet-tests,
@@ -390,15 +425,15 @@ jobs:
     steps:
       - name: Check every suite passed
         env:
-          RUN: ${{ needs.resolve-deployment.outputs.run }}
-          DRAFT: ${{ needs.resolve-deployment.outputs.draft }}
+          RUN: ${{ needs.prepare.outputs.run }}
+          DRAFT: ${{ needs.prepare.outputs.draft }}
           NEEDS: ${{ toJSON(needs) }}
         run: |
           if [ "$DRAFT" = "true" ]; then
             echo "The PR is a draft, so no E2E suite ran. Mark it ready for review to run them."
             exit 1
           fi
-          if [ "$(jq -r '."resolve-deployment".result' <<< "$NEEDS")" = "success" ] && [ "$RUN" != "true" ]; then
+          if [ "$(jq -r '.prepare.result' <<< "$NEEDS")" = "success" ] && [ "$RUN" != "true" ]; then
             echo "Nothing to test for this commit."
             exit 0
           fi

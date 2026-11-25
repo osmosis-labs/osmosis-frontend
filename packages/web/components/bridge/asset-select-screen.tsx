@@ -26,7 +26,8 @@ import { getLogoURIs } from "~/utils/logo-uri";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 const variantsNotToBeExcluded = ["WBTC"] satisfies (
-  MainnetAssetSymbols | TestnetAssetSymbols
+  | MainnetAssetSymbols
+  | TestnetAssetSymbols
 )[];
 const prioritizedDenoms = [
   "USDC",
@@ -41,7 +42,8 @@ const prioritizedDenoms = [
 // Deprioritize native assets. They can still be bridged, but we avoid
 // showing them at the top of the list
 const deprioritizedDenoms = ["OSMO", "ION"] satisfies (
-  MainnetAssetSymbols | TestnetAssetSymbols
+  | MainnetAssetSymbols
+  | TestnetAssetSymbols
 )[];
 
 type Asset =

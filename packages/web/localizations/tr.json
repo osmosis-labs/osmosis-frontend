@@ -824,7 +824,9 @@
     "slippageAutoAdjustedTitle": "Kayma otomatik ayarlandı",
     "slippageAutoAdjustedBody": "Yüksek fiyat etkisi veya düşük likidite nedeniyle bu işlemin varsayılan kayması artırıldı.",
     "routeLiquidityUnknown": "Bu rotanın likiditesi doğrulanamadı. Onaylamadan önce \"En azından al\" tutarını kontrol edin.",
-    "slippageAutoAdjustedHigh": "Bu işlemin yüksek fiyat etkisi veya düşük likiditesi nedeniyle kayma otomatik olarak artırıldı. Onaylamadan önce \"En azından al\" tutarını kontrol edin."
+    "routeLiquidityUnknownExactOut": "Bu rotanın likiditesi doğrulanamadı. Onaylamadan önce \"En fazla öde\" tutarını kontrol edin.",
+    "slippageAutoAdjustedHigh": "Bu işlemin yüksek fiyat etkisi veya düşük likiditesi nedeniyle kayma otomatik olarak artırıldı. Onaylamadan önce \"En azından al\" tutarını kontrol edin.",
+    "slippageAutoAdjustedHighExactOut": "Bu işlemin yüksek fiyat etkisi veya düşük likiditesi nedeniyle kayma otomatik olarak artırıldı. Onaylamadan önce \"En fazla öde\" tutarını kontrol edin."
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",

@@ -1,4 +1,3 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
 import { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {

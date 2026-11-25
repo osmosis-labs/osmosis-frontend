@@ -1,7 +1,7 @@
 import { apiClient } from "@osmosis-labs/utils";
 
 import { IS_TESTNET } from "~/config";
-import { ChainList } from "~/config/generated/chain-list";
+import { ClientChainList as ChainList } from "~/config/generated/client-chain-list";
 
 /**
  * Pure helpers for multi-transaction bridge routes. Kept free of store and

@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { authHeaders, DETAILS_API_URL } from "../coingecko";
+import { authHeaders, DETAILS_API_URL } from "./constants";
 
 export interface QueryMarketChartRequest {
   id: string;

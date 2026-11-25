@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "endOfLine": "lf",
+  "trailingComma": "es5",
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/.open-next/**",
+    "**/.wrangler/**",
+    "**/build/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/__snapshots__/**",
+    "yarn.lock",
+    ".yarn-4.18.1.cjs",
+    "packages/web/config/generated/**",
+    "packages/web/public/**",
+    "packages/proto-codecs/chain-proto/**",
+    "packages/proto-codecs/localnet/**",
+    "packages/proto-codecs/proto-dependencies/**",
+    "packages/proto-codecs/types/**",
+    "packages/math/types/**"
+  ]
+}

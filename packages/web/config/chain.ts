@@ -3,15 +3,15 @@ import type { AppCurrency, ChainInfoWithExplorer } from "@osmosis-labs/types";
 import { ChainIdHelper } from "@osmosis-labs/utils";
 
 import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "~/config/env";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { ChainList } from "~/config/generated/chain-list";
+import { ClientAssetLists } from "~/config/generated/client-asset-lists";
+import { ClientChainList } from "~/config/generated/client-chain-list";
 import { getKeplrCompatibleChain } from "~/config/keplr-chain";
 
 /**
  * Static chain config, built once from the generated lists and shared by the web runtime.
  */
-const ChainInfos: ChainInfoWithExplorer[] = ChainList.map((chain) =>
-  getKeplrCompatibleChain({ chain, assetLists: AssetLists })
+const ChainInfos: ChainInfoWithExplorer[] = ClientChainList.map((chain) =>
+  getKeplrCompatibleChain({ chain, assetLists: ClientAssetLists })
 );
 
 /** Chain lookups match on the identifier, so `osmosis` resolves to `osmosis-1`. */

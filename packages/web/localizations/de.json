@@ -824,7 +824,9 @@
     "slippageAutoAdjustedTitle": "Slippage automatisch angepasst",
     "slippageAutoAdjustedBody": "Die Standard-Slippage für diesen Trade wurde aufgrund hoher Preisauswirkung oder geringer Liquidität erhöht.",
     "routeLiquidityUnknown": "Die Liquidität dieser Route konnte nicht überprüft werden. Prüfen Sie vor dem Bestätigen den Betrag unter „Erhalten Sie mindestens“.",
-    "slippageAutoAdjustedHigh": "Die Slippage wurde wegen hoher Preisauswirkung oder geringer Liquidität automatisch erhöht. Prüfen Sie vor dem Bestätigen den Betrag unter „Erhalten Sie mindestens“."
+    "routeLiquidityUnknownExactOut": "Die Liquidität dieser Route konnte nicht überprüft werden. Prüfen Sie vor dem Bestätigen den Betrag unter „Bezahlen Sie höchstens“.",
+    "slippageAutoAdjustedHigh": "Die Slippage wurde wegen hoher Preisauswirkung oder geringer Liquidität automatisch erhöht. Prüfen Sie vor dem Bestätigen den Betrag unter „Erhalten Sie mindestens“.",
+    "slippageAutoAdjustedHighExactOut": "Die Slippage wurde wegen hoher Preisauswirkung oder geringer Liquidität automatisch erhöht. Prüfen Sie vor dem Bestätigen den Betrag unter „Bezahlen Sie höchstens“."
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",

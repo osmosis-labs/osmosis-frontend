@@ -3,7 +3,6 @@ import { estimateGasFee, simulateCosmosTxBody } from "@osmosis-labs/tx";
 import { Dec } from "@osmosis-labs/unit";
 import { NativeEVMTokenConstantAddress } from "@osmosis-labs/utils";
 import { LRUCache } from "lru-cache";
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
 import { createPublicClient } from "viem";
 
@@ -223,6 +222,50 @@ describe("SkipBridgeProvider", () => {
         gas: "420000",
       },
     });
+  });
+
+  it("converts Skip's swap price impact percentage to a negative fraction", async () => {
+    server.use(
+      http.post("https://api.skip.build/v2/fungible/route", () =>
+        HttpResponse.json({
+          ...ETH_OsmosisToEthereum_Route,
+          swap_price_impact_percent: "4.7392",
+        })
+      ),
+      http.post("https://api.skip.build/v2/fungible/msgs", () =>
+        HttpResponse.json(ETH_OsmosisToEthereum_Msgs)
+      )
+    );
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      gas: "420000",
+      amount: [{ denom: "uosmo", amount: "1232" }],
+    });
+
+    const quote = await provider.getQuote({
+      fromAmount: "10000000000000000000",
+      fromAsset: {
+        denom: "ETH",
+        address:
+          "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+        decimals: 18,
+      },
+      fromChain: {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
+      toAsset: {
+        denom: "WETH",
+        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        decimals: 18,
+      },
+      toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+      toAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+    });
+
+    // A 4.7392% loss, as the fraction the high-impact gate reads.
+    expect(quote.expectedOutput.priceImpact).toBe("-0.047392000000000000");
   });
 
   it("should get a quote - ETH.axl from Ethereum to Osmosis", async () => {
@@ -964,6 +1007,52 @@ describe("SkipBridgeProvider", () => {
 
       expect(assetListAsset.counterparty.length).toBe(counterpartyCountBefore);
       expect(last).toEqual(first);
+    });
+
+    it("takes an alloy's family candidates from its transmuter members only", async () => {
+      const allAssets = MockAssetLists.flatMap(({ assets }) => assets);
+      const alloy = allAssets.find(
+        (a) =>
+          a.coinMinimalDenom ===
+          "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
+      )!;
+      // USDC.axl: same variant family, counterparties on Axelar and Ethereum.
+      const nonMember = allAssets.find(
+        (a) =>
+          a.coinMinimalDenom ===
+          "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858"
+      )!;
+      const assetLists = [
+        {
+          ...MockAssetLists[0],
+          assets: [
+            { ...alloy, isAlloyed: true, counterparty: [] },
+            { ...nonMember, variantGroupKey: alloy.variantGroupKey },
+          ],
+        },
+      ];
+      const request = {
+        chain: { chainId: "osmosis-1", chainType: "cosmos" as const },
+        asset: { denom: "USDC", address: alloy.coinMinimalDenom, decimals: 6 },
+        direction: "withdraw" as const,
+      };
+      const chainIds = async (extra: Partial<BridgeProviderContext>) =>
+        (
+          await new SkipBridgeProvider({
+            ...ctx,
+            assetLists,
+            ...extra,
+          }).getSupportedAssets(request)
+        ).map(({ chainId }) => chainId);
+
+      // Membership unknown: the whole variant family, as before.
+      expect(await chainIds({})).toContain(1);
+      // USDC.axl is not a member, so its counterparties are not offered.
+      const memberOnly = await chainIds({
+        getAlloyMemberDenoms: jest.fn().mockResolvedValue(["uosmo"]),
+      });
+      expect(memberOnly).not.toContain(1);
+      expect(memberOnly).not.toContain("axelar-dojo-1");
     });
 
     it("returns Solana as an in-app quote chain for withdrawals of SPL-counterparty assets", async () => {

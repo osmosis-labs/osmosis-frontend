@@ -11,6 +11,8 @@ import {
 import {
   type CacheEntry,
   DEFAULT_VS_CURRENCY,
+  getAlloyContractAddress,
+  getAlloyStatuses,
   getAssetPrice,
   getCachedTransmuterTotalPoolLiquidity,
   getChain,
@@ -95,6 +97,20 @@ function getBridgeProviders(ctx: {
         getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         getAssetUsdPrice: (coinMinimalDenom) =>
           getAssetPrice({ ...ctx, asset: { coinMinimalDenom } }),
+        getAlloyMemberDenoms: async (alloyedDenom) => {
+          const contract = getAlloyContractAddress(alloyedDenom);
+          if (!contract) return undefined;
+          const status = (
+            await getAlloyStatuses({ ...ctx, contractAddresses: [contract] })
+          )[contract];
+          if (!status) return undefined;
+          // A failed status lookup comes back with no members: unknown.
+          const corrupted = new Set(status.corruptedDenoms);
+          const members = Object.keys(status.normalizationFactors).filter(
+            (denom) => denom !== alloyedDenom && !corrupted.has(denom)
+          );
+          return members.length > 0 ? members : undefined;
+        },
       }
     );
     bridgeProvidersCache.set(ctx.assetLists, instance);

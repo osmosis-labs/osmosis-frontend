@@ -1,10 +1,7 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import fs from "fs";
 import { glob } from "glob";
 // Start of Selection
 import path from "path";
-// Add prettier import at the top with other imports
-import prettier from "prettier";
 
 import { omittedKeyPaths } from "./omitted-keys.mjs";
 
@@ -118,8 +115,6 @@ console.log("Removed", removeCount, "keys");
 // Write the updated JS objects back to the files as stringified JSON
 for (const [fileName, obj] of localizationObjs) {
   const filePath = path.join(process.cwd(), fileName);
-  const jsonString = JSON.stringify(obj, null, 2);
-  // No need to resolve config since it's just JSON
-  const formattedJson = await prettier.format(jsonString, { parser: "json" });
-  fs.writeFileSync(filePath, formattedJson);
+  const jsonString = `${JSON.stringify(obj, null, 2)}\n`;
+  fs.writeFileSync(filePath, jsonString);
 }

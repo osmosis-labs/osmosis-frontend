@@ -70,13 +70,16 @@ export const FullWalletList: FunctionComponent<{
         },
         {
           "walletSelect.installedWallets": [] as (
-            typeof cosmosWallets | typeof evmWallets
+            | typeof cosmosWallets
+            | typeof evmWallets
           )[number][],
           "walletSelect.mobileWallets": [] as (
-            typeof cosmosWallets | typeof evmWallets
+            | typeof cosmosWallets
+            | typeof evmWallets
           )[number][],
           "walletSelect.otherWallets": [] as (
-            typeof cosmosWallets | typeof evmWallets
+            | typeof cosmosWallets
+            | typeof evmWallets
           )[number][],
         }
       ),
