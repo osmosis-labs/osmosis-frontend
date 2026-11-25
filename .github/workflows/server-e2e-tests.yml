@@ -11,28 +11,9 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/master' }}
 
 jobs:
-  setup-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - id: set-matrix
-        env:
-          MAIN_BRANCH: "refs/heads/master"
-        run: |
-          if [[ "${{ github.ref }}" == "${{ env.MAIN_BRANCH }}" ]]; then
-            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}]}" >> "$GITHUB_OUTPUT"
-          else
-            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}]}" >> "$GITHUB_OUTPUT"
-          fi
-
   test:
-    name: ${{ matrix.env }}
-    needs: setup-matrix
+    name: Server E2E
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
@@ -56,12 +37,37 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
-      - name: Echo Current Server URL
-        run: echo "SQS Server URL:${{ matrix.server-url }}"
+      - name: Cache Turbo build
+        uses: actions/cache@v5
+        with:
+          path: .turbo/cache
+          key: ${{ runner.OS }}-turbo-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-turbo-build-
 
-      - name: Run Tests
-        id: tests
-        run: corepack yarn test:e2e --filter=@osmosis-labs/server
+      - name: Run production server E2E tests
+        id: prod
+        continue-on-error: true
+        run: |
+          echo "SQS Server URL: https://sqs.osmosis.zone"
+          corepack yarn test:e2e --filter=@osmosis-labs/server
         env:
-          NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
-          NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
+          NEXT_PUBLIC_SIDECAR_BASE_URL: https://sqs.osmosis.zone
+          NEXT_PUBLIC_TIMESERIES_DATA_URL: https://data.app.osmosis.zone
+
+      - name: Run staging server E2E tests
+        id: stage
+        if: github.ref != 'refs/heads/master'
+        continue-on-error: true
+        run: |
+          echo "SQS Server URL: https://sqs.stage.osmosis.zone"
+          corepack yarn test:e2e --filter=@osmosis-labs/server
+        env:
+          NEXT_PUBLIC_SIDECAR_BASE_URL: https://sqs.stage.osmosis.zone
+          NEXT_PUBLIC_TIMESERIES_DATA_URL: https://data.app.osmosis.zone
+
+      - name: Check server E2E outcomes
+        if: steps.prod.outcome == 'failure' || steps.stage.outcome == 'failure'
+        run: |
+          echo "production: ${{ steps.prod.outcome }}, staging: ${{ steps.stage.outcome }}"
+          exit 1
