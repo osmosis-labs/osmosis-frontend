@@ -158,8 +158,6 @@ jobs:
             packages/*/build
             packages/*/tsconfig.tsbuildinfo
           key: ${{ runner.os }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-build-
 
       # Restore the latest warm webpack/React Compiler cache from stage/master.
       # Only non-PR pushes save back to avoid churning the 10 GB repo cache budget.
