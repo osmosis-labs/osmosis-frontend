@@ -10,7 +10,6 @@ import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
-import * as prettier from "prettier";
 
 type UpdateWalletMode =
   "ledger" | "extension" | "wallet-connect" | "social-login" | undefined;
@@ -101,22 +100,14 @@ async function generateCosmosKitWalletList() {
       )}     
     `;
 
-  const prettierConfig = await prettier.resolveConfig("./");
-  const formatted = await prettier.format(content, {
-    ...prettierConfig,
-    parser: "typescript",
-  });
-
   const fileName = "cosmos-kit-wallet-list.ts";
   try {
     const dirPath = "config/generated";
     const filePath = path.join(dirPath, fileName);
 
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
+    fs.mkdirSync(dirPath, { recursive: true });
 
-    fs.writeFileSync(filePath, formatted, {
+    fs.writeFileSync(filePath, `${content.trim()}\n`, {
       encoding: "utf8",
       flag: "w",
     });

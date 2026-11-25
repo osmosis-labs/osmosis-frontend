@@ -2,11 +2,10 @@ import fs from "fs";
 // eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { JSDOM } from "jsdom";
 import path from "path";
-import * as prettier from "prettier";
 
 /**
- * Generate a properly formatted TypeScript file sprite-ids.ts containing all the available
- * ids defines in sprite.svg. This is used by the Icon component to render the svg.
+ * Generate a TypeScript file sprite-ids.ts containing all the available
+ * ids defined in sprite.svg. This is used by the Icon component to render the svg.
  */
 async function generateSpriteIds() {
   const svgFile = fs.readFileSync("public/icons/sprite.svg", "utf-8");
@@ -20,23 +19,15 @@ async function generateSpriteIds() {
 
   const content = `export type SpriteIconId = ${ids
     .map((id) => `'${id}'`)
-    .join(" | ")};`;
-
-  const prettierConfig = await prettier.resolveConfig("./");
-  const formatted = await prettier.format(content, {
-    ...prettierConfig,
-    parser: "typescript",
-  });
+    .join(" | ")};\n`;
 
   try {
     const dirPath = "config/generated";
     const filePath = path.join(dirPath, "sprite-ids.ts");
 
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
+    fs.mkdirSync(dirPath, { recursive: true });
 
-    fs.writeFileSync(filePath, formatted, {
+    fs.writeFileSync(filePath, content, {
       encoding: "utf8",
       flag: "w",
     });
