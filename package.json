@@ -49,9 +49,8 @@
   },
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend#readme",
   "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@babel/preset-env": "^7.29.7",
-    "babel-jest": "^30.5.2",
+    "@swc/core": "^1.16.22",
+    "@swc/jest": "^0.2.39",
     "concurrently": "^8.2.1",
     "dotenv-cli": "^11.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -64,7 +63,6 @@
     "oxfmt": "^0.79.0",
     "oxlint": "^1.90.0",
     "sherif": "1.13.0",
-    "ts-jest": "^29.4.14",
     "typescript": "6.0.3"
   },
   "packageManager": "yarn@4.18.1",
