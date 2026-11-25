@@ -1,3 +1,5 @@
+// Must stay first: configures zod before any imported module builds a schema.
+import "~/config/zod";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import "../styles/globals.css";
 
@@ -22,7 +24,6 @@ import {
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
-import { z } from "zod";
 
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
@@ -56,11 +57,6 @@ dayjs.extend(isBetween);
 dayjs.extend(localizedFormat);
 dayjs.updateLocale("es", dayjsLocaleEs);
 dayjs.updateLocale("ko", dayjsLocaleKo);
-
-// Skip zod v4's JIT `new Function` probe: it is caught, but still reported as a
-// CSP `unsafe-eval` violation on every page load. Parsing falls back to the
-// interpreter, which is plenty fast for our schemas.
-z.config({ jitless: true });
 
 const DEFAULT_LANGUAGE = "en";
 
