@@ -1,4 +1,3 @@
-/* eslint-disable import-compat/no-extraneous-dependencies */
 import fs from "fs";
 import { glob } from "glob";
 // Start of Selection
