@@ -828,7 +828,9 @@
     "slippageAutoAdjustedTitle": "スリッページが自動調整されました",
     "slippageAutoAdjustedBody": "価格への影響が大きい、または流動性が低いため、この取引のデフォルトのスリッページが引き上げられました。",
     "routeLiquidityUnknown": "このルートの流動性を確認できませんでした。確定する前に「少なくとも受け取る」の金額をご確認ください。",
-    "slippageAutoAdjustedHigh": "この取引の価格影響が大きい、または流動性が低いため、スリッページが自動的に引き上げられました。確定する前に「少なくとも受け取る」の金額をご確認ください。"
+    "routeLiquidityUnknownExactOut": "このルートの流動性を確認できませんでした。確定する前に「最大で支払う」の金額をご確認ください。",
+    "slippageAutoAdjustedHigh": "この取引の価格影響が大きい、または流動性が低いため、スリッページが自動的に引き上げられました。確定する前に「少なくとも受け取る」の金額をご確認ください。",
+    "slippageAutoAdjustedHighExactOut": "この取引の価格影響が大きい、または流動性が低いため、スリッページが自動的に引き上げられました。確定する前に「最大で支払う」の金額をご確認ください。"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",

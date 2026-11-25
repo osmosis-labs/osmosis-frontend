@@ -1,9 +1,0 @@
-build/*
-types/*
-
-.prettierignore
-localnet
-
-chain-proto
-*.sh
-proto-dependencies

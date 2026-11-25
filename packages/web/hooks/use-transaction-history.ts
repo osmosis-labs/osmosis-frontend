@@ -78,7 +78,8 @@ export const useTransactionHistory = ({
   // made in other browsers or devices (local history is per browser).
   // The server shapes them as TxSnapshots; the store tracks their status.
   const indexedTransfers = transactionsData?.transfers as unknown as
-    TxSnapshot[] | undefined;
+    | TxSnapshot[]
+    | undefined;
   useEffect(() => {
     if (!indexedTransfers?.length) return;
     transferHistoryStore.importSnapshots(indexedTransfers);

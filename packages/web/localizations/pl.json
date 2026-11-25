@@ -828,7 +828,9 @@
     "slippageAutoAdjustedTitle": "Poślizg dostosowany automatycznie",
     "slippageAutoAdjustedBody": "Domyślny poślizg dla tej transakcji został podniesiony z powodu dużego wpływu na cenę lub niskiej płynności.",
     "routeLiquidityUnknown": "Nie udało się zweryfikować płynności tej trasy. Przed potwierdzeniem sprawdź kwotę „Otrzymaj co najmniej”.",
-    "slippageAutoAdjustedHigh": "Poślizg został automatycznie zwiększony z powodu dużego wpływu na cenę lub niskiej płynności tej transakcji. Przed potwierdzeniem sprawdź kwotę „Otrzymaj co najmniej”."
+    "routeLiquidityUnknownExactOut": "Nie udało się zweryfikować płynności tej trasy. Przed potwierdzeniem sprawdź kwotę „Zapłać maksymalnie”.",
+    "slippageAutoAdjustedHigh": "Poślizg został automatycznie zwiększony z powodu dużego wpływu na cenę lub niskiej płynności tej transakcji. Przed potwierdzeniem sprawdź kwotę „Otrzymaj co najmniej”.",
+    "slippageAutoAdjustedHighExactOut": "Poślizg został automatycznie zwiększony z powodu dużego wpływu na cenę lub niskiej płynności tej transakcji. Przed potwierdzeniem sprawdź kwotę „Zapłać maksymalnie”."
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",

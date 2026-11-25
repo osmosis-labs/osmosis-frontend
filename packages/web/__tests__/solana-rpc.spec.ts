@@ -1,4 +1,3 @@
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
 import { delay, http, HttpResponse } from "msw";
 
 import { server } from "~/__tests__/msw";

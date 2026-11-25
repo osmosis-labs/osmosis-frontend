@@ -2,7 +2,7 @@
 // executes these commands from packages/web with absolute file paths appended.
 module.exports = {
   "**/*.{js,ts,jsx,tsx}": [
-    "prettier --check",
+    "oxfmt --check --no-error-on-unmatched-pattern",
     "oxlint --max-warnings=0 --no-error-on-unmatched-pattern",
   ],
 };

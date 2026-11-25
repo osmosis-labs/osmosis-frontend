@@ -85,7 +85,8 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     /** `undefined` until bound via `setOnAccountTransferSuccess`; successes
      *  arriving in the meantime are replayed (once) on binding. */
     protected onAccountTransferSuccess:
-      ((accountAddress: string) => void) | undefined,
+      | ((accountAddress: string) => void)
+      | undefined,
     protected readonly kvStore: KVStore,
     protected readonly transferStatusProviders: TransferStatusProvider[] = [],
     protected readonly historyExpireDays = 3,
@@ -246,13 +247,12 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     indexed: readonly TxSnapshot[],
     snapshots: readonly TxSnapshot[] = this.snapshots
   ) {
-    const rows = matchIndexedTransfers(indexed, snapshots).flatMap(
-      (match, i) =>
-        match.kind === "imported"
-          ? [match.entry]
-          : match.kind === "new"
-            ? [{ ...indexed[i], imported: true }]
-            : []
+    const rows = matchIndexedTransfers(indexed, snapshots).flatMap((match, i) =>
+      match.kind === "imported"
+        ? [match.entry]
+        : match.kind === "new"
+          ? [{ ...indexed[i], imported: true }]
+          : []
     );
     return this.getHistoriesByAccount(accountAddress, rows);
   }

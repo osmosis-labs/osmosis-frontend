@@ -828,7 +828,9 @@
     "slippageAutoAdjustedTitle": "슬리피지 자동 조정됨",
     "slippageAutoAdjustedBody": "높은 가격 영향 또는 낮은 유동성으로 인해 이 거래의 기본 슬리피지가 상향되었습니다.",
     "routeLiquidityUnknown": "이 경로의 유동성을 확인할 수 없습니다. 확인하기 전에 '최소한 받다' 금액을 확인하세요.",
-    "slippageAutoAdjustedHigh": "이 거래의 높은 가격 영향 또는 낮은 유동성으로 인해 슬리피지가 자동으로 상향되었습니다. 확인하기 전에 '최소한 받다' 금액을 확인하세요."
+    "routeLiquidityUnknownExactOut": "이 경로의 유동성을 확인할 수 없습니다. 확인하기 전에 '최대 지불' 금액을 확인하세요.",
+    "slippageAutoAdjustedHigh": "이 거래의 높은 가격 영향 또는 낮은 유동성으로 인해 슬리피지가 자동으로 상향되었습니다. 확인하기 전에 '최소한 받다' 금액을 확인하세요.",
+    "slippageAutoAdjustedHighExactOut": "이 거래의 높은 가격 영향 또는 낮은 유동성으로 인해 슬리피지가 자동으로 상향되었습니다. 확인하기 전에 '최대 지불' 금액을 확인하세요."
   },
   "walletSelect": {
     "gettingStarted": "시작하기",

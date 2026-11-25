@@ -163,7 +163,14 @@ export const setPaginationParams = (
 };
 
 type Builtin =
-  Date | Function | Uint8Array | string | number | bigint | boolean | undefined;
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | bigint
+  | boolean
+  | undefined;
 
 export type DeepPartial<T> = T extends Builtin
   ? T

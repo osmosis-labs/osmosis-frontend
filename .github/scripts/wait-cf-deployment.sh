@@ -4,7 +4,7 @@
 set -euo pipefail
 : "${REPO:?}" "${SHA:?}" "${EVENT:?}" "${GITHUB_OUTPUT:?}"
 
-for _ in $(seq 1 60); do
+for _ in $(seq 1 270); do
   run=$(gh api "repos/$REPO/actions/workflows/cf-deploy.yml/runs" --method GET \
     -f head_sha="$SHA" -f event="$EVENT" -f per_page=1 \
     --jq '.workflow_runs[0] // empty | [.id, .status, .conclusion] | @tsv')
@@ -23,7 +23,7 @@ for _ in $(seq 1 60); do
     echo "Cloudflare deployment for $SHA: $url" | tee -a "$GITHUB_STEP_SUMMARY"
     exit 0
   fi
-  sleep 45
+  sleep 10
 done
 
 echo "Timed out waiting for the Cloudflare deployment of $SHA."

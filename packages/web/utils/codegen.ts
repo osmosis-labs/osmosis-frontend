@@ -1,10 +1,7 @@
 import * as fs from "fs";
 import path from "path";
-// eslint-disable-next-line import-compat/no-extraneous-dependencies
-import * as prettier from "prettier";
 
-/** Generates a prettified TS file or appends to an existing TS file if `overwriteFile` is `false`.
- *  Prettier config must be at the root dir of where this function is called. */
+/** Generates a TS file or appends to an existing TS file if `overwriteFile` is `false`. */
 export async function generateTsFile(
   content: string,
   dirPath: string,
@@ -16,21 +13,17 @@ export async function generateTsFile(
   }
 
   try {
-    const prettierConfig = await prettier.resolveConfig("./");
-    const formatted = await prettier.format(content, {
-      ...prettierConfig,
-      parser: "typescript",
-    });
-
+    fs.mkdirSync(dirPath, { recursive: true });
+    const output = content.endsWith("\n") ? content : `${content}\n`;
     const filePath = path.join(dirPath, fileName);
 
     if (overwriteFile) {
-      fs.writeFileSync(filePath, formatted, {
+      fs.writeFileSync(filePath, output, {
         encoding: "utf8",
         flag: "w",
       });
     } else {
-      fs.appendFileSync(filePath, formatted, {
+      fs.appendFileSync(filePath, output, {
         encoding: "utf8",
         flag: "a",
       });

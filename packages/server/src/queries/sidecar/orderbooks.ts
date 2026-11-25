@@ -72,7 +72,9 @@ export interface SQSOrderbookTick {
 }
 
 export type OrderbookTicksSQSUnavailableReason =
-  "not-orderbook" | "not-ingested" | "malformed";
+  | "not-orderbook"
+  | "not-ingested"
+  | "malformed";
 
 export type OrderbookTicksSQSResult =
   | { status: "ok"; ticks: SQSOrderbookTick[] }
