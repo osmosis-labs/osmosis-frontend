@@ -1,6 +1,8 @@
 import { findOrderbookByDenoms } from "~/hooks/limit-orders/use-orderbook";
 
-jest.mock("~/config/generated/asset-lists", () => ({ AssetLists: [] }));
+jest.mock("~/config/generated/client-asset-lists", () => ({
+  ClientAssetLists: [],
+}));
 jest.mock("~/hooks/use-feature-flags", () => ({ useFeatureFlags: jest.fn() }));
 jest.mock("~/hooks/use-swap", () => ({ useSwapAsset: jest.fn() }));
 jest.mock("~/hooks/use-wallet", () => ({ useWallet: jest.fn() }));

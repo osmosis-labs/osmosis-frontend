@@ -457,15 +457,16 @@ async function computePairDepth({
   const maxPrice = Math.max(...allPrices);
   const maxDepth = Math.max(...depthData.map((d) => d.depth));
 
-  // Derive grouping options from the order of magnitude of midPrice.
-  // e.g. mid=$94,000 → magnitude=10,000 → options: 1, 10, 100
-  //      mid=$0.50   → magnitude=0.1    → options: 0.0001, 0.001, 0.01
+  // Derive grouping options from the order of magnitude of midPrice, the
+  // coarsest a tenth of it: bids round down, so a bucket as large as the
+  // magnitude would put every bid below it at price 0.
+  // e.g. mid=$94,000 → magnitude=10,000 → options: 10, 100, 1,000
+  //      mid=$1.20   → magnitude=1      → options: 0.001, 0.01, 0.1
   const magnitude = Math.pow(10, Math.floor(Math.log10(midPrice)));
-  const groupingOptions: GroupingOption[] = [
-    { label: formatGroupLabel(magnitude * 0.01), value: magnitude * 0.01 },
-    { label: formatGroupLabel(magnitude * 0.1), value: magnitude * 0.1 },
-    { label: formatGroupLabel(magnitude), value: magnitude },
-  ];
+  const groupingOptions: GroupingOption[] = [1000, 100, 10].map((divisor) => {
+    const value = magnitude / divisor;
+    return { label: formatGroupLabel(value), value };
+  });
 
   return {
     depthData,
