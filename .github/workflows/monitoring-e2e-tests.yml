@@ -50,7 +50,7 @@ jobs:
 
       - name: Run Tests
         id: tests
-        run: corepack yarn test:e2e --filter=@osmosis-labs/server
+        run: corepack yarn build:packages && corepack yarn workspaces foreach -A -p -i --include @osmosis-labs/server run test:e2e
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}

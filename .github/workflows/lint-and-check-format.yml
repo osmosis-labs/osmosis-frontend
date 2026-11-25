@@ -41,7 +41,7 @@ jobs:
         run: corepack yarn lint:workspace
 
       - name: Lint all packages
-        run: corepack yarn lint --filter='!app-osmosis-e2e'
+        run: corepack yarn lint
 
   typecheck-web:
     runs-on: ubuntu-latest
@@ -68,17 +68,19 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
-      - name: Cache Turbo build
+      - name: Cache workspace packages build
         uses: actions/cache@v5
         with:
-          path: .turbo/cache
-          key: ${{ runner.OS }}-turbo-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-turbo-build-
+            ${{ runner.OS }}-packages-build-
 
       # Web resolves workspace packages through their build/ output and imports generated config.
       - name: Build workspace packages
-        run: corepack yarn turbo run build --filter=@osmosis-labs/web^...
+        run: corepack yarn build:packages
 
       # generate queries the GitHub API for the latest assetlists commit; the
       # token avoids the unauthenticated rate limit shared across runners.

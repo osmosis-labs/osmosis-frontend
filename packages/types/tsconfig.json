@@ -1,10 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "outDir": "build",
     "declaration": true,
     "rootDir": "src",
     "module": "esnext"
   },
+  "references": [{ "path": "../unit" }],
   "include": ["src/**/*"]
 }

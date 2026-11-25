@@ -40,20 +40,22 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: corepack yarn install --immutable
 
-      - name: Cache Turbo build
+      - name: Cache workspace packages build
         uses: actions/cache@v5
         with:
-          path: .turbo/cache
-          key: ${{ runner.OS }}-turbo-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'turbo.json', 'yarn.lock') }}
+          path: |
+            packages/*/build
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.OS }}-packages-build-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig.json', 'tsconfig.json', 'tsconfig.packages.json', 'yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-turbo-build-
+            ${{ runner.OS }}-packages-build-
 
       - name: Run production server E2E tests
         id: prod
         continue-on-error: true
         run: |
           echo "SQS Server URL: https://sqs.osmosis.zone"
-          corepack yarn test:e2e --filter=@osmosis-labs/server
+          corepack yarn build:packages && corepack yarn workspaces foreach -A -p -i --include @osmosis-labs/server run test:e2e
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: https://sqs.osmosis.zone
           NEXT_PUBLIC_TIMESERIES_DATA_URL: https://data.app.osmosis.zone
@@ -64,7 +66,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "SQS Server URL: https://sqs.stage.osmosis.zone"
-          corepack yarn test:e2e --filter=@osmosis-labs/server
+          corepack yarn build:packages && corepack yarn workspaces foreach -A -p -i --include @osmosis-labs/server run test:e2e
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: https://sqs.stage.osmosis.zone
           NEXT_PUBLIC_TIMESERIES_DATA_URL: https://data.app.osmosis.zone

@@ -9,7 +9,7 @@
     "dev": "concurrently --raw --kill-others \"next dev --webpack\" \"yarn watch\" \"yarn cf:api:dev\"",
     "clean": "rm -rf node_modules; rm -rf .next; rm -rf config/generated",
     "build": "yarn build:packages && yarn generate && next build --webpack",
-    "build:packages": "yarn --cwd ../.. turbo run build --filter=@osmosis-labs/web^...",
+    "build:packages": "yarn --cwd ../.. build:packages",
     "test": "yarn generate && dotenv -c -- jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build --webpack",
     "start": "concurrently --raw --kill-others \"next start\" \"yarn cf:api:start\"",
