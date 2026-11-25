@@ -1,17 +1,7 @@
 import { superjson } from "@osmosis-labs/server";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { redactConfiguredEvmRpcUrls, timeout } from "@osmosis-labs/utils";
-import {
-  httpBatchLink,
-  httpLink,
-  Operation,
-  OperationResultEnvelope,
-  splitLink,
-  TRPCClientError,
-  TRPCLink,
-} from "@trpc/client";
-import { type AnyRouter, initTRPC } from "@trpc/server";
-import { observable } from "@trpc/server/observable";
+import { initTRPC } from "@trpc/server";
 import { ZodError } from "zod";
 
 /**
@@ -100,76 +90,3 @@ export const publicProcedure = t.procedure
   });
 
 export const createCallerFactory = t.createCallerFactory;
-
-/**
- * Creates a local link for tRPC operations.
- * This function is used to create a custom TRPCLink that intercepts operations and
- * handles them locally using the provided router, instead of sending them over the network.
- */
-export function localLink<TRouter extends AnyRouter>({
-  router,
-  assetLists,
-  chainList,
-}: {
-  router: TRouter;
-  assetLists: AssetList[];
-  chainList: Chain[];
-}): TRPCLink<TRouter> {
-  return () =>
-    ({ op }) =>
-      observable<
-        OperationResultEnvelope<unknown, TRPCClientError<TRouter>>,
-        TRPCClientError<TRouter>
-      >((observer) => {
-        async function execute() {
-          const createCaller = t.createCallerFactory(router);
-          const caller = createCaller({
-            assetLists,
-            chainList,
-          });
-          try {
-            // Attempt to execute the operation using the router's caller.
-            const data = await (caller[op.path] as (input: unknown) => unknown)(
-              op.input
-            );
-            // If successful, notify the observer with the result.
-            observer.next({ result: { data, type: "data" } });
-            observer.complete();
-          } catch (err) {
-            // If an error occurs, convert it to a TRPCClientError and notify the observer.
-            observer.error(TRPCClientError.from(err as Error));
-          }
-        }
-
-        // Execute the operation asynchronously.
-        void execute();
-      });
-}
-
-/**
- * Provides ability to skip batching for a specific query.
- * This is useful for preventing expensive queries from blocking less expensive queries.
- * `shouldSkipBatch` also sends matching operations unbatched, e.g. so each
- * CDN-cacheable query gets its own stable URL.
- */
-export const makeSkipBatchLink = (
-  url: string,
-  shouldSkipBatch?: (op: Operation) => boolean
-) =>
-  splitLink({
-    condition(op) {
-      // check for context property `skipBatch`
-      return op.context.skipBatch === true || Boolean(shouldSkipBatch?.(op));
-    },
-    // when condition is true, use normal request
-    true: httpLink({
-      url,
-      transformer: superjson,
-    }),
-    // when condition is false, use batching
-    false: httpBatchLink({
-      url,
-      transformer: superjson,
-      maxURLLength: 10_000,
-    }),
-  });

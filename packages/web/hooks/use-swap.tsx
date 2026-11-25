@@ -67,7 +67,7 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { useWallet } from "~/hooks/use-wallet";
 import { useUserWatchlist } from "~/hooks/user-settings";
-import { AppRouter } from "~/server/api/root-router";
+import type { AppRouter } from "~/server/api/root-router";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { slippageRequiredByFeeError } from "~/utils/slippage";
 import { api, RouterInputs } from "~/utils/trpc";

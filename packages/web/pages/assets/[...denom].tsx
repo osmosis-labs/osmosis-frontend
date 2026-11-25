@@ -39,7 +39,6 @@ import {
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
-import { createTrpcHelpers } from "~/utils/helpers";
 
 type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -298,38 +297,48 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   const denom = params?.denom as string[];
   const tokenDenom = denom.join("/");
 
-  // Reject unknown denoms with 404 before invoking tRPC. Returning
+  // Reject unknown denoms with 404 before hydrating query state. Returning
   // `{ notFound: true }` passes `data: null` to OpenNext's cache adapter,
   // which deletes rather than writes to R2, preventing unbounded cache growth.
-  const [{ getAsset }, { AssetLists }] = await Promise.all([
+  const [
+    { getAsset, superjson },
+    { AssetLists },
+    { QueryClient, dehydrate },
+    { getQueryKey },
+    { api },
+  ] = await Promise.all([
     import("@osmosis-labs/server"),
     import("~/config/generated/asset-lists"),
+    import("@tanstack/react-query"),
+    import("@trpc/react-query"),
+    import("~/utils/trpc"),
   ]);
+  let asset;
   try {
-    getAsset({ assetLists: AssetLists, anyDenom: tokenDenom });
+    asset = getAsset({ assetLists: AssetLists, anyDenom: tokenDenom });
   } catch {
     return {
       notFound: true as const,
     };
   }
 
-  const trpcHelpers = createTrpcHelpers();
-
-  try {
-    /**
-     * Lookup for the current token
-     */
-
-    await trpcHelpers.edge.assets.getUserAsset.fetch({
-      findMinDenomOrSymbol: tokenDenom,
-    });
-  } catch (e) {
-    console.error(e);
-  }
+  // Seed the exact `edge.assets.getUserAsset` cache entry that `useAssetInfo`
+  // reads on mount. Without a `userOsmoAddress`, the tRPC procedure just
+  // returns `getAsset(...)`, so seeding directly avoids bundling `appRouter`
+  // and `@trpc/server` into the frontend Worker.
+  const queryClient = new QueryClient();
+  queryClient.setQueryData(
+    getQueryKey(
+      api.edge.assets.getUserAsset,
+      { findMinDenomOrSymbol: tokenDenom },
+      "query"
+    ),
+    asset
+  );
 
   return {
     props: {
-      trpcState: trpcHelpers.dehydrate(),
+      trpcState: superjson.serialize(dehydrate(queryClient)),
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in

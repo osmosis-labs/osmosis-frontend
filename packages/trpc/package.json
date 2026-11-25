@@ -32,7 +32,6 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
-    "@trpc/client": "^11.19.0",
     "@trpc/server": "^11.19.0",
     "zod": "^4.6.6"
   },

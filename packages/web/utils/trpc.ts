@@ -1,10 +1,15 @@
 import { superjson } from "@osmosis-labs/server";
-import { makeSkipBatchLink } from "@osmosis-labs/trpc";
 import { makeIndexedKVStore } from "@osmosis-labs/utils";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import { loggerLink } from "@trpc/client";
+import {
+  httpBatchLink,
+  httpLink,
+  loggerLink,
+  type Operation,
+  splitLink,
+} from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
@@ -24,6 +29,30 @@ const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
+
+/**
+ * Splits a tRPC endpoint between single-operation `httpLink` and batched
+ * `httpBatchLink` so expensive queries (`context.skipBatch`) and CDN-cacheable
+ * queries (`shouldSkipBatch`) get their own unbatched requests.
+ */
+const makeSkipBatchLink = (
+  url: string,
+  shouldSkipBatch?: (op: Operation) => boolean
+) =>
+  splitLink({
+    condition(op) {
+      return op.context.skipBatch === true || Boolean(shouldSkipBatch?.(op));
+    },
+    true: httpLink({
+      url,
+      transformer: superjson,
+    }),
+    false: httpBatchLink({
+      url,
+      transformer: superjson,
+      maxURLLength: 10_000,
+    }),
+  });
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
