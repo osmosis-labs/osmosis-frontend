@@ -27,6 +27,7 @@ import {
 } from "~/components/swap-tool/swap-tool-tabs";
 import { useBookPriceSelection } from "~/components/trade-tool/use-book-price-selection";
 import { useCanonicalOrderbookForPair } from "~/components/trade-view/hooks";
+import { prefetchTradingViewChart } from "~/components/trade-view/prefetch-chart";
 import { useTradeViewExpanded } from "~/components/trade-view/use-trade-view-expanded";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useIsClient } from "~/hooks/use-is-client";
@@ -315,28 +316,32 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
                 initialQuoteDenom={limitToolPairProps.initialQuoteDenom}
               />
             )}
-            {canExpand && (
-              <button
-                type="button"
-                onClick={() => setExpanded(!expanded)}
-                aria-label={
-                  expanded ? t("tradeView.collapse") : t("tradeView.expand")
-                }
-                aria-pressed={expanded}
-                title={
-                  expanded ? t("tradeView.collapse") : t("tradeView.expand")
-                }
-                className="flex h-8 w-8 items-center justify-center rounded-full text-osmoverse-300 transition-colors hover:bg-osmoverse-800 hover:text-osmoverse-100"
-              >
-                <Icon
-                  id={expanded ? "resize-minimize" : "resize-expand"}
-                  width={16}
-                  height={16}
-                />
-              </button>
-            )}
           </div>
         </div>
+        {/* A tab on the card's right edge, pointing to where the book opens.
+            It overhangs the card, into the gap beside the book when
+            expanded. Hovering or focusing it starts fetching the chart
+            library, so the chart is drawn sooner after the click. */}
+        {canExpand && (
+          <button
+            type="button"
+            onClick={() => setExpanded(!expanded)}
+            onPointerEnter={prefetchTradingViewChart}
+            onFocus={prefetchTradingViewChart}
+            aria-label={
+              expanded ? t("tradeView.collapse") : t("tradeView.expand")
+            }
+            aria-pressed={expanded}
+            title={expanded ? t("tradeView.collapse") : t("tradeView.expand")}
+            className="absolute -right-3.5 top-[18px] flex h-11 w-3.5 items-center justify-center rounded-r-[10px] bg-osmoverse-825 text-osmoverse-200 transition-colors hover:bg-osmoverse-700 hover:text-osmoverse-100"
+          >
+            <Icon
+              id={expanded ? "chevron-left" : "chevron-right"}
+              width={6}
+              height={10}
+            />
+          </button>
+        )}
         {useMemo(() => {
           switch (tab) {
             case SwapToolTab.BUY:
