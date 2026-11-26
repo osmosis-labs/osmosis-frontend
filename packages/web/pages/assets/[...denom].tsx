@@ -38,6 +38,7 @@ import {
 } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
+import { Breakpoint, useWindowSize } from "~/hooks/window/use-window-size";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
 import { createTrpcHelpers } from "~/utils/helpers";
 
@@ -105,6 +106,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
     [asset.coinMinimalDenom]
   );
   const [ref] = useQueryState("ref");
+
+  // The page lays the trade tool out in one of two places by width. Only the
+  // visible one is mounted, so the hidden copy doesn't poll depth and orders
+  // too. Nothing is mounted until the width is known.
+  const { width, isMobile: isBelowXl } = useWindowSize(Breakpoint.xl);
+  const showNarrowTradeTool = width > 0 && isBelowXl;
+  const showWideTradeTool = width > 0 && !isBelowXl;
 
   useNavBar({
     title: (
@@ -217,9 +225,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
             />
             <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
               <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                <TradeTool {...tradeToolProps}>
-                  <AssetOrderHistory />
-                </TradeTool>
+                {showNarrowTradeTool && (
+                  <TradeTool {...tradeToolProps} bookLayout="below">
+                    <AssetOrderHistory />
+                  </TradeTool>
+                )}
               </div>
             </div>
             {!asset.areTransfersDisabled && asset.contract ? (
@@ -235,9 +245,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = memo(() => {
 
           <div className="flex flex-col gap-11 sm:gap-10">
             <div className="xl:hidden">
-              <TradeTool {...tradeToolProps}>
-                <AssetOrderHistory />
-              </TradeTool>
+              {showWideTradeTool && (
+                <TradeTool {...tradeToolProps} bookLayout="below">
+                  <AssetOrderHistory />
+                </TradeTool>
+              )}
             </div>
             <AssetBalance className="xl:hidden" />
             <AssetStats className="xl:hidden" />

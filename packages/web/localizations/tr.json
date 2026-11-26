@@ -1562,6 +1562,8 @@
     }
   },
   "tradeView": {
+    "expand": "İşlem görünümünü genişlet",
+    "collapse": "İşlem görünümünü daralt",
     "orderBook": "Emir defteri"
   }
 }

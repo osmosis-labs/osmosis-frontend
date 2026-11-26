@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -11,6 +12,7 @@ import {
 } from "~/components/assets/highlights-categories";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
+import { useTradeViewExpandedParam } from "~/components/trade-view/use-trade-view-expanded";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useNavBarStore } from "~/stores/nav-bar-store";
 import { api } from "~/utils/trpc";
@@ -31,6 +33,11 @@ const Home = () => {
 
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
+
+  // Expanded, the trade tool lays out chart, widget and book.
+  // The view is desktop only; the `1.5lg:` classes below undo the wide
+  // layout at 1152px and narrower, where the trade tool ignores the flag.
+  const [expanded] = useTradeViewExpandedParam();
 
   return (
     <main className="relative flex overflow-auto pb-2 pt-8 h-content md:h-content-mobile">
@@ -56,13 +63,27 @@ const Home = () => {
             } as CSSProperties
           }
         >
-          <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
-            {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+          <div
+            className={classNames(
+              "flex flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5",
+              expanded
+                ? "w-full min-w-0 px-4 1.5lg:w-[512px] 1.5lg:px-0"
+                : "w-[512px]"
+            )}
+          >
             <TradeTool
+              bookLayout="expandable"
               previousTrade={previousTrade}
               setPreviousTrade={setPreviousTrade}
+              // Banner and Top gainers sit in the widget's column, so they
+              // stay with the widget when the trade view is expanded.
+              aboveWidget={
+                featureFlags.swapsAdBanner ? <SwapAdsBanner /> : undefined
+              }
+              belowWidget={
+                featureFlags.swapToolTopGainers ? <TopGainers /> : undefined
+              }
             />
-            {featureFlags.swapToolTopGainers && <TopGainers />}
           </div>
         </div>
       </div>

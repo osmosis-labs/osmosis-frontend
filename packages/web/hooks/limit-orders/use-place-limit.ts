@@ -56,6 +56,8 @@ interface UsePlaceLimitParams {
   type: "limit" | "market";
   maxSlippage?: Dec;
   quoteType?: QuoteDirection;
+  /** Limit orders only: the market side runs no router quotes. */
+  limitOnly?: boolean;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -73,6 +75,7 @@ export const usePlaceLimit = ({
   type,
   maxSlippage,
   quoteType = "out-given-in",
+  limitOnly = false,
 }: UsePlaceLimitParams) => {
   const apiUtils = api.useUtils();
   const { t } = useTranslation();
@@ -112,6 +115,7 @@ export const usePlaceLimit = ({
     useOtherCurrencies,
     maxSlippage,
     quoteType: type !== "market" ? "out-given-in" : quoteType,
+    disableQuotes: limitOnly,
   });
 
   const quoteAsset = swapAssets.toAsset;
@@ -218,6 +222,8 @@ export const usePlaceLimit = ({
   const priceState = useLimitPrice({
     orderDirection,
     baseDenom: baseAsset?.coinMinimalDenom,
+    quoteDenom: quoteAsset?.coinMinimalDenom,
+    orderbookAddress: orderbookContractAddress,
     normalizationFactor,
   });
 
@@ -783,13 +789,19 @@ const MIN_TICK_PRICE = 0.000000000001;
  * Allows the user to input either a set fiat price or a percentage related to the current spot price.
  * Also returns relevant spot price for each direction.
  */
-const useLimitPrice = ({
+export const useLimitPrice = ({
   orderDirection,
   baseDenom,
+  quoteDenom,
+  orderbookAddress,
   normalizationFactor,
 }: {
   orderDirection: OrderDirection;
   baseDenom?: string;
+  /** A price is quote per base, so it is reset when either denom changes. */
+  quoteDenom?: string;
+  /** The orderbook the price is for; a different book resets it too. */
+  orderbookAddress?: string;
   normalizationFactor?: Dec;
 }) => {
   const [priceLocked, setPriceLock] = useState(false);
@@ -1037,15 +1049,26 @@ const useLimitPrice = ({
     setPriceLock(false);
   }, []);
 
+  // A price entered for one pair or book must never carry over to another,
+  // whatever set it (typed, preset or picked from a book).
   const [prevResetKey, setPrevResetKey] = useState({
     orderDirection,
     baseDenom,
+    quoteDenom,
+    orderbookAddress,
   });
   if (
     prevResetKey.orderDirection !== orderDirection ||
-    prevResetKey.baseDenom !== baseDenom
+    prevResetKey.baseDenom !== baseDenom ||
+    prevResetKey.quoteDenom !== quoteDenom ||
+    prevResetKey.orderbookAddress !== orderbookAddress
   ) {
-    setPrevResetKey({ orderDirection, baseDenom });
+    setPrevResetKey({
+      orderDirection,
+      baseDenom,
+      quoteDenom,
+      orderbookAddress,
+    });
     reset();
   }
 

@@ -1562,6 +1562,8 @@
     }
   },
   "tradeView": {
+    "expand": "거래 보기 펼치기",
+    "collapse": "거래 보기 접기",
     "orderBook": "오더북"
   }
 }

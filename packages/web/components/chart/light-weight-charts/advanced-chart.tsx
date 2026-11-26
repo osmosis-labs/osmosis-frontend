@@ -1,8 +1,9 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 import { useFeatureFlags } from "~/hooks";
 import type {
   ChartingLibraryWidgetOptions,
+  IChartingLibraryWidget,
   ResolutionString,
 } from "~/public/tradingview";
 import { theme } from "~/tailwind.config";
@@ -55,6 +56,10 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     },
   };
 
+  // The live widget and the symbol it shows.
+  const widgetRef = useRef<IChartingLibraryWidget | null>(null);
+  const symbolRef = useRef<string | null>(null);
+
   // Reads the latest props without re-creating the widget when they change.
   const createWidget = useEffectEvent((container: HTMLDivElement) => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
@@ -91,9 +96,19 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     };
 
     const widget = new TradingView.widget(widgetOptions);
+    widgetRef.current = widget;
+    symbolRef.current = props.coinDenom;
     widget.onChartReady(() => setIsReady(true));
     return widget;
   });
+
+  // A new denom is switched on the existing chart. Rebuilding the widget
+  // instead blanks the chart behind the loading overlay until it is ready.
+  useEffect(() => {
+    if (!isReady || symbolRef.current === props.coinDenom) return;
+    widgetRef.current?.activeChart().setSymbol(props.coinDenom);
+    symbolRef.current = props.coinDenom;
+  }, [isReady, props.coinDenom]);
 
   const isFeatureFlagsInitialized = featureFlags._isInitialized;
   useEffect(() => {
@@ -121,6 +136,8 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     return () => {
       if (intervalId) clearInterval(intervalId);
       widget?.remove();
+      widgetRef.current = null;
+      symbolRef.current = null;
       setIsReady(false);
     };
   }, [container, isFeatureFlagsInitialized]);

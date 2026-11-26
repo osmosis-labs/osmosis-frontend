@@ -1562,6 +1562,8 @@
     }
   },
   "tradeView": {
+    "expand": "展開交易視圖",
+    "collapse": "收起交易視圖",
     "orderBook": "訂單簿"
   }
 }

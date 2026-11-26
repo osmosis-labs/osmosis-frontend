@@ -12,6 +12,8 @@ export enum SwapToolTab {
 interface SwapToolTabsProps {
   setTab: (tab: SwapToolTab) => void;
   activeTab: SwapToolTab;
+  /** Tabs to offer; all three by default. */
+  allowedTabs?: SwapToolTab[];
 }
 
 /**
@@ -24,6 +26,7 @@ interface SwapToolTabsProps {
 export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
   setTab,
   activeTab,
+  allowedTabs,
 }) => {
   const { t } = useTranslation();
 
@@ -47,31 +50,33 @@ export const SwapToolTabs: FunctionComponent<SwapToolTabsProps> = ({
 
   return (
     <div className="flex w-max items-center gap-px rounded-3xl border border-osmoverse-700">
-      {tabs.map((tab) => {
-        const isActive = activeTab === tab.value;
-        return (
-          <button
-            key={`swap-tab-${tab.value}`}
-            onClick={() => setTab(tab.value)}
-            className={classNames(
-              "sm:body2 -m-px rounded-3xl px-4 py-3 transition-colors sm:px-3 sm:py-1.5",
-              {
-                "hover:bg-osmoverse-850": !isActive,
-                "bg-wosmongton-100": isActive,
-              }
-            )}
-          >
-            <p
-              className={classNames("font-semibold", {
-                "text-wosmongton-100": !isActive,
-                "text-osmoverse-900": isActive,
-              })}
+      {tabs
+        .filter((tab) => !allowedTabs || allowedTabs.includes(tab.value))
+        .map((tab) => {
+          const isActive = activeTab === tab.value;
+          return (
+            <button
+              key={`swap-tab-${tab.value}`}
+              onClick={() => setTab(tab.value)}
+              className={classNames(
+                "sm:body2 -m-px rounded-3xl px-4 py-3 transition-colors sm:px-3 sm:py-1.5",
+                {
+                  "hover:bg-osmoverse-850": !isActive,
+                  "bg-wosmongton-100": isActive,
+                }
+              )}
             >
-              {tab.label}
-            </p>
-          </button>
-        );
-      })}
+              <p
+                className={classNames("font-semibold", {
+                  "text-wosmongton-100": !isActive,
+                  "text-osmoverse-900": isActive,
+                })}
+              >
+                {tab.label}
+              </p>
+            </button>
+          );
+        })}
     </div>
   );
 };

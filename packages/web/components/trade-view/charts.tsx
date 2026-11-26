@@ -3,6 +3,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { AdvancedChart } from "~/components/chart/light-weight-charts/advanced-chart";
 import { ChartUnavailable } from "~/components/chart/price-historical";
+import { TRADING_VIEW_LOADER_SRC } from "~/components/trade-view/prefetch-chart";
 import { historicalDatafeed } from "~/utils/trading-view";
 import { api } from "~/utils/trpc";
 
@@ -20,18 +21,10 @@ export const AssetUsdChart: FunctionComponent<{
   return (
     <>
       {/* next/script loads a given src only once. */}
-      <Script
-        src="/tradingview/charting_library.standalone.js"
-        strategy="afterInteractive"
-      />
+      <Script src={TRADING_VIEW_LOADER_SRC} strategy="afterInteractive" />
       {coinDenom ? (
-        // The widget reads its symbol only at creation, so rebuild it when
-        // the denom changes.
-        <AdvancedChart
-          key={coinDenom}
-          coinDenom={coinDenom}
-          datafeed={datafeed}
-        />
+        // A denom change switches the symbol on the live chart.
+        <AdvancedChart coinDenom={coinDenom} datafeed={datafeed} />
       ) : (
         <ChartUnavailable />
       )}

@@ -95,6 +95,8 @@ type SwapOptions = {
   forceSwapInPoolId?: string;
   maxSlippage: Dec | undefined;
   quoteType?: QuoteDirection;
+  /** Run no router quote queries at all (e.g. a limit-only widget). */
+  disableQuotes?: boolean;
 };
 
 // Note: For computing spot price between token in and out, we use this multiplier
@@ -122,6 +124,7 @@ export function useSwap(
     forceSwapInPoolId,
     maxSlippage,
     quoteType = "out-given-in",
+    disableQuotes = false,
   }: SwapOptions = { maxSlippage: undefined }
 ) {
   const apiUtils = api.useUtils();
@@ -157,12 +160,14 @@ export function useSwap(
     forceSwapInPoolId,
     maxSlippage,
     swapAssets,
+    disableQuotes,
   });
 
   const outAmountInput = useSwapAmountInput({
     forceSwapInPoolId,
     maxSlippage,
     swapAssets: reverseSwapAssets,
+    disableQuotes,
   });
 
   // load flags
@@ -179,7 +184,8 @@ export function useSwap(
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
     !txTypeInProgress &&
-    quoteType === "out-given-in";
+    quoteType === "out-given-in" &&
+    !disableQuotes;
 
   const inGivenOutQuoteEnabled =
     isToFromAssets &&
@@ -189,7 +195,8 @@ export function useSwap(
     outAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.toAsset?.coinMinimalDenom &&
     !txTypeInProgress &&
-    quoteType === "in-given-out";
+    quoteType === "in-given-out" &&
+    !disableQuotes;
 
   const {
     data: outGivenInQuote,
@@ -297,7 +304,7 @@ export function useSwap(
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-    isToFromAssets
+    isToFromAssets && !disableQuotes
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -1155,10 +1162,12 @@ function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
+  disableQuotes = false,
 }: {
   swapAssets: ReturnType<typeof useSwapAssets>;
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
+  disableQuotes?: boolean;
 }) {
   const { txTypeInProgress } = useWallet();
   const { isLoading: isLoadingWallet } = useWalletSelect();
@@ -1175,6 +1184,7 @@ function useSwapAmountInput({
   // Flags are undefined until LaunchDarkly loads, so coerce to keep this a
   // boolean: an undefined `enabled` would let the quote query run.
   const balanceQuoteQueryEnabled =
+    !disableQuotes &&
     Boolean(featureFlags.swapToolSimulateFee) &&
     !isLoadingWallet &&
     !txTypeInProgress &&

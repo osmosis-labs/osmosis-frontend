@@ -181,6 +181,8 @@ interface TokenSelectProps {
   isLoadingSelectAssets?: boolean;
   assetQueryInput?: string;
   setAssetQueryInput?: (input: string) => void;
+  /** Shows the selected asset without letting the user change it. */
+  locked?: boolean;
 }
 
 const AssetFieldsetTokenSelector = ({
@@ -197,6 +199,7 @@ const AssetFieldsetTokenSelector = ({
   isLoadingSelectAssets,
   assetQueryInput,
   setAssetQueryInput,
+  locked = false,
   ...rest
 }: TokenSelectProps) => {
   const { t } = useTranslation();
@@ -215,10 +218,15 @@ const AssetFieldsetTokenSelector = ({
     <>
       <button
         type="button"
-        className="flex max-w-[50%] items-center gap-1 rounded-[64px] bg-osmoverse-850 py-3 pl-3 pr-4 transition-colors hover:bg-osmoverse-800 sm:px-3"
+        className={classNames(
+          "flex max-w-[50%] items-center gap-1 rounded-[64px] bg-osmoverse-850 py-3 pl-3 pr-4 transition-colors sm:px-3",
+          locked ? "cursor-default" : "hover:bg-osmoverse-800"
+        )}
+        disabled={locked}
         onClick={(e) => {
           e.stopPropagation();
           e.currentTarget.blur();
+          if (locked) return;
           if (onSelectorClick) return onSelectorClick();
 
           if (
@@ -249,16 +257,18 @@ const AssetFieldsetTokenSelector = ({
         <span className="ml-2 truncate text-h5 font-h5 sm:ml-1 sm:text-h6 sm:font-h6">
           {selectedCoinDenom}
         </span>
-        <div className="flex h-6 w-6 items-center justify-center">
-          <Icon
-            id="chevron-down"
-            width={isMobile ? 12 : 16}
-            height={isMobile ? 12 : 16}
-            className="text-osmoverse-400"
-          />
-        </div>
+        {!locked && (
+          <div className="flex h-6 w-6 items-center justify-center">
+            <Icon
+              id="chevron-down"
+              width={isMobile ? 12 : 16}
+              height={isMobile ? 12 : 16}
+              className="text-osmoverse-400"
+            />
+          </div>
+        )}
       </button>
-      {!isModalExternal && selectableAssets && (
+      {!locked && !isModalExternal && selectableAssets && (
         <TokenSelectModalLimit
           headerTitle={
             orderDirection === "ask"

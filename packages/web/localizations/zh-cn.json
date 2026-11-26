@@ -1562,6 +1562,8 @@
     }
   },
   "tradeView": {
+    "expand": "展开交易视图",
+    "collapse": "收起交易视图",
     "orderBook": "订单簿"
   }
 }

@@ -1562,6 +1562,8 @@
     }
   },
   "tradeView": {
+    "expand": "Agrandir la vue de trading",
+    "collapse": "Réduire la vue de trading",
     "orderBook": "Carnet d'ordres"
   }
 }

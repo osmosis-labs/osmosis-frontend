@@ -75,6 +75,8 @@ export interface SwapToolProps {
     sendTokenDenom: string;
     outTokenDenom: string;
   }) => void;
+  /** Called with the selected from and to minimal denoms whenever they change. */
+  onPairChange?: (pair: { base: string; quote: string }) => void;
 }
 
 const LOW_LIQUIDITY_WARNING_THRESHOLD = new Dec(3000);
@@ -89,6 +91,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
     initialOutTokenDenom,
     forceSwapInPoolId,
     onSwapSuccess,
+    onPairChange,
   }) => {
     const { t } = useTranslation();
     const { chainId } = OsmosisChainInfo;
@@ -130,6 +133,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = memo(
       maxSlippage: slippageConfig.slippage.toDec(),
       quoteType,
     });
+
+    const selectedFromDenom = swapState.fromAsset?.coinMinimalDenom;
+    const selectedToDenom = swapState.toAsset?.coinMinimalDenom;
+    useEffect(() => {
+      if (selectedFromDenom && selectedToDenom) {
+        onPairChange?.({ base: selectedFromDenom, quote: selectedToDenom });
+      }
+      // Report only when the pair changes, not when the callback identity does.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedFromDenom, selectedToDenom]);
 
     // review swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);

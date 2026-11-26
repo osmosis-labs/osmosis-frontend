@@ -1562,6 +1562,8 @@
     }
   },
   "tradeView": {
+    "expand": "Extinde vizualizarea de tranzacționare",
+    "collapse": "Restrânge vizualizarea de tranzacționare",
     "orderBook": "Registru de ordine"
   }
 }

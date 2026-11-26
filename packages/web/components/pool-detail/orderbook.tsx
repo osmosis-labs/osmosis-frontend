@@ -1,19 +1,10 @@
 import { RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dynamic from "next/dynamic";
-import { parseAsStringEnum, parseAsStringLiteral, useQueryState } from "nuqs";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { PlaceLimitTool } from "~/components/place-limit-tool";
-import { TRADE_PAIR_QUERY_OPTIONS } from "~/components/place-limit-tool/defaults";
-import {
-  OrderTypeSelector,
-  TRADE_TYPES,
-} from "~/components/swap-tool/order-type-selector";
-import { SwapToolTab } from "~/components/swap-tool/swap-tool-tabs";
-import { OrderBook } from "~/components/trade-view/order-book";
-import { OrderbookYourOrders } from "~/components/trade-view/your-orders";
+import { TradeTool } from "~/components/trade-tool";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { api } from "~/utils/trpc";
 
@@ -25,37 +16,14 @@ const AssetUsdChart = dynamic(
   { ssr: false }
 );
 
+/** Trades on this page are not remembered as the trade page's last pair. */
+const noop = () => {};
+
 export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
   poolId,
 }) => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
-
-  // Buy / Sell tab, written to the URL on mount so PlaceLimitTool picks up
-  // the default. Kept in the URL even when it equals the default: nuqs would
-  // otherwise drop it, and PlaceLimitTool reads a missing tab as Sell.
-  const [tradeTab, setTradeTab] = useQueryState(
-    "tab",
-    parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab))
-      .withDefault(SwapToolTab.BUY)
-      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
-  );
-
-  // Default to limit order type on this page, kept in the URL for the same
-  // reason (a missing type reads as market).
-  const [, setTradeType] = useQueryState(
-    "type",
-    parseAsStringLiteral(TRADE_TYPES)
-      .withDefault("limit")
-      .withOptions(TRADE_PAIR_QUERY_OPTIONS)
-  );
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has("tab")) setTradeTab(SwapToolTab.BUY);
-    if (!params.has("type")) setTradeType("limit");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Pool base data
   const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
@@ -95,9 +63,6 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
     { osmoAddress: contractAddress },
     { enabled: Boolean(contractAddress) }
   );
-
-  // Price selected by clicking a depth table row, forwarded to PlaceLimitTool
-  const [selectedPrice, setSelectedPrice] = useState<string>("");
 
   // Display denom for TradingView — use the normalized baseDenom from orderbook metadata
   const baseCoinDenom =
@@ -170,78 +135,20 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = ({
           </SkeletonLoader>
         )}
 
-        {/* ── Trade widget + Depth table (side by side) ── */}
-        <div className="flex items-start gap-6 lg:flex-col">
-          {/* Trade widget — natural height, bordered */}
-          <div className="w-[512px] shrink-0 rounded-3xl border border-osmoverse-700 lg:w-full">
-            {/* Buy / Sell tabs — each takes 50% */}
-            <div className="flex overflow-hidden rounded-t-3xl">
-              {([SwapToolTab.BUY, SwapToolTab.SELL] as const).map((tab, i) => {
-                const isActive = tradeTab === tab;
-                const isBuy = tab === SwapToolTab.BUY;
-                return (
-                  <button
-                    key={tab}
-                    onClick={() => setTradeTab(tab)}
-                    className={classNames(
-                      "flex-1 py-3 font-semibold transition-colors",
-                      isActive
-                        ? isBuy
-                          ? "bg-bullish-400 text-osmoverse-1000"
-                          : "bg-rust-500 text-white"
-                        : i === 0
-                          ? "border-b border-r border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
-                          : "border-b border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
-                    )}
-                  >
-                    {isBuy ? t("portfolio.buy") : t("limitOrders.sell")}
-                  </button>
-                );
-              })}
-            </div>
-            {/* Limit / Market toggle */}
-            <div className="flex items-center px-5 pt-4">
-              <OrderTypeSelector
-                initialBaseDenom={baseDenom}
-                initialQuoteDenom={quoteDenom}
-              />
-            </div>
-            {/* PlaceLimitTool with matching padding */}
-            <div className="px-5 pb-4">
-              <PlaceLimitTool
-                key={tradeTab}
-                initialBaseDenom={baseDenom}
-                initialQuoteDenom={quoteDenom}
-                alwaysExpandedDetails
-                externalOrderPrice={selectedPrice}
-              />
-            </div>
-          </div>
-
-          {/* Market depth panel: stretches to the trade widget's height */}
-          <div className="relative min-w-0 flex-1 self-stretch lg:min-h-[500px]">
-            <div className="absolute inset-0 flex flex-col overflow-hidden rounded-3xl border border-osmoverse-700 bg-osmoverse-1000">
-              <OrderBook
-                poolId={orderbook ? poolId : undefined}
-                baseSymbol={
-                  pool?.reserveCoins.find(
-                    (c) => c.currency.coinMinimalDenom === baseDenom
-                  )?.currency.coinDenom
-                }
-                quoteSymbol={
-                  pool?.reserveCoins.find(
-                    (c) => c.currency.coinMinimalDenom === quoteDenom
-                  )?.currency.coinDenom
-                }
-                onPriceSelect={(p) => setSelectedPrice(String(p))}
-                hideOpenOrderbookLink
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ── Your Orders (full width) ── */}
-        {orderbook && <OrderbookYourOrders contractAddress={contractAddress} />}
+        {/* ── Trade widget (Buy and Sell, locked to this pair) + order book,
+              then the user's orders on this book ── */}
+        {orderbook && (
+          <TradeTool
+            setPreviousTrade={noop}
+            limitOnly
+            showOrderHistoryLink={false}
+            orderbookPool={{
+              poolId,
+              baseDenom: orderbook.baseDenom,
+              quoteDenom: orderbook.quoteDenom,
+            }}
+          />
+        )}
       </section>
     </main>
   );
