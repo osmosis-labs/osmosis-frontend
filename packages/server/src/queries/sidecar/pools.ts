@@ -235,9 +235,12 @@ export async function queryPools({
   }
 
   if (pagination) {
-    if (pagination.cursor != null) {
-      params.append("page[cursor]", pagination.cursor.toString());
-    }
+    // Always send the cursor, defaulting to 0. Omitting page[cursor] makes SQS
+    // return a bogus next_cursor of 0 even when more pages exist, which the
+    // infinite query reads as "there is a next page" and loops forever on the
+    // same page. The cursor is dropped from the serialized tRPC input when it is
+    // 0, so without this default the first page never sends one. (MTN-557)
+    params.append("page[cursor]", (pagination.cursor ?? 0).toString());
     if (pagination.limit != null) {
       params.append("page[size]", pagination.limit.toString());
     }
