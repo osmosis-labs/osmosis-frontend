@@ -1,7 +1,8 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
   // API routes only, behind the osmosis-frontend-stage pages Worker's `API` binding. The
-  // `production` env below is osmosis-frontend-api-production, bound from osmosis-frontend-production.
+  // `production` env below is osmosis-frontend-api-production, bound from osmosis-frontend-production,
+  // and `testnet` is osmosis-frontend-api-testnet.
   "name": "osmosis-frontend-api-stage",
   "main": "worker.ts",
   // Wrangler makes this path cwd-relative, then esbuild resolves it from this config's
@@ -49,6 +50,14 @@
       // `api-worker/tsconfig.json` from this directory and the build fails.
       "tsconfig": "../tsconfig.json",
       // vars are not inherited from the top level.
+      "vars": {
+        "NODE_ENV": "production",
+      },
+    },
+    // osmosis-frontend-api-testnet, bound from osmosis-frontend-testnet.
+    "testnet": {
+      "name": "osmosis-frontend-api-testnet",
+      "tsconfig": "../tsconfig.json",
       "vars": {
         "NODE_ENV": "production",
       },

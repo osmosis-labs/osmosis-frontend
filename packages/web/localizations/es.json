@@ -34,7 +34,17 @@
     "low": "bajo",
     "buttonCreateAndStake": "Crear posición y apuesta",
     "estimated": "Estimado",
-    "estimatedInfo": "Esta es una estimación basada en los precios seleccionados actuales. La APR real puede variar. Si la posición se sale del rango, la TAE será del 0%."
+    "estimatedInfo": "Esta es una estimación basada en los precios seleccionados actuales. La APR real puede variar. Si la posición se sale del rango, la TAE será del 0%.",
+    "singleAsset": {
+      "splitBreakdown": "De tu {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) se intercambiarán a {outDenom} para coincidir con la proporción de la posición.",
+      "noSwapNeeded": "Tu rango seleccionado solo necesita {inputDenom}, por lo que no se requiere intercambio.",
+      "valueIn": "Valor de entrada",
+      "valueOut": "Valor de salida",
+      "totalCost": "Costo total",
+      "totalCostWarning": "El costo total de este depósito es {totalCost}, incluyendo el impacto en el precio y las comisiones de intercambio, lo que reduce el valor que llega a tu posición.",
+      "quoteLoading": "Buscando el mejor intercambio…",
+      "impactDataUnavailable": "No se pudieron cargar los datos de liquidez del pool necesarios para comprobar el impacto en el precio de este intercambio. Inténtalo de nuevo en breve."
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "¿Qué es la liquidez sobrealimentada?",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "Sí, entiendo que esto podría causar una gran pérdida de fondos y deseo continuar.",
     "quoteUpdatedTitle": "Cotización actualizada",
     "quoteUpdatedCaption": "La cotización cambió desde que confirmaste. Revisa los detalles actualizados y confirma de nuevo.",
+    "noQuotesAvailableTitle": "No hay cotizaciones disponibles",
+    "noQuotesAvailableDescription": "No pudimos obtener una cotización para este monto. Prueba con otro monto o vuelve a intentarlo más tarde.",
+    "quoteProviderUnavailableTitle": "Esta opción no está disponible",
+    "quoteProviderUnavailableDescription": "La opción de transferencia que seleccionaste no está disponible para este monto. Prueba con otro monto, elige otra opción en los detalles de la transferencia o vuelve a intentarlo más tarde.",
     "slippageTooHighTitle": "El deslizamiento es alto",
     "slippageTooHighDescription": "El deslizamiento de esta transferencia es alto. Prueba con un monto menor o acepta el riesgo de pérdida para continuar.",
     "priceImpactTooHighTitle": "El impacto en el precio es alto",

@@ -34,7 +34,17 @@
     "low": "低い",
     "buttonCreateAndStake": "ポジションとステークの作成",
     "estimated": "推定",
-    "estimatedInfo": "これは現在選択されている価格に基づいた見積もりです。実際の年利は異なる場合があります。ポジションが範囲外になると、APR は 0% になります。"
+    "estimatedInfo": "これは現在選択されている価格に基づいた見積もりです。実際の年利は異なる場合があります。ポジションが範囲外になると、APR は 0% になります。",
+    "singleAsset": {
+      "splitBreakdown": "ご入金いただいた{inputAmount} {inputDenom}のうち、{swapAmount} {inputDenom}({swapPercent})をポジションレシオに合わせて{outDenom}にスワップします。",
+      "noSwapNeeded": "選択した範囲には{inputDenom}のみが必要なため、スワップは不要です。",
+      "valueIn": "入金額",
+      "valueOut": "出金額",
+      "totalCost": "総コスト",
+      "totalCostWarning": "この入金の合計コストは{totalCost}で、価格インパクトとスワップ手数料が含まれ、ポジションに届く価値が減少します。",
+      "quoteLoading": "最適なスワップを検索中…",
+      "impactDataUnavailable": "このスワップの価格インパクトを確認するためのプール流動性データを読み込めませんでした。しばらくしてから再度お試しください。"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "流動性のスーパーチャージとは何ですか?",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "はい、これにより資金が大きく失われる可能性があることを理解した上で続行します。",
     "quoteUpdatedTitle": "見積もりが更新されました",
     "quoteUpdatedCaption": "確認後に見積もりが変更されました。更新された内容を確認のうえ、もう一度確定してください。",
+    "noQuotesAvailableTitle": "利用可能な見積もりがありません",
+    "noQuotesAvailableDescription": "この金額の見積もりを取得できませんでした。別の金額を試すか、しばらくしてからもう一度ご確認ください。",
+    "quoteProviderUnavailableTitle": "このオプションは利用できません",
+    "quoteProviderUnavailableDescription": "選択した送金オプションはこの金額では利用できません。別の金額を試すか、送金詳細で別のオプションを選択するか、しばらくしてからもう一度ご確認ください。",
     "slippageTooHighTitle": "スリッページが高くなっています",
     "slippageTooHighDescription": "この送金のスリッページが高くなっています。金額を減らすか、損失のリスクを受け入れて続行してください。",
     "priceImpactTooHighTitle": "価格への影響が大きくなっています",

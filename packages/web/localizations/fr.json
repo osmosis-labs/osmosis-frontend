@@ -34,7 +34,17 @@
     "low": "faible",
     "buttonCreateAndStake": "Créer une position et un enjeu",
     "estimated": "Estimé",
-    "estimatedInfo": "Il s'agit d'une estimation basée sur les prix actuellement sélectionnés. Le TAEG réel peut varier. Si la position sort de la fourchette, l'APR sera de 0 %."
+    "estimatedInfo": "Il s'agit d'une estimation basée sur les prix actuellement sélectionnés. Le TAEG réel peut varier. Si la position sort de la fourchette, l'APR sera de 0 %.",
+    "singleAsset": {
+      "splitBreakdown": "De votre {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) seront échangés contre {outDenom} pour correspondre au ratio de position.",
+      "noSwapNeeded": "Votre plage sélectionnée n'a besoin que de {inputDenom}, aucun échange n'est nécessaire.",
+      "valueIn": "Valeur entrante",
+      "valueOut": "Valeur sortante",
+      "totalCost": "Coût total",
+      "totalCostWarning": "Le coût total de ce dépôt est de {totalCost}, incluant l'impact sur le prix et les frais d'échange, ce qui réduit la valeur qui atteint votre position.",
+      "quoteLoading": "Recherche du meilleur échange…",
+      "impactDataUnavailable": "Les données de liquidité du pool nécessaires pour vérifier l'impact sur le prix de ce swap n'ont pas pu être chargées. Veuillez réessayer dans un instant."
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Qu'est-ce que la liquidité suralimentée ?",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "Oui, je comprends que cela pourrait entraîner une perte importante de fonds et je souhaite continuer.",
     "quoteUpdatedTitle": "Cotation mise à jour",
     "quoteUpdatedCaption": "La cotation a changé depuis votre confirmation. Veuillez vérifier les détails mis à jour et confirmer à nouveau.",
+    "noQuotesAvailableTitle": "Aucune cotation disponible",
+    "noQuotesAvailableDescription": "Nous n'avons pas pu obtenir de cotation pour ce montant. Essayez un autre montant ou réessayez plus tard.",
+    "quoteProviderUnavailableTitle": "Cette option n'est pas disponible",
+    "quoteProviderUnavailableDescription": "L'option de transfert que vous avez sélectionnée n'est pas disponible pour ce montant. Essayez un autre montant, choisissez une autre option dans les détails du transfert ou réessayez plus tard.",
     "slippageTooHighTitle": "Le slippage est élevé",
     "slippageTooHighDescription": "Le slippage de ce transfert est élevé. Essayez un montant plus faible ou acceptez le risque de perte pour continuer.",
     "priceImpactTooHighTitle": "L'impact sur le prix est élevé",

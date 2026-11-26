@@ -7,7 +7,7 @@ import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -104,6 +104,35 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Keep the last good quote so a failed background refetch dims the details
+  // instead of unrendering them, leaving the user stranded (MTN-351). Scoped to
+  // this component's lifecycle: a fresh visit to Review always starts from a
+  // live quote (you cannot reach Review without one), so this never surfaces a
+  // stale quote from a different transfer. Stored in state (not a ref) and
+  // updated during render with a convergence guard, the same pattern as
+  // `useLossAcknowledgement`.
+  const [lastGoodQuote, setLastGoodQuote] = useState(quote.selectedQuote);
+  if (quote.selectedQuote && quote.selectedQuote !== lastGoodQuote) {
+    setLastGoodQuote(quote.selectedQuote);
+  }
+  const displayedQuote = quote.selectedQuote ?? lastGoodQuote;
+  // The live quote is gone (the selected provider has no successful quote —
+  // every provider errored, or a pinned one did) but we still have the previous
+  // terms to show while the 30s refetch keeps retrying.
+  const isQuoteOutdated = !quote.selectedQuote && Boolean(displayedQuote);
+  // Distinguish "the provider you pinned is unavailable, but others still work"
+  // from "nothing quotes this amount". In auto mode the hook switches to the
+  // best remaining provider, so an outdated state that still has other
+  // successful quotes means the user pinned the now-unavailable one — point them
+  // at the provider options rather than only the amount.
+  const hasAlternativeQuotes = (quote.successfulQuotes?.length ?? 0) > 0;
+  const outdatedHeading = hasAlternativeQuotes
+    ? t("transfer.quoteProviderUnavailableTitle")
+    : t("transfer.noQuotesAvailableTitle");
+  const outdatedDescription = hasAlternativeQuotes
+    ? t("transfer.quoteProviderUnavailableDescription")
+    : t("transfer.noQuotesAvailableDescription");
+
   const { data: assetsInOsmosis } =
     api.edge.assets.getBridgeAssetWithVariants.useQuery(
       {
@@ -143,30 +172,43 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
             : "transfer.reviewDepositP"
         )}
       </p>
-      {quote.selectedQuote && (
-        <AssetBox
-          type="from"
-          assetImageUrl={fromVariantAsset?.coinImageUrl ?? "/"}
-          chain={fromChain}
-          address={fromAddress}
-          walletImageUrl={fromWalletIcon}
-          value={quote.selectedQuote.quote.input.fiatValue}
-          coin={quote.selectedQuote.quote.input.amount}
+      {/* Dim the last good quote while it is outdated so it reads as "not
+          current" without disappearing; the expired warning below explains it
+          and Confirm stays disabled (MTN-351). */}
+      <div
+        className={`flex flex-col gap-1 transition-opacity ${
+          isQuoteOutdated ? "opacity-60" : ""
+        }`}
+      >
+        {displayedQuote && (
+          <AssetBox
+            type="from"
+            assetImageUrl={fromVariantAsset?.coinImageUrl ?? "/"}
+            chain={fromChain}
+            address={fromAddress}
+            walletImageUrl={fromWalletIcon}
+            value={displayedQuote.quote.input.fiatValue}
+            coin={displayedQuote.quote.input.amount}
+          />
+        )}
+        <TransferDetails
+          {...quote}
+          selectedQuote={displayedQuote}
+          fromDisplayChain={fromChain}
         />
-      )}
-      <TransferDetails {...quote} fromDisplayChain={fromChain} />
-      {quote.selectedQuote && (
-        <AssetBox
-          type="to"
-          assetImageUrl={toVariantAsset?.coinImageUrl ?? "/"}
-          chain={toChain}
-          address={toAddress}
-          walletImageUrl={toWalletIcon}
-          value={quote.selectedQuote.expectedOutputFiat}
-          coin={quote.selectedQuote.expectedOutput}
-          isManualAddress={isManualAddress}
-        />
-      )}
+        {displayedQuote && (
+          <AssetBox
+            type="to"
+            assetImageUrl={toVariantAsset?.coinImageUrl ?? "/"}
+            chain={toChain}
+            address={toAddress}
+            walletImageUrl={toWalletIcon}
+            value={displayedQuote.expectedOutputFiat}
+            coin={displayedQuote.expectedOutput}
+            isManualAddress={isManualAddress}
+          />
+        )}
+      </div>
       <div className="caption pt-6 text-center text-osmoverse-400 md:pt-4">
         {t("transfer.risks")}{" "}
         <Link
@@ -214,22 +256,28 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           </div>
         </div>
       )}
-      {/* Renders for any active error, not just loss warnings — when the
-          quote errors out (e.g. every provider fails a refetch), the details
-          above unrender and this box is the only thing telling the user why
-          the screen is empty and Confirm is disabled. */}
-      {quote.errorBoxMessage && (
+      {/* Render whatever message the hook set: `errorBoxMessage` already carries
+          the most specific copy (insufficient fees, account not found, invalid
+          address, withdrawals unavailable, no quotes, the pinned-option-
+          unavailable text, …), so prefer it. Fall back to the plain outdated
+          copy only for the transient gap where the quote is outdated but the
+          hook has set no message yet (e.g. a refetch still in flight). The terms
+          above stay on screen, dimmed, and Confirm is disabled. The loss
+          checkbox renders only when a high-loss warning owns the slot. */}
+      {(isQuoteOutdated || quote.errorBoxMessage) && (
         <div className="flex flex-col gap-3 pt-3">
           <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
             <Icon id="alert-triangle" className="h-6 w-6 text-rust-600" />
             <div className="flex flex-col">
-              <h1 className="body2">{quote.errorBoxMessage.heading}</h1>
+              <h1 className="body2">
+                {quote.errorBoxMessage?.heading ?? outdatedHeading}
+              </h1>
               <p className="body2 text-osmoverse-300">
-                {quote.errorBoxMessage.description}
+                {quote.errorBoxMessage?.description ?? outdatedDescription}
               </p>
             </div>
           </div>
-          {hasLossWarning && (
+          {!isQuoteOutdated && hasLossWarning && (
             <LossAcknowledgementCheckbox
               label={t("transfer.lossAcknowledgement")}
               checked={quote.hasAcknowledgedLoss}

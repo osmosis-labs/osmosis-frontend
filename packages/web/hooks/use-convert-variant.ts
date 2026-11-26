@@ -78,11 +78,14 @@ export function useConvertVariant(
       tokenOutDenom: variant?.canonicalAsset?.coinMinimalDenom ?? "",
     },
     {
-      enabled:
+      // Coerce: an undefined `variant` would otherwise make `enabled` undefined,
+      // which React Query treats as enabled.
+      enabled: Boolean(
         enabled &&
         variant &&
-        !!variant.amount.currency.coinMinimalDenom &&
-        !!variant.canonicalAsset?.coinMinimalDenom,
+        variant.amount.currency.coinMinimalDenom &&
+        variant.canonicalAsset?.coinMinimalDenom
+      ),
     }
   );
 

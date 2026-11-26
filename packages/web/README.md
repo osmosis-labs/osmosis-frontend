@@ -33,7 +33,8 @@ yarn lint:fix
 ### Deploy
 
 Pushes to `stage` and `master` deploy the Cloudflare API/frontend pair through
-`.github/workflows/cf-deploy.yml`. PRs into `stage` get a frontend Worker Preview;
+`.github/workflows/cf-deploy.yml`. Pushes to `stage` also deploy the testnet pair
+(testnet.osmosis.zone). PRs into `stage` get a frontend Worker Preview;
 its API calls use the deployed stage API Worker. Frontend E2E tests wait for the
 Cloudflare run for their exact commit and test its recorded deployment URL.
 The `e2e-gate` check includes the existing real-funds smoke test; drafts skip the

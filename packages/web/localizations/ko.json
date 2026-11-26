@@ -34,7 +34,17 @@
     "low": "낮은",
     "buttonCreateAndStake": "직위 및 지분 생성",
     "estimated": "추정된",
-    "estimatedInfo": "현재 선택한 가격을 기준으로 한 추정치입니다. 실제 APR은 다를 수 있습니다. 포지션이 범위를 벗어나면 APR은 0%가 됩니다."
+    "estimatedInfo": "현재 선택한 가격을 기준으로 한 추정치입니다. 실제 APR은 다를 수 있습니다. 포지션이 범위를 벗어나면 APR은 0%가 됩니다.",
+    "singleAsset": {
+      "splitBreakdown": "당신의 {inputAmount} {inputDenom} 중 {swapAmount} {inputDenom}({swapPercent})이 포지션 비율을 맞추기 위해 {outDenom}으로 스왑됩니다.",
+      "noSwapNeeded": "선택한 범위는 {inputDenom}만 필요하므로 스왑이 필요하지 않습니다.",
+      "valueIn": "입금액",
+      "valueOut": "출금액",
+      "totalCost": "총 비용",
+      "totalCostWarning": "이 예치의 총 비용은 {totalCost}이며, 가격 영향과 스왑 수수료가 포함되어 포지션에 도달하는 가치가 줄어듭니다.",
+      "quoteLoading": "최적 스왑을 찾는 중…",
+      "impactDataUnavailable": "이 스왑의 가격 영향을 확인하는 데 필요한 풀 유동성 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "과급 유동성이란 무엇입니까?",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "네, 이로 인해 자금에 큰 손실이 발생할 수 있음을 이해하며 계속 진행하겠습니다.",
     "quoteUpdatedTitle": "견적 업데이트됨",
     "quoteUpdatedCaption": "확인 이후 견적이 변경되었습니다. 업데이트된 내용을 검토한 후 다시 확인해 주세요.",
+    "noQuotesAvailableTitle": "사용 가능한 견적이 없습니다",
+    "noQuotesAvailableDescription": "이 금액에 대한 견적을 가져올 수 없습니다. 다른 금액을 시도하거나 잠시 후 다시 확인하세요.",
+    "quoteProviderUnavailableTitle": "이 옵션은 사용할 수 없습니다",
+    "quoteProviderUnavailableDescription": "선택한 전송 옵션은 이 금액에 사용할 수 없습니다. 다른 금액을 시도하거나, 전송 세부정보에서 다른 옵션을 선택하거나, 잠시 후 다시 확인하세요.",
     "slippageTooHighTitle": "슬리피지가 높습니다",
     "slippageTooHighDescription": "이 전송의 슬리피지가 높습니다. 더 적은 금액을 시도하거나 손실 위험을 감수하고 계속 진행하세요.",
     "priceImpactTooHighTitle": "가격 영향이 큽니다",

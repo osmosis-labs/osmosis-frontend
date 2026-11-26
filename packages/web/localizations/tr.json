@@ -34,7 +34,17 @@
     "low": "Düşük",
     "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun",
     "estimated": "Tahmini",
-    "estimatedInfo": "Bu, mevcut seçilmiş fiyatlara dayalı bir tahmindir. Gerçek APR değişebilir. Konum aralığın dışına çıkarsa APR %0 olacaktır."
+    "estimatedInfo": "Bu, mevcut seçilmiş fiyatlara dayalı bir tahmindir. Gerçek APR değişebilir. Konum aralığın dışına çıkarsa APR %0 olacaktır.",
+    "singleAsset": {
+      "splitBreakdown": "{inputAmount} {inputDenom} bakiyenizden {swapAmount} {inputDenom} ({swapPercent}), pozisyon oranını eşleştirmek için {outDenom} ile takas edilecektir.",
+      "noSwapNeeded": "Seçili aralık yalnızca {inputDenom} gerektiriyor, bu nedenle takas gerekli değildir.",
+      "valueIn": "Gelen değer",
+      "valueOut": "Giden değer",
+      "totalCost": "Toplam maliyet",
+      "totalCostWarning": "Bu yatırmanın toplam maliyeti {totalCost} olup fiyat etkisi ve takas ücretlerini içerir; bu da pozisyonunuza ulaşan değeri azaltır.",
+      "quoteLoading": "En iyi takas bulunuyor…",
+      "impactDataUnavailable": "Bu takasın fiyat etkisini kontrol etmek için gereken havuz likidite verileri yüklenemedi. Lütfen birazdan tekrar deneyin."
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Supercharged Likidite Nedir?",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "Evet, bunun ciddi fon kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
     "quoteUpdatedTitle": "Teklif güncellendi",
     "quoteUpdatedCaption": "Onayınızdan sonra teklif değişti. Lütfen güncellenen ayrıntıları inceleyip yeniden onaylayın.",
+    "noQuotesAvailableTitle": "Kullanılabilir teklif yok",
+    "noQuotesAvailableDescription": "Bu tutar için teklif alamadık. Farklı bir tutar deneyin veya daha sonra tekrar kontrol edin.",
+    "quoteProviderUnavailableTitle": "Bu seçenek kullanılamıyor",
+    "quoteProviderUnavailableDescription": "Seçtiğiniz transfer seçeneği bu tutar için kullanılamıyor. Farklı bir tutar deneyin, transfer ayrıntılarından başka bir seçenek seçin veya daha sonra tekrar kontrol edin.",
     "slippageTooHighTitle": "Kayma yüksek",
     "slippageTooHighDescription": "Bu transfer için kayma yüksek. Daha küçük bir tutar deneyin veya devam etmek için kayıp riskini kabul edin.",
     "priceImpactTooHighTitle": "Fiyat etkisi yüksek",
