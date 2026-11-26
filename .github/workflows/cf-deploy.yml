@@ -6,6 +6,10 @@ name: Cloudflare deploy
 #
 #   push to stage  -> osmosis-frontend-stage + osmosis-frontend-api-stage
 #                     (configs as committed), environment `cloudflare-stage`
+#                  -> also osmosis-frontend-testnet + osmosis-frontend-api-testnet
+#                     (`--env testnet`), environment `cloudflare-testnet`, a
+#                     separate build because the chain settings (osmo-test-5,
+#                     endpoints, testnet asset lists) are inlined at build time
 #   push to master -> osmosis-frontend-production + osmosis-frontend-api-production
 #                     (`--env production` in both wrangler configs), environment
 #                     `cloudflare-production`
@@ -52,7 +56,7 @@ name: Cloudflare deploy
 #                 reads chains 1, 10, 56, 137, 250, 314, 1284, 8453, 42161,
 #                 43114, 81457)
 #
-# The production R2 cache bucket is created on the first master deploy.
+# The production and testnet R2 cache buckets are created on their first deploy.
 
 on:
   push:
@@ -81,10 +85,18 @@ jobs:
       || (github.event_name == 'pull_request'
         && github.event.action != 'closed'
         && github.event.pull_request.head.repo.fork == false)
+    # stage deploys the stage and testnet pairs side by side; every other
+    # event has one leg. A failed testnet leg neither cancels stage nor fails
+    # the run, which stage E2E (wait-cf-deployment.sh) requires to succeed.
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(github.event_name != 'pull_request' && github.ref_name == 'stage' && '["stage","testnet"]' || '["default"]') }}
+    continue-on-error: ${{ matrix.target == 'testnet' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
-      name: ${{ github.event_name == 'pull_request' && 'cloudflare-preview' || github.ref_name == 'master' && 'cloudflare-production' || 'cloudflare-stage' }}
+      name: ${{ matrix.target == 'testnet' && 'cloudflare-testnet' || github.event_name == 'pull_request' && 'cloudflare-preview' || github.ref_name == 'master' && 'cloudflare-production' || 'cloudflare-stage' }}
       url: ${{ steps.pages.outputs.url || steps.preview.outputs.url }}
     defaults:
       run:
@@ -116,7 +128,7 @@ jobs:
       - name: Export build values
         env:
           VARS_JSON: ${{ toJSON(vars) }}
-          WRANGLER_ENV: ${{ github.ref_name == 'master' && 'production' || '' }}
+          WRANGLER_ENV: ${{ matrix.target == 'testnet' && 'testnet' || github.ref_name == 'master' && 'production' || '' }}
         run: |
           set -euo pipefail
           jq -nr 'env.VARS_JSON | fromjson | to_entries[]
@@ -143,13 +155,15 @@ jobs:
           fi
           echo "asset lists at ${ASSET_LIST_COMMIT_HASH:-$hash}"
 
+      # Testnet downloads a different asset list into the same paths, so it
+      # keeps its own entry.
       - name: Cache generated asset images
         uses: actions/cache@v5
         with:
           path: |
             packages/web/public/tokens/generated
             packages/web/config/generated/asset-lock.json
-          key: ${{ runner.os }}-asset-images-${{ env.ASSET_LIST_COMMIT_HASH }}
+          key: ${{ runner.os }}-asset-images-${{ matrix.target == 'testnet' && 'testnet-' || '' }}${{ env.ASSET_LIST_COMMIT_HASH }}
 
       - name: Cache workspace packages build
         uses: actions/cache@v5
@@ -161,6 +175,7 @@ jobs:
 
       # Restore the latest warm webpack/React Compiler cache from stage/master.
       # Only non-PR pushes save back to avoid churning the 10 GB repo cache budget.
+      # The testnet leg restores stage's cache but never saves over it.
       - name: Restore Next.js build cache
         id: restore-next-cache
         uses: actions/cache/restore@v5
@@ -229,17 +244,17 @@ jobs:
           echo "NEXT_PUBLIC_EVM_RPC_PROXY_CHAIN_IDS=$ids" >> "$GITHUB_ENV"
           echo "EVM proxy chains: ${ids:-none}"
 
-      - name: Create production cache bucket if missing
-        if: github.ref_name == 'master'
+      - name: Create ${{ env.WRANGLER_ENV }} cache bucket if missing
+        if: env.WRANGLER_ENV != ''
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          if corepack yarn wrangler r2 bucket info osmosis-frontend-production-cache >/dev/null 2>&1; then
+          if corepack yarn wrangler r2 bucket info "osmosis-frontend-$WRANGLER_ENV-cache" >/dev/null 2>&1; then
             echo "bucket exists"
           else
-            corepack yarn cf:cache:create:production
+            corepack yarn "cf:cache:create:$WRANGLER_ENV"
           fi
 
       # Builds the workspace packages, the generated lists and the OpenNext
@@ -253,7 +268,7 @@ jobs:
         run: corepack yarn cf:build
 
       - name: Save Next.js build cache
-        if: github.event_name != 'pull_request' && steps.restore-next-cache.outputs.cache-hit != 'true'
+        if: github.event_name != 'pull_request' && matrix.target != 'testnet' && steps.restore-next-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: packages/web/.next/cache
@@ -328,8 +343,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       # E2E resolves this artifact from the successful run for its exact commit.
+      # Only the stage leg records it: E2E tests mainnet, and artifact names are
+      # unique per run.
       - name: Record frontend deployment URL
-        if: github.event_name == 'pull_request' || github.ref_name == 'stage'
+        if: github.event_name == 'pull_request' || (github.ref_name == 'stage' && matrix.target != 'testnet')
         env:
           DEPLOYMENT_URL: ${{ steps.pages.outputs.url || steps.preview.outputs.url }}
         run: |
@@ -338,7 +355,7 @@ jobs:
           printf '%s\n' "$DEPLOYMENT_URL" > "$RUNNER_TEMP/cf-frontend-deployment/url.txt"
 
       - name: Upload frontend deployment URL
-        if: github.event_name == 'pull_request' || github.ref_name == 'stage'
+        if: github.event_name == 'pull_request' || (github.ref_name == 'stage' && matrix.target != 'testnet')
         uses: actions/upload-artifact@v6
         with:
           name: cf-frontend-deployment
