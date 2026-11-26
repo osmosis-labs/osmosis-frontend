@@ -569,7 +569,11 @@
       "depthNoOrders": "Fără ordine deschise",
       "depthNoOrdersDesc": "Acest registru de ordine este în prezent gol",
       "depthUnavailable": "Date de profunzime indisponibile",
-      "depthUnavailableDesc": "Imposibil de încărcat adâncimea registrului de ordine. Se reîncearcă..."
+      "depthUnavailableDesc": "Imposibil de încărcat adâncimea registrului de ordine. Se reîncearcă...",
+      "depthClLegend": "Incl. pool-uri CL",
+      "depthClLegendTooltip": "Barele hașurate includ lichiditate din pool-urile de lichiditate concentrată pentru această pereche. Este lichiditate de curbă AMM, nu ordine în așteptare; cantitățile afișate sunt doar ordine.",
+      "depthClUnavailable": "Adâncime CL indisponibilă",
+      "depthRowWithCl": "Ordine: {orders} · Pool-uri CL: {cl}"
     }
   },
   "pools": {
@@ -1376,6 +1380,7 @@
     "minutesAgo": "acum {minutes} min",
     "buyWith": "Cumpărați cu {coinA} sau {coinB}",
     "orderHistory": "Istoric ordine",
+    "openOrderbook": "Deschide registrul de ordine",
     "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
     "tradeAnotherAsset": "Schimbă alt activ pentru {coinDenom}",
     "sellAnAsset": "Vinde un activ",
@@ -1555,5 +1560,8 @@
       "stepTitle": "Convertește {symbol} în {symbol}.wh",
       "description": "Deții {balance} {symbol} ca activ aliat. Wormhole face puntea variantei {symbol}.wh, așa că convertește mai întâi, apoi fă puntea mai jos."
     }
+  },
+  "tradeView": {
+    "orderBook": "Registru de ordine"
   }
 }

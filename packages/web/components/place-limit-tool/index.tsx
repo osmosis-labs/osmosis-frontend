@@ -57,6 +57,7 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
+import { useInvalidateOrderbookOrders } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
   useAmountWithSlippage,
@@ -153,6 +154,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     externalOrderPrice,
   }: PlaceLimitToolProps) => {
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
+    const invalidateOrders = useInvalidateOrderbookOrders();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const {
@@ -1117,6 +1119,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             setAmountSafe("fiat", "");
             setReviewOpen(false);
             setIsSendingTx(false);
+            // Show the new order in any Your Orders list without waiting for a poll.
+            invalidateOrders();
             onOrderSuccess?.(
               swapState.baseAsset?.coinMinimalDenom,
               swapState.quoteAsset?.coinMinimalDenom

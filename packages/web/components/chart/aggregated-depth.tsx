@@ -45,7 +45,10 @@ function formatQuantity(qty: number): string {
 const OrderRow: FunctionComponent<{
   level: OrderbookLevel;
   maxQuoteValue: number;
+  /** Cumulative quote value of resting orders up to this level. */
   cumulativeQuoteValue: number;
+  /** Cumulative quote value including CL pool liquidity. */
+  cumulativeTotalQuoteValue: number;
   side: "bid" | "ask";
   isHighlighted: boolean;
   onPriceSelect?: (price: number) => void;
@@ -55,6 +58,7 @@ const OrderRow: FunctionComponent<{
   level,
   maxQuoteValue,
   cumulativeQuoteValue,
+  cumulativeTotalQuoteValue,
   side,
   isHighlighted,
   onPriceSelect,
@@ -63,6 +67,9 @@ const OrderRow: FunctionComponent<{
 }) => {
   const pct =
     maxQuoteValue > 0 ? (cumulativeQuoteValue / maxQuoteValue) * 100 : 0;
+  const totalPct =
+    maxQuoteValue > 0 ? (cumulativeTotalQuoteValue / maxQuoteValue) * 100 : 0;
+  const clQuantity = level.clQuantity ?? 0;
   const isBid = side === "bid";
   const quoteAmount = level.price * level.quantity;
 
@@ -79,7 +86,25 @@ const OrderRow: FunctionComponent<{
       onClick={() => onPriceSelect?.(level.price)}
       onMouseEnter={() => onHover(index)}
       onMouseLeave={() => onHover(null)}
+      title={
+        clQuantity > 0
+          ? t("pool.orderbookPool.depthRowWithCl", {
+              orders: formatQuantity(level.quantity),
+              cl: formatQuantity(clQuantity),
+            })
+          : undefined
+      }
     >
+      {/* CL pool liquidity: a lighter, hatched bar behind the orders bar */}
+      {totalPct > pct && (
+        <span
+          className="pointer-events-none absolute inset-y-0 right-0"
+          style={{
+            width: `${Math.min(totalPct, 100)}%`,
+            backgroundImage: `repeating-linear-gradient(135deg, ${baseColor}14 0 3px, transparent 3px 6px)`,
+          }}
+        />
+      )}
       {/* depth bar behind the row — fills from the right */}
       <span
         className="pointer-events-none absolute inset-y-0 right-0"
@@ -103,6 +128,11 @@ const OrderRow: FunctionComponent<{
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+const withoutCl = (level: OrderbookLevel): OrderbookLevel => ({
+  ...level,
+  clQuantity: undefined,
+});
+
 export const OrderbookDepthPanel: FunctionComponent<{
   bids: OrderbookLevel[];
   asks: OrderbookLevel[];
@@ -119,9 +149,16 @@ export const OrderbookDepthPanel: FunctionComponent<{
   isError?: boolean;
   bucketSize?: number;
   onBucketSizeChange?: (size: number | undefined) => void;
+  /** Levels include CL pool liquidity in `clQuantity`. */
+  clIncluded?: boolean;
+  /** Whether CL pool liquidity is shown; omit to hide the toggle. */
+  clEnabled?: boolean;
+  onClEnabledChange?: (enabled: boolean) => void;
+  /** CL pool liquidity could not be loaded; levels are orders only. */
+  clUnavailable?: boolean;
 }> = ({
-  bids,
-  asks,
+  bids: bidsProp,
+  asks: asksProp,
   midPrice,
   bidPrice = 0,
   askPrice = 0,
@@ -135,7 +172,15 @@ export const OrderbookDepthPanel: FunctionComponent<{
   isError,
   bucketSize,
   onBucketSizeChange,
+  clIncluded,
+  clUnavailable,
+  clEnabled = true,
+  onClEnabledChange,
 }) => {
+  // With CL off, ignore any CL amounts still on the levels (e.g. depth kept
+  // on screen while the orders-only result loads).
+  const bids = clEnabled ? bidsProp : bidsProp.map(withoutCl);
+  const asks = clEnabled ? asksProp : asksProp.map(withoutCl);
   const VISIBLE_LEVELS = 12;
   const visibleBids = bids.slice(0, VISIBLE_LEVELS);
   const visibleAsks = asks.slice(0, VISIBLE_LEVELS);
@@ -147,9 +192,19 @@ export const OrderbookDepthPanel: FunctionComponent<{
   // sides are denominated in the same currency and large base-unit orders don't skew.
   const bidQuoteCumulatives = cumulativeQuoteValue(visibleBids);
   const askQuoteCumulatives = cumulativeQuoteValue(visibleAsks);
+  // The same including CL pool liquidity, for the lighter bar.
+  const totalCumulatives = (levels: OrderbookLevel[]) => {
+    let cum = 0;
+    return levels.map((l) => {
+      cum += l.price * (l.quantity + (l.clQuantity ?? 0));
+      return cum;
+    });
+  };
+  const bidTotalCumulatives = totalCumulatives(visibleBids);
+  const askTotalCumulatives = totalCumulatives(visibleAsks);
   const maxQuoteValue = Math.max(
-    bidQuoteCumulatives.at(-1) ?? 0,
-    askQuoteCumulatives.at(-1) ?? 0
+    bidTotalCumulatives.at(-1) ?? 0,
+    askTotalCumulatives.at(-1) ?? 0
   );
 
   const skeletonRows = Array.from({ length: VISIBLE_LEVELS });
@@ -246,8 +301,34 @@ export const OrderbookDepthPanel: FunctionComponent<{
             </button>
           ))}
         </div>
+        {onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) && (
+          <button
+            type="button"
+            aria-pressed={clEnabled}
+            onClick={() => onClEnabledChange(!clEnabled)}
+            title={t("pool.orderbookPool.depthClLegendTooltip")}
+            className={`ml-auto flex items-center gap-1 rounded px-1.5 py-0.5 text-xs transition-colors ${
+              clEnabled
+                ? "bg-osmoverse-700 text-white-full"
+                : "text-osmoverse-400 hover:text-osmoverse-200"
+            }`}
+          >
+            <span
+              className="inline-block h-2 w-3 rounded-sm"
+              style={{
+                backgroundImage: `repeating-linear-gradient(135deg, ${theme.colors.osmoverse["300"]}${clEnabled ? "aa" : "44"} 0 2px, transparent 2px 4px)`,
+              }}
+            />
+            {t("pool.orderbookPool.depthClLegend")}
+          </button>
+        )}
+        {clEnabled && clUnavailable && (
+          <span className="ml-2 text-xs text-osmoverse-500">
+            {t("pool.orderbookPool.depthClUnavailable")}
+          </span>
+        )}
         <span
-          className={`ml-auto mr-0.5 h-1.5 w-1.5 rounded-full ${
+          className={`${onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) ? "ml-2" : "ml-auto"} mr-0.5 h-1.5 w-1.5 rounded-full ${
             isLive ? "bg-bullish-400" : "animate-pulse bg-osmoverse-500"
           }`}
         />
@@ -282,6 +363,7 @@ export const OrderbookDepthPanel: FunctionComponent<{
               level={level}
               maxQuoteValue={maxQuoteValue}
               cumulativeQuoteValue={askQuoteCumulatives[i]}
+              cumulativeTotalQuoteValue={askTotalCumulatives[i]}
               side="ask"
               isHighlighted={hoveredAsk !== null && i <= hoveredAsk}
               onPriceSelect={onPriceSelect}
@@ -340,6 +422,7 @@ export const OrderbookDepthPanel: FunctionComponent<{
               level={level}
               maxQuoteValue={maxQuoteValue}
               cumulativeQuoteValue={bidQuoteCumulatives[i]}
+              cumulativeTotalQuoteValue={bidTotalCumulatives[i]}
               side="bid"
               isHighlighted={hoveredBid !== null && i <= hoveredBid}
               onPriceSelect={onPriceSelect}

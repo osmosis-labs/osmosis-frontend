@@ -569,7 +569,11 @@
       "depthNoOrders": "سفارش بازی وجود ندارد",
       "depthNoOrdersDesc": "این دفتر سفارش در حال حاضر خالی است",
       "depthUnavailable": "داده‌های عمق در دسترس نیست",
-      "depthUnavailableDesc": "بارگذاری عمق دفتر سفارش ممکن نیست. در حال تلاش مجدد..."
+      "depthUnavailableDesc": "بارگذاری عمق دفتر سفارش ممکن نیست. در حال تلاش مجدد...",
+      "depthClLegend": "شامل استخرهای CL",
+      "depthClLegendTooltip": "نوارهای هاشورخورده شامل نقدینگی استخرهای نقدینگی متمرکز برای این جفت هستند. این نقدینگی منحنی AMM است، نه سفارش‌های باز؛ مقادیر نمایش‌داده‌شده فقط سفارش‌ها هستند.",
+      "depthClUnavailable": "عمق CL در دسترس نیست",
+      "depthRowWithCl": "سفارش‌ها: {orders} · استخرهای CL: {cl}"
     }
   },
   "pools": {
@@ -1376,6 +1380,7 @@
     "minutesAgo": "{minutes} دقیقه قبل",
     "buyWith": "خرید با {coinA} یا {coinB}",
     "orderHistory": "تاریخچه سفارش ها",
+    "openOrderbook": "باز کردن دفتر سفارش",
     "tradeAnotherAssetOr": "دارایی دیگری را برای {coinA} یا {coinB} مبادله کنید.",
     "tradeAnotherAsset": "دارایی دیگری را برای {coinDenom} مبادله کنید",
     "sellAnAsset": "فروش یک دارایی",
@@ -1555,5 +1560,8 @@
       "stepTitle": "تبدیل {symbol} به {symbol}.wh",
       "description": "شما {balance} {symbol} به صورت دارایی آلویدشده دارید. Wormhole واریانت {symbol}.wh را پل می‌زند، پس ابتدا تبدیل کنید و سپس در پایین پل بزنید."
     }
+  },
+  "tradeView": {
+    "orderBook": "دفتر سفارش"
   }
 }

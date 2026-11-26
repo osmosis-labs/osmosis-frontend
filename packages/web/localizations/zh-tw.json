@@ -569,7 +569,11 @@
       "depthNoOrders": "暫無掛單",
       "depthNoOrdersDesc": "該訂單簿目前為空",
       "depthUnavailable": "深度資料無法使用",
-      "depthUnavailableDesc": "無法載入委託簿深度。正在重試..."
+      "depthUnavailableDesc": "無法載入委託簿深度。正在重試...",
+      "depthClLegend": "含 CL 池",
+      "depthClLegendTooltip": "斜紋柱包含此交易對集中流動性池的流動性。這是 AMM 曲線流動性，不是掛單；顯示的數量僅為掛單。",
+      "depthClUnavailable": "CL 深度不可用",
+      "depthRowWithCl": "掛單：{orders} · CL 池：{cl}"
     }
   },
   "pools": {
@@ -1378,6 +1382,7 @@
     "orderHistory": "訂單歷史",
     "tradeAnotherAssetOr": "用其他資產換取{coinA}或{coinB}",
     "tradeAnotherAsset": "用其他資產換取{coinDenom}",
+    "openOrderbook": "打開訂單簿",
     "sellAnAsset": "出售資產",
     "swapAnAsset": "兌換資產",
     "of": "的",
@@ -1555,5 +1560,8 @@
       "stepTitle": "將 {symbol} 轉換為 {symbol}.wh",
       "description": "您持有 {balance} {symbol} 作為合金資產。Wormhole 跨鏈的是 {symbol}.wh 變體，請先轉換，然後在下方跨鏈。"
     }
+  },
+  "tradeView": {
+    "orderBook": "訂單簿"
   }
 }

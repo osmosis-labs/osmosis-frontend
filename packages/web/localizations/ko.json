@@ -569,7 +569,11 @@
       "depthNoOrders": "미체결 주문 없음",
       "depthNoOrdersDesc": "이 주문서는 현재 비어 있습니다",
       "depthUnavailable": "호가창 깊이 데이터 없음",
-      "depthUnavailableDesc": "주문서 깊이를 불러올 수 없습니다. 재시도 중..."
+      "depthUnavailableDesc": "주문서 깊이를 불러올 수 없습니다. 재시도 중...",
+      "depthClLegend": "CL 풀 포함",
+      "depthClLegendTooltip": "빗금 막대에는 이 페어의 집중 유동성 풀 유동성이 포함됩니다. 이는 AMM 곡선 유동성이며 대기 주문이 아닙니다. 표시된 수량은 주문만입니다.",
+      "depthClUnavailable": "CL 깊이를 불러올 수 없음",
+      "depthRowWithCl": "주문: {orders} · CL 풀: {cl}"
     }
   },
   "pools": {
@@ -1376,6 +1380,7 @@
     "minutesAgo": "{minutes} 분 전",
     "buyWith": "{coinA} 또는 {coinB} 로 구매하세요.",
     "orderHistory": "주문 내역",
+    "openOrderbook": "오더북 열기",
     "tradeAnotherAssetOr": "다른 자산을 {coinA} 또는 {coinB} 로 교환하세요",
     "tradeAnotherAsset": "다른 자산을 {coinDenom} 으로 교환하세요",
     "sellAnAsset": "자산 판매",
@@ -1555,5 +1560,8 @@
       "stepTitle": "{symbol}을 {symbol}.wh로 변환",
       "description": "합금 자산으로 {balance} {symbol}을 보유하고 있습니다. Wormhole은 {symbol}.wh 변형을 브리지하므로 먼저 변환한 다음 아래에서 브리지하세요."
     }
+  },
+  "tradeView": {
+    "orderBook": "오더북"
   }
 }

@@ -569,7 +569,11 @@
       "depthNoOrders": "Sem ordens abertas",
       "depthNoOrdersDesc": "Este livro de ordens está vazio",
       "depthUnavailable": "Dados de profundidade indisponíveis",
-      "depthUnavailableDesc": "Não foi possível carregar a profundidade do livro de ordens. Tentando novamente..."
+      "depthUnavailableDesc": "Não foi possível carregar a profundidade do livro de ordens. Tentando novamente...",
+      "depthClLegend": "Incl. pools CL",
+      "depthClLegendTooltip": "As barras hachuradas incluem liquidez de pools de liquidez concentrada para este par. É liquidez da curva AMM, não ordens em aberto; as quantidades exibidas são apenas ordens.",
+      "depthClUnavailable": "Profundidade CL indisponível",
+      "depthRowWithCl": "Ordens: {orders} · Pools CL: {cl}"
     }
   },
   "pools": {
@@ -1376,6 +1380,7 @@
     "minutesAgo": "há {minutes} min",
     "buyWith": "Compre com {coinA} ou {coinB}",
     "orderHistory": "Histórico de ordens",
+    "openOrderbook": "Abrir livro de ofertas",
     "tradeAnotherAssetOr": "Negocie outro ativo por {coinA} ou {coinB}",
     "tradeAnotherAsset": "Negocie outro ativo por {coinDenom}",
     "sellAnAsset": "Vender um ativo",
@@ -1555,5 +1560,8 @@
       "stepTitle": "Converter {symbol} para {symbol}.wh",
       "description": "Você tem {balance} {symbol} como ativo alloyed. A Wormhole faz a ponte da variante {symbol}.wh, então converta primeiro e depois faça a ponte abaixo."
     }
+  },
+  "tradeView": {
+    "orderBook": "Livro de ofertas"
   }
 }

@@ -569,7 +569,11 @@
       "depthNoOrders": "Нет открытых ордеров",
       "depthNoOrdersDesc": "Книга ордеров пуста",
       "depthUnavailable": "Данные глубины недоступны",
-      "depthUnavailableDesc": "Не удалось загрузить глубину стакана заявок. Повторная попытка..."
+      "depthUnavailableDesc": "Не удалось загрузить глубину стакана заявок. Повторная попытка...",
+      "depthClLegend": "Вкл. пулы CL",
+      "depthClLegendTooltip": "Заштрихованные полосы включают ликвидность пулов концентрированной ликвидности для этой пары. Это ликвидность кривой AMM, а не лимитные ордера; показанные объёмы — только ордера.",
+      "depthClUnavailable": "Глубина CL недоступна",
+      "depthRowWithCl": "Ордера: {orders} · Пулы CL: {cl}"
     }
   },
   "pools": {
@@ -1376,6 +1380,7 @@
     "minutesAgo": "{minutes} мин назад",
     "buyWith": "Купите с помощью {coinA} или {coinB}",
     "orderHistory": "История ордеров",
+    "openOrderbook": "Открыть книгу ордеров",
     "tradeAnotherAssetOr": "Обменяйте другой актив на {coinA} или {coinB}",
     "tradeAnotherAsset": "Обменяйте другой актив на {coinDenom}",
     "sellAnAsset": "Продать актив",
@@ -1555,5 +1560,8 @@
       "stepTitle": "Конвертировать {symbol} в {symbol}.wh",
       "description": "У вас есть {balance} {symbol} в виде alloyed-актива. Wormhole делает бридж варианта {symbol}.wh, поэтому сначала конвертируйте, затем используйте бридж ниже."
     }
+  },
+  "tradeView": {
+    "orderBook": "Книга ордеров"
   }
 }
