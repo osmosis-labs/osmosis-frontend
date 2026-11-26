@@ -2055,10 +2055,33 @@ export const useBridgeQuotes = ({
       }),
       description: t("taprootAddressNotSupported"),
     };
-  } else if (bridgeTransaction.error || Boolean(someError)) {
+  } else if (someError) {
+    // A quote request errored and no provider returned a usable quote. Surfaced
+    // on both the amount (preview) and review screens via this shared message
+    // (MTN-351) — friendlier and more actionable than the old generic
+    // "something isn't working".
+    errorBoxMessage = {
+      heading: t("transfer.noQuotesAvailableTitle"),
+      description: t("transfer.noQuotesAvailableDescription"),
+    };
+  } else if (bridgeTransaction.error) {
     errorBoxMessage = {
       heading: t("transfer.somethingIsntWorking"),
       description: t("transfer.sorryForTheInconvenience"),
+    };
+  } else if (
+    !selectedQuote &&
+    isBridgeProviderControlledMode &&
+    dropdownQuotes.length > 0 &&
+    !isSpeedQuoteHeld
+  ) {
+    // The user pinned a specific provider in the quote dropdown that now has no
+    // quote for this amount, while other providers still do. Point them at the
+    // other options rather than only the amount (MTN-351). Surfaced on both the
+    // amount (preview) and review screens.
+    errorBoxMessage = {
+      heading: t("transfer.quoteProviderUnavailableTitle"),
+      description: t("transfer.quoteProviderUnavailableDescription"),
     };
   } else if (warnUserOfSlippage) {
     highLossWarningActive = true;

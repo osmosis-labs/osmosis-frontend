@@ -34,7 +34,17 @@
     "low": "低的",
     "buttonCreateAndStake": "創建倉位和股份",
     "estimated": "估計的",
-    "estimatedInfo": "這是基於當前選定價格的估計值。實際年利率可能會有所不同。如果部位超出範圍，年利率將為 0%。"
+    "estimatedInfo": "這是基於當前選定價格的估計值。實際年利率可能會有所不同。如果部位超出範圍，年利率將為 0%。",
+    "singleAsset": {
+      "splitBreakdown": "您的 {inputAmount} {inputDenom} 中，{swapAmount} {inputDenom}（{swapPercent}）將兌換為 {outDenom} 以符合部位比例。",
+      "noSwapNeeded": "您選定的範圍只需要 {inputDenom}，無須兌換。",
+      "valueIn": "輸入價值",
+      "valueOut": "輸出價值",
+      "totalCost": "總成本",
+      "totalCostWarning": "此存入的總成本為 {totalCost}，包括價格影響和兌換費用，這會減少進入您倉位的價值。",
+      "quoteLoading": "正在尋找最佳兌換方案…",
+      "impactDataUnavailable": "無法載入檢查此兌換價格影響所需的池流動性資料。請稍後再試。"
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "什麼是流動性增強？",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "是的，我明白這可能導致資金嚴重損失，我仍希望繼續。",
     "quoteUpdatedTitle": "報價已更新",
     "quoteUpdatedCaption": "自您確認以來報價已發生變化。請查看更新後的詳情並重新確認。",
+    "noQuotesAvailableTitle": "暫無可用報價",
+    "noQuotesAvailableDescription": "無法取得此金額的報價。請嘗試其他金額，或稍後再查看。",
+    "quoteProviderUnavailableTitle": "此選項不可用",
+    "quoteProviderUnavailableDescription": "您所選的轉賬選項不適用於此金額。請嘗試其他金額，在轉賬詳情中選擇其他選項，或稍後再查看。",
     "slippageTooHighTitle": "滑點偏高",
     "slippageTooHighDescription": "此轉賬的滑點偏高。請嘗試較小的金額，或接受損失風險以繼續。",
     "priceImpactTooHighTitle": "價格影響偏高",

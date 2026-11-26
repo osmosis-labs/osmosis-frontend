@@ -34,7 +34,17 @@
     "low": "low",
     "buttonCreateAndStake": "Create Position & Stake",
     "estimated": "Estimated",
-    "estimatedInfo": "This is an estimate based on the current selected prices. The actual APR may vary. If the position goes out of range, the APR will be 0%."
+    "estimatedInfo": "This is an estimate based on the current selected prices. The actual APR may vary. If the position goes out of range, the APR will be 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Of your {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) will be swapped to {outDenom} to match the position ratio.",
+      "noSwapNeeded": "Your selected range only needs {inputDenom}, so no swap is required.",
+      "valueIn": "Value in",
+      "valueOut": "Value out",
+      "totalCost": "Total cost",
+      "totalCostWarning": "The total cost of this deposit is {totalCost}, including price impact and swap fees, which reduces the value that reaches your position.",
+      "quoteLoading": "Finding the best swap…",
+      "impactDataUnavailable": "Pool liquidity data needed to check this swap's price impact could not be loaded. Please try again shortly."
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "What is Supercharged Liquidity?",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "Yes, I understand this could cause heavy loss of funds and I wish to proceed.",
     "quoteUpdatedTitle": "Quote updated",
     "quoteUpdatedCaption": "The quote changed since you confirmed. Please review the updated details and confirm again.",
+    "noQuotesAvailableTitle": "No quotes available",
+    "noQuotesAvailableDescription": "We couldn't get a quote for this amount. Try a different amount, or check again shortly.",
+    "quoteProviderUnavailableTitle": "This option is unavailable",
+    "quoteProviderUnavailableDescription": "The transfer option you selected isn't available for this amount. Try a different amount, choose another option in the transfer details, or check again shortly.",
     "slippageTooHighTitle": "Slippage is high",
     "slippageTooHighDescription": "Slippage on this transfer is high. Try a smaller amount, or accept the risk of loss to proceed.",
     "priceImpactTooHighTitle": "Price impact is high",

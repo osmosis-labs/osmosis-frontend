@@ -12,9 +12,11 @@ an entry for every ID. There are no Next API wrappers.
 | -------- | ----------------------------- | --------------------------------- |
 | `stage`  | `osmosis-frontend-stage`      | `osmosis-frontend-api-stage`      |
 | `master` | `osmosis-frontend-production` | `osmosis-frontend-api-production` |
+| `stage`  | `osmosis-frontend-testnet`    | `osmosis-frontend-api-testnet`    |
 
 `.github/workflows/cf-deploy.yml` deploys both Workers on pushes to those branches,
-API first. PR Previews use the deployed stage API Worker, so a PR's API changes
+API first. The testnet pair (`--env testnet`, testnet.osmosis.zone) is a second
+build of `stage` with the `cloudflare-testnet` GitHub environment's chain settings. PR Previews use the deployed stage API Worker, so a PR's API changes
 are not included in its Preview. Validate those locally before merging.
 
 ## Environment

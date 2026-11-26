@@ -34,7 +34,17 @@
     "low": "scăzut",
     "buttonCreateAndStake": "Creați poziție și miză",
     "estimated": "Estimată",
-    "estimatedInfo": "Aceasta este o estimare bazată pe prețurile curente selectate. DAE reală poate varia. Dacă poziția iese din interval, APR va fi de 0%."
+    "estimatedInfo": "Aceasta este o estimare bazată pe prețurile curente selectate. DAE reală poate varia. Dacă poziția iese din interval, APR va fi de 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Din {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) vor fi schimbați în {outDenom} pentru a se potrivi cu raportul poziției.",
+      "noSwapNeeded": "Gama selectată necesită doar {inputDenom}, deci nu este necesară vreo schimbare.",
+      "valueIn": "Valoare intrare",
+      "valueOut": "Valoare ieșire",
+      "totalCost": "Cost total",
+      "totalCostWarning": "Costul total al acestui depozit este {totalCost}, incluzând impactul asupra prețului și comisioanele de schimb, ceea ce reduce valoarea care ajunge în poziția ta.",
+      "quoteLoading": "Se caută cea mai bună schimbare…",
+      "impactDataUnavailable": "Datele de lichiditate ale pool-ului necesare pentru verificarea impactului asupra prețului acestui swap nu au putut fi încărcate. Încearcă din nou în curând."
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Ce este lichiditatea supraalimentată?",
@@ -1032,6 +1042,10 @@
     "lossAcknowledgement": "Da, înțeleg că acest lucru ar putea cauza pierderi mari de fonduri și doresc să continui.",
     "quoteUpdatedTitle": "Cotație actualizată",
     "quoteUpdatedCaption": "Cotația s-a schimbat de la confirmarea dvs. Verificați detaliile actualizate și confirmați din nou.",
+    "noQuotesAvailableTitle": "Nicio cotație disponibilă",
+    "noQuotesAvailableDescription": "Nu am putut obține o cotație pentru această sumă. Încercați o altă sumă sau reveniți mai târziu.",
+    "quoteProviderUnavailableTitle": "Această opțiune nu este disponibilă",
+    "quoteProviderUnavailableDescription": "Opțiunea de transfer pe care ați selectat-o nu este disponibilă pentru această sumă. Încercați o altă sumă, alegeți o altă opțiune în detaliile transferului sau reveniți mai târziu.",
     "slippageTooHighTitle": "Slippage-ul este mare",
     "slippageTooHighDescription": "Slippage-ul pentru acest transfer este mare. Încercați o sumă mai mică sau acceptați riscul de pierdere pentru a continua.",
     "priceImpactTooHighTitle": "Impactul asupra prețului este mare",
