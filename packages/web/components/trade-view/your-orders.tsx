@@ -88,7 +88,7 @@ export const OrderbookYourOrders: FunctionComponent<{
   return (
     <div className="rounded-3xl border border-osmoverse-700 p-6">
       <div className="mb-4 flex items-center gap-3">
-        <h4>{t("pool.orderbookPool.yourOrders")}</h4>
+        <h6>{t("pool.orderbookPool.yourOrders")}</h6>
         <div className="ml-auto flex gap-1 rounded-lg bg-osmoverse-800 p-0.5">
           {(["all", "bid", "ask"] as const).map((f) => (
             <button
@@ -289,7 +289,7 @@ const PoolOrderGroupHeader: FunctionComponent<{
     return (
       <tr className="flex w-full items-center py-2">
         <td className="flex min-w-0 flex-1 items-center gap-2 !px-0">
-          <span className="shrink-0 text-h5 font-h5">
+          <span className="subtitle1 shrink-0">
             {t("limitOrders.orderHistoryHeaders.filled")}
           </span>
           {claimableCount > 0 && (
@@ -341,7 +341,7 @@ const PoolOrderGroupHeader: FunctionComponent<{
   return (
     <tr className="flex items-center py-2">
       <td colSpan={6} className="!px-0">
-        <span className="text-h5 font-h5">
+        <span className="subtitle1">
           {group === "pending"
             ? t("limitOrders.orderHistoryHeaders.pending")
             : t("limitOrders.orderHistoryHeaders.past")}

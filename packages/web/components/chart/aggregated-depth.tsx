@@ -23,11 +23,73 @@ function formatPrice(price: number): string {
   return price.toPrecision(4);
 }
 
+/**
+ * A level as shown. A summary row (`beyond`) can stand for several levels at
+ * different prices, so it carries its own quote values.
+ */
+type DisplayLevel = OrderbookLevel & {
+  /** Quote value of the row's orders; price x quantity when absent. */
+  quoteValue?: number;
+  /** Quote value including CL; price x (quantity + CL) when absent. */
+  totalQuoteValue?: number;
+};
+
+const ordersQuote = (l: DisplayLevel) => l.quoteValue ?? l.price * l.quantity;
+const totalQuote = (l: DisplayLevel) =>
+  l.totalQuoteValue ?? l.price * (l.quantity + (l.clQuantity ?? 0));
+
+/**
+ * At most `max` rows per side, best first. Everything past the last row that
+ * fits (further orders, and the server's summary level for CL past the
+ * outermost order) folds into one summary row priced at that last row, shown
+ * as "< price" for bids and "> price" for asks, so no liquidity is dropped.
+ */
+function foldLevels(
+  levels: OrderbookLevel[],
+  max: number,
+  showEdges: boolean
+): DisplayLevel[] {
+  if (!showEdges) return levels.filter((l) => !l.beyond).slice(0, max);
+  if (levels.length <= max) return levels;
+  const shown = levels.slice(0, max - 1);
+  const rest = levels.slice(max - 1);
+  const edge = shown.at(-1)!;
+  const quantity = rest.reduce((sum, l) => sum + l.quantity, 0);
+  const clQuantity = rest.reduce((sum, l) => sum + (l.clQuantity ?? 0), 0);
+  // Valued at no more than the row's own price: a far ask (say 70 OSMO at
+  // 9,999 USDC) would otherwise dominate the row's quote total. Bids past
+  // the edge are all below it, so their own total is already the smaller.
+  const quoteValue = Math.min(
+    rest.reduce((sum, l) => sum + ordersQuote(l), 0),
+    quantity * edge.price
+  );
+  return [
+    ...shown,
+    {
+      price: edge.price,
+      quantity,
+      cumulative: rest.at(-1)!.cumulative,
+      clQuantity,
+      beyond: true,
+      quoteValue,
+      // CL is capped at the row's own price for the same reason. For bids
+      // each level's own price is the smaller, and the server's CL summary
+      // level is priced at the outermost bid, not at this row.
+      totalQuoteValue:
+        quoteValue +
+        Math.min(
+          rest.reduce((sum, l) => sum + (l.clQuantity ?? 0) * l.price, 0),
+          clQuantity * edge.price
+        ),
+    },
+  ];
+}
+
 /** Running total of price x quantity per level, in quote units. */
-function cumulativeQuoteValue(levels: OrderbookLevel[]): number[] {
+function cumulativeQuoteValue(levels: DisplayLevel[]): number[] {
   const totals: number[] = [];
   for (const l of levels) {
-    totals.push((totals.at(-1) ?? 0) + l.price * l.quantity);
+    totals.push((totals.at(-1) ?? 0) + ordersQuote(l));
   }
   return totals;
 }
@@ -43,7 +105,7 @@ function formatQuantity(qty: number): string {
 // ── Level 2 table ─────────────────────────────────────────────────────────────
 
 const OrderRow: FunctionComponent<{
-  level: OrderbookLevel;
+  level: DisplayLevel;
   maxQuoteValue: number;
   /** Cumulative quote value of resting orders up to this level. */
   cumulativeQuoteValue: number;
@@ -71,7 +133,12 @@ const OrderRow: FunctionComponent<{
     maxQuoteValue > 0 ? (cumulativeTotalQuoteValue / maxQuoteValue) * 100 : 0;
   const clQuantity = level.clQuantity ?? 0;
   const isBid = side === "bid";
-  const quoteAmount = level.price * level.quantity;
+  // A summary row stands for what is not shown, so its columns include CL;
+  // other rows show resting orders, with CL in the hatched bar and tooltip.
+  const quoteAmount = level.beyond ? totalQuote(level) : ordersQuote(level);
+  const baseAmount = level.beyond
+    ? level.quantity + (level.clQuantity ?? 0)
+    : level.quantity;
 
   const baseColor = isBid
     ? theme.colors.bullish["400"]
@@ -79,11 +146,13 @@ const OrderRow: FunctionComponent<{
 
   return (
     <div
-      className="relative grid cursor-pointer grid-cols-3 px-2 py-0.5 font-mono text-xs"
+      className={`relative grid grid-cols-3 px-2 py-0.5 font-mono text-xs ${
+        level.beyond ? "cursor-default" : "cursor-pointer"
+      }`}
       style={{
         backgroundColor: isHighlighted ? baseColor + "18" : "transparent",
       }}
-      onClick={() => onPriceSelect?.(level.price)}
+      onClick={() => !level.beyond && onPriceSelect?.(level.price)}
       onMouseEnter={() => onHover(index)}
       onMouseLeave={() => onHover(null)}
       title={
@@ -114,10 +183,11 @@ const OrderRow: FunctionComponent<{
         }}
       />
       <span className={isBid ? "text-bullish-400" : "text-rust-400"}>
+        {level.beyond ? (isBid ? "< " : "> ") : ""}
         {formatPrice(level.price)}
       </span>
       <span className="text-right text-osmoverse-200">
-        {formatQuantity(level.quantity)}
+        {formatQuantity(baseAmount)}
       </span>
       <span className="text-right text-osmoverse-400">
         {formatQuantity(quoteAmount)}
@@ -156,6 +226,11 @@ export const OrderbookDepthPanel: FunctionComponent<{
   onClEnabledChange?: (enabled: boolean) => void;
   /** CL pool liquidity could not be loaded; levels are orders only. */
   clUnavailable?: boolean;
+  /** Rows per side, including the "<" or ">" row. */
+  visibleLevels?: number;
+  /** Whether what is past the rows shown folds into a "<" and ">" row. */
+  showEdges?: boolean;
+  onShowEdgesChange?: (show: boolean) => void;
 }> = ({
   bids: bidsProp,
   asks: asksProp,
@@ -176,14 +251,20 @@ export const OrderbookDepthPanel: FunctionComponent<{
   clUnavailable,
   clEnabled = true,
   onClEnabledChange,
+  visibleLevels = 12,
+  showEdges = true,
+  onShowEdgesChange,
 }) => {
   // With CL off, ignore any CL amounts still on the levels (e.g. depth kept
-  // on screen while the orders-only result loads).
-  const bids = clEnabled ? bidsProp : bidsProp.map(withoutCl);
-  const asks = clEnabled ? asksProp : asksProp.map(withoutCl);
-  const VISIBLE_LEVELS = 12;
-  const visibleBids = bids.slice(0, VISIBLE_LEVELS);
-  const visibleAsks = asks.slice(0, VISIBLE_LEVELS);
+  // on screen while the orders-only result loads), and the CL-only levels
+  // past the book's edge with them.
+  const ordersOnly = (levels: OrderbookLevel[]) =>
+    levels.filter((l) => l.quantity > 0).map(withoutCl);
+  const bids = clEnabled ? bidsProp : ordersOnly(bidsProp);
+  const asks = clEnabled ? asksProp : ordersOnly(asksProp);
+  const VISIBLE_LEVELS = visibleLevels;
+  const visibleBids = foldLevels(bids, VISIBLE_LEVELS, showEdges);
+  const visibleAsks = foldLevels(asks, VISIBLE_LEVELS, showEdges);
 
   const [hoveredAsk, setHoveredAsk] = useState<number | null>(null);
   const [hoveredBid, setHoveredBid] = useState<number | null>(null);
@@ -193,18 +274,25 @@ export const OrderbookDepthPanel: FunctionComponent<{
   const bidQuoteCumulatives = cumulativeQuoteValue(visibleBids);
   const askQuoteCumulatives = cumulativeQuoteValue(visibleAsks);
   // The same including CL pool liquidity, for the lighter bar.
-  const totalCumulatives = (levels: OrderbookLevel[]) => {
+  const totalCumulatives = (levels: DisplayLevel[]) => {
     let cum = 0;
     return levels.map((l) => {
-      cum += l.price * (l.quantity + (l.clQuantity ?? 0));
+      cum += totalQuote(l);
       return cum;
     });
   };
   const bidTotalCumulatives = totalCumulatives(visibleBids);
   const askTotalCumulatives = totalCumulatives(visibleAsks);
+  // The bars scale to the rows shown, not the "<" and ">" rows: those can
+  // stand for far more (outlier orders, CL out to the curve's ends) and would
+  // flatten every other bar. Their own bars cap at full width.
+  const lastShown = (levels: DisplayLevel[], cumulatives: number[]) => {
+    const i = levels.findLastIndex((l) => !l.beyond);
+    return i >= 0 ? cumulatives[i] : 0;
+  };
   const maxQuoteValue = Math.max(
-    bidTotalCumulatives.at(-1) ?? 0,
-    askTotalCumulatives.at(-1) ?? 0
+    lastShown(visibleBids, bidTotalCumulatives),
+    lastShown(visibleAsks, askTotalCumulatives)
   );
 
   const skeletonRows = Array.from({ length: VISIBLE_LEVELS });
@@ -232,28 +320,115 @@ export const OrderbookDepthPanel: FunctionComponent<{
       ? visibleAsks[sweepIndex ?? 0]?.price
       : visibleBids[sweepIndex ?? 0]?.price;
 
-  if (!isLoading && bids.length === 0 && asks.length === 0) {
+  // The controls stay up in the empty state too, so a toggle that hid every
+  // row can be switched back.
+  const controls = (
+    <div className="flex items-center border-b border-osmoverse-700 px-3 py-1">
+      <div className="flex gap-1">
+        <button
+          onClick={() => onBucketSizeChange?.(undefined)}
+          className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+            bucketSize === undefined
+              ? "bg-osmoverse-700 text-white-full"
+              : "text-osmoverse-400 hover:text-osmoverse-200"
+          }`}
+        >
+          {t("pool.orderbookPool.depthRaw")}
+        </button>
+        {groupingOptions.map(({ label, value }) => (
+          <button
+            key={value}
+            onClick={() => onBucketSizeChange?.(value)}
+            className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+              bucketSize === value
+                ? "bg-osmoverse-700 text-white-full"
+                : "text-osmoverse-400 hover:text-osmoverse-200"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {onShowEdgesChange && (
+        <button
+          type="button"
+          aria-pressed={showEdges}
+          aria-label={t("pool.orderbookPool.depthEdgesTooltip")}
+          onClick={() => onShowEdgesChange(!showEdges)}
+          title={t("pool.orderbookPool.depthEdgesTooltip")}
+          className={`ml-auto rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+            showEdges
+              ? "bg-osmoverse-700 text-white-full"
+              : "text-osmoverse-400 hover:text-osmoverse-200"
+          }`}
+        >
+          {"<>"}
+        </button>
+      )}
+      {onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) && (
+        <button
+          type="button"
+          aria-pressed={clEnabled}
+          onClick={() => onClEnabledChange(!clEnabled)}
+          title={t("pool.orderbookPool.depthClLegendTooltip")}
+          className={`${onShowEdgesChange ? "ml-1" : "ml-auto"} flex items-center gap-1 whitespace-nowrap rounded px-1.5 py-0.5 text-xs transition-colors ${
+            clEnabled
+              ? "bg-osmoverse-700 text-white-full"
+              : "text-osmoverse-400 hover:text-osmoverse-200"
+          }`}
+        >
+          <span
+            className="inline-block h-2 w-3 rounded-sm"
+            style={{
+              backgroundImage: `repeating-linear-gradient(135deg, ${theme.colors.osmoverse["300"]}${clEnabled ? "aa" : "44"} 0 2px, transparent 2px 4px)`,
+            }}
+          />
+          {t("pool.orderbookPool.depthClLegend")}
+        </button>
+      )}
+      {clEnabled && clUnavailable && (
+        <span className="ml-2 text-xs text-osmoverse-500">
+          {t("pool.orderbookPool.depthClUnavailable")}
+        </span>
+      )}
+      <span
+        className={`${onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) ? "ml-2" : "ml-auto"} mr-0.5 h-1.5 w-1.5 rounded-full ${
+          isLive ? "bg-bullish-400" : "animate-pulse bg-osmoverse-500"
+        }`}
+      />
+    </div>
+  );
+
+  // Empty states follow the rows shown: with the "<" and ">" rows off, a
+  // side holding only CL past the book's edge has nothing to show.
+  if (!isLoading && visibleBids.length === 0 && visibleAsks.length === 0) {
     if (isError) {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-          <p className="body2 text-osmoverse-300">
-            {t("pool.orderbookPool.depthUnavailable")}
-          </p>
-          <p className="caption text-osmoverse-500">
-            {t("pool.orderbookPool.depthUnavailableDesc")}
-          </p>
+        <div className="flex h-full flex-col overflow-hidden">
+          {controls}
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+            <p className="body2 text-osmoverse-300">
+              {t("pool.orderbookPool.depthUnavailable")}
+            </p>
+            <p className="caption text-osmoverse-500">
+              {t("pool.orderbookPool.depthUnavailableDesc")}
+            </p>
+          </div>
         </div>
       );
     }
     if (!isRefetching) {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-          <p className="body2 text-osmoverse-300">
-            {t("pool.orderbookPool.depthNoOrders")}
-          </p>
-          <p className="caption text-osmoverse-500">
-            {t("pool.orderbookPool.depthNoOrdersDesc")}
-          </p>
+        <div className="flex h-full flex-col overflow-hidden">
+          {controls}
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+            <p className="body2 text-osmoverse-300">
+              {t("pool.orderbookPool.depthNoOrders")}
+            </p>
+            <p className="caption text-osmoverse-500">
+              {t("pool.orderbookPool.depthNoOrdersDesc")}
+            </p>
+          </div>
         </div>
       );
     }
@@ -263,76 +438,18 @@ export const OrderbookDepthPanel: FunctionComponent<{
     !isLoading &&
     !isRefetching &&
     !isError &&
-    asks.length === 0 &&
-    bids.length > 0;
+    visibleAsks.length === 0 &&
+    visibleBids.length > 0;
   const noBids =
     !isLoading &&
     !isRefetching &&
     !isError &&
-    bids.length === 0 &&
-    asks.length > 0;
+    visibleBids.length === 0 &&
+    visibleAsks.length > 0;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      {/* Aggregation selector + live indicator */}
-      <div className="flex items-center border-b border-osmoverse-700 px-3 py-1">
-        <div className="flex gap-1">
-          <button
-            onClick={() => onBucketSizeChange?.(undefined)}
-            className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
-              bucketSize === undefined
-                ? "bg-osmoverse-700 text-white-full"
-                : "text-osmoverse-400 hover:text-osmoverse-200"
-            }`}
-          >
-            {t("pool.orderbookPool.depthRaw")}
-          </button>
-          {groupingOptions.map(({ label, value }) => (
-            <button
-              key={value}
-              onClick={() => onBucketSizeChange?.(value)}
-              className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
-                bucketSize === value
-                  ? "bg-osmoverse-700 text-white-full"
-                  : "text-osmoverse-400 hover:text-osmoverse-200"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        {onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) && (
-          <button
-            type="button"
-            aria-pressed={clEnabled}
-            onClick={() => onClEnabledChange(!clEnabled)}
-            title={t("pool.orderbookPool.depthClLegendTooltip")}
-            className={`ml-auto flex items-center gap-1 rounded px-1.5 py-0.5 text-xs transition-colors ${
-              clEnabled
-                ? "bg-osmoverse-700 text-white-full"
-                : "text-osmoverse-400 hover:text-osmoverse-200"
-            }`}
-          >
-            <span
-              className="inline-block h-2 w-3 rounded-sm"
-              style={{
-                backgroundImage: `repeating-linear-gradient(135deg, ${theme.colors.osmoverse["300"]}${clEnabled ? "aa" : "44"} 0 2px, transparent 2px 4px)`,
-              }}
-            />
-            {t("pool.orderbookPool.depthClLegend")}
-          </button>
-        )}
-        {clEnabled && clUnavailable && (
-          <span className="ml-2 text-xs text-osmoverse-500">
-            {t("pool.orderbookPool.depthClUnavailable")}
-          </span>
-        )}
-        <span
-          className={`${onClEnabledChange && (clIncluded || clUnavailable || !clEnabled) ? "ml-2" : "ml-auto"} mr-0.5 h-1.5 w-1.5 rounded-full ${
-            isLive ? "bg-bullish-400" : "animate-pulse bg-osmoverse-500"
-          }`}
-        />
-      </div>
+      {controls}
       {/* Column headers */}
       <div className="grid grid-cols-3 px-3 py-0.5 font-mono text-xs text-osmoverse-500">
         <span>{t("pool.orderbookPool.depthPrice")}</span>

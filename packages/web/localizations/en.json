@@ -556,7 +556,7 @@
       "type": "Orderbook",
       "spread": "Spread",
       "makerFee": "Maker fee",
-      "yourOrders": "Your Orders",
+      "yourOrders": "Your orders",
       "noOrders": "No orders for this pair",
       "noOrdersDesc": "Place your first limit order.",
       "filterAll": "All",
@@ -567,11 +567,12 @@
       "depthNoAsks": "No asks",
       "depthNoBids": "No bids",
       "depthNoOrders": "No open orders",
-      "depthNoOrdersDesc": "This order book is currently empty",
+      "depthNoOrdersDesc": "This orderbook is currently empty",
       "depthUnavailable": "Depth data unavailable",
-      "depthUnavailableDesc": "Unable to load order book depth. Retrying...",
+      "depthUnavailableDesc": "Unable to load orderbook depth. Retrying...",
       "depthClLegend": "Incl. CL pools",
       "depthClLegendTooltip": "Hatched bars include liquidity from concentrated liquidity pools for this pair. It is AMM curve liquidity, not resting orders; quantities shown are orders only.",
+      "depthEdgesTooltip": "Show the liquidity past the rows shown as one < and > row",
       "depthClUnavailable": "CL depth unavailable",
       "depthRowWithCl": "Orders: {orders} · CL pools: {cl}",
       "retiredQuoteDesc": "{quote} isn't offered as a quote for new limit orders. You can still claim and cancel your orders on this book.",
@@ -1383,7 +1384,7 @@
     "minutesAgo": "{minutes}m ago",
     "buyWith": "Buy with {coinA} or {coinB}",
     "orderHistory": "Order history",
-    "openOrderbook": "Open orderbook",
+    "openOrderbook": "Open {pair} orderbook",
     "tradeAnotherAssetOr": "Trade another asset for {coinA} or {coinB}",
     "tradeAnotherAsset": "Trade another asset for {coinDenom}",
     "sellAnAsset": "Sell an asset",
@@ -1567,6 +1568,6 @@
   "tradeView": {
     "expand": "Expand trade view",
     "collapse": "Collapse trade view",
-    "orderBook": "Order book"
+    "orderBook": "Orderbook"
   }
 }

@@ -1,4 +1,8 @@
-import { clAmountsInPriceInterval, clQuantitiesOnLevels } from "../cl-depth";
+import {
+  clAmountsInPriceInterval,
+  clBeyondEdges,
+  clQuantitiesOnLevels,
+} from "../cl-depth";
 
 // One range between raw prices 1 and 4 (sqrt 1 and 2) with liquidity 1e6,
 // pool price 2.25 (sqrt 1.5). Above the price: token0 = L(1/1.5 - 1/2).
@@ -107,5 +111,21 @@ describe("clQuantitiesOnLevels", () => {
     expect(asks[0]).toBeCloseTo((1e6 * (1 / 1.5 - 1 / 1.75)) / 1e6, 9);
     expect(asks[1]).toBeCloseTo((1e6 * (1 / 1.75 - 1 / 2)) / 1e6, 9);
     expect(asks[0] + asks[1]).toBeCloseTo(token0Above / 1e6, 9);
+  });
+});
+
+describe("clBeyondEdges", () => {
+  it("sums the CL past each edge: base above the ask edge, quote below the bid edge at the edge price", () => {
+    const { bid, ask } = clBeyondEdges({
+      pools: [{ ranges: [range], currentSqrtPrice: 1.5, token0IsBase: true }],
+      bidEdge: 2,
+      askEdge: 3,
+      baseDecimals: 6,
+      quoteDecimals: 6,
+    });
+    // Quote held from the range's bottom (sqrt 1) up to the edge (sqrt 2).
+    expect(bid).toBeCloseTo((1e6 * (Math.sqrt(2) - 1)) / 1e6 / 2, 9);
+    // Base held from the edge (sqrt 3) to the range's top (sqrt 4).
+    expect(ask).toBeCloseTo((1e6 * (1 / Math.sqrt(3) - 1 / 2)) / 1e6, 9);
   });
 });

@@ -471,11 +471,11 @@ export const AssetStats = (props: CustomClasses) => {
   ]);
 
   return (
-    <section className={classNames("flex flex-col gap-8", className)}>
+    <section className={classNames("flex flex-col gap-3", className)}>
       <header>
-        <h6>{t("tokenInfos.info.title")}</h6>
+        <h5>{t("tokenInfos.info.title")}</h5>
       </header>
-      <ul className="flex flex-col gap-6">
+      <ul className="flex flex-col gap-3">
         {stats.map((stat) => (
           <Stat key={stat.title} {...stat} />
         ))}
