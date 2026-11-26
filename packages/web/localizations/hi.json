@@ -551,7 +551,26 @@
     "yourStats": "आपका पूल संतुलन",
     "onlyInRangePositions": "केवल रेंज में पदों के लिए",
     "custom": "रिवाज़",
-    "nextRewardIn": "अगला पुरस्कार"
+    "nextRewardIn": "अगला पुरस्कार",
+    "orderbookPool": {
+      "type": "ऑर्डर बुक",
+      "spread": "स्प्रेड",
+      "makerFee": "मेकर शुल्क",
+      "yourOrders": "आपके ऑर्डर",
+      "noOrders": "इस जोड़ी के लिए कोई ऑर्डर नहीं",
+      "noOrdersDesc": "अपना पहला सीमा ऑर्डर दें।",
+      "filterAll": "सभी",
+      "filterBuy": "खरीदें",
+      "filterSell": "बेचें",
+      "depthPrice": "मूल्य",
+      "depthRaw": "कच्चा",
+      "depthNoAsks": "कोई विक्रय आदेश नहीं",
+      "depthNoBids": "कोई क्रय आदेश नहीं",
+      "depthNoOrders": "कोई खुले आदेश नहीं",
+      "depthNoOrdersDesc": "यह ऑर्डर बुक वर्तमान में खाली है",
+      "depthUnavailable": "गहराई डेटा अनुपलब्ध",
+      "depthUnavailableDesc": "ऑर्डर बुक गहराई लोड करने में असमर्थ। पुनः प्रयास हो रहा है..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1346,7 +1365,6 @@
     "pay": "भुगतान",
     "open": "खुला",
     "filled": "भरा गया",
-    "claimable": "प्राप्त करने योग्य",
     "claimAndClose": "प्राप्त करें और बंद करें",
     "close": "बंद करें",
     "claim": "प्राप्त करें",

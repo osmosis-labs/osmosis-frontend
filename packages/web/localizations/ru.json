@@ -551,7 +551,26 @@
     "yourStats": "Ваш баланс в пуле",
     "onlyInRangePositions": "Только для позиций в диапазоне",
     "custom": "Обычай",
-    "nextRewardIn": "Следующая награда через"
+    "nextRewardIn": "Следующая награда через",
+    "orderbookPool": {
+      "type": "Книга заявок",
+      "spread": "Спред",
+      "makerFee": "Комиссия мейкера",
+      "yourOrders": "Ваши ордера",
+      "noOrders": "Нет ордеров для этой пары",
+      "noOrdersDesc": "Разместите первый лимитный ордер.",
+      "filterAll": "Все",
+      "filterBuy": "Купить",
+      "filterSell": "Продать",
+      "depthPrice": "Цена",
+      "depthRaw": "Без группировки",
+      "depthNoAsks": "Нет предложений",
+      "depthNoBids": "Нет заявок",
+      "depthNoOrders": "Нет открытых ордеров",
+      "depthNoOrdersDesc": "Книга ордеров пуста",
+      "depthUnavailable": "Данные глубины недоступны",
+      "depthUnavailableDesc": "Не удалось загрузить глубину стакана заявок. Повторная попытка..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1346,7 +1365,6 @@
     "pay": "Оплата",
     "open": "Открыт",
     "filled": "Исполнено",
-    "claimable": "Можно получить",
     "claimAndClose": "Получить и закрыть",
     "close": "Закрыть",
     "claim": "Получить",

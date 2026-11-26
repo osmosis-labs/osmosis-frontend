@@ -498,14 +498,19 @@ export const useOrderbookClaimableOrders = ({
   userAddress,
   disabled = false,
   refetchInterval = 5000,
+  orderbookAddress,
 }: {
   userAddress: string;
   disabled?: boolean;
   refetchInterval?: number;
+  /** Limits claiming to one orderbook, e.g. on that pool's own page. */
+  orderbookAddress?: string;
 }) => {
   const { orderbooks } = useOrderbooks();
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
-  const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
+  const addresses = orderbooks
+    .map(({ contractAddress }) => contractAddress)
+    .filter((address) => !orderbookAddress || address === orderbookAddress);
   const { data: orders, isLoading } = useClaimableOrdersQuery({
     userAddress,
     disabled,

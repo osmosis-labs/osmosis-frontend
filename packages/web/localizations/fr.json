@@ -551,7 +551,26 @@
     "yourStats": "Le solde de votre piscine",
     "onlyInRangePositions": "Uniquement pour les positions dans la plage",
     "custom": "Coutume",
-    "nextRewardIn": "Prochaine récompense dans"
+    "nextRewardIn": "Prochaine récompense dans",
+    "orderbookPool": {
+      "type": "Carnet d'ordres",
+      "spread": "Écart",
+      "makerFee": "Frais du créateur",
+      "yourOrders": "Vos ordres",
+      "noOrders": "Aucun ordre pour cette paire",
+      "noOrdersDesc": "Passez votre premier ordre limité.",
+      "filterAll": "Tous",
+      "filterBuy": "Acheter",
+      "filterSell": "Vendre",
+      "depthPrice": "Prix",
+      "depthRaw": "Brut",
+      "depthNoAsks": "Aucune vente",
+      "depthNoBids": "Aucun achat",
+      "depthNoOrders": "Aucun ordre ouvert",
+      "depthNoOrdersDesc": "Ce carnet d'ordres est actuellement vide",
+      "depthUnavailable": "Données de profondeur indisponibles",
+      "depthUnavailableDesc": "Impossible de charger la profondeur du carnet d'ordres. Nouvelle tentative..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1346,7 +1365,6 @@
     "pay": "Payer",
     "open": "Ouvert",
     "filled": "Exécuté",
-    "claimable": "À réclamer",
     "claimAndClose": "Réclamer et clôturer",
     "close": "Fermer",
     "claim": "Réclamer",

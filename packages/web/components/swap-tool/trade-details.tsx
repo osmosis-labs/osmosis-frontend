@@ -34,6 +34,7 @@ interface TradeDetailsProps {
   makerFee?: Dec;
   priceOverride?: PricePretty;
   tab?: "buy" | "sell";
+  alwaysExpanded?: boolean;
 }
 
 export const TradeDetails = memo(
@@ -45,11 +46,15 @@ export const TradeDetails = memo(
     makerFee,
     tab,
     priceOverride,
+    alwaysExpanded = false,
   }: Partial<TradeDetailsProps>) => {
     const { t } = useTranslation();
     const routesVisDisclosure = useDisclosure();
 
     const [outAsBase, setOutAsBase] = useState(tab === "buy");
+    // The pool page's limit-only widget has no quotes, and its limit price
+    // input already shows the rate.
+    const hideRate = alwaysExpanded && type === "limit";
 
     const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 
@@ -95,99 +100,119 @@ export const TradeDetails = memo(
 
     return (
       <div className="flex w-full">
-        <Disclosure>
+        <Disclosure defaultOpen={alwaysExpanded}>
           {({ open, close }) => (
             <div
               className="flex w-full flex-col transition-all"
-              style={{
-                height: open ? detailsHeight : 32,
-                overflow: open ? "hidden" : undefined,
-              }}
+              style={
+                alwaysExpanded
+                  ? undefined
+                  : {
+                      height: open ? detailsHeight : 32,
+                      overflow: open ? "hidden" : undefined,
+                    }
+              }
             >
               <div ref={details} className="flex w-full flex-col">
-                <Closer
-                  isInAmountEmpty={isInAmountEmpty || isOutAmountEmpty}
-                  close={close}
-                />
-                <div className="flex min-h-[2rem] w-full items-start justify-between sm:min-h-[1.5rem]">
-                  <SkeletonLoader
-                    isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
-                  >
-                    <GenericDisclaimer
-                      title={t("tradeDetails.expectedRate.header")}
-                      body={t("tradeDetails.expectedRate.content")}
+                {!alwaysExpanded && (
+                  <Closer
+                    isInAmountEmpty={isInAmountEmpty || isOutAmountEmpty}
+                    close={close}
+                  />
+                )}
+                <div
+                  className={classNames(
+                    "flex w-full items-start justify-between",
+                    { "min-h-[2rem] sm:min-h-[1.5rem]": !hideRate }
+                  )}
+                >
+                  {!hideRate && (
+                    <SkeletonLoader
+                      isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
                     >
-                      <div className="flex items-center gap-2">
-                        {isLoading && (
-                          <Spinner className="!h-6 !w-6 text-wosmongton-500" />
-                        )}
-                        <span
-                          onClick={() => setOutAsBase(!outAsBase)}
+                      <GenericDisclaimer
+                        title={t("tradeDetails.expectedRate.header")}
+                        body={t("tradeDetails.expectedRate.content")}
+                      >
+                        <div className="flex items-center gap-2">
+                          {isLoading && (
+                            <Spinner className="!h-6 !w-6 text-wosmongton-500" />
+                          )}
+                          <span
+                            onClick={() => setOutAsBase(!outAsBase)}
+                            className={classNames(
+                              "body2 sm:caption py-1 text-osmoverse-300",
+                              {
+                                "animate-pulse":
+                                  inPriceFetching ||
+                                  isLoading ||
+                                  swapState?.inAmountInput.isTyping ||
+                                  swapState?.outAmountInput.isTyping,
+                              }
+                            )}
+                          >
+                            {swapState?.inBaseOutQuoteSpotPrice && (
+                              <SkeletonLoader
+                                isLoaded={
+                                  type !== "market" ||
+                                  !swapState.inAmountInput.isTyping ||
+                                  !swapState.outAmountInput.isTyping
+                                }
+                              >
+                                {ExpectedRate(
+                                  swapState,
+                                  outAsBase,
+                                  treatAsStable,
+                                  priceOverride
+                                )}
+                              </SkeletonLoader>
+                            )}
+                          </span>
+                        </div>
+                      </GenericDisclaimer>
+                    </SkeletonLoader>
+                  )}
+                  {!alwaysExpanded && (
+                    <Disclosure.Button
+                      className={classNames(
+                        "relative flex items-center justify-between py-1 transition-opacity"
+                      )}
+                      disabled={isInAmountEmpty || isOutAmountEmpty}
+                    >
+                      <GenericDisclaimer
+                        title="High price impact"
+                        body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
+                        disabled={!isPriceImpactHigh || open}
+                      >
+                        <div
                           className={classNames(
-                            "body2 sm:caption py-1 text-osmoverse-300",
+                            "flex items-center gap-2 transition-opacity",
                             {
-                              "animate-pulse":
-                                inPriceFetching ||
-                                isLoading ||
-                                swapState?.inAmountInput.isTyping ||
-                                swapState?.outAmountInput.isTyping,
+                              "opacity-0": isInAmountEmpty || isOutAmountEmpty,
                             }
                           )}
                         >
-                          {swapState?.inBaseOutQuoteSpotPrice && (
-                            <SkeletonLoader
-                              isLoaded={
-                                type !== "market" ||
-                                !swapState.inAmountInput.isTyping ||
-                                !swapState.outAmountInput.isTyping
-                              }
-                            >
-                              {ExpectedRate(
-                                swapState,
-                                outAsBase,
-                                treatAsStable,
-                                priceOverride
-                              )}
-                            </SkeletonLoader>
+                          {isPriceImpactHigh && !open && (
+                            <Icon
+                              id="alert-circle-filled"
+                              width={16}
+                              height={16}
+                            />
                           )}
-                        </span>
-                      </div>
-                    </GenericDisclaimer>
-                  </SkeletonLoader>
-                  <Disclosure.Button
-                    className={classNames(
-                      "relative flex items-center justify-between py-1 transition-opacity"
-                    )}
-                    disabled={isInAmountEmpty || isOutAmountEmpty}
-                  >
-                    <GenericDisclaimer
-                      title="High price impact"
-                      body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
-                      disabled={!isPriceImpactHigh || open}
-                    >
-                      <div
-                        className={classNames(
-                          "flex items-center gap-2 transition-opacity",
-                          {
-                            "opacity-0": isInAmountEmpty || isOutAmountEmpty,
-                          }
-                        )}
-                      >
-                        {isPriceImpactHigh && !open && (
-                          <Icon
-                            id="alert-circle-filled"
-                            width={16}
-                            height={16}
-                          />
-                        )}
-                        <span className="body2 sm:caption whitespace-nowrap text-wosmongton-300">
-                          {open ? t("swap.hideDetails") : t("swap.showDetails")}
-                        </span>
-                      </div>
-                    </GenericDisclaimer>
-                  </Disclosure.Button>
+                          <span className="body2 sm:caption whitespace-nowrap text-wosmongton-300">
+                            {open
+                              ? t("swap.hideDetails")
+                              : t("swap.showDetails")}
+                          </span>
+                        </div>
+                      </GenericDisclaimer>
+                    </Disclosure.Button>
+                  )}
                 </div>
-                <Disclosure.Panel className="body2 sm:caption flex flex-col text-osmoverse-300">
+                <Disclosure.Panel
+                  static={alwaysExpanded}
+                  className="body2 sm:caption flex flex-col text-osmoverse-300"
+                >
                   {type === "market" ? (
                     <RecapRow
                       className={classNames({

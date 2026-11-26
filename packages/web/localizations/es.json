@@ -551,7 +551,26 @@
     "yourStats": "Su saldo de la piscina",
     "onlyInRangePositions": "Solo para posiciones en rango",
     "custom": "Costumbre",
-    "nextRewardIn": "Próxima recompensa en"
+    "nextRewardIn": "Próxima recompensa en",
+    "orderbookPool": {
+      "type": "Libro de órdenes",
+      "spread": "Diferencial",
+      "makerFee": "Tarifa del creador",
+      "yourOrders": "Tus órdenes",
+      "noOrders": "No hay órdenes para este par",
+      "noOrdersDesc": "Coloca tu primera orden limitada.",
+      "filterAll": "Todos",
+      "filterBuy": "Comprar",
+      "filterSell": "Vender",
+      "depthPrice": "Precio",
+      "depthRaw": "Sin agrupar",
+      "depthNoAsks": "Sin ventas",
+      "depthNoBids": "Sin compras",
+      "depthNoOrders": "Sin órdenes abiertas",
+      "depthNoOrdersDesc": "Este libro de órdenes está vacío",
+      "depthUnavailable": "Datos de profundidad no disponibles",
+      "depthUnavailableDesc": "No se pudo cargar la profundidad del libro de órdenes. Reintentando..."
+    }
   },
   "pools": {
     "allPools": {
@@ -1346,7 +1365,6 @@
     "pay": "Pagar",
     "open": "Abierto",
     "filled": "Ejecutado",
-    "claimable": "Por reclamar",
     "claimAndClose": "Reclamar y cerrar",
     "close": "Cerrar",
     "claim": "Reclamar",

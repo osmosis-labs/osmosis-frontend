@@ -21,11 +21,7 @@ export function ActionsCell({
         // TODO: swap to cancel button for partially filled but entirely claimed orders
         return <ClaimAndCloseButton order={order} refetch={refetch} />;
       case "filled":
-        return (
-          <span className="text-body-1 text-osmoverse-300">
-            {t("limitOrders.claimable")}
-          </span>
-        );
+        return <ClaimButton order={order} refetch={refetch} />;
       default:
         return null;
     }
@@ -122,6 +118,66 @@ const ClaimAndCloseButton = ({
   );
 };
 
+const ClaimButton = ({
+  order,
+  refetch,
+}: {
+  order: MappedLimitOrder;
+  refetch: () => Promise<any>;
+}) => {
+  const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
+  const [claiming, setClaiming] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line hooks-compat/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
+    setClaiming(false);
+  }, [order.order_id]);
+
+  const claim = useCallback(async () => {
+    if (!account) {
+      console.error("Attempted to claim orders without wallet connected");
+      return;
+    }
+    const { tick_id, order_id, orderbookAddress } = order;
+    try {
+      setClaiming(true);
+      await prepareMultiExecuteContractMsg(
+        transactionContext,
+        "executeWasm",
+        [
+          {
+            msg: { claim_limit: { order_id, tick_id } },
+            contractAddress: orderbookAddress,
+            funds: [],
+          },
+        ],
+        undefined
+      ).then((prepared) => signAndBroadcast(...prepared));
+      await refetch();
+    } catch (error) {
+      console.error(error);
+      setClaiming(false);
+    }
+  }, [account, order, refetch, signAndBroadcast, transactionContext]);
+
+  return (
+    <button
+      className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
+      onClick={(e) => {
+        // The row opens the order modal on click.
+        e.stopPropagation();
+        claim();
+      }}
+      disabled={claiming}
+    >
+      <span className="body2 flex items-center text-wosmongton-200">
+        {claiming && <Spinner className="mr-2 h-2 w-2" />}
+        {t("limitOrders.claim")}
+      </span>
+    </button>
+  );
+};
+
 const CancelButton = ({
   order,
   refetch,
@@ -150,7 +206,7 @@ const CancelButton = ({
       return;
     }
     const { tick_id, order_id, orderbookAddress } = order;
-    const claimMsg = {
+    const cancelMsg = {
       msg: {
         cancel_limit: { order_id, tick_id },
       },
@@ -163,7 +219,7 @@ const CancelButton = ({
       await prepareMultiExecuteContractMsg(
         transactionContext,
         "executeWasm",
-        [claimMsg],
+        [cancelMsg],
         undefined
       ).then((prepared) => signAndBroadcast(...prepared));
       await refetch();
