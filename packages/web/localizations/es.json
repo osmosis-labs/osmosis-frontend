@@ -573,7 +573,10 @@
       "depthClLegend": "Incl. pools CL",
       "depthClLegendTooltip": "Las barras rayadas incluyen liquidez de pools de liquidez concentrada para este par. Es liquidez de curva AMM, no órdenes en espera; las cantidades mostradas son solo órdenes.",
       "depthClUnavailable": "Profundidad CL no disponible",
-      "depthRowWithCl": "Órdenes: {orders} · Pools CL: {cl}"
+      "depthRowWithCl": "Órdenes: {orders} · Pools CL: {cl}",
+      "retiredQuoteDesc": "{quote} ya no se ofrece como cotización para nuevas órdenes límite. Aún puedes reclamar y cancelar tus órdenes en este libro.",
+      "retiredQuoteGoTo": "Operar en el libro de órdenes {pair}",
+      "retiredQuoteCreate": "Crear un libro de órdenes {pair}"
     }
   },
   "pools": {

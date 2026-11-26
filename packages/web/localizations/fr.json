@@ -573,7 +573,10 @@
       "depthClLegend": "Incl. pools CL",
       "depthClLegendTooltip": "Les barres hachurées incluent la liquidité des pools de liquidité concentrée pour cette paire. Il s'agit de liquidité de courbe AMM, pas d'ordres en attente ; les quantités affichées sont uniquement des ordres.",
       "depthClUnavailable": "Profondeur CL indisponible",
-      "depthRowWithCl": "Ordres : {orders} · Pools CL : {cl}"
+      "depthRowWithCl": "Ordres : {orders} · Pools CL : {cl}",
+      "retiredQuoteDesc": "{quote} n'est plus proposé comme devise de cotation pour les nouveaux ordres limites. Vous pouvez toujours réclamer et annuler vos ordres sur ce carnet.",
+      "retiredQuoteGoTo": "Trader sur le carnet d'ordres {pair}",
+      "retiredQuoteCreate": "Créer un carnet d'ordres {pair}"
     }
   },
   "pools": {

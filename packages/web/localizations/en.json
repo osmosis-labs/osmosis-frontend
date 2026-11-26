@@ -573,7 +573,10 @@
       "depthClLegend": "Incl. CL pools",
       "depthClLegendTooltip": "Hatched bars include liquidity from concentrated liquidity pools for this pair. It is AMM curve liquidity, not resting orders; quantities shown are orders only.",
       "depthClUnavailable": "CL depth unavailable",
-      "depthRowWithCl": "Orders: {orders} · CL pools: {cl}"
+      "depthRowWithCl": "Orders: {orders} · CL pools: {cl}",
+      "retiredQuoteDesc": "{quote} isn't offered as a quote for new limit orders. You can still claim and cancel your orders on this book.",
+      "retiredQuoteGoTo": "Trade on the {pair} orderbook",
+      "retiredQuoteCreate": "Create a {pair} orderbook"
     }
   },
   "pools": {

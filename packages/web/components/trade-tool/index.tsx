@@ -15,7 +15,10 @@ import {
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
-import { deferQueryCorrection } from "~/components/place-limit-tool/defaults";
+import {
+  deferQueryCorrection,
+  getAllowedQuoteDenom,
+} from "~/components/place-limit-tool/defaults";
 import { SwapTool, SwapToolProps } from "~/components/swap-tool";
 import {
   OrderTypeSelector,
@@ -25,6 +28,7 @@ import {
   SwapToolTab,
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
+import { RetiredQuoteNotice } from "~/components/trade-tool/retired-quote-notice";
 import { useBookPriceSelection } from "~/components/trade-tool/use-book-price-selection";
 import { useCanonicalOrderbookForPair } from "~/components/trade-view/hooks";
 import { prefetchTradingViewChart } from "~/components/trade-view/prefetch-chart";
@@ -297,6 +301,12 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
         initialQuoteDenom: previousTrade?.quoteDenom,
       };
 
+  // A pool whose quote the tab no longer offers can't take new orders here:
+  // the limit tool would switch the quote and place on a different book.
+  const isRetiredPoolQuote =
+    Boolean(orderbookPool) &&
+    !getAllowedQuoteDenom(orderbookPool?.quoteDenom ?? "", tab);
+
   const widget = (
     <div className="flex flex-col gap-3">
       <div
@@ -343,6 +353,18 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
           </button>
         )}
         {useMemo(() => {
+          if (
+            orderbookPool &&
+            isRetiredPoolQuote &&
+            (tab === SwapToolTab.BUY || tab === SwapToolTab.SELL)
+          ) {
+            return (
+              <RetiredQuoteNotice
+                baseDenom={orderbookPool.baseDenom}
+                quoteDenom={orderbookPool.quoteDenom}
+              />
+            );
+          }
           switch (tab) {
             case SwapToolTab.BUY:
               return (
@@ -413,6 +435,7 @@ const TradeToolContent: FunctionComponent<PropsWithChildren<TradeToolProps>> = (
           setPreviousTrade,
           orderbookPool?.poolId,
           externalOrderPrice,
+          isRetiredPoolQuote,
         ])}
       </div>
 

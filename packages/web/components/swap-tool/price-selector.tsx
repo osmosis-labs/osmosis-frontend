@@ -212,8 +212,7 @@ export const PriceSelector = memo(
 
     /**
      * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
-     * Sell trades limited to the canonical stables plus legacy Noble USDC
-     * (see SELL_QUOTES).
+     * Sell trades limited to the canonical stables (see SELL_QUOTES).
      */
     const defaultQuotesWithBalances = useMemo(() => {
       const filtered =
