@@ -1181,9 +1181,11 @@ function useSwapAmountInput({
     gasAmount: gasAmount,
   });
 
+  // Flags are undefined until LaunchDarkly loads, so coerce to keep this a
+  // boolean: an undefined `enabled` would let the quote query run.
   const balanceQuoteQueryEnabled =
     !disableQuotes &&
-    featureFlags.swapToolSimulateFee &&
+    Boolean(featureFlags.swapToolSimulateFee) &&
     !isLoadingWallet &&
     !txTypeInProgress &&
     Boolean(swapAssets.fromAsset) &&
@@ -1454,6 +1456,10 @@ function useQueryRouterBestQuote(
   const { address } = useWallet();
   const trpcReact = createTRPCReact<AppRouter>();
 
+  // Callers' `enabled` can be undefined at runtime despite its type, which
+  // React Query treats as enabled; never quote without an amount either.
+  const canQuote = enabled === true && Boolean(input.tokenInAmount);
+
   const queryOptions = {
     // quotes should not be considered fresh for long, otherwise
     // the gas simulation will fail due to slippage and the user would see errors
@@ -1488,7 +1494,7 @@ function useQueryRouterBestQuote(
       },
       {
         ...queryOptions,
-        enabled: enabled && quoteType === "in-given-out",
+        enabled: canQuote && quoteType === "in-given-out",
 
         // Longer refetch and cache times due to query inefficiencies. Can be removed once that is fixed.
         staleTime: 10_000,
@@ -1507,7 +1513,7 @@ function useQueryRouterBestQuote(
       },
       {
         ...queryOptions,
-        enabled: enabled && quoteType === "out-given-in",
+        enabled: canQuote && quoteType === "out-given-in",
       }
     );
 
@@ -1597,7 +1603,9 @@ function useQueryRouterBestQuote(
 /** Various router clients on server should reconcile their error messages
  *  into the following error messages or instances on the server.
  *  Then we can show the user a useful translated error message vs just "Error". */
-function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
+export function makeRouterErrorFromTrpcError(
+  errorMsg: string | null | undefined
+):
   | {
       error:
         | NoRouteError

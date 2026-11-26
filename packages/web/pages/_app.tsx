@@ -1,3 +1,5 @@
+// Must stay first: configures zod before any imported module builds a schema.
+import "~/config/zod";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import "../styles/globals.css";
 

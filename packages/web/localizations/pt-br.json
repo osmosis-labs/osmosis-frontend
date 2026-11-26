@@ -34,7 +34,17 @@
     "low": "baixo",
     "buttonCreateAndStake": "Criar posição e participação",
     "estimated": "Estimado",
-    "estimatedInfo": "Esta é uma estimativa baseada nos preços atuais selecionados. A TAEG real pode variar. Se a posição sair do intervalo, a TAEG será de 0%."
+    "estimatedInfo": "Esta é uma estimativa baseada nos preços atuais selecionados. A TAEG real pode variar. Se a posição sair do intervalo, a TAEG será de 0%.",
+    "singleAsset": {
+      "splitBreakdown": "Dos seus {inputAmount} {inputDenom}, {swapAmount} {inputDenom} ({swapPercent}) serão trocados para {outDenom} para corresponder à proporção da posição.",
+      "noSwapNeeded": "Seu intervalo selecionado precisa apenas de {inputDenom}, portanto nenhuma troca é necessária.",
+      "valueIn": "Valor de entrada",
+      "valueOut": "Valor de saída",
+      "totalCost": "Custo total",
+      "totalCostWarning": "O custo total deste depósito é {totalCost}, incluindo o impacto no preço e as taxas de troca, o que reduz o valor que chega à sua posição.",
+      "quoteLoading": "Encontrando a melhor troca…",
+      "impactDataUnavailable": "Não foi possível carregar os dados de liquidez do pool necessários para verificar o impacto no preço deste swap. Tente novamente em instantes."
+    }
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "O que é Liquidez Supercarregada?",
@@ -1036,6 +1046,10 @@
     "lossAcknowledgement": "Sim, entendo que isso pode causar uma grande perda de fundos e desejo continuar.",
     "quoteUpdatedTitle": "Cotação atualizada",
     "quoteUpdatedCaption": "A cotação mudou desde a sua confirmação. Revise os detalhes atualizados e confirme novamente.",
+    "noQuotesAvailableTitle": "Nenhuma cotação disponível",
+    "noQuotesAvailableDescription": "Não foi possível obter uma cotação para este valor. Tente outro valor ou verifique novamente mais tarde.",
+    "quoteProviderUnavailableTitle": "Esta opção está indisponível",
+    "quoteProviderUnavailableDescription": "A opção de transferência que você selecionou está indisponível para este valor. Tente outro valor, escolha outra opção nos detalhes da transferência ou verifique novamente mais tarde.",
     "slippageTooHighTitle": "O deslizamento está alto",
     "slippageTooHighDescription": "O deslizamento desta transferência está alto. Tente um valor menor ou aceite o risco de perda para continuar.",
     "priceImpactTooHighTitle": "O impacto no preço está alto",
