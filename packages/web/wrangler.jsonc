@@ -126,5 +126,37 @@
         "binding": "IMAGES",
       },
     },
+    // `--env testnet` (stage, .github/workflows/cf-deploy.yml) deploys the testnet pair for
+    // testnet.osmosis.zone: stage code built with the `cloudflare-testnet` chain settings.
+    "testnet": {
+      "name": "osmosis-frontend-testnet",
+      "services": [
+        {
+          "binding": "WORKER_SELF_REFERENCE",
+          "service": "osmosis-frontend-testnet",
+        },
+        {
+          "binding": "API",
+          "service": "osmosis-frontend-api-testnet",
+        },
+      ],
+      "r2_buckets": [
+        {
+          "binding": "NEXT_INC_CACHE_R2_BUCKET",
+          "bucket_name": "osmosis-frontend-testnet-cache",
+        },
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "NEXT_CACHE_DO_QUEUE",
+            "class_name": "DOQueueHandler",
+          },
+        ],
+      },
+      "images": {
+        "binding": "IMAGES",
+      },
+    },
   },
 }

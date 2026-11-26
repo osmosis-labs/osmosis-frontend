@@ -6,9 +6,10 @@ name: Assetlist deploy
 # cf-deploy.yml run does.
 #
 #   schedule (daily 15:00 UTC) -> runs cf-deploy.yml on stage and master, but only
-#                                 if the mainnet frontend lists changed in the last
-#                                 26 hours. assetlists generates and auto-merges at
-#                                 14:30 UTC.
+#                                 if the mainnet or testnet frontend lists changed
+#                                 in the last 26 hours. assetlists generates and
+#                                 auto-merges at 14:30 UTC. The stage run also
+#                                 deploys the testnet Workers.
 #   workflow_dispatch          -> runs cf-deploy.yml on stage and master regardless.
 #
 # Scheduled workflows run from the default branch (stage), which is why this
@@ -42,7 +43,8 @@ jobs:
           fi
           since=$(date -u -d '26 hours ago' +%Y-%m-%dT%H:%M:%SZ)
           count=0
-          for path in osmosis-1/generated/frontend/assetlist.json osmosis-1/generated/frontend/chainlist.json; do
+          for path in osmosis-1/generated/frontend/assetlist.json osmosis-1/generated/frontend/chainlist.json \
+            osmo-test-5/generated/frontend/assetlist.json osmo-test-5/generated/frontend/chainlist.json; do
             n=$(gh api "repos/osmosis-labs/assetlists/commits?sha=main&path=$path&since=$since&per_page=1" --jq length)
             count=$((count + n))
           done
