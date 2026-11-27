@@ -297,10 +297,11 @@ export const OrderHistory = ({
   }, [claimAllOrders, refetch]);
 
   // The pagination sentinel below only calls fetchNextPage when it transitions
-  // into view. While this book has no orders on the loaded pages (its orders can
-  // sit on a later page, because the query fetches every book), the sentinel
-  // stays in place and never fires again, so advance the pages here until the
-  // book's first order loads or the pages run out.
+  // into view. While nothing in the current view has loaded (the query fetches
+  // every book and we filter client-side by book, side, and asset, so the
+  // matches can sit on a later page), the sentinel stays in place and never
+  // fires again. Advance the pages here until a matching order loads or the
+  // pages run out, so a filter with matches only further in doesn't stall.
   //
   // Stop on a failed page fetch, or this would retry it in a tight loop: earlier
   // pages keep the query in a success state (so `isError` stays false), and the
@@ -308,7 +309,7 @@ export const OrderHistory = ({
   // poll clears it and pagination resumes on its own.
   useEffect(() => {
     if (
-      bookOrders.length === 0 &&
+      displayOrders.length === 0 &&
       hasNextPage &&
       !isFetchingNextPage &&
       !isFetchNextPageError &&
@@ -317,7 +318,7 @@ export const OrderHistory = ({
       fetchNextPage();
     }
   }, [
-    bookOrders.length,
+    displayOrders.length,
     hasNextPage,
     isFetchingNextPage,
     isFetchNextPageError,
