@@ -1341,7 +1341,8 @@
         "title": "Yeni sipariş yok",
         "subtitle": "Ticari sipariş geçmişiniz burada görünecektir.",
         "connectTitle": "Sipariş geçmişinizi görmek için cüzdanınızı bağlayın",
-        "connectSubtitle": "Osmosis'teki geçmiş limit emirleriniz burada görünecektir."
+        "connectSubtitle": "Osmosis'teki geçmiş limit emirleriniz burada görünecektir.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Emirleriniz yüklenemedi",

@@ -83,6 +83,7 @@ export const OrderHistory = ({
   onOrderSelect,
   onSelectedOrderChange,
   orderbookAddress,
+  title,
 }: {
   selectedOrder?: MappedLimitOrder;
   /** Omit on a page that doesn't own the selection; the list then self-hosts a centered modal. */
@@ -91,6 +92,8 @@ export const OrderHistory = ({
   onSelectedOrderChange?: (order: MappedLimitOrder) => void;
   /** When set, show only this book's orders (and self-host the detail modal). */
   orderbookAddress?: string;
+  /** Optional heading shown in the toolbar beside the filter toggle (the pool embed). */
+  title?: string;
 }) => {
   // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
   // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
@@ -394,13 +397,26 @@ export const OrderHistory = ({
           width={120}
           height={80}
         />
-        <h6>{t("limitOrders.historyTable.emptyState.title")}</h6>
-        <p className="body2 inline-flex items-center gap-1 text-osmoverse-300">
-          {t("limitOrders.historyTable.emptyState.subtitle")}
-          <Link href={"/"} className="text-wosmongton-300">
-            {t("limitOrders.startTrading")}
-          </Link>
-        </p>
+        {orderbookAddress ? (
+          // On a book's own page the trade widget is right here, so name the
+          // pair and keep the user on the page instead of linking away to "/".
+          <>
+            <h6>{t("limitOrders.historyTable.emptyState.bookTitle")}</h6>
+            <p className="body2 text-osmoverse-300">
+              {t("pool.orderbookPool.noOrdersDesc")}
+            </p>
+          </>
+        ) : (
+          <>
+            <h6>{t("limitOrders.historyTable.emptyState.title")}</h6>
+            <p className="body2 inline-flex items-center gap-1 text-osmoverse-300">
+              {t("limitOrders.historyTable.emptyState.subtitle")}
+              <Link href={"/"} className="text-wosmongton-300">
+                {t("limitOrders.startTrading")}
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     );
   }
@@ -417,6 +433,7 @@ export const OrderHistory = ({
       )}
     >
       <div className="mb-4 flex items-center gap-3">
+        {title && <h6 className="mr-auto">{title}</h6>}
         <ButtonGroup
           value={dirFilter}
           onValueChange={(value) =>

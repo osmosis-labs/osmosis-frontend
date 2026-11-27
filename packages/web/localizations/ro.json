@@ -1341,7 +1341,8 @@
         "title": "Fără comenzi recente",
         "subtitle": "Istoricul comenzilor dvs. comerciale va apărea aici.",
         "connectTitle": "Conectați-vă portofelul pentru a vedea istoricul comenzilor",
-        "connectSubtitle": "Comenzile dumneavoastră limită anterioare pentru Osmosis vor apărea aici."
+        "connectSubtitle": "Comenzile dumneavoastră limită anterioare pentru Osmosis vor apărea aici.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Ordinele tale nu au putut fi încărcate",

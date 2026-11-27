@@ -1341,7 +1341,8 @@
         "title": "Brak ostatnich zamówień",
         "subtitle": "Tutaj pojawi się historia Twoich zleceń handlowych.",
         "connectTitle": "Podłącz swój portfel, aby zobaczyć historię swoich zamówień",
-        "connectSubtitle": "Tutaj pojawią się Twoje wcześniejsze zamówienia z limitem na Osmozie."
+        "connectSubtitle": "Tutaj pojawią się Twoje wcześniejsze zamówienia z limitem na Osmozie.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Nie udało się wczytać Twoich zleceń",

@@ -1341,7 +1341,8 @@
         "title": "No recent orders",
         "subtitle": "Your trade order history will appear here.",
         "connectTitle": "Connect your wallet to see your order history",
-        "connectSubtitle": "Your past limit orders on Osmosis will appear here."
+        "connectSubtitle": "Your past limit orders on Osmosis will appear here.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Couldn't load your orders",

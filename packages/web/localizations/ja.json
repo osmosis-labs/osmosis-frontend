@@ -1341,7 +1341,8 @@
         "title": "最近の注文はありません",
         "subtitle": "取引注文履歴がここに表示されます。",
         "connectTitle": "ウォレットを接続すると注文履歴が表示されます",
-        "connectSubtitle": "Osmosis での過去の指値注文がここに表示されます。"
+        "connectSubtitle": "Osmosis での過去の指値注文がここに表示されます。",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "注文を読み込めませんでした",

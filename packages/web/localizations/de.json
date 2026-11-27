@@ -1341,7 +1341,8 @@
         "title": "Keine aktuellen Bestellungen",
         "subtitle": "Ihr Handelsauftragsverlauf wird hier angezeigt.",
         "connectTitle": "Verbinden Sie Ihr Portemonnaie, um Ihren Bestellverlauf anzuzeigen",
-        "connectSubtitle": "Ihre früheren Limitaufträge bei Osmosis werden hier angezeigt."
+        "connectSubtitle": "Ihre früheren Limitaufträge bei Osmosis werden hier angezeigt.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Ihre Orders konnten nicht geladen werden",

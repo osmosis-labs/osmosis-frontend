@@ -1341,7 +1341,8 @@
         "title": "Aucune commande récente",
         "subtitle": "L’historique de vos commandes commerciales apparaîtra ici.",
         "connectTitle": "Connectez votre portefeuille pour voir l'historique de vos commandes",
-        "connectSubtitle": "Vos ordres limités passés sur Osmosis apparaîtront ici."
+        "connectSubtitle": "Vos ordres limités passés sur Osmosis apparaîtront ici.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Impossible de charger vos ordres",

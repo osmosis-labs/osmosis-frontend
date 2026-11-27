@@ -15,8 +15,10 @@ export const OrderbookYourOrders: FunctionComponent<{
 
   return (
     <div className="rounded-3xl border border-osmoverse-700 p-6">
-      <h6 className="mb-4">{t("pool.orderbookPool.yourOrders")}</h6>
-      <OrderHistory orderbookAddress={contractAddress} />
+      <OrderHistory
+        orderbookAddress={contractAddress}
+        title={t("pool.orderbookPool.yourOrders")}
+      />
     </div>
   );
 };
