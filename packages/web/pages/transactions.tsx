@@ -66,8 +66,23 @@ const Transactions: React.FC = memo(() => {
   }, [transactionsPage, router, _isInitialized]);
 
   const [fromPage] = useQueryState("fromPage");
+  const [fromPath] = useQueryState("from");
+  const [fromLabel] = useQueryState("fromLabel");
 
   const { t } = useTranslation();
+
+  // Where the back button points depends on where the user arrived from.
+  // An asset path is only trusted when it is internal, so a crafted `from`
+  // query value cannot turn the back button into an open redirect.
+  const back = (() => {
+    if (fromPath?.startsWith("/assets/")) {
+      return { href: fromPath, label: fromLabel ?? t("menu.portfolio") };
+    }
+    if (fromPage === "swap") {
+      return { href: "/", label: t("limitOrders.trade") };
+    }
+    return { href: "/portfolio", label: t("menu.portfolio") };
+  })();
 
   useNavBar({
     title: (
@@ -82,13 +97,9 @@ const Transactions: React.FC = memo(() => {
             className="text-osmoverse-200"
           />
         }
-        label={
-          fromPage === "swap" ? t("limitOrders.trade") : t("menu.portfolio")
-        }
-        ariaLabel={
-          fromPage === "swap" ? t("limitOrders.trade") : t("menu.portfolio")
-        }
-        href={fromPage === "swap" ? "/" : "/portfolio"}
+        label={back.label}
+        ariaLabel={back.label}
+        href={back.href}
       />
     ),
     ctas: [],

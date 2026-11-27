@@ -4,6 +4,7 @@ import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -26,6 +27,7 @@ import {
 export const AssetOrderHistory = () => {
   const { asset } = useAssetInfo();
   const { t } = useTranslation();
+  const router = useRouter();
   const featureFlags = useFeatureFlags();
 
   const { address, isWalletConnected } = useWallet();
@@ -67,7 +69,11 @@ export const AssetOrderHistory = () => {
       <div className="flex items-center justify-between">
         <h6>{t("portfolio.openOrders")}</h6>
         <Link
-          href="/transactions?tab=orders"
+          // Carry the current asset path so the order-history back button
+          // returns to this asset instead of the default portfolio page.
+          href={`/transactions?tab=orders&from=${encodeURIComponent(
+            router.asPath
+          )}&fromLabel=${encodeURIComponent(asset.coinDenom)}`}
           aria-label={t("limitOrders.orderHistory")}
           title={t("limitOrders.orderHistory")}
           className="-my-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-osmoverse-400 transition-colors hover:bg-osmoverse-800 hover:text-osmoverse-200"
