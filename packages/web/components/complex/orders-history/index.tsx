@@ -137,6 +137,14 @@ export const OrderHistory = ({
         : setInternalSelectedOrder(order),
     [onSelectedOrderChange]
   );
+  // Clear the self-hosted selection when the wallet or book changes (including a
+  // disconnect, which empties `address`), so the modal can't reopen a previous
+  // wallet's or book's order. Controlled callers own their own selection.
+  useEffect(() => {
+    if (!selfHosted) return;
+    // eslint-disable-next-line hooks-compat/set-state-in-effect -- resets the self-hosted selection on a wallet or book change so a stale order is not shown; runs only when those identities change
+    setInternalSelectedOrder(undefined);
+  }, [selfHosted, address, orderbookAddress]);
   const [dirFilter, setDirFilter] = useState<"all" | "bid" | "ask">("all");
   // Backed by the URL (`?asset=`), so the asset page can deep-link here with the
   // field pre-filled. Hidden and unused when embedded on a single book (below).
@@ -271,12 +279,19 @@ export const OrderHistory = ({
       baseSymbol: assetQuery || undefined,
     });
 
+  // The in-flight flag lives here, not in the group header, because a filter
+  // change can unmount the header (empty list) and would otherwise reset it,
+  // letting a second Claim All start while the first is still pending.
+  const [isClaimingAll, setIsClaimingAll] = useState(false);
   const claimOrders = useCallback(async () => {
+    setIsClaimingAll(true);
     try {
       await claimAllOrders();
       await refetch();
     } catch {
       // Intentionally swallowed: this handler previously only logged analytics.
+    } finally {
+      setIsClaimingAll(false);
     }
   }, [claimAllOrders, refetch]);
 
@@ -330,9 +345,22 @@ export const OrderHistory = ({
     );
   }
 
-  if (bookOrders.length === 0 && !isLoading) {
+  // Only a definitive empty state once pagination is exhausted. While more
+  // pages may hold this book's orders, fall through so the table renders the
+  // pagination sentinel and keeps loading, instead of a premature "no orders".
+  if (
+    bookOrders.length === 0 &&
+    !isLoading &&
+    !hasNextPage &&
+    !isFetchingNextPage
+  ) {
     return (
       <div className="flex flex-col items-center justify-center gap-6">
+        {historyUnavailable && (
+          <p className="body2 text-center text-osmoverse-300">
+            {t("limitOrders.historyTable.historyUnavailable")}
+          </p>
+        )}
         <Image
           src="/images/ion-thumbs-up.svg"
           alt="ion thumbs up"
@@ -455,9 +483,15 @@ export const OrderHistory = ({
           ) : rows.length === 0 ? (
             <tr className="flex items-center justify-center py-10">
               <td colSpan={headers.length + 1} className="!p-0">
-                <p className="body2 text-osmoverse-300">
-                  {t("limitOrders.noMatchingOrders")}
-                </p>
+                {hasNextPage || isFetchingNextPage ? (
+                  // More pages may still hold this book's orders; the sentinel
+                  // below keeps fetching, so show progress, not "no orders".
+                  <Spinner className="!h-10 !w-10" />
+                ) : (
+                  <p className="body2 text-osmoverse-300">
+                    {t("limitOrders.noMatchingOrders")}
+                  </p>
+                )}
               </td>
             </tr>
           ) : (
@@ -486,6 +520,7 @@ export const OrderHistory = ({
                     style={style}
                     filledOrdersCount={filledOrdersCount}
                     claimOrders={claimOrders}
+                    claiming={isClaimingAll}
                   />
                 );
               }
@@ -525,6 +560,7 @@ export const OrderHistory = ({
         <OrderModal
           order={internalSelectedOrder}
           onRequestClose={() => setInternalSelectedOrder(undefined)}
+          onRequestRefresh={refetch}
         />
       )}
     </div>
@@ -536,20 +572,15 @@ const TableGroupHeader = ({
   style,
   filledOrdersCount,
   claimOrders,
+  claiming,
 }: {
   group: string;
   style: object;
   filledOrdersCount: number;
   claimOrders: () => Promise<void>;
+  claiming: boolean;
 }) => {
   const { t } = useTranslation();
-  const [claiming, setClaiming] = useState(false);
-
-  const claim = useCallback(async () => {
-    setClaiming(true);
-    await claimOrders();
-    setClaiming(false);
-  }, [claimOrders]);
 
   if (group === "filled") {
     return (
@@ -592,7 +623,7 @@ const TableGroupHeader = ({
         <td className="flex items-center justify-end md:!p-0">
           <button
             className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
-            onClick={claim}
+            onClick={claimOrders}
             disabled={claiming}
           >
             {claiming && <Spinner className="mr-2 !h-2 !w-2 md:hidden" />}
