@@ -303,7 +303,6 @@ const useOrdersQuery = ({
     fetchNextPage: fetchSQSOrdersNextPage,
     isFetching: isSQSOrdersFetching,
     isFetchingNextPage: isSQSOrdersFetchingNextPage,
-    isFetchNextPageError: isSQSOrdersFetchNextPageError,
     hasNextPage: hasSQSOrdersNextPage,
     refetch: refetchSQSOrders,
     isRefetching: isSQSOrdersRefetching,
@@ -338,7 +337,6 @@ const useOrdersQuery = ({
     fetchNextPage: fetchNodeOrdersNextPage,
     isFetching: isNodeOrdersFetching,
     isFetchingNextPage: isNodeOrdersFetchingNextPage,
-    isFetchNextPageError: isNodeOrdersFetchNextPageError,
     hasNextPage: hasNodeOrdersNextPage,
     refetch: refetchNodeOrders,
     isRefetching: isNodeOrdersRefetching,
@@ -381,9 +379,6 @@ const useOrdersQuery = ({
     isFetchingNextPage: sqsActiveOrders
       ? isSQSOrdersFetchingNextPage
       : isNodeOrdersFetchingNextPage,
-    isFetchNextPageError: sqsActiveOrders
-      ? isSQSOrdersFetchNextPageError
-      : isNodeOrdersFetchNextPageError,
     hasNextPage: sqsActiveOrders ? hasSQSOrdersNextPage : hasNodeOrdersNextPage,
     refetch: sqsActiveOrders ? refetchSQSOrders : refetchNodeOrders,
     isRefetching: sqsActiveOrders
@@ -413,7 +408,6 @@ export const useOrderbookOrders = ({
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
-    isFetchNextPageError,
     hasNextPage,
     refetch,
     isRefetching,
@@ -430,6 +424,8 @@ export const useOrderbookOrders = ({
 
   return {
     orders: allOrders,
+    /** Count of loaded pages; advances only on a successful fetch, so callers can key a fresh pagination observer per page. */
+    pagesLoaded: orders?.pages.length ?? 0,
     /** True when the closed orders couldn't be loaded, so `orders` holds only open orders. */
     historyUnavailable,
     isLoading,
@@ -438,8 +434,6 @@ export const useOrderbookOrders = ({
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
-    /** True when the last `fetchNextPage` failed; data from earlier pages stays, so `isError` is false here. */
-    isFetchNextPageError,
     hasNextPage,
     refetch: refetchOrders,
     isRefetching,

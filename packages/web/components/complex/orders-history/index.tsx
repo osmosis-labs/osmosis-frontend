@@ -168,12 +168,12 @@ export const OrderHistory = ({
 
   const {
     orders,
+    pagesLoaded,
     historyUnavailable,
     isLoading,
     isError,
     fetchNextPage,
     isFetchingNextPage,
-    isFetchNextPageError,
     hasNextPage,
     refetch,
     isRefetching,
@@ -295,36 +295,6 @@ export const OrderHistory = ({
       setIsClaimingAll(false);
     }
   }, [claimAllOrders, refetch]);
-
-  // The pagination sentinel below only calls fetchNextPage when it transitions
-  // into view. While nothing in the current view has loaded (the query fetches
-  // every book and we filter client-side by book, side, and asset, so the
-  // matches can sit on a later page), the sentinel stays in place and never
-  // fires again. Advance the pages here until a matching order loads or the
-  // pages run out, so a filter with matches only further in doesn't stall.
-  //
-  // Stop on a failed page fetch, or this would retry it in a tight loop: earlier
-  // pages keep the query in a success state (so `isError` stays false), and the
-  // next-page error only shows up as `isFetchNextPageError`. The 10s refetch
-  // poll clears it and pagination resumes on its own.
-  useEffect(() => {
-    if (
-      displayOrders.length === 0 &&
-      hasNextPage &&
-      !isFetchingNextPage &&
-      !isFetchNextPageError &&
-      !isLoading
-    ) {
-      fetchNextPage();
-    }
-  }, [
-    displayOrders.length,
-    hasNextPage,
-    isFetchingNextPage,
-    isFetchNextPageError,
-    isLoading,
-    fetchNextPage,
-  ]);
 
   const showConnectWallet = !isWalletConnected && !isWalletLoading;
 
@@ -581,6 +551,12 @@ export const OrderHistory = ({
         </tbody>
       </table>
       <Intersection
+        // Remount per loaded page so a fresh observer reports its state again.
+        // A still-visible sentinel then keeps paging until the view has orders
+        // or the pages run out, which plain visibility transitions miss once the
+        // sentinel stops moving. The key only advances on a successful page, so
+        // a failed fetch can't loop; the refetch poll recovers it.
+        key={pagesLoaded}
         onVisible={() => {
           if (hasNextPage && !isFetchingNextPage && !isLoading) {
             fetchNextPage();
