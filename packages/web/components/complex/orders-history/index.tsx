@@ -173,6 +173,7 @@ export const OrderHistory = ({
     isError,
     fetchNextPage,
     isFetchingNextPage,
+    isFetchNextPageError,
     hasNextPage,
     refetch,
     isRefetching,
@@ -300,11 +301,17 @@ export const OrderHistory = ({
   // sit on a later page, because the query fetches every book), the sentinel
   // stays in place and never fires again, so advance the pages here until the
   // book's first order loads or the pages run out.
+  //
+  // Stop on a failed page fetch, or this would retry it in a tight loop: earlier
+  // pages keep the query in a success state (so `isError` stays false), and the
+  // next-page error only shows up as `isFetchNextPageError`. The 10s refetch
+  // poll clears it and pagination resumes on its own.
   useEffect(() => {
     if (
       bookOrders.length === 0 &&
       hasNextPage &&
       !isFetchingNextPage &&
+      !isFetchNextPageError &&
       !isLoading
     ) {
       fetchNextPage();
@@ -313,6 +320,7 @@ export const OrderHistory = ({
     bookOrders.length,
     hasNextPage,
     isFetchingNextPage,
+    isFetchNextPageError,
     isLoading,
     fetchNextPage,
   ]);
