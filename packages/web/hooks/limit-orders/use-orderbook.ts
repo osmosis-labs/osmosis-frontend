@@ -542,6 +542,7 @@ export const useOrderbookClaimableOrders = ({
   orderbookAddress,
   orderDirection,
   baseSymbol,
+  assetDenom,
 }: {
   userAddress: string;
   disabled?: boolean;
@@ -550,8 +551,10 @@ export const useOrderbookClaimableOrders = ({
   orderbookAddress?: string;
   /** Limits claiming to one side, e.g. when the Buy/Sell filter is set. */
   orderDirection?: "bid" | "ask";
-  /** Limits claiming to orders whose base asset matches, e.g. the asset filter. */
+  /** Limits claiming to orders whose base asset symbol matches the typed filter. */
   baseSymbol?: string;
+  /** Limits claiming to orders with this exact coinMinimalDenom on base or quote, for the asset deep link. */
+  assetDenom?: string;
 }) => {
   const { orderbooks } = useOrderbooks();
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
@@ -565,8 +568,10 @@ export const useOrderbookClaimableOrders = ({
   });
 
   // Claim only the orders in scope: one book when `orderbookAddress` is set, one
-  // side when `orderDirection` is set, one base asset when `baseSymbol` is set.
-  // The count and the batch both follow, so Claim All matches the visible list.
+  // side when `orderDirection` is set, the typed base symbol when `baseSymbol`
+  // is set, or the exact base-or-quote denom when `assetDenom` is set (the asset
+  // deep link). The count and the batch both follow, so Claim All matches the
+  // visible list.
   //
   // Known limit: on the SQS path, `useClaimableOrdersQuery` loads only the first
   // page of 100 filled orders and does not paginate, so these scopes narrow that
@@ -582,9 +587,12 @@ export const useOrderbookClaimableOrders = ({
         (o) =>
           (!orderbookAddress || o.orderbookAddress === orderbookAddress) &&
           (!orderDirection || o.order_direction === orderDirection) &&
-          (!query || !!o.baseAsset?.symbol?.toLowerCase().includes(query))
+          (!query || !!o.baseAsset?.symbol?.toLowerCase().includes(query)) &&
+          (!assetDenom ||
+            o.baseAsset?.coinMinimalDenom === assetDenom ||
+            o.quoteAsset?.coinMinimalDenom === assetDenom)
       ),
-    [orders, orderbookAddress, orderDirection, query]
+    [orders, orderbookAddress, orderDirection, query, assetDenom]
   );
 
   const claimAllOrders = useCallback(async () => {

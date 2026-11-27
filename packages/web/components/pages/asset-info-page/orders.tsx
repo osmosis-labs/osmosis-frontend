@@ -69,11 +69,14 @@ export const AssetOrderHistory = () => {
       <div className="flex items-center justify-between">
         <h6>{t("portfolio.openOrders")}</h6>
         <Link
-          // Carry the current asset path so the order-history back button
-          // returns to this asset, and pre-fill its asset filter with this token.
-          // The back-button label is derived from this path, not sent separately.
+          // Carry the current asset path so the order-history back button returns
+          // to this asset (the label is derived from this path, not sent
+          // separately), pre-fill the filter field with the symbol, and send the
+          // exact denom so the list matches this asset on base or quote.
           href={`/transactions?tab=orders&asset=${encodeURIComponent(
             asset.coinDenom
+          )}&assetDenom=${encodeURIComponent(
+            asset.coinMinimalDenom
           )}&from=${encodeURIComponent(router.asPath)}`}
           aria-label={t("limitOrders.orderHistory")}
           title={t("limitOrders.orderHistory")}

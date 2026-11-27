@@ -153,6 +153,14 @@ export const OrderHistory = ({
     defaultValue: "",
     clearOnDefault: true,
   });
+  // Set only by the asset-page deep link (`?assetDenom=`): the exact
+  // coinMinimalDenom to match on base or quote, so the set matches the asset
+  // page rather than a base-symbol substring. Cleared once the user edits the
+  // field, which switches to the typed base-symbol search.
+  const [assetDenomFilter, setAssetDenomFilter] = useQueryState("assetDenom", {
+    defaultValue: "",
+    clearOnDefault: true,
+  });
 
   // The page shows the details panel from xxxl, like the trade history's. It
   // leaves too little width for every column, so the table takes the layout it
@@ -204,17 +212,27 @@ export const OrderHistory = ({
   // The asset filter applies only on the full view; when embedded on a single
   // book the list is already scoped, so the field is hidden and ignored.
   const assetQuery = orderbookAddress ? "" : assetFilter.trim().toLowerCase();
+  const assetDenom = orderbookAddress ? "" : assetDenomFilter;
   const displayOrders = useMemo(() => {
     const byDirection =
       dirFilter === "all"
         ? bookOrders
         : bookOrders.filter((o) => o.order_direction === dirFilter);
+    // Deep link: match the exact denom on base or quote, like the asset page, so
+    // a USDC link keeps OSMO/USDC orders and an ATOM link excludes stATOM/qATOM.
+    if (assetDenom) {
+      return byDirection.filter(
+        (o) =>
+          o.baseAsset?.coinMinimalDenom === assetDenom ||
+          o.quoteAsset?.coinMinimalDenom === assetDenom
+      );
+    }
     if (!assetQuery) return byDirection;
-    // Base asset only: "osmo" matches an OSMO/USDC order, not ATOM/OSMO.
+    // Typed text: base-symbol substring. "osmo" matches an OSMO/USDC order.
     return byDirection.filter((o) =>
       o.baseAsset?.symbol?.toLowerCase().includes(assetQuery)
     );
-  }, [bookOrders, dirFilter, assetQuery]);
+  }, [bookOrders, dirFilter, assetQuery, assetDenom]);
   // The page keeps the copy of the selected order taken on click. Hand it each
   // refetched copy, so the details show the order's current status and build the
   // claim or cancel from its current fill. An order no longer in the loaded
@@ -282,7 +300,10 @@ export const OrderHistory = ({
       refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
       orderbookAddress,
       orderDirection: dirFilter === "all" ? undefined : dirFilter,
-      baseSymbol: assetQuery || undefined,
+      // Scope Claim All to the visible set: the deep link's exact denom when set,
+      // otherwise the typed base-symbol substring.
+      baseSymbol: assetDenom ? undefined : assetQuery || undefined,
+      assetDenom: assetDenom || undefined,
     });
 
   // The in-flight flag lives here, not in the group header, because a filter
@@ -412,7 +433,12 @@ export const OrderHistory = ({
             size="small"
             placeholder={t("limitOrders.filterByAsset")}
             currentValue={assetFilter}
-            onInput={(value) => setAssetFilter(value)}
+            onInput={(value) => {
+              setAssetFilter(value);
+              // Editing switches to the typed base-symbol search, so drop the
+              // deep link's exact-denom match.
+              setAssetDenomFilter("");
+            }}
           />
         )}
       </div>
