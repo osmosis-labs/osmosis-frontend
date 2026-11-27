@@ -565,6 +565,14 @@ export const useOrderbookClaimableOrders = ({
   // Claim only the orders in scope: one book when `orderbookAddress` is set, one
   // side when `orderDirection` is set, one base asset when `baseSymbol` is set.
   // The count and the batch both follow, so Claim All matches the visible list.
+  //
+  // Known limit: on the SQS path, `useClaimableOrdersQuery` loads only the first
+  // page of 100 filled orders and does not paginate, so these scopes narrow that
+  // first page, not the full claimable set. A wallet with more than 100 filled
+  // claimable orders could see a scoped Claim All miss orders past the first
+  // page. This predates the asset filter (the direction scope already shares it);
+  // the real fix is paging the claimable query or scoping it server-side, tracked
+  // separately.
   const query = baseSymbol?.trim().toLowerCase();
   const scopedOrders = useMemo(
     () =>

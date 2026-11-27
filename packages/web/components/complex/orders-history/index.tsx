@@ -295,6 +295,28 @@ export const OrderHistory = ({
     }
   }, [claimAllOrders, refetch]);
 
+  // The pagination sentinel below only calls fetchNextPage when it transitions
+  // into view. While this book has no orders on the loaded pages (its orders can
+  // sit on a later page, because the query fetches every book), the sentinel
+  // stays in place and never fires again, so advance the pages here until the
+  // book's first order loads or the pages run out.
+  useEffect(() => {
+    if (
+      bookOrders.length === 0 &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+      !isLoading
+    ) {
+      fetchNextPage();
+    }
+  }, [
+    bookOrders.length,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    fetchNextPage,
+  ]);
+
   const showConnectWallet = !isWalletConnected && !isWalletLoading;
 
   if (showConnectWallet) {
