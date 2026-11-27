@@ -169,6 +169,7 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
                     type === "cosmwasm-alloyed" ||
                     type === "cosmwasm-astroport-pcl" ||
                     type === "cosmwasm-whitewhale" ||
+                    type === "cosmwasm-orderbook" ||
                     type === "cosmwasm") && (
                     <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
                       {type === "concentrated" && (
@@ -184,6 +185,9 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
                           height={16}
                         />
                       )}
+                      {type === "cosmwasm-orderbook" && (
+                        <Icon id="open-book" height={16} width={16} />
+                      )}
                       {type === "cosmwasm" && (
                         <Icon id="setting" height={16} width={16} />
                       )}
@@ -197,9 +201,11 @@ const Pools: FunctionComponent<Route> = memo(({ pools }) => {
                               ? "Astroport PCL"
                               : type === "cosmwasm-whitewhale"
                                 ? "Skeleton Swap"
-                                : type === "cosmwasm"
-                                  ? "pool.custom"
-                                  : "pool.stableswapEnabled"
+                                : type === "cosmwasm-orderbook"
+                                  ? "components.table.orderbook"
+                                  : type === "cosmwasm"
+                                    ? "pool.custom"
+                                    : "pool.stableswapEnabled"
                       )}
                     </div>
                   )}
