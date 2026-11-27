@@ -50,7 +50,7 @@ import { ModalBase, ModalBaseProps } from "~/modals";
 import { EvmWalletState } from "~/modals/wallet-select/evm-wallet-state";
 import { useConnectWallet } from "~/modals/wallet-select/use-connect-wallet";
 import { useSelectableWallets } from "~/modals/wallet-select/use-selectable-wallets";
-import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import type { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { checkSolanaRecipient } from "~/utils/solana";
 
 interface BridgeWalletSelectProps {

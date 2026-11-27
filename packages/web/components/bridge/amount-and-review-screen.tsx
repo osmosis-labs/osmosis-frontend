@@ -11,7 +11,7 @@ import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { useWallet } from "~/hooks/use-wallet";
-import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import type { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries } from "~/stores";
 import { api } from "~/utils/trpc";
 

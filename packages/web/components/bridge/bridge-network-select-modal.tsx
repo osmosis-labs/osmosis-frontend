@@ -9,7 +9,7 @@ import { useFilteredData, useWindowSize } from "~/hooks";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { ModalBase, ModalBaseProps } from "~/modals";
-import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import type { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
 import { SupportedChain } from "./use-bridges-supported-assets";
 

@@ -1,6 +1,6 @@
 import { createTRPCReact } from "@trpc/react-query";
 
-import { AppRouter } from "~/server/api/root-router";
+import type { AppRouter } from "~/server/api/root-router";
 
 /**
  * tRPC v11 creates a separate React context per `createTRPCReact` instance,

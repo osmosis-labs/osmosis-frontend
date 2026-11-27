@@ -47,7 +47,7 @@ import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { usePhantomWallet } from "~/hooks/use-phantom-wallet";
 import { useWallet } from "~/hooks/use-wallet";
-import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import type { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import {
   depositHaltReasonKey,
   withdrawalHaltReasonKey,
