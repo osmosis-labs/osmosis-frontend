@@ -41,7 +41,8 @@ export class SwapPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto("/", { timeout: 30_000 });
+    // The trade tool opens on Buy; these flows start from Swap.
+    await this.page.goto("/?tab=swap", { timeout: 30_000 });
     await this.waitForTradeUi();
     const currentUrl = this.page.url();
     console.log(`FE opened at: ${currentUrl}`);

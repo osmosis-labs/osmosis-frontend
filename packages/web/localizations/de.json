@@ -556,7 +556,34 @@
     "yourStats": "Ihr Pool-Guthaben",
     "onlyInRangePositions": "Nur für Positionen in Reichweite",
     "custom": "Brauch",
-    "nextRewardIn": "Nächste Belohnung in"
+    "nextRewardIn": "Nächste Belohnung in",
+    "orderbookPool": {
+      "type": "Orderbuch",
+      "spread": "Spread",
+      "makerFee": "Maker-Gebühr",
+      "yourOrders": "Ihre Aufträge",
+      "noOrders": "Keine Aufträge für dieses Paar",
+      "noOrdersDesc": "Geben Sie Ihren ersten Limitauftrag auf.",
+      "filterAll": "Alle",
+      "filterBuy": "Kaufen",
+      "filterSell": "Verkaufen",
+      "depthPrice": "Preis",
+      "depthRaw": "Roh",
+      "depthNoAsks": "Keine Verkaufsangebote",
+      "depthNoBids": "Keine Kaufangebote",
+      "depthNoOrders": "Keine offenen Aufträge",
+      "depthNoOrdersDesc": "Dieses Orderbuch ist derzeit leer",
+      "depthUnavailable": "Tiefendaten nicht verfügbar",
+      "depthUnavailableDesc": "Orderbuch-Tiefe konnte nicht geladen werden. Erneuter Versuch...",
+      "depthClLegend": "Inkl. CL-Pools",
+      "depthClLegendTooltip": "Schraffierte Balken enthalten Liquidität aus Concentrated-Liquidity-Pools für dieses Paar. Das ist AMM-Kurvenliquidität, keine offenen Orders; angezeigte Mengen sind nur Orders.",
+      "depthEdgesTooltip": "Liquidität jenseits der angezeigten Zeilen als je eine < und > Zeile anzeigen",
+      "depthClUnavailable": "CL-Tiefe nicht verfügbar",
+      "depthRowWithCl": "Orders: {orders} · CL-Pools: {cl}",
+      "retiredQuoteDesc": "{quote} wird für neue Limit-Orders nicht mehr als Quote angeboten. Deine Orders in diesem Orderbuch kannst du weiterhin einlösen und stornieren.",
+      "retiredQuoteGoTo": "Im {pair}-Orderbuch handeln",
+      "retiredQuoteCreate": "{pair}-Orderbuch erstellen"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "Ja, ich verstehe, dass dies zu einem erheblichen Verlust von Geldern führen kann, und ich möchte fortfahren.",
     "quoteUpdatedTitle": "Kurs aktualisiert",
     "quoteUpdatedCaption": "Der Kurs hat sich seit Ihrer Bestätigung geändert. Bitte prüfen Sie die aktualisierten Details und bestätigen Sie erneut.",
+    "noQuotesAvailableTitle": "Keine Kurse verfügbar",
+    "noQuotesAvailableDescription": "Für diesen Betrag konnten wir keinen Kurs abrufen. Versuchen Sie einen anderen Betrag oder schauen Sie später noch einmal vorbei.",
+    "quoteProviderUnavailableTitle": "Diese Option ist nicht verfügbar",
+    "quoteProviderUnavailableDescription": "Die von Ihnen gewählte Transferoption ist für diesen Betrag nicht verfügbar. Versuchen Sie einen anderen Betrag, wählen Sie in den Transferdetails eine andere Option oder schauen Sie später noch einmal vorbei.",
     "slippageTooHighTitle": "Slippage ist hoch",
     "slippageTooHighDescription": "Die Slippage für diese Übertragung ist hoch. Versuchen Sie einen kleineren Betrag oder akzeptieren Sie das Verlustrisiko, um fortzufahren.",
     "priceImpactTooHighTitle": "Preisauswirkung ist hoch",
@@ -1347,7 +1378,6 @@
     "pay": "Zahlen",
     "open": "Offen",
     "filled": "Ausgeführt",
-    "claimable": "Beanspruchbar",
     "claimAndClose": "Beanspruchen und schließen",
     "close": "Schließen",
     "claim": "Beanspruchen",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "vor {minutes} Minuten",
     "buyWith": "Kaufen mit {coinA} oder {coinB}",
     "orderHistory": "Orderverlauf",
+    "openOrderbook": "{pair}-Orderbuch öffnen",
     "tradeAnotherAssetOr": "Tauschen Sie einen anderen Vermögenswert gegen {coinA} oder {coinB}",
     "tradeAnotherAsset": "Tauschen Sie einen anderen Vermögenswert gegen {coinDenom}",
     "sellAnAsset": "Einen Vermögenswert verkaufen",
@@ -1538,5 +1569,10 @@
       "stepTitle": "{symbol} in {symbol}.wh umwandeln",
       "description": "Du hältst {balance} {symbol} als alloyierten Vermögenswert. Wormhole bridgt die {symbol}.wh-Variante, also wandle zuerst um und bridge dann unten."
     }
+  },
+  "tradeView": {
+    "expand": "Handelsansicht erweitern",
+    "collapse": "Handelsansicht einklappen",
+    "orderBook": "Orderbuch"
   }
 }

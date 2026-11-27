@@ -556,7 +556,34 @@
     "yourStats": "موجودی استخر شما",
     "onlyInRangePositions": "فقط برای موقعیت های در محدوده",
     "custom": "سفارشی",
-    "nextRewardIn": "پاداش بعدی در"
+    "nextRewardIn": "پاداش بعدی در",
+    "orderbookPool": {
+      "type": "دفتر سفارشات",
+      "spread": "اسپرد",
+      "makerFee": "کارمزد میکر",
+      "yourOrders": "سفارش‌های شما",
+      "noOrders": "هیچ سفارشی برای این جفت وجود ندارد",
+      "noOrdersDesc": "اولین سفارش محدود خود را ثبت کنید.",
+      "filterAll": "همه",
+      "filterBuy": "خرید",
+      "filterSell": "فروش",
+      "depthPrice": "قیمت",
+      "depthRaw": "خام",
+      "depthNoAsks": "بدون فروشنده",
+      "depthNoBids": "بدون خریدار",
+      "depthNoOrders": "سفارش بازی وجود ندارد",
+      "depthNoOrdersDesc": "این دفتر سفارش در حال حاضر خالی است",
+      "depthUnavailable": "داده‌های عمق در دسترس نیست",
+      "depthUnavailableDesc": "بارگذاری عمق دفتر سفارش ممکن نیست. در حال تلاش مجدد...",
+      "depthClLegend": "شامل استخرهای CL",
+      "depthClLegendTooltip": "نوارهای هاشورخورده شامل نقدینگی استخرهای نقدینگی متمرکز برای این جفت هستند. این نقدینگی منحنی AMM است، نه سفارش‌های باز؛ مقادیر نمایش‌داده‌شده فقط سفارش‌ها هستند.",
+      "depthEdgesTooltip": "نمایش نقدینگی فراتر از ردیف‌های نمایش‌داده‌شده در یک ردیف < و یک ردیف >",
+      "depthClUnavailable": "عمق CL در دسترس نیست",
+      "depthRowWithCl": "سفارش‌ها: {orders} · استخرهای CL: {cl}",
+      "retiredQuoteDesc": "{quote} دیگر به‌عنوان ارز مظنه برای سفارش‌های محدود جدید ارائه نمی‌شود. همچنان می‌توانید سفارش‌های خود را در این دفتر دریافت یا لغو کنید.",
+      "retiredQuoteGoTo": "معامله در دفتر سفارش {pair}",
+      "retiredQuoteCreate": "ایجاد دفتر سفارش {pair}"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "بله، می‌دانم که این ممکن است باعث از دست رفتن شدید دارایی شود و می‌خواهم ادامه دهم.",
     "quoteUpdatedTitle": "قیمت به‌روزرسانی شد",
     "quoteUpdatedCaption": "قیمت از زمان تأیید شما تغییر کرده است. لطفاً جزئیات به‌روزشده را بررسی و دوباره تأیید کنید.",
+    "noQuotesAvailableTitle": "قیمتی در دسترس نیست",
+    "noQuotesAvailableDescription": "برای این مبلغ نتوانستیم قیمتی دریافت کنیم. مبلغ دیگری را امتحان کنید یا کمی بعد دوباره بررسی کنید.",
+    "quoteProviderUnavailableTitle": "این گزینه در دسترس نیست",
+    "quoteProviderUnavailableDescription": "گزینه انتقالی که انتخاب کرده‌اید برای این مبلغ در دسترس نیست. مبلغ دیگری را امتحان کنید، در جزئیات انتقال گزینه دیگری را انتخاب کنید یا کمی بعد دوباره بررسی کنید.",
     "slippageTooHighTitle": "لغزش قیمت زیاد است",
     "slippageTooHighDescription": "لغزش قیمت این انتقال زیاد است. مبلغ کمتری را امتحان کنید یا برای ادامه، ریسک ضرر را بپذیرید.",
     "priceImpactTooHighTitle": "تأثیر قیمتی زیاد است",
@@ -1347,7 +1378,6 @@
     "pay": "پرداخت",
     "open": "باز",
     "filled": "اجرا شده",
-    "claimable": "قابل دریافت",
     "claimAndClose": "دریافت و بستن",
     "close": "بستن",
     "claim": "دریافت",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "{minutes} دقیقه قبل",
     "buyWith": "خرید با {coinA} یا {coinB}",
     "orderHistory": "تاریخچه سفارش ها",
+    "openOrderbook": "باز کردن دفتر سفارش {pair}",
     "tradeAnotherAssetOr": "دارایی دیگری را برای {coinA} یا {coinB} مبادله کنید.",
     "tradeAnotherAsset": "دارایی دیگری را برای {coinDenom} مبادله کنید",
     "sellAnAsset": "فروش یک دارایی",
@@ -1538,5 +1569,10 @@
       "stepTitle": "تبدیل {symbol} به {symbol}.wh",
       "description": "شما {balance} {symbol} به صورت دارایی آلویدشده دارید. Wormhole واریانت {symbol}.wh را پل می‌زند، پس ابتدا تبدیل کنید و سپس در پایین پل بزنید."
     }
+  },
+  "tradeView": {
+    "expand": "گسترش نمای معامله",
+    "collapse": "جمع کردن نمای معامله",
+    "orderBook": "دفتر سفارش"
   }
 }

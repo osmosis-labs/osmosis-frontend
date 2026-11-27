@@ -556,7 +556,34 @@
     "yourStats": "Statisticile tale",
     "onlyInRangePositions": "Doar pentru pozițiile din rază",
     "custom": "Personalizat",
-    "nextRewardIn": "Următoarea recompensă în"
+    "nextRewardIn": "Următoarea recompensă în",
+    "orderbookPool": {
+      "type": "Registru de ordine",
+      "spread": "Diferență",
+      "makerFee": "Comision maker",
+      "yourOrders": "Ordinele tale",
+      "noOrders": "Nicio ordine pentru această pereche",
+      "noOrdersDesc": "Plasează primul tău ordin limitat.",
+      "filterAll": "Toate",
+      "filterBuy": "Cumpăra",
+      "filterSell": "Vinde",
+      "depthPrice": "Preț",
+      "depthRaw": "Brut",
+      "depthNoAsks": "Fără vânzări",
+      "depthNoBids": "Fără cumpărări",
+      "depthNoOrders": "Fără ordine deschise",
+      "depthNoOrdersDesc": "Acest registru de ordine este în prezent gol",
+      "depthUnavailable": "Date de profunzime indisponibile",
+      "depthUnavailableDesc": "Imposibil de încărcat adâncimea registrului de ordine. Se reîncearcă...",
+      "depthClLegend": "Incl. pool-uri CL",
+      "depthClLegendTooltip": "Barele hașurate includ lichiditate din pool-urile de lichiditate concentrată pentru această pereche. Este lichiditate de curbă AMM, nu ordine în așteptare; cantitățile afișate sunt doar ordine.",
+      "depthEdgesTooltip": "Afișează lichiditatea dincolo de rândurile afișate într-un rând < și unul >",
+      "depthClUnavailable": "Adâncime CL indisponibilă",
+      "depthRowWithCl": "Ordine: {orders} · Pool-uri CL: {cl}",
+      "retiredQuoteDesc": "{quote} nu mai este oferit ca monedă de cotare pentru ordinele limită noi. Poți în continuare să revendici și să anulezi ordinele din acest registru.",
+      "retiredQuoteGoTo": "Tranzacționează în registrul de ordine {pair}",
+      "retiredQuoteCreate": "Creează un registru de ordine {pair}"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "Da, înțeleg că acest lucru ar putea cauza pierderi mari de fonduri și doresc să continui.",
     "quoteUpdatedTitle": "Cotație actualizată",
     "quoteUpdatedCaption": "Cotația s-a schimbat de la confirmarea dvs. Verificați detaliile actualizate și confirmați din nou.",
+    "noQuotesAvailableTitle": "Nicio cotație disponibilă",
+    "noQuotesAvailableDescription": "Nu am putut obține o cotație pentru această sumă. Încercați o altă sumă sau reveniți mai târziu.",
+    "quoteProviderUnavailableTitle": "Această opțiune nu este disponibilă",
+    "quoteProviderUnavailableDescription": "Opțiunea de transfer pe care ați selectat-o nu este disponibilă pentru această sumă. Încercați o altă sumă, alegeți o altă opțiune în detaliile transferului sau reveniți mai târziu.",
     "slippageTooHighTitle": "Slippage-ul este mare",
     "slippageTooHighDescription": "Slippage-ul pentru acest transfer este mare. Încercați o sumă mai mică sau acceptați riscul de pierdere pentru a continua.",
     "priceImpactTooHighTitle": "Impactul asupra prețului este mare",
@@ -1347,7 +1378,6 @@
     "pay": "Plătiți",
     "open": "Deschis",
     "filled": "Executat",
-    "claimable": "De revendicat",
     "claimAndClose": "Revendicați și închideți",
     "close": "Închideți",
     "claim": "Revendicați",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "acum {minutes} min",
     "buyWith": "Cumpărați cu {coinA} sau {coinB}",
     "orderHistory": "Istoric ordine",
+    "openOrderbook": "Deschide registrul de ordine {pair}",
     "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
     "tradeAnotherAsset": "Schimbă alt activ pentru {coinDenom}",
     "sellAnAsset": "Vinde un activ",
@@ -1538,5 +1569,10 @@
       "stepTitle": "Convertește {symbol} în {symbol}.wh",
       "description": "Deții {balance} {symbol} ca activ aliat. Wormhole face puntea variantei {symbol}.wh, așa că convertește mai întâi, apoi fă puntea mai jos."
     }
+  },
+  "tradeView": {
+    "expand": "Extinde vizualizarea de tranzacționare",
+    "collapse": "Restrânge vizualizarea de tranzacționare",
+    "orderBook": "Registru de ordine"
   }
 }

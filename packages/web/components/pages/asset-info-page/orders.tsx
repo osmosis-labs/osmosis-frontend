@@ -2,6 +2,7 @@ import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
 import { prepareMultiExecuteContractMsg } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
@@ -57,21 +58,27 @@ export const AssetOrderHistory = () => {
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
 
-  if (
-    !isWalletConnected ||
-    (!isLoading && activeOrders.length === 0 && filledOrders.length === 0)
-  )
-    return null;
+  if (!isWalletConnected) return null;
+
+  const hasOrders = activeOrders.length > 0 || filledOrders.length > 0;
 
   return (
-    <div className="flex flex-col gap-3 rounded-3xl border border-osmoverse-700 p-6">
+    <div className="flex h-full flex-col gap-3 rounded-3xl border border-osmoverse-700 px-6 pt-4 pb-6">
       <div className="flex items-center justify-between">
         <h6>{t("portfolio.openOrders")}</h6>
         <Link
           href="/transactions?tab=orders"
-          className="body2 text-wosmongton-300 hover:text-wosmongton-200"
+          aria-label={t("limitOrders.orderHistory")}
+          title={t("limitOrders.orderHistory")}
+          className="-my-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-osmoverse-400 transition-colors hover:bg-osmoverse-800 hover:text-osmoverse-200"
         >
-          {t("portfolio.seeAll")}
+          <Icon
+            id="history-uncolored"
+            // The sprite draws this icon at 25x24; a smaller box clips it.
+            width={25}
+            height={24}
+            aria-hidden
+          />
         </Link>
       </div>
 
@@ -79,8 +86,24 @@ export const AssetOrderHistory = () => {
         <div className="flex justify-center py-4">
           <Spinner className="!h-6 !w-6" />
         </div>
+      ) : !hasOrders ? (
+        // The same empty state as the orderbook page's orders panel.
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 text-center">
+          <Image
+            src="/images/place-limit-order.svg"
+            alt=""
+            width={96}
+            height={64}
+          />
+          <p className="body2 text-osmoverse-300">
+            {t("pool.orderbookPool.depthNoOrders")}
+          </p>
+          <p className="caption text-osmoverse-500">
+            {t("pool.orderbookPool.noOrdersDesc")}
+          </p>
+        </div>
       ) : (
-        <div className="flex flex-col">
+        <div className="flex min-h-0 flex-col overflow-y-auto">
           {filledOrders.length > 0 && (
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">

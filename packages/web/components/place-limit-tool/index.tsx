@@ -57,6 +57,7 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
+import { useInvalidateOrderbookOrders } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
   useAmountWithSlippage,
@@ -72,6 +73,14 @@ interface PlaceLimitToolProps {
   initialBaseDenom?: string;
   initialQuoteDenom?: string;
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
+  alwaysExpandedDetails?: boolean;
+  externalOrderPrice?: string;
+  /** Fixes the pair to the initial base and quote: no token selection. */
+  lockPair?: boolean;
+  /** Limit orders only: ignores a market type in the URL and runs no market quotes. */
+  limitOnly?: boolean;
+  /** Called with the selected base and quote minimal denoms whenever they change. */
+  onPairChange?: (pair: { base: string; quote: string }) => void;
 }
 
 /** Safely converts a raw input string to a Dec value.
@@ -147,8 +156,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     initialBaseDenom = ATOM_BASE_DENOM,
     initialQuoteDenom = USDC_BASE_DENOM,
     onOrderSuccess,
+    alwaysExpandedDetails = false,
+    externalOrderPrice,
+    lockPair = false,
+    limitOnly = false,
+    onPairChange,
   }: PlaceLimitToolProps) => {
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
+    const invalidateOrders = useInvalidateOrderbookOrders();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
     const {
@@ -175,7 +190,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     // claimable and cancellable from order history.
     const limitOrdersDisabled =
       featureFlags._isInitialized && !featureFlags.limitOrders;
-    const type = limitOrdersDisabled ? "market" : queryType;
+    // The kill switch wins over a limit-only widget: it then places nothing.
+    const type = limitOrdersDisabled
+      ? "market"
+      : limitOnly
+        ? "limit"
+        : queryType;
 
     // The flag can flip while a review is open (LaunchDarkly streams updates),
     // which would turn a reviewed limit order into an unreviewed market order.
@@ -202,6 +222,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     );
 
     const setBase = useCallback((base: string) => set({ from: base }), [set]);
+
+    // A locked pair ignores any pair left in the URL by another page.
+    useEffect(() => {
+      if (
+        lockPair &&
+        (from !== initialBaseDenom || quote !== initialQuoteDenom)
+      ) {
+        return deferQueryCorrection(() =>
+          set({ from: initialBaseDenom, quote: initialQuoteDenom })
+        );
+      }
+    }, [lockPair, from, quote, initialBaseDenom, initialQuoteDenom, set]);
 
     useEffect(() => {
       if (from === quote) {
@@ -243,7 +275,23 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
       type,
       maxSlippage: slippageConfig.slippage.toDec(),
       quoteType,
+      limitOnly,
     });
+
+    const selectedBaseDenom = swapState.baseAsset?.coinMinimalDenom;
+    const selectedQuoteDenom = swapState.quoteAsset?.coinMinimalDenom;
+    useEffect(() => {
+      if (selectedBaseDenom && selectedQuoteDenom) {
+        onPairChange?.({ base: selectedBaseDenom, quote: selectedQuoteDenom });
+      }
+      // Report only when the pair changes, not when the callback identity does.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedBaseDenom, selectedQuoteDenom]);
+
+    useEffect(() => {
+      if (externalOrderPrice) swapState.priceState.setPrice(externalOrderPrice);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [externalOrderPrice]);
 
     const resetSlippage = useCallback(() => {
       const defaultSlippage =
@@ -948,6 +996,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
                 data-testid={`trade-input-${type}`}
               />
               <AssetFieldsetTokenSelector
+                locked={lockPair}
                 onSelect={setBase}
                 selectableAssets={selectableBaseAssets}
                 orderDirection={orderDirection}
@@ -1023,6 +1072,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
               <PriceSelector
                 initialBaseDenom={initialBaseDenom}
                 initialQuoteDenom={initialQuoteDenom}
+                locked={lockPair}
               />
             </AssetFieldsetFooter>
           </AssetFieldset>
@@ -1087,6 +1137,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             makerFee={swapState.makerFee}
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
+            alwaysExpanded={alwaysExpandedDetails}
             priceOverride={
               type === "limit" && swapState.priceState.spotPrice
                 ? new PricePretty(
@@ -1107,6 +1158,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             setAmountSafe("fiat", "");
             setReviewOpen(false);
             setIsSendingTx(false);
+            // Show the new order in any Your Orders list without waiting for a poll.
+            invalidateOrders();
             onOrderSuccess?.(
               swapState.baseAsset?.coinMinimalDenom,
               swapState.quoteAsset?.coinMinimalDenom

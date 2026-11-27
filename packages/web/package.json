@@ -22,6 +22,7 @@
     "cf:deploy": "yarn cf:build && opennextjs-cloudflare deploy -- --keep-vars",
     "cf:cache:create": "wrangler r2 bucket create osmosis-frontend-stage-cache",
     "cf:cache:create:production": "wrangler r2 bucket create osmosis-frontend-production-cache",
+    "cf:cache:create:testnet": "wrangler r2 bucket create osmosis-frontend-testnet-cache",
     "cf:router:dry-run": "wrangler deploy -c router/wrangler.jsonc --dry-run --outdir .wrangler/router",
     "cf:router:deploy": "wrangler deploy -c router/wrangler.jsonc",
     "cf:api:dry-run": "dotenv -c production -- node api-worker/run-wrangler.mjs deploy --dry-run --outdir .wrangler/api --metafile",

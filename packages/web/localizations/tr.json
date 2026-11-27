@@ -556,7 +556,34 @@
     "yourStats": "Havuz bakiyeniz",
     "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için",
     "custom": "Gelenek",
-    "nextRewardIn": "Sonraki ödül"
+    "nextRewardIn": "Sonraki ödül",
+    "orderbookPool": {
+      "type": "Emir defteri",
+      "spread": "Fark",
+      "makerFee": "Yapıcı ücreti",
+      "yourOrders": "Emirleriniz",
+      "noOrders": "Bu parite için emir yok",
+      "noOrdersDesc": "İlk limit emrinizi verin.",
+      "filterAll": "Tümü",
+      "filterBuy": "Al",
+      "filterSell": "Sat",
+      "depthPrice": "Fiyat",
+      "depthRaw": "Ham",
+      "depthNoAsks": "Satış yok",
+      "depthNoBids": "Alış yok",
+      "depthNoOrders": "Açık emir yok",
+      "depthNoOrdersDesc": "Bu emir defteri şu anda boş",
+      "depthUnavailable": "Derinlik verisi mevcut değil",
+      "depthUnavailableDesc": "Emir defteri derinliği yüklenemedi. Yeniden deneniyor...",
+      "depthClLegend": "CL havuzları dahil",
+      "depthClLegendTooltip": "Taralı çubuklar bu parite için yoğunlaştırılmış likidite havuzlarının likiditesini içerir. Bu AMM eğrisi likiditesidir, bekleyen emir değildir; gösterilen miktarlar yalnızca emirlerdir.",
+      "depthEdgesTooltip": "Gösterilen satırların ötesindeki likiditeyi birer < ve > satırında göster",
+      "depthClUnavailable": "CL derinliği kullanılamıyor",
+      "depthRowWithCl": "Emirler: {orders} · CL havuzları: {cl}",
+      "retiredQuoteDesc": "{quote} artık yeni limit emirleri için kotasyon birimi olarak sunulmuyor. Bu defterdeki emirlerinizi yine de talep edebilir ve iptal edebilirsiniz.",
+      "retiredQuoteGoTo": "{pair} emir defterinde işlem yap",
+      "retiredQuoteCreate": "{pair} emir defteri oluştur"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "Evet, bunun ciddi fon kaybına yol açabileceğini anlıyorum ve devam etmek istiyorum.",
     "quoteUpdatedTitle": "Teklif güncellendi",
     "quoteUpdatedCaption": "Onayınızdan sonra teklif değişti. Lütfen güncellenen ayrıntıları inceleyip yeniden onaylayın.",
+    "noQuotesAvailableTitle": "Kullanılabilir teklif yok",
+    "noQuotesAvailableDescription": "Bu tutar için teklif alamadık. Farklı bir tutar deneyin veya daha sonra tekrar kontrol edin.",
+    "quoteProviderUnavailableTitle": "Bu seçenek kullanılamıyor",
+    "quoteProviderUnavailableDescription": "Seçtiğiniz transfer seçeneği bu tutar için kullanılamıyor. Farklı bir tutar deneyin, transfer ayrıntılarından başka bir seçenek seçin veya daha sonra tekrar kontrol edin.",
     "slippageTooHighTitle": "Kayma yüksek",
     "slippageTooHighDescription": "Bu transfer için kayma yüksek. Daha küçük bir tutar deneyin veya devam etmek için kayıp riskini kabul edin.",
     "priceImpactTooHighTitle": "Fiyat etkisi yüksek",
@@ -1347,7 +1378,6 @@
     "pay": "Ödeme",
     "open": "Açık",
     "filled": "Gerçekleşti",
-    "claimable": "Talep edilebilir",
     "claimAndClose": "Talep et ve kapat",
     "close": "Kapat",
     "claim": "Talep et",
@@ -1364,6 +1394,7 @@
     "sellAnAsset": "Bir varlık sat",
     "swapAnAsset": "Bir varlığı takas et",
     "of": "değerinde",
+    "openOrderbook": "{pair} emir defterini aç",
     "insufficientFunds": "Yetersiz bakiye",
     "startTrading": "İşlem yapmaya başla",
     "tradeFees": "İşlem ücretleri (emir gerçekleştiğinde)",
@@ -1538,5 +1569,10 @@
       "stepTitle": "{symbol} ı {symbol}.wh ye dönüştür",
       "description": "Alaşımlı varlık olarak {balance} {symbol} tutuyorsunuz. Wormhole {symbol}.wh varyantını köprüler, bu yüzden önce dönüştürün, sonra aşağıda köprüleyin."
     }
+  },
+  "tradeView": {
+    "expand": "İşlem görünümünü genişlet",
+    "collapse": "İşlem görünümünü daralt",
+    "orderBook": "Emir defteri"
   }
 }

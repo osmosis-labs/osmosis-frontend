@@ -556,7 +556,34 @@
     "yourStats": "Su saldo de la piscina",
     "onlyInRangePositions": "Solo para posiciones en rango",
     "custom": "Costumbre",
-    "nextRewardIn": "Próxima recompensa en"
+    "nextRewardIn": "Próxima recompensa en",
+    "orderbookPool": {
+      "type": "Libro de órdenes",
+      "spread": "Diferencial",
+      "makerFee": "Tarifa del creador",
+      "yourOrders": "Tus órdenes",
+      "noOrders": "No hay órdenes para este par",
+      "noOrdersDesc": "Coloca tu primera orden limitada.",
+      "filterAll": "Todos",
+      "filterBuy": "Comprar",
+      "filterSell": "Vender",
+      "depthPrice": "Precio",
+      "depthRaw": "Sin agrupar",
+      "depthNoAsks": "Sin ventas",
+      "depthNoBids": "Sin compras",
+      "depthNoOrders": "Sin órdenes abiertas",
+      "depthNoOrdersDesc": "Este libro de órdenes está vacío",
+      "depthUnavailable": "Datos de profundidad no disponibles",
+      "depthUnavailableDesc": "No se pudo cargar la profundidad del libro de órdenes. Reintentando...",
+      "depthClLegend": "Incl. pools CL",
+      "depthClLegendTooltip": "Las barras rayadas incluyen liquidez de pools de liquidez concentrada para este par. Es liquidez de curva AMM, no órdenes en espera; las cantidades mostradas son solo órdenes.",
+      "depthEdgesTooltip": "Mostrar la liquidez más allá de las filas visibles en una fila < y otra >",
+      "depthClUnavailable": "Profundidad CL no disponible",
+      "depthRowWithCl": "Órdenes: {orders} · Pools CL: {cl}",
+      "retiredQuoteDesc": "{quote} ya no se ofrece como cotización para nuevas órdenes límite. Aún puedes reclamar y cancelar tus órdenes en este libro.",
+      "retiredQuoteGoTo": "Operar en el libro de órdenes {pair}",
+      "retiredQuoteCreate": "Crear un libro de órdenes {pair}"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "Sí, entiendo que esto podría causar una gran pérdida de fondos y deseo continuar.",
     "quoteUpdatedTitle": "Cotización actualizada",
     "quoteUpdatedCaption": "La cotización cambió desde que confirmaste. Revisa los detalles actualizados y confirma de nuevo.",
+    "noQuotesAvailableTitle": "No hay cotizaciones disponibles",
+    "noQuotesAvailableDescription": "No pudimos obtener una cotización para este monto. Prueba con otro monto o vuelve a intentarlo más tarde.",
+    "quoteProviderUnavailableTitle": "Esta opción no está disponible",
+    "quoteProviderUnavailableDescription": "La opción de transferencia que seleccionaste no está disponible para este monto. Prueba con otro monto, elige otra opción en los detalles de la transferencia o vuelve a intentarlo más tarde.",
     "slippageTooHighTitle": "El deslizamiento es alto",
     "slippageTooHighDescription": "El deslizamiento de esta transferencia es alto. Prueba con un monto menor o acepta el riesgo de pérdida para continuar.",
     "priceImpactTooHighTitle": "El impacto en el precio es alto",
@@ -1347,7 +1378,6 @@
     "pay": "Pagar",
     "open": "Abierto",
     "filled": "Ejecutado",
-    "claimable": "Por reclamar",
     "claimAndClose": "Reclamar y cerrar",
     "close": "Cerrar",
     "claim": "Reclamar",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "hace {minutes} min",
     "buyWith": "Compre con {coinA} o {coinB}",
     "orderHistory": "Historial de órdenes",
+    "openOrderbook": "Abrir libro de órdenes {pair}",
     "tradeAnotherAssetOr": "Cambie otro activo por {coinA} o {coinB}",
     "tradeAnotherAsset": "Cambie otro activo por {coinDenom}",
     "sellAnAsset": "Vender un activo",
@@ -1538,5 +1569,10 @@
       "stepTitle": "Convertir {symbol} a {symbol}.wh",
       "description": "Tienes {balance} {symbol} como activo aleado. Wormhole usa el puente con la variante {symbol}.wh, así que convierte primero y luego usa el puente abajo."
     }
+  },
+  "tradeView": {
+    "expand": "Expandir vista de trading",
+    "collapse": "Contraer vista de trading",
+    "orderBook": "Libro de órdenes"
   }
 }

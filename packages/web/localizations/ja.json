@@ -556,7 +556,34 @@
     "yourStats": "プール残高",
     "onlyInRangePositions": "範囲内の位置のみ",
     "custom": "カスタム",
-    "nextRewardIn": "次の報酬まで"
+    "nextRewardIn": "次の報酬まで",
+    "orderbookPool": {
+      "type": "オーダーブック",
+      "spread": "スプレッド",
+      "makerFee": "メイカー手数料",
+      "yourOrders": "あなたの注文",
+      "noOrders": "このペアの注文はありません",
+      "noOrdersDesc": "最初の指値注文を入れましょう。",
+      "filterAll": "すべて",
+      "filterBuy": "購入",
+      "filterSell": "売却",
+      "depthPrice": "価格",
+      "depthRaw": "未集計",
+      "depthNoAsks": "売り注文なし",
+      "depthNoBids": "買い注文なし",
+      "depthNoOrders": "未約定注文なし",
+      "depthNoOrdersDesc": "この板は現在空です",
+      "depthUnavailable": "板情報データを取得できません",
+      "depthUnavailableDesc": "板情報の読み込みに失敗しました。再試行中...",
+      "depthClLegend": "CLプール含む",
+      "depthClLegendTooltip": "斜線のバーには、このペアの集中流動性プールの流動性が含まれます。これはAMMカーブの流動性であり、指値注文ではありません。表示数量は注文のみです。",
+      "depthEdgesTooltip": "表示行より外側の流動性を < と > の1行ずつにまとめて表示",
+      "depthClUnavailable": "CLの厚みを取得できません",
+      "depthRowWithCl": "注文: {orders} · CLプール: {cl}",
+      "retiredQuoteDesc": "{quote} は新しい指値注文の決済通貨として提供されなくなりました。このオーダーブック上の注文は引き続き請求・キャンセルできます。",
+      "retiredQuoteGoTo": "{pair} オーダーブックで取引",
+      "retiredQuoteCreate": "{pair} オーダーブックを作成"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "はい、これにより資金が大きく失われる可能性があることを理解した上で続行します。",
     "quoteUpdatedTitle": "見積もりが更新されました",
     "quoteUpdatedCaption": "確認後に見積もりが変更されました。更新された内容を確認のうえ、もう一度確定してください。",
+    "noQuotesAvailableTitle": "利用可能な見積もりがありません",
+    "noQuotesAvailableDescription": "この金額の見積もりを取得できませんでした。別の金額を試すか、しばらくしてからもう一度ご確認ください。",
+    "quoteProviderUnavailableTitle": "このオプションは利用できません",
+    "quoteProviderUnavailableDescription": "選択した送金オプションはこの金額では利用できません。別の金額を試すか、送金詳細で別のオプションを選択するか、しばらくしてからもう一度ご確認ください。",
     "slippageTooHighTitle": "スリッページが高くなっています",
     "slippageTooHighDescription": "この送金のスリッページが高くなっています。金額を減らすか、損失のリスクを受け入れて続行してください。",
     "priceImpactTooHighTitle": "価格への影響が大きくなっています",
@@ -1347,7 +1378,6 @@
     "pay": "支払い",
     "open": "注文中",
     "filled": "約定済み",
-    "claimable": "受取可能",
     "claimAndClose": "受け取ってクローズ",
     "close": "クローズ",
     "claim": "受け取る",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "{minutes}分前",
     "buyWith": "{coinA}または{coinB}で購入",
     "orderHistory": "注文履歴",
+    "openOrderbook": "{pair}の板を開く",
     "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
     "tradeAnotherAsset": "別の資産を{coinDenom}と交換する",
     "sellAnAsset": "資産を売る",
@@ -1538,5 +1569,10 @@
       "stepTitle": "{symbol}を{symbol}.whに変換",
       "description": "アロイド資産として {balance} {symbol} を保有しています。Wormholeは{symbol}.whバリアントをブリッジするため、先に変換してから下でブリッジしてください。"
     }
+  },
+  "tradeView": {
+    "expand": "取引ビューを展開",
+    "collapse": "取引ビューを折りたたむ",
+    "orderBook": "板"
   }
 }

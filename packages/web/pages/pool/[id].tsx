@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Script from "next/script";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
@@ -6,6 +7,7 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import {
   BasePoolDetails,
   ConcentratedLiquidityPool,
+  OrderbookPool,
   SharePool,
 } from "~/components/pool-detail";
 import { useTranslation } from "~/hooks";
@@ -28,17 +30,28 @@ const Pool: FunctionComponent = () => {
     { enabled: router.isReady && isValidPoolId }
   );
 
+  const isOrderbookPool = pool?.type === "cosmwasm-orderbook";
+
   const [showTradeModal, setShowTradeModal] = useState(false);
 
   useNavBar(
     useMemo(
       () => ({
         title: t("pool.title", { id: poolId }),
-        ctas: [
-          { label: t("pool.swap"), onClick: () => setShowTradeModal(true) },
-        ],
+        // An orderbook pool's page trades its pair with its own Buy and Sell
+        // widget, so it has no Trade Pair button. The button waits for the
+        // pool to load, so it never flashes up on an orderbook pool's page.
+        ctas:
+          pool && !isOrderbookPool
+            ? [
+                {
+                  label: t("pool.swap"),
+                  onClick: () => setShowTradeModal(true),
+                },
+              ]
+            : [],
       }),
-      [poolId, t]
+      [poolId, t, pool, isOrderbookPool]
     )
   );
 
@@ -49,7 +62,7 @@ const Pool: FunctionComponent = () => {
     if (!pool || !isValidPoolId) return;
 
     // Handle different cosmwasm pool type redirections
-    if (pool.type.startsWith("cosmwasm")) {
+    if (pool.type.startsWith("cosmwasm") && !isOrderbookPool) {
       let redirectUrl = "";
 
       if (pool.type === "cosmwasm-alloyed") {
@@ -72,7 +85,7 @@ const Pool: FunctionComponent = () => {
         window.location.href = redirectUrl;
       }
     }
-  }, [pool, poolId, isValidPoolId]);
+  }, [pool, poolId, isValidPoolId, isOrderbookPool]);
   useEffect(() => {
     if ((!isValidPoolId || isError) && router.isReady) {
       // Log error for debugging
@@ -85,8 +98,14 @@ const Pool: FunctionComponent = () => {
 
   return (
     <>
+      {isOrderbookPool && (
+        <Script
+          src="/tradingview/charting_library.standalone.js"
+          strategy="afterInteractive"
+        />
+      )}
       <NextSeo title={t("seo.pool.title", { id: poolId })} />
-      {pool && Boolean(poolId) && (
+      {pool && Boolean(poolId) && !isOrderbookPool && (
         <TradeTokens
           className="md:!p-0"
           isOpen={showTradeModal}
@@ -106,6 +125,8 @@ const Pool: FunctionComponent = () => {
           <SkeletonLoader className="h-8 !rounded-xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />
         </div>
+      ) : isOrderbookPool ? (
+        <OrderbookPool poolId={pool.id} />
       ) : pool.type === "concentrated" ? (
         <ConcentratedLiquidityPool poolId={pool.id} />
       ) : pool.type === "weighted" || pool.type === "stable" ? (

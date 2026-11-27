@@ -556,7 +556,34 @@
     "yourStats": "Twoje saldo puli",
     "onlyInRangePositions": "Tylko dla pozycji w zasięgu",
     "custom": "Zwyczaj",
-    "nextRewardIn": "Następna nagroda za"
+    "nextRewardIn": "Następna nagroda za",
+    "orderbookPool": {
+      "type": "Arkusz zleceń",
+      "spread": "Spread",
+      "makerFee": "Opłata makera",
+      "yourOrders": "Twoje zlecenia",
+      "noOrders": "Brak zleceń dla tej pary",
+      "noOrdersDesc": "Złóż swoje pierwsze zlecenie z limitem.",
+      "filterAll": "Wszystkie",
+      "filterBuy": "Kupno",
+      "filterSell": "Sprzedaż",
+      "depthPrice": "Cena",
+      "depthRaw": "Surowe",
+      "depthNoAsks": "Brak ofert sprzedaży",
+      "depthNoBids": "Brak ofert kupna",
+      "depthNoOrders": "Brak otwartych zleceń",
+      "depthNoOrdersDesc": "Ta księga zleceń jest obecnie pusta",
+      "depthUnavailable": "Dane głębokości niedostępne",
+      "depthUnavailableDesc": "Nie można załadować głębokości arkusza zleceń. Ponawiam próbę...",
+      "depthClLegend": "W tym pule CL",
+      "depthClLegendTooltip": "Kreskowane paski obejmują płynność z pul skoncentrowanej płynności dla tej pary. To płynność krzywej AMM, nie oczekujące zlecenia; pokazane ilości to tylko zlecenia.",
+      "depthEdgesTooltip": "Pokaż płynność poza widocznymi wierszami jako jeden wiersz < i jeden >",
+      "depthClUnavailable": "Głębokość CL niedostępna",
+      "depthRowWithCl": "Zlecenia: {orders} · Pule CL: {cl}",
+      "retiredQuoteDesc": "{quote} nie jest już oferowany jako waluta kwotowania dla nowych zleceń z limitem. Nadal możesz odebrać i anulować swoje zlecenia w tym arkuszu.",
+      "retiredQuoteGoTo": "Handluj w arkuszu zleceń {pair}",
+      "retiredQuoteCreate": "Utwórz arkusz zleceń {pair}"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "Tak, rozumiem, że może to spowodować znaczną utratę środków i chcę kontynuować.",
     "quoteUpdatedTitle": "Wycena zaktualizowana",
     "quoteUpdatedCaption": "Wycena zmieniła się od czasu potwierdzenia. Sprawdź zaktualizowane szczegóły i potwierdź ponownie.",
+    "noQuotesAvailableTitle": "Brak dostępnych wycen",
+    "noQuotesAvailableDescription": "Nie udało się uzyskać wyceny dla tej kwoty. Spróbuj innej kwoty lub sprawdź ponownie później.",
+    "quoteProviderUnavailableTitle": "Ta opcja jest niedostępna",
+    "quoteProviderUnavailableDescription": "Wybrana opcja transferu jest niedostępna dla tej kwoty. Spróbuj innej kwoty, wybierz inną opcję w szczegółach transferu lub sprawdź ponownie później.",
     "slippageTooHighTitle": "Poślizg jest wysoki",
     "slippageTooHighDescription": "Poślizg dla tego transferu jest wysoki. Spróbuj mniejszej kwoty lub zaakceptuj ryzyko straty, aby kontynuować.",
     "priceImpactTooHighTitle": "Wpływ na cenę jest wysoki",
@@ -1347,7 +1378,6 @@
     "pay": "Płacisz",
     "open": "Otwarte",
     "filled": "Zrealizowane",
-    "claimable": "Do odebrania",
     "claimAndClose": "Odbierz i zamknij",
     "close": "Zamknij",
     "claim": "Odbierz",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "{minutes} min temu",
     "buyWith": "Kupuj za pomocą {coinA} lub {coinB}",
     "orderHistory": "Historia zleceń",
+    "openOrderbook": "Otwórz arkusz zleceń {pair}",
     "tradeAnotherAssetOr": "Zamień inny zasób na {coinA} lub {coinB}",
     "tradeAnotherAsset": "Zamień inny zasób na {coinDenom}",
     "sellAnAsset": "Sprzedaj aktywa",
@@ -1538,5 +1569,10 @@
       "stepTitle": "Konwertuj {symbol} na {symbol}.wh",
       "description": "Posiadasz {balance} {symbol} jako aktywo stopowe. Wormhole mostkuje wariant {symbol}.wh, więc najpierw skonwertuj, a potem zmostkuj poniżej."
     }
+  },
+  "tradeView": {
+    "expand": "Rozwiń widok handlu",
+    "collapse": "Zwiń widok handlu",
+    "orderBook": "Arkusz zleceń"
   }
 }

@@ -556,7 +556,34 @@
     "yourStats": "내 잔액",
     "onlyInRangePositions": "범위 내 위치에만 해당",
     "custom": "관습",
-    "nextRewardIn": "다음 보상까지"
+    "nextRewardIn": "다음 보상까지",
+    "orderbookPool": {
+      "type": "오더북",
+      "spread": "스프레드",
+      "makerFee": "메이커 수수료",
+      "yourOrders": "내 주문",
+      "noOrders": "이 페어에 주문이 없습니다",
+      "noOrdersDesc": "첫 번째 지정가 주문을 넣어보세요.",
+      "filterAll": "전체",
+      "filterBuy": "구매",
+      "filterSell": "판매",
+      "depthPrice": "가격",
+      "depthRaw": "원본",
+      "depthNoAsks": "매도 없음",
+      "depthNoBids": "매수 없음",
+      "depthNoOrders": "미체결 주문 없음",
+      "depthNoOrdersDesc": "이 주문서는 현재 비어 있습니다",
+      "depthUnavailable": "호가창 깊이 데이터 없음",
+      "depthUnavailableDesc": "주문서 깊이를 불러올 수 없습니다. 재시도 중...",
+      "depthClLegend": "CL 풀 포함",
+      "depthClLegendTooltip": "빗금 막대에는 이 페어의 집중 유동성 풀 유동성이 포함됩니다. 이는 AMM 곡선 유동성이며 대기 주문이 아닙니다. 표시된 수량은 주문만입니다.",
+      "depthEdgesTooltip": "표시된 행 밖의 유동성을 < 행과 > 행 하나씩으로 표시",
+      "depthClUnavailable": "CL 깊이를 불러올 수 없음",
+      "depthRowWithCl": "주문: {orders} · CL 풀: {cl}",
+      "retiredQuoteDesc": "{quote}는 더 이상 새 지정가 주문의 견적 통화로 제공되지 않습니다. 이 오더북의 주문은 계속 청구하거나 취소할 수 있습니다.",
+      "retiredQuoteGoTo": "{pair} 오더북에서 거래",
+      "retiredQuoteCreate": "{pair} 오더북 만들기"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "네, 이로 인해 자금에 큰 손실이 발생할 수 있음을 이해하며 계속 진행하겠습니다.",
     "quoteUpdatedTitle": "견적 업데이트됨",
     "quoteUpdatedCaption": "확인 이후 견적이 변경되었습니다. 업데이트된 내용을 검토한 후 다시 확인해 주세요.",
+    "noQuotesAvailableTitle": "사용 가능한 견적이 없습니다",
+    "noQuotesAvailableDescription": "이 금액에 대한 견적을 가져올 수 없습니다. 다른 금액을 시도하거나 잠시 후 다시 확인하세요.",
+    "quoteProviderUnavailableTitle": "이 옵션은 사용할 수 없습니다",
+    "quoteProviderUnavailableDescription": "선택한 전송 옵션은 이 금액에 사용할 수 없습니다. 다른 금액을 시도하거나, 전송 세부정보에서 다른 옵션을 선택하거나, 잠시 후 다시 확인하세요.",
     "slippageTooHighTitle": "슬리피지가 높습니다",
     "slippageTooHighDescription": "이 전송의 슬리피지가 높습니다. 더 적은 금액을 시도하거나 손실 위험을 감수하고 계속 진행하세요.",
     "priceImpactTooHighTitle": "가격 영향이 큽니다",
@@ -1347,7 +1378,6 @@
     "pay": "지불",
     "open": "미체결",
     "filled": "체결 완료",
-    "claimable": "수령 가능",
     "claimAndClose": "수령 후 닫기",
     "close": "닫기",
     "claim": "수령",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "{minutes} 분 전",
     "buyWith": "{coinA} 또는 {coinB} 로 구매하세요.",
     "orderHistory": "주문 내역",
+    "openOrderbook": "{pair} 오더북 열기",
     "tradeAnotherAssetOr": "다른 자산을 {coinA} 또는 {coinB} 로 교환하세요",
     "tradeAnotherAsset": "다른 자산을 {coinDenom} 으로 교환하세요",
     "sellAnAsset": "자산 판매",
@@ -1538,5 +1569,10 @@
       "stepTitle": "{symbol}을 {symbol}.wh로 변환",
       "description": "합금 자산으로 {balance} {symbol}을 보유하고 있습니다. Wormhole은 {symbol}.wh 변형을 브리지하므로 먼저 변환한 다음 아래에서 브리지하세요."
     }
+  },
+  "tradeView": {
+    "expand": "거래 보기 펼치기",
+    "collapse": "거래 보기 접기",
+    "orderBook": "오더북"
   }
 }

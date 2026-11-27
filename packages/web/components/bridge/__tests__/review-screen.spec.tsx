@@ -14,6 +14,28 @@ jest.mock("~/utils/trpc", () => ({
   },
 }));
 
+// Keep the transfer-details subtree light so a quote with `selectedQuote` set
+// can render without a fully-formed quote: the retention cases below only need
+// the From/To asset boxes and the warning area.
+jest.mock("../quote-detail", () => {
+  const Stub = () => null;
+  return {
+    BridgeProviderDropdownRow: Stub,
+    EstimatedTimeRow: Stub,
+    ExpandDetailsControlContent: Stub,
+    NetworkFeeRow: Stub,
+    ProviderFeesRow: Stub,
+    QuoteDetailRow: Stub,
+    TotalFeesRow: Stub,
+  };
+});
+jest.mock("../query-remaining-time", () => ({
+  QueryRemainingTime: () => null,
+}));
+jest.mock("~/utils/formatter", () => ({
+  formatPretty: (coin: { denom?: string }) => coin?.denom ?? "",
+}));
+
 import { MultiLanguageProvider } from "~/hooks/language";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 
@@ -208,6 +230,128 @@ describe("ReviewScreen loss-acknowledgement gate", () => {
     );
 
     expect(screen.getByText("Insufficient funds for fees")).toBeInTheDocument();
+    expect(acknowledgementCheckbox()).not.toBeInTheDocument();
+    expect(confirmButton()).toBeDisabled();
+  });
+
+  // Regression (MTN-351): a failed background refetch drops `selectedQuote`.
+  // The screen must keep the last good quote on screen (dimmed) instead of
+  // unrendering it, and render the hook's `errorBoxMessage` as-is. The hook's
+  // `someError` branch already resolves an all-providers failure to the plain
+  // "no quotes available" copy, so the screen does not second-guess it.
+  it("keeps the last good quote and shows the hook's no-quotes message when a refetch drops it", () => {
+    const goodQuote = {
+      quote: { input: { fiatValue: undefined, amount: { denom: "WETH" } } },
+      expectedOutput: { denom: "WETH" },
+      expectedOutputFiat: undefined,
+      estimatedTime: { humanize: () => "16 minutes" },
+    } as unknown as BridgeQuote["selectedQuote"];
+
+    const element = (quote: BridgeQuote) => (
+      <MultiLanguageProvider defaultLanguage="en">
+        <ReviewScreen
+          direction="withdraw"
+          selectedDenom="BTC"
+          fromChain={osmosis}
+          toChain={bitcoin}
+          fromAsset={{ address: "allBTC", decimals: 8, denom: "BTC" } as any}
+          toAsset={{ address: "sat", decimals: 8, denom: "BTC" } as any}
+          fromAddress="osmo1abc"
+          toAddress="bc1qxyz"
+          fromWalletIcon={undefined}
+          toWalletIcon={undefined}
+          quote={quote}
+          isManualAddress={false}
+          onCancel={jest.fn()}
+          onConfirm={jest.fn()}
+        />
+      </MultiLanguageProvider>
+    );
+
+    const { rerender } = render(
+      element(makeQuote({ selectedQuote: goodQuote }))
+    );
+
+    // Live quote: both asset boxes are on screen, no outdated message yet.
+    expect(screen.getByText("From")).toBeInTheDocument();
+    expect(screen.getByText("To")).toBeInTheDocument();
+    expect(screen.queryByText(/no quotes available/i)).not.toBeInTheDocument();
+
+    // A failed refetch: selectedQuote is gone and the hook has resolved the
+    // all-providers failure to its plain no-quotes copy.
+    rerender(
+      element(
+        makeQuote({
+          selectedQuote: undefined,
+          userCanAdvance: false,
+          errorBoxMessage: {
+            heading: "No quotes available",
+            description:
+              "We couldn't get a quote for this amount. Try a different amount, or check again shortly.",
+          },
+        })
+      )
+    );
+
+    // The boxes stay (retained from the last good quote), the hook's no-quotes
+    // copy is shown, no checkbox, and Confirm is disabled.
+    expect(screen.getByText("From")).toBeInTheDocument();
+    expect(screen.getByText("To")).toBeInTheDocument();
+    expect(screen.getByText(/no quotes available/i)).toBeInTheDocument();
+    expect(acknowledgementCheckbox()).not.toBeInTheDocument();
+    expect(confirmButton()).toBeDisabled();
+  });
+
+  // Case 2 (MTN-351): the user pinned a provider that then lost its quote, but
+  // another provider still has one. We keep the pin (no silent auto-switch) and
+  // show the "this option is unavailable" copy, pointing at the other options,
+  // rather than "no quotes available".
+  it("shows the pinned-option-unavailable message when alternatives exist", () => {
+    const goodQuote = {
+      quote: { input: { fiatValue: undefined, amount: { denom: "WETH" } } },
+      expectedOutput: { denom: "WETH" },
+      expectedOutputFiat: undefined,
+      estimatedTime: { humanize: () => "16 minutes" },
+    } as unknown as BridgeQuote["selectedQuote"];
+
+    const element = (quote: BridgeQuote) => (
+      <MultiLanguageProvider defaultLanguage="en">
+        <ReviewScreen
+          direction="withdraw"
+          selectedDenom="BTC"
+          fromChain={osmosis}
+          toChain={bitcoin}
+          fromAsset={{ address: "allBTC", decimals: 8, denom: "BTC" } as any}
+          toAsset={{ address: "sat", decimals: 8, denom: "BTC" } as any}
+          fromAddress="osmo1abc"
+          toAddress="bc1qxyz"
+          fromWalletIcon={undefined}
+          toWalletIcon={undefined}
+          quote={quote}
+          isManualAddress={false}
+          onCancel={jest.fn()}
+          onConfirm={jest.fn()}
+        />
+      </MultiLanguageProvider>
+    );
+
+    const { rerender } = render(
+      element(makeQuote({ selectedQuote: goodQuote }))
+    );
+
+    // The pinned provider drops its quote, but another provider still has one.
+    rerender(
+      element(
+        makeQuote({
+          selectedQuote: undefined,
+          userCanAdvance: false,
+          successfulQuotes: [{ data: { provider: { id: "Squid" } } }] as any,
+        })
+      )
+    );
+
+    expect(screen.getByText(/this option is unavailable/i)).toBeInTheDocument();
+    expect(screen.queryByText(/no quotes available/i)).not.toBeInTheDocument();
     expect(acknowledgementCheckbox()).not.toBeInTheDocument();
     expect(confirmButton()).toBeDisabled();
   });

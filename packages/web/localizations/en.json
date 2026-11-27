@@ -556,7 +556,34 @@
     "yourStats": "Your pool balance",
     "onlyInRangePositions": "Only for positions in range",
     "custom": "Custom",
-    "nextRewardIn": "Next reward in"
+    "nextRewardIn": "Next reward in",
+    "orderbookPool": {
+      "type": "Orderbook",
+      "spread": "Spread",
+      "makerFee": "Maker fee",
+      "yourOrders": "Your orders",
+      "noOrders": "No orders for this pair",
+      "noOrdersDesc": "Place your first limit order.",
+      "filterAll": "All",
+      "filterBuy": "Buy",
+      "filterSell": "Sell",
+      "depthPrice": "Price",
+      "depthRaw": "Raw",
+      "depthNoAsks": "No asks",
+      "depthNoBids": "No bids",
+      "depthNoOrders": "No open orders",
+      "depthNoOrdersDesc": "This orderbook is currently empty",
+      "depthUnavailable": "Depth data unavailable",
+      "depthUnavailableDesc": "Unable to load orderbook depth. Retrying...",
+      "depthClLegend": "Incl. CL pools",
+      "depthClLegendTooltip": "Hatched bars include liquidity from concentrated liquidity pools for this pair. It is AMM curve liquidity, not resting orders; quantities shown are orders only.",
+      "depthEdgesTooltip": "Show the liquidity past the rows shown as one < and > row",
+      "depthClUnavailable": "CL depth unavailable",
+      "depthRowWithCl": "Orders: {orders} · CL pools: {cl}",
+      "retiredQuoteDesc": "{quote} isn't offered as a quote for new limit orders. You can still claim and cancel your orders on this book.",
+      "retiredQuoteGoTo": "Trade on the {pair} orderbook",
+      "retiredQuoteCreate": "Create a {pair} orderbook"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "Yes, I understand this could cause heavy loss of funds and I wish to proceed.",
     "quoteUpdatedTitle": "Quote updated",
     "quoteUpdatedCaption": "The quote changed since you confirmed. Please review the updated details and confirm again.",
+    "noQuotesAvailableTitle": "No quotes available",
+    "noQuotesAvailableDescription": "We couldn't get a quote for this amount. Try a different amount, or check again shortly.",
+    "quoteProviderUnavailableTitle": "This option is unavailable",
+    "quoteProviderUnavailableDescription": "The transfer option you selected isn't available for this amount. Try a different amount, choose another option in the transfer details, or check again shortly.",
     "slippageTooHighTitle": "Slippage is high",
     "slippageTooHighDescription": "Slippage on this transfer is high. Try a smaller amount, or accept the risk of loss to proceed.",
     "priceImpactTooHighTitle": "Price impact is high",
@@ -1347,7 +1378,6 @@
     "pay": "Pay",
     "open": "Open",
     "filled": "Filled",
-    "claimable": "Claimable",
     "claimAndClose": "Claim and close",
     "close": "Close",
     "claim": "Claim",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "{minutes}m ago",
     "buyWith": "Buy with {coinA} or {coinB}",
     "orderHistory": "Order history",
+    "openOrderbook": "Open {pair} orderbook",
     "tradeAnotherAssetOr": "Trade another asset for {coinA} or {coinB}",
     "tradeAnotherAsset": "Trade another asset for {coinDenom}",
     "sellAnAsset": "Sell an asset",
@@ -1538,5 +1569,10 @@
       "stepTitle": "Convert {symbol} to {symbol}.wh",
       "description": "You hold {balance} {symbol} as the alloyed asset. Wormhole bridges the {symbol}.wh variant, so convert first, then bridge below."
     }
+  },
+  "tradeView": {
+    "expand": "Expand trade view",
+    "collapse": "Collapse trade view",
+    "orderBook": "Orderbook"
   }
 }

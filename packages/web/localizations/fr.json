@@ -556,7 +556,34 @@
     "yourStats": "Le solde de votre piscine",
     "onlyInRangePositions": "Uniquement pour les positions dans la plage",
     "custom": "Coutume",
-    "nextRewardIn": "Prochaine récompense dans"
+    "nextRewardIn": "Prochaine récompense dans",
+    "orderbookPool": {
+      "type": "Carnet d'ordres",
+      "spread": "Écart",
+      "makerFee": "Frais du créateur",
+      "yourOrders": "Vos ordres",
+      "noOrders": "Aucun ordre pour cette paire",
+      "noOrdersDesc": "Passez votre premier ordre limité.",
+      "filterAll": "Tous",
+      "filterBuy": "Acheter",
+      "filterSell": "Vendre",
+      "depthPrice": "Prix",
+      "depthRaw": "Brut",
+      "depthNoAsks": "Aucune vente",
+      "depthNoBids": "Aucun achat",
+      "depthNoOrders": "Aucun ordre ouvert",
+      "depthNoOrdersDesc": "Ce carnet d'ordres est actuellement vide",
+      "depthUnavailable": "Données de profondeur indisponibles",
+      "depthUnavailableDesc": "Impossible de charger la profondeur du carnet d'ordres. Nouvelle tentative...",
+      "depthClLegend": "Incl. pools CL",
+      "depthClLegendTooltip": "Les barres hachurées incluent la liquidité des pools de liquidité concentrée pour cette paire. Il s'agit de liquidité de courbe AMM, pas d'ordres en attente ; les quantités affichées sont uniquement des ordres.",
+      "depthEdgesTooltip": "Afficher la liquidité au-delà des lignes visibles dans une ligne < et une ligne >",
+      "depthClUnavailable": "Profondeur CL indisponible",
+      "depthRowWithCl": "Ordres : {orders} · Pools CL : {cl}",
+      "retiredQuoteDesc": "{quote} n'est plus proposé comme devise de cotation pour les nouveaux ordres limites. Vous pouvez toujours réclamer et annuler vos ordres sur ce carnet.",
+      "retiredQuoteGoTo": "Trader sur le carnet d'ordres {pair}",
+      "retiredQuoteCreate": "Créer un carnet d'ordres {pair}"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "Oui, je comprends que cela pourrait entraîner une perte importante de fonds et je souhaite continuer.",
     "quoteUpdatedTitle": "Cotation mise à jour",
     "quoteUpdatedCaption": "La cotation a changé depuis votre confirmation. Veuillez vérifier les détails mis à jour et confirmer à nouveau.",
+    "noQuotesAvailableTitle": "Aucune cotation disponible",
+    "noQuotesAvailableDescription": "Nous n'avons pas pu obtenir de cotation pour ce montant. Essayez un autre montant ou réessayez plus tard.",
+    "quoteProviderUnavailableTitle": "Cette option n'est pas disponible",
+    "quoteProviderUnavailableDescription": "L'option de transfert que vous avez sélectionnée n'est pas disponible pour ce montant. Essayez un autre montant, choisissez une autre option dans les détails du transfert ou réessayez plus tard.",
     "slippageTooHighTitle": "Le slippage est élevé",
     "slippageTooHighDescription": "Le slippage de ce transfert est élevé. Essayez un montant plus faible ou acceptez le risque de perte pour continuer.",
     "priceImpactTooHighTitle": "L'impact sur le prix est élevé",
@@ -1347,7 +1378,6 @@
     "pay": "Payer",
     "open": "Ouvert",
     "filled": "Exécuté",
-    "claimable": "À réclamer",
     "claimAndClose": "Réclamer et clôturer",
     "close": "Fermer",
     "claim": "Réclamer",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "il y a {minutes} min",
     "buyWith": "Achetez avec {coinA} ou {coinB}",
     "orderHistory": "Historique des ordres",
+    "openOrderbook": "Ouvrir le carnet d'ordres {pair}",
     "tradeAnotherAssetOr": "Échangez un autre actif contre {coinA} ou {coinB}",
     "tradeAnotherAsset": "Échangez un autre actif contre {coinDenom}",
     "sellAnAsset": "Vendre un actif",
@@ -1538,5 +1569,10 @@
       "stepTitle": "Convertir {symbol} en {symbol}.wh",
       "description": "Vous détenez {balance} {symbol} en tant qu actif allié. Wormhole fait le pont avec la variante {symbol}.wh, convertissez d abord puis faites le pont ci-dessous."
     }
+  },
+  "tradeView": {
+    "expand": "Agrandir la vue de trading",
+    "collapse": "Réduire la vue de trading",
+    "orderBook": "Carnet d'ordres"
   }
 }

@@ -102,12 +102,15 @@ export function getUserQuotes(
 interface PriceSelectorProps {
   initialBaseDenom: string;
   initialQuoteDenom: string;
+  /** Shows the quote asset without letting the user change it. */
+  locked?: boolean;
 }
 
 export const PriceSelector = memo(
   ({
     initialBaseDenom = ATOM_BASE_DENOM,
     initialQuoteDenom = USDC_BASE_DENOM,
+    locked = false,
   }: PriceSelectorProps) => {
     const { t } = useTranslation();
 
@@ -209,8 +212,7 @@ export const PriceSelector = memo(
 
     /**
      * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
-     * Sell trades limited to the canonical stables plus legacy Noble USDC
-     * (see SELL_QUOTES).
+     * Sell trades limited to the canonical stables (see SELL_QUOTES).
      */
     const defaultQuotesWithBalances = useMemo(() => {
       const filtered =
@@ -292,7 +294,12 @@ export const PriceSelector = memo(
         <Menu as="div" className="relative inline-block">
           {({ open, close }) => (
             <>
-              <Menu.Button className="flex items-center justify-between">
+              <Menu.Button
+                disabled={locked}
+                className={classNames("flex items-center justify-between", {
+                  "cursor-default": locked,
+                })}
+              >
                 <div className="flex flex-1 items-center justify-between">
                   {quoteAsset && (
                     <div className="flex items-center gap-1 transition-opacity sm:gap-0">
@@ -316,15 +323,17 @@ export const PriceSelector = memo(
                         <span className="md:caption body2 text-left">
                           {quoteAsset.symbol}
                         </span>
-                        <Icon
-                          id="chevron-down"
-                          className={classNames(
-                            "h-[7px] w-3 text-wosmongton-200 transition-transform",
-                            {
-                              "rotate-180": open,
-                            }
-                          )}
-                        />
+                        {!locked && (
+                          <Icon
+                            id="chevron-down"
+                            className={classNames(
+                              "h-[7px] w-3 text-wosmongton-200 transition-transform",
+                              {
+                                "rotate-180": open,
+                              }
+                            )}
+                          />
+                        )}
                       </div>
                     </div>
                   )}

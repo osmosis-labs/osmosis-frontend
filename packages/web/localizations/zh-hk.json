@@ -556,7 +556,34 @@
     "yourStats": "您嘅資金池餘額",
     "onlyInRangePositions": "僅適用於範圍內的位置",
     "custom": "風俗",
-    "nextRewardIn": "下次獎勵"
+    "nextRewardIn": "下次獎勵",
+    "orderbookPool": {
+      "type": "訂單簿",
+      "spread": "價差",
+      "makerFee": "掛單手續費",
+      "yourOrders": "我嘅訂單",
+      "noOrders": "呢個交易對冇訂單",
+      "noOrdersDesc": "請落您嘅第一筆限價訂單。",
+      "filterAll": "全部",
+      "filterBuy": "買入",
+      "filterSell": "賣出",
+      "depthPrice": "價格",
+      "depthRaw": "原始",
+      "depthNoAsks": "無賣單",
+      "depthNoBids": "無買單",
+      "depthNoOrders": "暫無掛單",
+      "depthNoOrdersDesc": "該訂單簿目前為空",
+      "depthUnavailable": "深度數據不可用",
+      "depthUnavailableDesc": "無法載入訂單簿深度。正在重試...",
+      "depthClLegend": "含 CL 池",
+      "depthClLegendTooltip": "斜紋柱包含此交易對集中流動性池的流動性。這是 AMM 曲線流動性，不是掛單；顯示的數量僅為掛單。",
+      "depthEdgesTooltip": "將顯示行以外的流動性合併為一行 < 和一行 >",
+      "depthClUnavailable": "CL 深度不可用",
+      "depthRowWithCl": "掛單：{orders} · CL 池：{cl}",
+      "retiredQuoteDesc": "{quote} 不再作為新限價單的報價幣種。你仍可在此訂單簿上領取和取消訂單。",
+      "retiredQuoteGoTo": "在 {pair} 訂單簿交易",
+      "retiredQuoteCreate": "建立 {pair} 訂單簿"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "是的，我明白這可能導致資金嚴重損失，我仍希望繼續。",
     "quoteUpdatedTitle": "報價已更新",
     "quoteUpdatedCaption": "自您確認以來報價已發生變化。請查看更新後的詳情並重新確認。",
+    "noQuotesAvailableTitle": "暫無可用報價",
+    "noQuotesAvailableDescription": "無法取得此金額的報價。請嘗試其他金額，或稍後再查看。",
+    "quoteProviderUnavailableTitle": "此選項不可用",
+    "quoteProviderUnavailableDescription": "您所選的轉賬選項不適用於此金額。請嘗試其他金額，在轉賬詳情中選擇其他選項，或稍後再查看。",
     "slippageTooHighTitle": "滑點偏高",
     "slippageTooHighDescription": "此轉賬的滑點偏高。請嘗試較小的金額，或接受損失風險以繼續。",
     "priceImpactTooHighTitle": "價格影響偏高",
@@ -1347,7 +1378,6 @@
     "pay": "支付",
     "open": "掛單中",
     "filled": "已成交",
-    "claimable": "可領取",
     "claimAndClose": "領取並關閉",
     "close": "關閉",
     "claim": "領取",
@@ -1361,6 +1391,7 @@
     "orderHistory": "訂單歷史",
     "tradeAnotherAssetOr": "用其他資產換取{coinA}或{coinB}",
     "tradeAnotherAsset": "用其他資產換取{coinDenom}",
+    "openOrderbook": "打開{pair}訂單簿",
     "sellAnAsset": "出售資產",
     "swapAnAsset": "兌換資產",
     "of": "的",
@@ -1538,5 +1569,10 @@
       "stepTitle": "將 {symbol} 轉換為 {symbol}.wh",
       "description": "您持有 {balance} {symbol} 作為合金資產。Wormhole 跨鏈的是 {symbol}.wh 變體，請先轉換，然後在下方跨鏈。"
     }
+  },
+  "tradeView": {
+    "expand": "展開交易視圖",
+    "collapse": "收起交易視圖",
+    "orderBook": "訂單簿"
   }
 }

@@ -718,7 +718,10 @@ export function deriveSingleAssetSwap({
  * - `swap`       a swap is required to reach the position ratio
  */
 export type SingleAssetInputState =
-  "empty" | "too-small" | "one-sided" | "swap";
+  | "empty"
+  | "too-small"
+  | "one-sided"
+  | "swap";
 
 export function deriveSingleAssetInputState(
   input: ConcentratedDepositAmount,

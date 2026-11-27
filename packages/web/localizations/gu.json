@@ -556,7 +556,34 @@
     "yourStats": "તમારું પૂલ બેલેન્સ",
     "onlyInRangePositions": "માત્ર શ્રેણીમાં હોદ્દા માટે",
     "custom": "કસ્ટમ",
-    "nextRewardIn": "પછીનું પુરસ્કાર"
+    "nextRewardIn": "પછીનું પુરસ્કાર",
+    "orderbookPool": {
+      "type": "ઓર્ડર બુક",
+      "spread": "સ્પ્રેડ",
+      "makerFee": "મેકર ફી",
+      "yourOrders": "તમારા ઓર્ડર",
+      "noOrders": "આ જોડી માટે કોઈ ઓર્ડર નથી",
+      "noOrdersDesc": "તમારો પ્રથમ મર્યાદા ઓર્ડર આપો.",
+      "filterAll": "બધા",
+      "filterBuy": "ખરીદો",
+      "filterSell": "વેચો",
+      "depthPrice": "ભાવ",
+      "depthRaw": "કાચું",
+      "depthNoAsks": "કોઈ વેચાણ નથી",
+      "depthNoBids": "કોઈ ખરીદી નથી",
+      "depthNoOrders": "કોઈ ખુલ્લા ઓર્ડર નથી",
+      "depthNoOrdersDesc": "આ ઓર્ડર બુક હાલમાં ખાલી છે",
+      "depthUnavailable": "ઊંડાઈ ડેટા અનુપલબ્ધ",
+      "depthUnavailableDesc": "ઓર્ડર બુક ઊંડાઈ લોડ કરવામાં અસમર્થ. ફરી પ્રયાસ કરી રહ્યા છીએ...",
+      "depthClLegend": "CL પૂલ સહિત",
+      "depthClLegendTooltip": "છાયાંકિત પટ્ટીઓમાં આ જોડી માટે કોન્સન્ટ્રેટેડ લિક્વિડિટી પૂલની લિક્વિડિટી શામેલ છે. આ AMM કર્વ લિક્વિડિટી છે, બાકી ઓર્ડર નહીં; દર્શાવેલ જથ્થા ફક્ત ઓર્ડર છે.",
+      "depthEdgesTooltip": "બતાવેલી પંક્તિઓ પછીની લિક્વિડિટી એક < અને એક > પંક્તિમાં બતાવો",
+      "depthClUnavailable": "CL ઊંડાઈ ઉપલબ્ધ નથી",
+      "depthRowWithCl": "ઓર્ડર: {orders} · CL પૂલ: {cl}",
+      "retiredQuoteDesc": "{quote} હવે નવા લિમિટ ઓર્ડર માટે ક્વોટ તરીકે ઉપલબ્ધ નથી. તમે આ બુક પરના તમારા ઓર્ડર હજી પણ ક્લેમ અને રદ કરી શકો છો.",
+      "retiredQuoteGoTo": "{pair} ઓર્ડરબુક પર ટ્રેડ કરો",
+      "retiredQuoteCreate": "{pair} ઓર્ડરબુક બનાવો"
+    }
   },
   "pools": {
     "allPools": {
@@ -1024,6 +1051,10 @@
     "lossAcknowledgement": "હા, હું સમજું છું કે આનાથી ભંડોળનું ભારે નુકસાન થઈ શકે છે અને હું આગળ વધવા માંગું છું.",
     "quoteUpdatedTitle": "ક્વોટ અપડેટ થયો",
     "quoteUpdatedCaption": "તમે પુષ્ટિ કરી ત્યારથી ક્વોટ બદલાયો છે. કૃપા કરીને અપડેટ થયેલી વિગતો તપાસો અને ફરીથી પુષ્ટિ કરો.",
+    "noQuotesAvailableTitle": "કોઈ ક્વોટ ઉપલબ્ધ નથી",
+    "noQuotesAvailableDescription": "આ રકમ માટે અમે ક્વોટ મેળવી શક્યા નથી. અલગ રકમ અજમાવો અથવા થોડી વાર પછી ફરી તપાસો.",
+    "quoteProviderUnavailableTitle": "આ વિકલ્પ ઉપલબ્ધ નથી",
+    "quoteProviderUnavailableDescription": "તમે પસંદ કરેલ ટ્રાન્સફર વિકલ્પ આ રકમ માટે ઉપલબ્ધ નથી. અલગ રકમ અજમાવો, ટ્રાન્સફર વિગતોમાં અન્ય વિકલ્પ પસંદ કરો અથવા થોડી વાર પછી ફરી તપાસો.",
     "slippageTooHighTitle": "સ્લિપેજ વધારે છે",
     "slippageTooHighDescription": "આ ટ્રાન્સફર માટે સ્લિપેજ વધારે છે. નાની રકમ અજમાવો અથવા આગળ વધવા માટે નુકસાનનું જોખમ સ્વીકારો.",
     "priceImpactTooHighTitle": "કિંમત પર અસર વધારે છે",
@@ -1347,7 +1378,6 @@
     "pay": "ચૂકવો",
     "open": "ખુલ્લા",
     "filled": "ભરાયેલ",
-    "claimable": "મેળવી શકાય",
     "claimAndClose": "મેળવો અને બંધ કરો",
     "close": "બંધ કરો",
     "claim": "મેળવો",
@@ -1359,6 +1389,7 @@
     "minutesAgo": "{minutes} મિનિટ પહેલા",
     "buyWith": "{coinA} અથવા {coinB} વડે ખરીદો",
     "orderHistory": "ઓર્ડર ઇતિહાસ",
+    "openOrderbook": "{pair} ઓર્ડરબુક ખોલો",
     "tradeAnotherAssetOr": "{coinA} અથવા {coinB} માટે બીજી સંપત્તિનો વેપાર કરો",
     "tradeAnotherAsset": "{coinDenom} માટે બીજી સંપત્તિનો વેપાર કરો",
     "sellAnAsset": "સંપત્તિ વેચો",
@@ -1538,5 +1569,10 @@
       "stepTitle": "{symbol} ને {symbol}.wh માં કન્વર્ટ કરો",
       "description": "તમારી પાસે {balance} {symbol} એલોય્ડ એસેટ તરીકે છે. Wormhole {symbol}.wh વેરિઅન્ટ બ્રિજ કરે છે, તેથી પહેલા કન્વર્ટ કરો, પછી નીચે બ્રિજ કરો."
     }
+  },
+  "tradeView": {
+    "expand": "ટ્રેડ વ્યૂ વિસ્તૃત કરો",
+    "collapse": "ટ્રેડ વ્યૂ સંકુચિત કરો",
+    "orderBook": "ઓર્ડર બુક"
   }
 }

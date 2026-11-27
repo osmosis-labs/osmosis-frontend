@@ -27,7 +27,10 @@ export function getOrderbookActiveOrdersSQS({
   return cached({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-sqs-${userOsmoAddress}`,
-    ttl: 5000, // 5 seconds
+    // Short enough that the refetches after placing an order (1s, 2s, 4s)
+    // each reach SQS instead of a copy cached before the order landed; still
+    // shares one SQS request between lists that ask at the same moment.
+    ttl: 1000,
     getFreshValue: () =>
       queryActiveOrdersSQS({
         userOsmoAddress,

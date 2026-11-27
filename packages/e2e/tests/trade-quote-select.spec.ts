@@ -10,9 +10,9 @@ import { BasePage } from "../pages/base-page";
 import { TestConfig } from "../test-config";
 import { findAssetWithOnlyOrderbookQuote } from "../utils/orderbook";
 
-// Assets whose limit orders must switch away from the default Alloyed USDC
-// quote because their only orderbook is USDC.noble-quoted. Anyone can create
-// an orderbook, so the tests use the first candidate that still qualifies.
+// Assets whose only orderbook is USDC.noble-quoted, which is no longer a
+// quote for new orders. Anyone can create an orderbook, so the tests use the
+// first candidate that still qualifies.
 // ATOM has an Alloyed USDC one.
 const USDC_NOBLE_ONLY_CANDIDATES = [
   "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED", // JUNO
@@ -90,33 +90,18 @@ test.describe("Test trade tool quote selection on asset pages", () => {
     await context.close();
   });
 
-  test("Limit switches to the asset's only orderbook, USDC.noble", async () => {
+  test("Limit offers an allUSDC orderbook when the only one is USDC.noble", async () => {
     await openUsdcNobleOnlyAssetPage();
     await selectLimit();
 
-    await expect(page).toHaveURL(new RegExp(`quote=${USDC_NOBLE}`));
-    await expect(quoteMenuButton()).toContainText("USDC.noble");
-  });
-
-  test("Limit offers to create an orderbook for quotes without one", async () => {
-    await openUsdcNobleOnlyAssetPage();
-    await selectLimit();
-
-    await quoteMenuButton().click({ timeout: 10_000 });
-    const quotes = page
-      .getByRole("menu")
-      .getByRole("menuitem")
-      .filter({ hasNotText: "another asset" });
-    await expect(quotes.first()).toBeVisible();
-    // Rows stay disabled until the pair's verification confirms there is no
-    // orderbook yet, then offer creation instead of switching the quote.
-    for (const quote of await quotes.all()) {
-      await expect(quote).toContainText(
-        "Click to create an orderbook for this pair.",
-        { timeout: 30_000 }
-      );
-      await expect(quote).toBeEnabled();
-    }
+    // USDC.noble is no longer a quote for new orders, so the asset counts as
+    // having no orderbook: Limit opens creation instead of switching to it.
+    // Matched by text: app modals sit under an aria-hidden body, so role
+    // queries can't see them.
+    await expect(
+      page.getByText("No orderbook exists for").filter({ visible: true })
+    ).toBeVisible({ timeout: 30_000 });
+    await expect(page).not.toHaveURL(new RegExp(`quote=${USDC_NOBLE}`));
     await expectResponsive(page);
   });
 

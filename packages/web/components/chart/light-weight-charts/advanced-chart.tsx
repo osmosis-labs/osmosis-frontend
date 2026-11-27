@@ -1,8 +1,9 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 import { useFeatureFlags } from "~/hooks";
 import type {
   ChartingLibraryWidgetOptions,
+  IChartingLibraryWidget,
   ResolutionString,
 } from "~/public/tradingview";
 import { theme } from "~/tailwind.config";
@@ -16,6 +17,7 @@ type AdvancedChartProps = Omit<
 
 export const AdvancedChart = (props: AdvancedChartProps) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   const featureFlags = useFeatureFlags();
   const themeOptions: Partial<ChartingLibraryWidgetOptions> = {
@@ -54,6 +56,10 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     },
   };
 
+  // The live widget and the symbol it shows.
+  const widgetRef = useRef<IChartingLibraryWidget | null>(null);
+  const symbolRef = useRef<string | null>(null);
+
   // Reads the latest props without re-creating the widget when they change.
   const createWidget = useEffectEvent((container: HTMLDivElement) => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
@@ -89,15 +95,60 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       ...props,
     };
 
-    return new TradingView.widget(widgetOptions);
+    const widget = new TradingView.widget(widgetOptions);
+    widgetRef.current = widget;
+    symbolRef.current = props.coinDenom;
+    widget.onChartReady(() => setIsReady(true));
+    return widget;
   });
+
+  // A new denom is switched on the existing chart. Rebuilding the widget
+  // instead blanks the chart behind the loading overlay until it is ready.
+  useEffect(() => {
+    if (!isReady || symbolRef.current === props.coinDenom) return;
+    widgetRef.current?.activeChart().setSymbol(props.coinDenom);
+    symbolRef.current = props.coinDenom;
+  }, [isReady, props.coinDenom]);
 
   const isFeatureFlagsInitialized = featureFlags._isInitialized;
   useEffect(() => {
     if (!container || !isFeatureFlagsInitialized) return;
-    const widget = createWidget(container);
-    return () => widget.remove();
+
+    let widget: { remove: () => void } | undefined;
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
+    const tryInit = () => {
+      if (widget) return true;
+      // The TradingView script may not have loaded yet; wait for it.
+      if (typeof window === "undefined" || !(window as any).TradingView) {
+        return false;
+      }
+      widget = createWidget(container);
+      return true;
+    };
+
+    if (!tryInit()) {
+      intervalId = setInterval(() => {
+        if (tryInit() && intervalId) clearInterval(intervalId);
+      }, 200);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      widget?.remove();
+      widgetRef.current = null;
+      symbolRef.current = null;
+      setIsReady(false);
+    };
   }, [container, isFeatureFlagsInitialized]);
 
-  return <div className="relative h-full" ref={setContainer} />;
+  return (
+    <div className="relative h-full w-full">
+      {/* TradingView owns this div, no React children inside it */}
+      <div className="h-full w-full" ref={setContainer} />
+      {!isReady && (
+        <div className="pointer-events-none absolute inset-0 z-10 bg-osmoverse-1000" />
+      )}
+    </div>
+  );
 };
