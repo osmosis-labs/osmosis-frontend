@@ -557,11 +557,7 @@
       "spread": "스프레드",
       "makerFee": "메이커 수수료",
       "yourOrders": "내 주문",
-      "noOrders": "이 페어에 주문이 없습니다",
       "noOrdersDesc": "첫 번째 지정가 주문을 넣어보세요.",
-      "filterAll": "전체",
-      "filterBuy": "구매",
-      "filterSell": "판매",
       "depthPrice": "가격",
       "depthRaw": "원본",
       "depthNoAsks": "매도 없음",
@@ -1474,7 +1470,9 @@
     "howPayoutsWork": "지급은 어떻게 이루어지나요?",
     "payoutNote": "주문이 거의 모두 체결되면 체결된 금액은 보통 지갑으로 자동 지급되며, 여러 차례에 걸쳐 지급되기도 합니다. 그 전까지는 주문에 남아 있습니다. 취소하면 아직 지급되지 않은 체결 금액이 지급되고 미체결 금액이 반환됩니다. 주문에 '수령'이 표시되면 체결된 금액의 일부가 아직 지급되지 않은 것입니다.",
     "buyLimitOrder": "지정가 매수 주문",
-    "sellLimitOrder": "지정가 매도 주문"
+    "sellLimitOrder": "지정가 매도 주문",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter"
   },
   "tradeDetails": {
     "priceImpact": {

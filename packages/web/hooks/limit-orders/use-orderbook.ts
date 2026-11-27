@@ -538,12 +538,15 @@ export const useOrderbookClaimableOrders = ({
   disabled = false,
   refetchInterval = 5000,
   orderbookAddress,
+  orderDirection,
 }: {
   userAddress: string;
   disabled?: boolean;
   refetchInterval?: number;
   /** Limits claiming to one orderbook, e.g. on that pool's own page. */
   orderbookAddress?: string;
+  /** Limits claiming to one side, e.g. when the Buy/Sell filter is set. */
+  orderDirection?: "bid" | "ask";
 }) => {
   const { orderbooks } = useOrderbooks();
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
@@ -556,11 +559,23 @@ export const useOrderbookClaimableOrders = ({
     refetchInterval,
   });
 
+  // Claim only the orders in scope: one book when `orderbookAddress` is set,
+  // one side when `orderDirection` is set. The count and the batch both follow.
+  const scopedOrders = useMemo(
+    () =>
+      (orders ?? []).filter(
+        (o) =>
+          (!orderbookAddress || o.orderbookAddress === orderbookAddress) &&
+          (!orderDirection || o.order_direction === orderDirection)
+      ),
+    [orders, orderbookAddress, orderDirection]
+  );
+
   const claimAllOrders = useCallback(async () => {
-    if (!account || !orders) return;
+    if (!account || scopedOrders.length === 0) return;
     const msgs = addresses
       .map((contractAddress) => {
-        const ordersForAddress = orders.filter(
+        const ordersForAddress = scopedOrders.filter(
           (o) => o.orderbookAddress === contractAddress
         );
         if (ordersForAddress.length === 0) return;
@@ -590,11 +605,11 @@ export const useOrderbookClaimableOrders = ({
       ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
     }
-  }, [account, orders, addresses, transactionContext, signAndBroadcast]);
+  }, [account, scopedOrders, addresses, transactionContext, signAndBroadcast]);
 
   return {
-    orders: orders ?? [],
-    count: orders?.length ?? 0,
+    orders: scopedOrders,
+    count: scopedOrders.length,
     isLoading,
     claimAllOrders,
   };

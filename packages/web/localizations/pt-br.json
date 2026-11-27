@@ -557,11 +557,7 @@
       "spread": "Spread",
       "makerFee": "Taxa do criador",
       "yourOrders": "Seus pedidos",
-      "noOrders": "Nenhuma ordem para este par",
       "noOrdersDesc": "Faça seu primeiro pedido limitado.",
-      "filterAll": "Todos",
-      "filterBuy": "Comprar",
-      "filterSell": "Vender",
       "depthPrice": "Preço",
       "depthRaw": "Bruto",
       "depthNoAsks": "Sem vendas",
@@ -1474,7 +1470,9 @@
     "howPayoutsWork": "Como funcionam os pagamentos?",
     "payoutNote": "Quando uma ordem está quase totalmente executada, o valor executado normalmente é pago automaticamente na sua carteira, às vezes em mais de um pagamento. Até lá, ele fica na ordem. Cancelar paga o valor executado que ainda não foi pago e devolve o valor não executado. Se uma ordem mostrar “Resgatar”, parte do valor executado ainda não foi paga.",
     "buyLimitOrder": "Ordem limitada de compra",
-    "sellLimitOrder": "Ordem limitada de venda"
+    "sellLimitOrder": "Ordem limitada de venda",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter"
   },
   "tradeDetails": {
     "priceImpact": {

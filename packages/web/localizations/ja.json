@@ -557,11 +557,7 @@
       "spread": "スプレッド",
       "makerFee": "メイカー手数料",
       "yourOrders": "あなたの注文",
-      "noOrders": "このペアの注文はありません",
       "noOrdersDesc": "最初の指値注文を入れましょう。",
-      "filterAll": "すべて",
-      "filterBuy": "購入",
-      "filterSell": "売却",
       "depthPrice": "価格",
       "depthRaw": "未集計",
       "depthNoAsks": "売り注文なし",
@@ -1474,7 +1470,9 @@
     "howPayoutsWork": "支払いの仕組み",
     "payoutNote": "注文がほぼすべて約定すると、約定した分は通常ウォレットへ自動的に支払われ、複数回に分かれることもあります。それまでは注文内に残ります。キャンセルすると、まだ支払われていない約定分が支払われ、未約定の分が返却されます。注文に「受け取る」と表示されている場合、約定した分の一部はまだ支払われていません。",
     "buyLimitOrder": "指値買い注文",
-    "sellLimitOrder": "指値売り注文"
+    "sellLimitOrder": "指値売り注文",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter"
   },
   "tradeDetails": {
     "priceImpact": {

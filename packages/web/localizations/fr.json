@@ -557,11 +557,7 @@
       "spread": "Écart",
       "makerFee": "Frais du créateur",
       "yourOrders": "Vos ordres",
-      "noOrders": "Aucun ordre pour cette paire",
       "noOrdersDesc": "Passez votre premier ordre limité.",
-      "filterAll": "Tous",
-      "filterBuy": "Acheter",
-      "filterSell": "Vendre",
       "depthPrice": "Prix",
       "depthRaw": "Brut",
       "depthNoAsks": "Aucune vente",
@@ -1474,7 +1470,9 @@
     "howPayoutsWork": "Comment fonctionnent les paiements ?",
     "payoutNote": "Lorsqu'un ordre est presque entièrement exécuté, le montant exécuté est généralement versé automatiquement sur votre portefeuille, parfois en plusieurs versements. D'ici là, il reste dans l'ordre. L'annulation verse tout montant exécuté qui n'a pas encore été versé et restitue le montant non exécuté. Si un ordre affiche « Réclamer », une partie du montant exécuté n'a pas encore été versée.",
     "buyLimitOrder": "Ordre d'achat à cours limité",
-    "sellLimitOrder": "Ordre de vente à cours limité"
+    "sellLimitOrder": "Ordre de vente à cours limité",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter"
   },
   "tradeDetails": {
     "priceImpact": {

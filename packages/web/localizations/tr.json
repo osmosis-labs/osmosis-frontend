@@ -557,11 +557,7 @@
       "spread": "Fark",
       "makerFee": "Yapıcı ücreti",
       "yourOrders": "Emirleriniz",
-      "noOrders": "Bu parite için emir yok",
       "noOrdersDesc": "İlk limit emrinizi verin.",
-      "filterAll": "Tümü",
-      "filterBuy": "Al",
-      "filterSell": "Sat",
       "depthPrice": "Fiyat",
       "depthRaw": "Ham",
       "depthNoAsks": "Satış yok",
@@ -1474,7 +1470,9 @@
     "howPayoutsWork": "Ödemeler nasıl çalışır?",
     "payoutNote": "Bir emir neredeyse tamamen gerçekleştiğinde, gerçekleşen tutar genellikle cüzdanınıza otomatik olarak aktarılır, bazen birden fazla ödeme halinde. O zamana kadar emirde kalır. İptal etmek, henüz ödenmemiş gerçekleşen tutarı öder ve gerçekleşmeyen tutarı iade eder. Bir emirde “Talep et” görünüyorsa, gerçekleşen tutarın bir kısmı henüz ödenmemiştir.",
     "buyLimitOrder": "Limit alış emri",
-    "sellLimitOrder": "Limit satış emri"
+    "sellLimitOrder": "Limit satış emri",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter"
   },
   "tradeDetails": {
     "priceImpact": {

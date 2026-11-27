@@ -15,12 +15,14 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
+import { OrderModal } from "~/components/complex/orders-history/order-modal";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { SortHeader } from "~/components/table/headers/sort";
 import { Tooltip } from "~/components/tooltip";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
+import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
 import { EntityImage } from "~/components/ui/entity-image";
 import { OsmosisChainInfo } from "~/config/chain";
 import {
@@ -77,11 +79,15 @@ export const OrderHistory = ({
   selectedOrder,
   onOrderSelect,
   onSelectedOrderChange,
+  orderbookAddress,
 }: {
   selectedOrder?: MappedLimitOrder;
-  onOrderSelect: (order: MappedLimitOrder) => void;
+  /** Omit on a page that doesn't own the selection; the list then self-hosts a centered modal. */
+  onOrderSelect?: (order: MappedLimitOrder) => void;
   /** Receives each refetched copy of the selected order. */
-  onSelectedOrderChange: (order: MappedLimitOrder) => void;
+  onSelectedOrderChange?: (order: MappedLimitOrder) => void;
+  /** When set, show only this book's orders (and self-host the detail modal). */
+  orderbookAddress?: string;
 }) => {
   // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
   // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
@@ -106,10 +112,36 @@ export const OrderHistory = ({
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile, isExtraLargeDesktop } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
+
+  // The transactions page owns the selected order and renders the detail modal
+  // itself. When those props are absent (the orderbook pool page), self-host the
+  // selection in a centered modal. The inline side panel stays off there: the
+  // pool page is too narrow to fit the table and the panel side by side.
+  const selfHosted = !onOrderSelect;
+  const [internalSelectedOrder, setInternalSelectedOrder] =
+    useState<MappedLimitOrder>();
+  const effectiveSelectedOrder = selfHosted
+    ? internalSelectedOrder
+    : selectedOrder;
+  const handleOrderSelect = useCallback(
+    (order: MappedLimitOrder) =>
+      onOrderSelect ? onOrderSelect(order) : setInternalSelectedOrder(order),
+    [onOrderSelect]
+  );
+  const handleSelectedOrderChange = useCallback(
+    (order: MappedLimitOrder) =>
+      onSelectedOrderChange
+        ? onSelectedOrderChange(order)
+        : setInternalSelectedOrder(order),
+    [onSelectedOrderChange]
+  );
+  const [dirFilter, setDirFilter] = useState<"all" | "bid" | "ask">("all");
+
   // The page shows the details panel from xxxl, like the trade history's. It
   // leaves too little width for every column, so the table takes the layout it
   // has on xl screens while the panel is open.
-  const isDetailsOpen = isExtraLargeDesktop && !!selectedOrder;
+  const isDetailsOpen =
+    isExtraLargeDesktop && !!effectiveSelectedOrder && !selfHosted;
   const compact = isLargeScreen || isDetailsOpen;
   const [sortKey, setSortKey_] = useState<OrderSortKey>("placedAt");
   // Always sorted, so a click on the sorted column flips its direction instead of clearing it.
@@ -130,27 +162,58 @@ export const OrderHistory = ({
     isRefetching,
   } = useOrderbookOrders({
     userAddress: address ?? "",
-    pageSize: 20,
+    // A single book's orders can be scattered thin across pages (the query
+    // fetches every book and we filter client-side), so page larger when scoped.
+    pageSize: orderbookAddress ? 100 : 20,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     sort: { keyPath: sortKey, direction: sortDirection },
   });
+
+  // Scope to one book when asked (the pool page), then to one side when the
+  // Buy/Sell filter is set. `bookOrders` drives the empty state; `displayOrders`
+  // drives the table and the claimable count.
+  const bookOrders = useMemo(
+    () =>
+      orderbookAddress
+        ? orders.filter((o) => o.orderbookAddress === orderbookAddress)
+        : orders,
+    [orders, orderbookAddress]
+  );
+  const displayOrders = useMemo(
+    () =>
+      dirFilter === "all"
+        ? bookOrders
+        : bookOrders.filter((o) => o.order_direction === dirFilter),
+    [bookOrders, dirFilter]
+  );
   // The page keeps the copy of the selected order taken on click. Hand it each
   // refetched copy, so the details show the order's current status and build the
   // claim or cancel from its current fill. An order no longer in the loaded
   // pages keeps its last copy.
   const refetchedSelectedOrder =
-    selectedOrder &&
+    effectiveSelectedOrder &&
     orders.find(
       (o) =>
-        o.order_id === selectedOrder.order_id &&
-        o.orderbookAddress === selectedOrder.orderbookAddress
+        o.order_id === effectiveSelectedOrder.order_id &&
+        o.orderbookAddress === effectiveSelectedOrder.orderbookAddress
     );
   useEffect(() => {
-    if (refetchedSelectedOrder && refetchedSelectedOrder !== selectedOrder) {
-      onSelectedOrderChange(refetchedSelectedOrder);
+    if (
+      refetchedSelectedOrder &&
+      refetchedSelectedOrder !== effectiveSelectedOrder
+    ) {
+      // eslint-disable-next-line hooks-compat/set-state-in-effect -- mirrors the refetched copy of the selected order into state so the open detail modal tracks its latest status; the inequality guard above stops a render loop
+      handleSelectedOrderChange(refetchedSelectedOrder);
     }
-  }, [refetchedSelectedOrder, selectedOrder, onSelectedOrderChange]);
-  const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
+  }, [
+    refetchedSelectedOrder,
+    effectiveSelectedOrder,
+    handleSelectedOrderChange,
+  ]);
+  const groupedOrders = useMemo(
+    () => groupOrdersByStatus(displayOrders),
+    [displayOrders]
+  );
   const groups = useMemo(
     () =>
       Object.keys(groupedOrders).filter(
@@ -180,14 +243,16 @@ export const OrderHistory = ({
     paddingStart: 45,
   });
   const filledOrdersInDisplay = useMemo(() => {
-    return orders.filter((o) => o.status === "filled");
-  }, [orders]);
+    return displayOrders.filter((o) => o.status === "filled");
+  }, [displayOrders]);
 
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
       userAddress: address ?? "",
       disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
       refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+      orderbookAddress,
+      orderDirection: dirFilter === "all" ? undefined : dirFilter,
     });
 
   const claimOrders = useCallback(async () => {
@@ -238,7 +303,7 @@ export const OrderHistory = ({
     );
   }
 
-  if (orders.length === 0 && !isLoading && isError) {
+  if (bookOrders.length === 0 && !isLoading && isError) {
     return (
       <div className="flex flex-col items-center justify-center gap-6">
         <h6>{t("limitOrders.historyTable.errorState.title")}</h6>
@@ -249,7 +314,7 @@ export const OrderHistory = ({
     );
   }
 
-  if (orders.length === 0 && !isLoading) {
+  if (bookOrders.length === 0 && !isLoading) {
     return (
       <div className="flex flex-col items-center justify-center gap-6">
         <Image
@@ -280,6 +345,18 @@ export const OrderHistory = ({
           : "overflow-x-scroll xl:overflow-visible"
       )}
     >
+      <div className="mb-4 flex">
+        <ButtonGroup
+          value={dirFilter}
+          onValueChange={(value) =>
+            setDirFilter(value as "all" | "bid" | "ask")
+          }
+        >
+          <ButtonGroupItem value="all" label={t("limitOrders.all")} />
+          <ButtonGroupItem value="bid" label={t("limitOrders.buy")} />
+          <ButtonGroupItem value="ask" label={t("limitOrders.sell")} />
+        </ButtonGroup>
+      </div>
       {historyUnavailable && (
         <p className="body2 mb-3 text-osmoverse-300">
           {t("limitOrders.historyTable.historyUnavailable")}
@@ -350,6 +427,14 @@ export const OrderHistory = ({
                 <Spinner className="!h-10 !w-10" />
               </td>
             </tr>
+          ) : rows.length === 0 ? (
+            <tr className="flex items-center justify-center py-10">
+              <td colSpan={headers.length + 1} className="!p-0">
+                <p className="body2 text-osmoverse-300">
+                  {t("limitOrders.noMatchingOrders")}
+                </p>
+              </td>
+            </tr>
           ) : (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index];
@@ -390,12 +475,13 @@ export const OrderHistory = ({
                   order={order}
                   style={style}
                   refetch={refetch}
-                  onOrderSelect={onOrderSelect}
+                  onOrderSelect={handleOrderSelect}
                   forceCompact={isDetailsOpen}
                   isSelected={
                     isDetailsOpen &&
-                    selectedOrder.order_id === order.order_id &&
-                    selectedOrder.orderbookAddress === order.orderbookAddress
+                    effectiveSelectedOrder.order_id === order.order_id &&
+                    effectiveSelectedOrder.orderbookAddress ===
+                      order.orderbookAddress
                   }
                 />
               );
@@ -410,6 +496,12 @@ export const OrderHistory = ({
           }
         }}
       />
+      {selfHosted && (
+        <OrderModal
+          order={internalSelectedOrder}
+          onRequestClose={() => setInternalSelectedOrder(undefined)}
+        />
+      )}
     </div>
   );
 };

@@ -557,11 +557,7 @@
       "spread": "Spread",
       "makerFee": "Maker-Gebühr",
       "yourOrders": "Ihre Aufträge",
-      "noOrders": "Keine Aufträge für dieses Paar",
       "noOrdersDesc": "Geben Sie Ihren ersten Limitauftrag auf.",
-      "filterAll": "Alle",
-      "filterBuy": "Kaufen",
-      "filterSell": "Verkaufen",
       "depthPrice": "Preis",
       "depthRaw": "Roh",
       "depthNoAsks": "Keine Verkaufsangebote",
@@ -1474,7 +1470,9 @@
     "howPayoutsWork": "Wie funktionieren Auszahlungen?",
     "payoutNote": "Sobald eine Order fast vollständig ausgeführt ist, wird der ausgeführte Betrag in der Regel automatisch an Ihre Wallet ausgezahlt, manchmal in mehreren Auszahlungen. Bis dahin verbleibt er in der Order. Eine Stornierung zahlt alles Ausgeführte aus, das noch nicht ausgezahlt wurde, und erstattet den nicht ausgeführten Betrag. Wenn bei einer Order „Beanspruchen“ angezeigt wird, wurde ein Teil des ausgeführten Betrags noch nicht ausgezahlt.",
     "buyLimitOrder": "Limit-Kauforder",
-    "sellLimitOrder": "Limit-Verkaufsorder"
+    "sellLimitOrder": "Limit-Verkaufsorder",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter"
   },
   "tradeDetails": {
     "priceImpact": {

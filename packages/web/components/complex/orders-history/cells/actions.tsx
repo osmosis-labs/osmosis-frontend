@@ -49,7 +49,7 @@ const ClaimAndCloseButton = ({
   useEffect(() => {
     // eslint-disable-next-line hooks-compat/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
     setClaiming(false);
-  }, [order.order_id]);
+  }, [order.order_id, order.orderbookAddress]);
 
   const claimAndClose = useCallback(async () => {
     if (!account) {
@@ -131,7 +131,7 @@ const ClaimButton = ({
   useEffect(() => {
     // eslint-disable-next-line hooks-compat/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
     setClaiming(false);
-  }, [order.order_id]);
+  }, [order.order_id, order.orderbookAddress]);
 
   const claim = useCallback(async () => {
     if (!account) {
@@ -198,7 +198,7 @@ const CancelButton = ({
   useEffect(() => {
     // eslint-disable-next-line hooks-compat/set-state-in-effect -- the virtualizer reuses this row for another order, so the in-flight flag must be cleared
     setCancelling(false);
-  }, [order.order_id]);
+  }, [order.order_id, order.orderbookAddress]);
 
   const cancel = useCallback(async () => {
     if (!account) {

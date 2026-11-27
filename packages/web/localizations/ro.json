@@ -557,11 +557,7 @@
       "spread": "Diferență",
       "makerFee": "Comision maker",
       "yourOrders": "Ordinele tale",
-      "noOrders": "Nicio ordine pentru această pereche",
       "noOrdersDesc": "Plasează primul tău ordin limitat.",
-      "filterAll": "Toate",
-      "filterBuy": "Cumpăra",
-      "filterSell": "Vinde",
       "depthPrice": "Preț",
       "depthRaw": "Brut",
       "depthNoAsks": "Fără vânzări",
@@ -1474,7 +1470,9 @@
     "howPayoutsWork": "Cum funcționează plățile?",
     "payoutNote": "Când un ordin este aproape complet executat, suma executată este de obicei plătită automat în portofelul dumneavoastră, uneori în mai multe plăți. Până atunci, rămâne în ordin. Anularea plătește suma executată care nu a fost încă plătită și returnează suma neexecutată. Dacă un ordin afișează „Revendicați”, o parte din suma executată nu a fost încă plătită.",
     "buyLimitOrder": "Ordin limită de cumpărare",
-    "sellLimitOrder": "Ordin limită de vânzare"
+    "sellLimitOrder": "Ordin limită de vânzare",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter"
   },
   "tradeDetails": {
     "priceImpact": {
