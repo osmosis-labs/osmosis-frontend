@@ -1472,7 +1472,8 @@
     "buyLimitOrder": "Ordem limitada de compra",
     "sellLimitOrder": "Ordem limitada de venda",
     "all": "All",
-    "noMatchingOrders": "No orders match this filter"
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

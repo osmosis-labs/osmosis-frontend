@@ -1472,7 +1472,8 @@
     "buyLimitOrder": "سفارش محدود خرید",
     "sellLimitOrder": "سفارش محدود فروش",
     "all": "All",
-    "noMatchingOrders": "No orders match this filter"
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

@@ -70,8 +70,10 @@ export const AssetOrderHistory = () => {
         <h6>{t("portfolio.openOrders")}</h6>
         <Link
           // Carry the current asset path so the order-history back button
-          // returns to this asset instead of the default portfolio page.
-          href={`/transactions?tab=orders&from=${encodeURIComponent(
+          // returns to this asset, and pre-fill its asset filter with this token.
+          href={`/transactions?tab=orders&asset=${encodeURIComponent(
+            asset.coinDenom
+          )}&from=${encodeURIComponent(
             router.asPath
           )}&fromLabel=${encodeURIComponent(asset.coinDenom)}`}
           aria-label={t("limitOrders.orderHistory")}

@@ -539,6 +539,7 @@ export const useOrderbookClaimableOrders = ({
   refetchInterval = 5000,
   orderbookAddress,
   orderDirection,
+  baseSymbol,
 }: {
   userAddress: string;
   disabled?: boolean;
@@ -547,6 +548,8 @@ export const useOrderbookClaimableOrders = ({
   orderbookAddress?: string;
   /** Limits claiming to one side, e.g. when the Buy/Sell filter is set. */
   orderDirection?: "bid" | "ask";
+  /** Limits claiming to orders whose base asset matches, e.g. the asset filter. */
+  baseSymbol?: string;
 }) => {
   const { orderbooks } = useOrderbooks();
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
@@ -559,16 +562,19 @@ export const useOrderbookClaimableOrders = ({
     refetchInterval,
   });
 
-  // Claim only the orders in scope: one book when `orderbookAddress` is set,
-  // one side when `orderDirection` is set. The count and the batch both follow.
+  // Claim only the orders in scope: one book when `orderbookAddress` is set, one
+  // side when `orderDirection` is set, one base asset when `baseSymbol` is set.
+  // The count and the batch both follow, so Claim All matches the visible list.
+  const query = baseSymbol?.trim().toLowerCase();
   const scopedOrders = useMemo(
     () =>
       (orders ?? []).filter(
         (o) =>
           (!orderbookAddress || o.orderbookAddress === orderbookAddress) &&
-          (!orderDirection || o.order_direction === orderDirection)
+          (!orderDirection || o.order_direction === orderDirection) &&
+          (!query || !!o.baseAsset?.symbol?.toLowerCase().includes(query))
       ),
-    [orders, orderbookAddress, orderDirection]
+    [orders, orderbookAddress, orderDirection, query]
   );
 
   const claimAllOrders = useCallback(async () => {

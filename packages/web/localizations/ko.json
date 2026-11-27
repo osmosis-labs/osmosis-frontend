@@ -1472,7 +1472,8 @@
     "buyLimitOrder": "지정가 매수 주문",
     "sellLimitOrder": "지정가 매도 주문",
     "all": "All",
-    "noMatchingOrders": "No orders match this filter"
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

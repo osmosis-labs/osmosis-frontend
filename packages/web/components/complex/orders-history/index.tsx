@@ -10,12 +10,14 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useQueryState } from "nuqs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { OrderModal } from "~/components/complex/orders-history/order-modal";
+import { SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { SortHeader } from "~/components/table/headers/sort";
@@ -136,6 +138,12 @@ export const OrderHistory = ({
     [onSelectedOrderChange]
   );
   const [dirFilter, setDirFilter] = useState<"all" | "bid" | "ask">("all");
+  // Backed by the URL (`?asset=`), so the asset page can deep-link here with the
+  // field pre-filled. Hidden and unused when embedded on a single book (below).
+  const [assetFilter, setAssetFilter] = useQueryState("asset", {
+    defaultValue: "",
+    clearOnDefault: true,
+  });
 
   // The page shows the details panel from xxxl, like the trade history's. It
   // leaves too little width for every column, so the table takes the layout it
@@ -179,13 +187,20 @@ export const OrderHistory = ({
         : orders,
     [orders, orderbookAddress]
   );
-  const displayOrders = useMemo(
-    () =>
+  // The asset filter applies only on the full view; when embedded on a single
+  // book the list is already scoped, so the field is hidden and ignored.
+  const assetQuery = orderbookAddress ? "" : assetFilter.trim().toLowerCase();
+  const displayOrders = useMemo(() => {
+    const byDirection =
       dirFilter === "all"
         ? bookOrders
-        : bookOrders.filter((o) => o.order_direction === dirFilter),
-    [bookOrders, dirFilter]
-  );
+        : bookOrders.filter((o) => o.order_direction === dirFilter);
+    if (!assetQuery) return byDirection;
+    // Base asset only: "osmo" matches an OSMO/USDC order, not ATOM/OSMO.
+    return byDirection.filter((o) =>
+      o.baseAsset?.symbol?.toLowerCase().includes(assetQuery)
+    );
+  }, [bookOrders, dirFilter, assetQuery]);
   // The page keeps the copy of the selected order taken on click. Hand it each
   // refetched copy, so the details show the order's current status and build the
   // claim or cancel from its current fill. An order no longer in the loaded
@@ -253,6 +268,7 @@ export const OrderHistory = ({
       refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
       orderbookAddress,
       orderDirection: dirFilter === "all" ? undefined : dirFilter,
+      baseSymbol: assetQuery || undefined,
     });
 
   const claimOrders = useCallback(async () => {
@@ -345,7 +361,7 @@ export const OrderHistory = ({
           : "overflow-x-scroll xl:overflow-visible"
       )}
     >
-      <div className="mb-4 flex">
+      <div className="mb-4 flex items-center gap-3">
         <ButtonGroup
           value={dirFilter}
           onValueChange={(value) =>
@@ -356,6 +372,15 @@ export const OrderHistory = ({
           <ButtonGroupItem value="bid" label={t("limitOrders.buy")} />
           <ButtonGroupItem value="ask" label={t("limitOrders.sell")} />
         </ButtonGroup>
+        {!orderbookAddress && (
+          <SearchBox
+            className="ml-auto"
+            size="small"
+            placeholder={t("limitOrders.filterByAsset")}
+            currentValue={assetFilter}
+            onInput={(value) => setAssetFilter(value)}
+          />
+        )}
       </div>
       {historyUnavailable && (
         <p className="body2 mb-3 text-osmoverse-300">

@@ -1472,7 +1472,8 @@
     "buyLimitOrder": "限價買單",
     "sellLimitOrder": "限價賣單",
     "all": "All",
-    "noMatchingOrders": "No orders match this filter"
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {
