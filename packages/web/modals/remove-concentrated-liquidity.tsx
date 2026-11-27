@@ -42,6 +42,7 @@ import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useWallet } from "~/hooks/use-wallet";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
+import type { SlippageSource } from "~/utils/slippage";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
@@ -72,6 +73,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     zapOutLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
     requiredSwap,
     currentBaseValueFraction,
     quoteInSync,
@@ -90,6 +93,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   // stays active.
   const slippageInput = useSlippageToleranceInput({
     slippageConfig: zapSlippageConfig,
+    slippageSource: zapSlippageSource,
   });
 
   const baseAsset = config.effectiveLiquidityAmounts?.base;
@@ -499,6 +503,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                   <ZapOutBreakdownSkeleton
                     zapSlippageConfig={zapSlippageConfig}
                     slippageInput={slippageInput}
+                    slippageSource={zapSlippageSource}
+                    slippageLiquidityUnknown={zapSlippageLiquidityUnknown}
                   />
                 ) : !quote || quoteFailed ? (
                   // No quote, or the latest fetch failed: show the typed router
@@ -529,6 +535,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                     swapExecutedFeeIn={swapExecutedFeeIn}
                     zapSlippageConfig={zapSlippageConfig}
                     slippageInput={slippageInput}
+                    slippageSource={zapSlippageSource}
+                    slippageLiquidityUnknown={zapSlippageLiquidityUnknown}
                   />
                 )}
 
@@ -620,6 +628,8 @@ const ZapOutBreakdown: FunctionComponent<{
   swapExecutedFeeIn: CoinPretty | undefined;
   zapSlippageConfig: SlippageConfig;
   slippageInput: SlippageToleranceInput;
+  slippageSource: SlippageSource;
+  slippageLiquidityUnknown: boolean;
 }> = memo((props) => {
   const {
     quote,
@@ -629,6 +639,8 @@ const ZapOutBreakdown: FunctionComponent<{
     swapExecutedFeeIn,
     zapSlippageConfig,
     slippageInput,
+    slippageSource,
+    slippageLiquidityUnknown,
   } = props;
   const { t } = useTranslation();
 
@@ -682,6 +694,8 @@ const ZapOutBreakdown: FunctionComponent<{
       <SlippageToleranceRow
         slippageConfig={zapSlippageConfig}
         input={slippageInput}
+        slippageSource={slippageSource}
+        slippageLiquidityUnknown={slippageLiquidityUnknown}
       />
       {quote.split.length > 0 && (
         <Disclosure>
@@ -730,40 +744,51 @@ const ZapOutBreakdown: FunctionComponent<{
 const ZapOutBreakdownSkeleton: FunctionComponent<{
   zapSlippageConfig: SlippageConfig;
   slippageInput: SlippageToleranceInput;
-}> = memo(({ zapSlippageConfig, slippageInput }) => {
-  const { t } = useTranslation();
+  slippageSource: SlippageSource;
+  slippageLiquidityUnknown: boolean;
+}> = memo(
+  ({
+    zapSlippageConfig,
+    slippageInput,
+    slippageSource,
+    slippageLiquidityUnknown,
+  }) => {
+    const { t } = useTranslation();
 
-  return (
-    <div className="mx-auto flex w-full max-w-lg flex-col">
-      <RecapRow
-        left={t("addConcentratedLiquidity.singleAsset.estimatedTotalReceive")}
-        right={<SkeletonLoader className="h-4 w-40" />}
-      />
-      <RecapRow
-        left={t("receiveAtLeast")}
-        right={<SkeletonLoader className="h-4 w-40" />}
-      />
-      <RecapRow
-        left={t("addConcentratedLiquidity.singleAsset.valueOut")}
-        right={<SkeletonLoader className="h-4 w-20" />}
-      />
-      <RecapRow
-        left={t("pools.aprBreakdown.swapFees")}
-        right={<SkeletonLoader className="h-4 w-28" />}
-      />
-      <SlippageToleranceRow
-        slippageConfig={zapSlippageConfig}
-        input={slippageInput}
-      />
-      <div className="flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]">
-        <span className="sm:caption text-osmoverse-300">
-          {t("swap.autoRouter")}
-        </span>
-        <SkeletonLoader className="h-4 w-16" />
+    return (
+      <div className="mx-auto flex w-full max-w-lg flex-col">
+        <RecapRow
+          left={t("addConcentratedLiquidity.singleAsset.estimatedTotalReceive")}
+          right={<SkeletonLoader className="h-4 w-40" />}
+        />
+        <RecapRow
+          left={t("receiveAtLeast")}
+          right={<SkeletonLoader className="h-4 w-40" />}
+        />
+        <RecapRow
+          left={t("addConcentratedLiquidity.singleAsset.valueOut")}
+          right={<SkeletonLoader className="h-4 w-20" />}
+        />
+        <RecapRow
+          left={t("pools.aprBreakdown.swapFees")}
+          right={<SkeletonLoader className="h-4 w-28" />}
+        />
+        <SlippageToleranceRow
+          slippageConfig={zapSlippageConfig}
+          input={slippageInput}
+          slippageSource={slippageSource}
+          slippageLiquidityUnknown={slippageLiquidityUnknown}
+        />
+        <div className="flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]">
+          <span className="sm:caption text-osmoverse-300">
+            {t("swap.autoRouter")}
+          </span>
+          <SkeletonLoader className="h-4 w-16" />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 const AssetIconButton: FunctionComponent<{
   currency: { coinDenom: string; coinImageUrl?: string };

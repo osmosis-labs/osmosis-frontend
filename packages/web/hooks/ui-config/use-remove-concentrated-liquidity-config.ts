@@ -15,9 +15,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import { useSlippageConfig } from "~/hooks/ui-config/use-slippage-config";
+import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
+import {
+  useSwapSlippage,
+  useSwapSlippageConfig,
+} from "~/hooks/use-swap-slippage";
 import { useZapOutQuote } from "~/hooks/use-zap-out-quote";
+import type { SlippageSource } from "~/utils/slippage";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
@@ -72,7 +77,11 @@ export function useRemoveConcentratedLiquidityConfig(
   removeLiquidity: () => Promise<void>;
   zapOutLiquidity: () => Promise<void>;
   zapQuote: ReturnType<typeof useZapOutQuote>;
-  zapSlippageConfig: ReturnType<typeof useSlippageConfig>;
+  zapSlippageConfig: SlippageConfig;
+  /** Where the swap leg's tolerance came from (typed, quote tier, default). */
+  zapSlippageSource: SlippageSource;
+  /** The current quote's route liquidity is unknown, so the tier is a guess. */
+  zapSlippageLiquidityUnknown: boolean;
   requiredSwap: ZapOutRequiredSwap | undefined;
   /** Value split the position currently holds in base; the no-swap point the
    *  output-mix slider handle starts at. Undefined until prices/amounts load. */
@@ -122,8 +131,7 @@ export function useRemoveConcentratedLiquidityConfig(
     transactionContext,
   } = useWallet(osmosisChainId);
 
-  // Single-asset exit reuses the user's general swap slippage scope.
-  const zapSlippageConfig = useSlippageConfig();
+  const zapSlippageConfig = useSwapSlippageConfig();
 
   const [percentage, setPercentage] = useState(1);
   const [targetBaseValueFraction, setTargetBaseValueFraction] = useState<
@@ -250,6 +258,22 @@ export function useRemoveConcentratedLiquidityConfig(
     tokenInDenom: quotedSwap?.tokenInCurrency.coinMinimalDenom ?? "",
     tokenOutDenom: quotedSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
     enabled: Boolean(quotedSwap?.needsSwap),
+  });
+
+  // Same resolution as the zap-in and the swap tool: a typed value, else the
+  // tier for this quote's impact and route liquidity, else the default. There
+  // is no review step to latch the tier against, and no fee simulation before
+  // submit.
+  const {
+    source: zapSlippageSource,
+    liquidityUnknown: zapSlippageLiquidityUnknown,
+  } = useSwapSlippage({
+    slippageConfig: zapSlippageConfig,
+    quote: zapQuote.quote,
+    quoteType: "out-given-in",
+    feeError: undefined,
+    isReviewOpen: false,
+    isQuoteSettled: !zapQuote.isLoading && !zapQuote.isRefreshing,
   });
 
   // Portion of the quoted swap routed through the position's OWN pool. The
@@ -562,6 +586,8 @@ export function useRemoveConcentratedLiquidityConfig(
     zapOutLiquidity,
     zapQuote,
     zapSlippageConfig,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
     requiredSwap,
     currentBaseValueFraction,
     quoteInSync,
