@@ -1,8 +1,28 @@
+import {
+  BigDec,
+  calcZapOutRouteDegradation,
+  calcZapOutSwapAmount,
+  combineImpactWithDegradation,
+} from "@osmosis-labs/math";
 import type { UserPosition } from "@osmosis-labs/server";
-import { prepareWithdrawConcentratedLiquidityPositionMsg } from "@osmosis-labs/tx";
-import type { CoinPretty, Dec } from "@osmosis-labs/unit";
-import { useCallback, useMemo, useState } from "react";
+import {
+  prepareWithdrawConcentratedLiquidityPositionMsg,
+  prepareZapOutOfConcentratedPositionMsg,
+} from "@osmosis-labs/tx";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/types";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { displayToast } from "~/components/alert/toast";
+import { ToastType } from "~/components/alert/types";
+import type { SlippageConfig } from "~/hooks/ui-config/use-slippage-config";
+import { useDebouncedState } from "~/hooks/use-debounced-state";
+import {
+  useSwapSlippage,
+  useSwapSlippageConfig,
+} from "~/hooks/use-swap-slippage";
+import { useZapOutQuote } from "~/hooks/use-zap-out-quote";
+import type { SlippageSource } from "~/utils/slippage";
 import { api } from "~/utils/trpc";
 
 import { useWallet } from "../use-wallet";
@@ -20,8 +40,33 @@ export type RemoveConcentratedLiquidityConfig = {
     | { base: CoinPretty; quote: CoinPretty }
     | undefined;
   readonly error: Error | undefined;
+  /** Target fraction of the withdrawn *value* to end holding in base (token0),
+   *  in `[0, 1]`, or `undefined` for the explicit no-swap state (withdraw at
+   *  the position's current ratio). `undefined` is the default and the only
+   *  no-swap signal: the consumer never seeds a numeric value and never
+   *  compares a fraction against the current split, so there is no lossy
+   *  default and no float-equality. A swap is computed only for a real value. */
+  readonly targetBaseValueFraction: number | undefined;
   setPercentage: (percentage: number) => void;
+  /** Set a real target value-split (a user-chosen mix), or `undefined` to
+   *  return to the no-swap state (withdraw at the current ratio). */
+  setTargetBaseValueFraction: (fraction: number | undefined) => void;
 };
+
+/** The swap leg a single-asset (zap-out) exit requires to reach the target
+ *  value split, plus the input-state classification used by the modal/submit. */
+export interface ZapOutRequiredSwap {
+  swapSide: "base" | "quote";
+  /** Micro amount of `swapSide` the swap leg should sell (projected). */
+  swapInAmount: Int;
+  tokenInCurrency: UserPosition["currentCoins"][number]["currency"];
+  tokenOutCurrency: UserPosition["currentCoins"][number]["currency"];
+  needsSwap: boolean;
+  /** Share of the withdrawn value (at pool spot, no fiat prices needed) that a
+   *  given micro amount of `swapSide` represents. Undefined when the withdrawn
+   *  value is zero. */
+  shareOfWithdrawn: (swapSideAmount: Int) => Dec | undefined;
+}
 
 export function useRemoveConcentratedLiquidityConfig(
   osmosisChainId: string,
@@ -30,6 +75,53 @@ export function useRemoveConcentratedLiquidityConfig(
 ): {
   config: RemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
+  zapOutLiquidity: () => Promise<void>;
+  zapQuote: ReturnType<typeof useZapOutQuote>;
+  zapSlippageConfig: SlippageConfig;
+  /** Where the swap leg's tolerance came from (typed, quote tier, default). */
+  zapSlippageSource: SlippageSource;
+  /** The current quote's route liquidity is unknown, so the tier is a guess. */
+  zapSlippageLiquidityUnknown: boolean;
+  requiredSwap: ZapOutRequiredSwap | undefined;
+  /** Value split the position currently holds in base; the no-swap point the
+   *  output-mix slider handle starts at. Undefined until prices/amounts load. */
+  currentBaseValueFraction: number | undefined;
+  /** True when the (debounced) quote reflects the live slider target. Submission
+   *  must be blocked while false, or it would execute a stale target mix. */
+  quoteInSync: boolean;
+  /** The enforced swap-leg minimum output (target-side currency), matching what
+   *  the tx submits, so the "receive at least" display can't overstate it.
+   *  Undefined when no swap is needed or the quote isn't ready. */
+  swapMinOut: CoinPretty | undefined;
+  /** The sold-side amount the swap message actually spends (sold-side
+   *  currency). Undefined when no swap is needed or the plan isn't ready. */
+  swapExecutedIn: CoinPretty | undefined;
+  /** Expected output of the executed plan before the slippage floor
+   *  (target-side currency); pairs with `swapExecutedIn` for the estimated
+   *  display. Undefined when no swap is needed or the plan isn't ready. */
+  swapExpectedOut: CoinPretty | undefined;
+  /** Swap fee charged on the executed input (sold-side currency); undefined
+   *  when no swap is needed, the plan isn't ready, or the quote reports no
+   *  fee. */
+  swapExecutedFeeIn: CoinPretty | undefined;
+  /** Effective execution price impact (signed fraction, loss negative): the
+   *  quoted impact compounded with the own-pool post-withdraw degradation.
+   *  The high-cost guard and value display must use this, not the quoted
+   *  impact. Undefined when no swap is needed or the plan isn't ready. */
+  swapEffectiveImpact: Dec | undefined;
+  /** SQS could not compute the swap's price impact. The consumer must treat
+   *  this as high cost (explicit confirm) and must not derive a value-out
+   *  from a 0% placeholder. */
+  swapImpactUnknown: boolean;
+  /** Set when the execution plan is deliberately withheld: a split route
+   *  passes partly through the position's own pool and no safe min-out can
+   *  be derived for it (see `swapExecution`). Submission stays blocked while
+   *  set; requotes usually resolve to a clean route. */
+  zapOutBlockedReason: "mixedOwnPoolRoute" | undefined;
+  /** Whether the pool query (source of the spot price the swap math needs) is
+   *  still loading. The consumer only blocks a chosen mix while this is true, so
+   *  a never-resolving query can't trap the user with no path to withdraw. */
+  isPoolLoading: boolean;
 } {
   const apiUtils = api.useUtils();
 
@@ -39,7 +131,12 @@ export function useRemoveConcentratedLiquidityConfig(
     transactionContext,
   } = useWallet(osmosisChainId);
 
+  const zapSlippageConfig = useSwapSlippageConfig();
+
   const [percentage, setPercentage] = useState(1);
+  const [targetBaseValueFraction, setTargetBaseValueFraction] = useState<
+    number | undefined
+  >(undefined);
 
   const { liquidity, currentCoins } = position;
   const [baseAsset, quoteAsset] = currentCoins;
@@ -50,9 +147,306 @@ export function useRemoveConcentratedLiquidityConfig(
       effectiveLiquidity: getEffectiveLiquidity(pos, percentage),
       effectiveLiquidityAmounts: getEffectiveLiquidityAmounts(pos, percentage),
       error: getRemoveConcentratedLiquidityError(percentage),
+      targetBaseValueFraction,
       setPercentage,
+      setTargetBaseValueFraction,
     };
-  }, [baseAsset, quoteAsset, liquidity, percentage]);
+  }, [baseAsset, quoteAsset, liquidity, percentage, targetBaseValueFraction]);
+
+  // The pool's current sqrt price (micro basis) is what the swap executes
+  // against, so the value-rebalance math uses it rather than fiat oracle prices.
+  const { data: pool, isLoading: isPoolLoading } =
+    api.local.pools.getPool.useQuery({ poolId });
+  const currentSqrtPrice =
+    pool?.type === "concentrated"
+      ? new BigDec((pool.raw as ConcentratedPoolRawResponse).current_sqrt_price)
+      : undefined;
+
+  // The value split the position currently holds in base (token0), at spot. This
+  // is the no-swap point the output-mix slider starts at.
+  const withdrawn = config.effectiveLiquidityAmounts;
+  const currentBaseValueFraction = (() => {
+    if (!currentSqrtPrice || currentSqrtPrice.isZero() || !withdrawn)
+      return undefined;
+    const spot = currentSqrtPrice.mul(currentSqrtPrice);
+    const baseValue = new BigDec(new Int(withdrawn.base.toCoin().amount)).mul(
+      spot
+    );
+    const total = baseValue.add(
+      new BigDec(new Int(withdrawn.quote.toCoin().amount))
+    );
+    if (total.lte(new BigDec(0))) return undefined;
+    return Number(baseValue.quo(total).toString());
+  })();
+
+  // Compute the swap leg for a given target value-split. An `undefined` target
+  // is the explicit no-swap state (withdraw at the current ratio), so no swap is
+  // computed and no float-equality is involved — `needsSwap` is driven purely by
+  // whether the user has chosen a real target, not by comparing fractions.
+  const computeRequiredSwap = (
+    targetFraction: number | undefined
+  ): ZapOutRequiredSwap | undefined => {
+    if (targetFraction === undefined) return undefined;
+    if (!currentSqrtPrice || !withdrawn) return undefined;
+
+    const baseWithdrawn = new Int(withdrawn.base.toCoin().amount);
+    const quoteWithdrawn = new Int(withdrawn.quote.toCoin().amount);
+    if (baseWithdrawn.lte(new Int(0)) && quoteWithdrawn.lte(new Int(0)))
+      return undefined;
+
+    const { swapSide, swapInAmount } = calcZapOutSwapAmount({
+      baseWithdrawn,
+      quoteWithdrawn,
+      currentSqrtPrice,
+      targetBaseValueFraction: new BigDec(targetFraction.toString()),
+    });
+
+    const baseCurrency = withdrawn.base.currency;
+    const quoteCurrency = withdrawn.quote.currency;
+    const tokenInCurrency = swapSide === "base" ? baseCurrency : quoteCurrency;
+    const tokenOutCurrency = swapSide === "base" ? quoteCurrency : baseCurrency;
+
+    // Withdrawn value in quote micro units at spot (base x price + quote).
+    const spot = currentSqrtPrice.mul(currentSqrtPrice);
+    const withdrawnValue = new BigDec(baseWithdrawn)
+      .mul(spot)
+      .add(new BigDec(quoteWithdrawn));
+    const shareOfWithdrawn = (swapSideAmount: Int) => {
+      if (withdrawnValue.lte(new BigDec(0))) return undefined;
+      const value =
+        swapSide === "base"
+          ? new BigDec(swapSideAmount).mul(spot)
+          : new BigDec(swapSideAmount);
+      return new Dec(value.quo(withdrawnValue).toString());
+    };
+
+    return {
+      swapSide,
+      swapInAmount,
+      tokenInCurrency,
+      tokenOutCurrency,
+      needsSwap: swapInAmount.gt(new Int(0)),
+      shareOfWithdrawn,
+    };
+  };
+
+  // Live swap for the instant display (the "X will be swapped" line, the
+  // slider, value/percent breakdown).
+  const requiredSwap = computeRequiredSwap(config.targetBaseValueFraction);
+
+  // Debounced swap that drives the actual quote, so dragging the slider doesn't
+  // fire a quote on every tick — only after it settles for 500ms. The instant
+  // display above still reflects the live target.
+  const [debouncedTargetFraction, setDebouncedTargetFraction] =
+    useDebouncedState(config.targetBaseValueFraction, 500);
+  useEffect(() => {
+    setDebouncedTargetFraction(config.targetBaseValueFraction);
+  }, [config.targetBaseValueFraction, setDebouncedTargetFraction]);
+  const quotedSwap = computeRequiredSwap(debouncedTargetFraction);
+
+  // Whether the quote (debounced) reflects the live slider target. While the
+  // user is mid-drag the debounced value lags, so the quote and the displayed
+  // mix differ; submitting then would execute a stale target. The consumer
+  // blocks submission until this is true.
+  const quoteInSync =
+    debouncedTargetFraction === config.targetBaseValueFraction;
+
+  // Quote the (debounced) swap leg (exact-in). Disabled when no swap is needed
+  // (handle at the no-swap point), so it never queries unnecessarily.
+  const zapQuote = useZapOutQuote({
+    tokenInAmount: quotedSwap?.swapInAmount.toString() ?? "0",
+    tokenInDenom: quotedSwap?.tokenInCurrency.coinMinimalDenom ?? "",
+    tokenOutDenom: quotedSwap?.tokenOutCurrency.coinMinimalDenom ?? "",
+    enabled: Boolean(quotedSwap?.needsSwap),
+  });
+
+  // Same resolution as the zap-in and the swap tool: a typed value, else the
+  // tier for this quote's impact and route liquidity, else the default. There
+  // is no review step to latch the tier against, and no fee simulation before
+  // submit.
+  const {
+    source: zapSlippageSource,
+    liquidityUnknown: zapSlippageLiquidityUnknown,
+  } = useSwapSlippage({
+    slippageConfig: zapSlippageConfig,
+    quote: zapQuote.quote,
+    quoteType: "out-given-in",
+    feeError: undefined,
+    isReviewOpen: false,
+    isQuoteSettled: !zapQuote.isLoading && !zapQuote.isRefreshing,
+  });
+
+  // Portion of the quoted swap routed through the position's OWN pool. The
+  // withdraw leg executes FIRST and removes the withdrawn liquidity from
+  // exactly the depths the SQS quote assumed, so a min-out derived from the
+  // raw quote can exceed what the thinner post-withdraw book delivers and
+  // revert the whole tx. In an acyclic route this pair pool can only appear
+  // as a direct single-hop route (any other placement revisits a denom), so
+  // the routed amount is known exactly from the split. When it is non-zero,
+  // the pool's live tick depths are fetched and the expected output of that
+  // slice is degraded by a post-withdraw simulation (see `swapExecution`).
+  const poolRoutedInput = (zapQuote.quote?.split ?? [])
+    .filter((route) => route.pools.length === 1 && route.pools[0].id === poolId)
+    .reduce((sum, route) => sum.add(route.initialAmount), new Int(0));
+  const needsDepthAdjustment = poolRoutedInput.gt(new Int(0));
+  const { data: liquidityDepths } =
+    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
+      { poolId },
+      { enabled: needsDepthAdjustment }
+    );
+
+  // The swap-leg execution plan: the slippage-scaled per-leg routes and the
+  // resulting tokenOutMinAmount. Derived once and used both for submission and
+  // for the "receive at least" display, so the UI shows exactly what the tx
+  // enforces (no drift between the displayed minimum and the on-chain floor).
+  const slippageMultiplier = new Dec(1).sub(zapSlippageConfig.slippage.toDec());
+  let zapOutBlockedReason: "mixedOwnPoolRoute" | undefined;
+  const swapExecution = (() => {
+    if (!quotedSwap?.needsSwap || !zapQuote.quote) return undefined;
+    // A held quote for an older amount (shown while the current amount is
+    // fetching) must never build a plan: its legs would sell the old amount
+    // against the current withdrawal. The fresh quote is keyed on the exact
+    // amount, so a non-refreshing quote is the current one. Same rule as the
+    // zap-in.
+    if (zapQuote.isRefreshing) return undefined;
+    // A failed refetch keeps the last data; never build a plan from it.
+    if (zapQuote.isError || zapQuote.routerError) return undefined;
+
+    // Each leg's tokenIn is the conservative LOWER BOUND of the projected
+    // withdrawn amount of the sold side, fixed at sign time. NOTE the swap
+    // message spends from the whole account balance, not specifically from
+    // the withdrawal's outputs: if spot drift beyond the slippage buffer
+    // makes the withdraw deliver less than this input, the tx reverts only
+    // when the existing balance plus the actual withdrawn amount is below
+    // it; a pre-existing balance of the sold denom covers some or all of
+    // the shortfall (and is swapped, still at or above the min-out) instead.
+    // Truncation is per-leg, so the actual total input is slightly below the
+    // full quote input.
+    const routes = zapQuote.quote.split.map((route) => ({
+      pools: route.pools.map((routePool, i: number) => ({
+        id: routePool.id,
+        tokenOutDenom: route.tokenOutDenoms[i],
+      })),
+      tokenInAmount: new Dec(route.initialAmount)
+        .mul(slippageMultiplier)
+        .truncate()
+        .toString(),
+    }));
+
+    // The min-out tracks the ACTUAL scaled input, not the full quote output:
+    // scale the expected output by the realised input ratio (sum of scaled leg
+    // inputs / full quote input), then apply slippage. Output scales ~linearly
+    // with input at the same rate, so a min-out tied to the larger full-quote
+    // output would make the swap revert even when the withdraw succeeds.
+    const fullInput = zapQuote.quote.split.reduce(
+      (sum, route) => sum.add(new Dec(route.initialAmount)),
+      new Dec(0)
+    );
+    const scaledInput = routes.reduce(
+      (sum, route) => sum.add(new Dec(route.tokenInAmount)),
+      new Dec(0)
+    );
+    const inputRatio = fullInput.isZero()
+      ? new Dec(0)
+      : scaledInput.quo(fullInput);
+    const outMicro = new Int(zapQuote.quote.amount.toCoin().amount);
+    let expectedOut = new Dec(outMicro);
+    // 1 = no own-pool degradation; set below for a direct own-pool route.
+    let degradationFactor = new Dec(1);
+
+    // Degrade the pool-routed slice of the expected output for the liquidity
+    // the withdraw removes before the swap runs. FAIL CLOSED while the data
+    // this requires is missing: returning undefined here blocks submission
+    // (and the breakdown shows its loading state) rather than composing a
+    // min-out the post-withdraw book may not deliver.
+    if (needsDepthAdjustment) {
+      if (
+        !currentSqrtPrice ||
+        !liquidityDepths ||
+        liquidityDepths.length === 0 ||
+        !config.effectiveLiquidity
+      )
+        return undefined;
+      // The degradation is only sound for a quote routed ENTIRELY through
+      // the own pool (the dominant direct-route case, where whole-output
+      // application is exact). For a mixed split there is no safe scaling:
+      // the quote lacks per-route outputs, input-share weighting can
+      // understate the own-pool route's output contribution (floor too
+      // high, self-inflicted revert), and whole-output application can
+      // collapse the floor far below the user's slippage on the un-affected
+      // legs (a 10% degradation on a 1%-routed slice must not permit a 90%
+      // loss). FAIL CLOSED: withhold the plan; the modal explains and the
+      // 5s requote usually resolves to a clean route.
+      if (new Dec(poolRoutedInput).lt(fullInput)) {
+        zapOutBlockedReason = "mixedOwnPoolRoute";
+        return undefined;
+      }
+      degradationFactor = calcZapOutRouteDegradation({
+        swapInAmount: poolRoutedInput,
+        swapSide: quotedSwap.swapSide,
+        currentSqrtPrice,
+        liquidityDepths,
+        withdrawnLiquidity: new Dec(config.effectiveLiquidity.toString()),
+        positionLowerTick: new Int(position.position.position.lower_tick),
+        positionUpperTick: new Int(position.position.position.upper_tick),
+      });
+      expectedOut = expectedOut.mul(degradationFactor);
+    }
+
+    const tokenOutMinAmount = expectedOut
+      .mul(inputRatio)
+      .mul(slippageMultiplier)
+      .truncate();
+
+    return {
+      routes,
+      tokenOutMinAmount,
+      tokenInCoinMinimalDenom: quotedSwap.tokenInCurrency.coinMinimalDenom,
+      /** The enforced minimum output, as the target-side currency. */
+      swapMinOut: new CoinPretty(
+        quotedSwap.tokenOutCurrency,
+        tokenOutMinAmount
+      ),
+      /** The total sold-side amount the swap message actually spends (sum of
+       *  the scaled leg inputs), as the sold-side currency. The wallet-balance
+       *  caution row is sized against this. */
+      swapExecutedIn: new CoinPretty(
+        quotedSwap.tokenInCurrency,
+        scaledInput.truncate()
+      ),
+      /** Expected output of the EXECUTED plan (post input-scaling and
+       *  degradation, before the slippage floor), as the target-side
+       *  currency. The estimated-receive display uses this together with
+       *  `swapExecutedIn`, so the estimate matches what the tx submits. */
+      swapExpectedOut: new CoinPretty(
+        quotedSwap.tokenOutCurrency,
+        expectedOut.mul(inputRatio).truncate()
+      ),
+      /** Swap fee charged on the EXECUTED input (sold-side currency): the
+       *  quote's fee amount scaled by the realised input ratio, so the fee
+       *  row describes the executed plan, not the full quote. */
+      swapExecutedFeeIn: zapQuote.quote.tokenInFeeAmount
+        ? new CoinPretty(
+            quotedSwap.tokenInCurrency,
+            new Dec(zapQuote.quote.tokenInFeeAmount).mul(inputRatio).truncate()
+          )
+        : undefined,
+      /** Effective execution price impact: the SQS-quoted impact (computed
+       *  against PRE-withdraw depths) compounded with the own-pool
+       *  post-withdraw degradation. Equals the quoted impact when the route
+       *  avoids the own pool. A direct own-pool route can quote ~1% impact
+       *  while the thinned book degrades the output by far more, so the
+       *  high-cost guard and the value display must use THIS figure. */
+      // Unknown when SQS could not compute the quoted impact: never read
+      // its absence as 0%.
+      swapEffectiveImpact: zapQuote.quote.priceImpactTokenOut
+        ? combineImpactWithDegradation({
+            quotedImpact: zapQuote.quote.priceImpactTokenOut.toDec(),
+            degradation: degradationFactor,
+          })
+        : undefined,
+    };
+  })();
 
   const removeLiquidity = useCallback(
     () =>
@@ -99,5 +493,114 @@ export function useRemoveConcentratedLiquidityConfig(
     ]
   );
 
-  return { config, removeLiquidity };
+  const zapOutLiquidity = useCallback(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        // Failures after broadcasting are surfaced by the global tx-event
+        // toast; failures BEFORE it (preflight: stale quote, dust floors)
+        // have no other user-visible surface, so they are toasted below.
+        // Mirrors the zap-in flow.
+        const rejectPreflight = (message: string) => {
+          displayToast(
+            { titleTranslationKey: "errors.generic", captionElement: message },
+            ToastType.ERROR
+          );
+          reject(message);
+        };
+        let broadcastAttempted = false;
+        try {
+          const liquidity = config.effectiveLiquidity;
+          if (!liquidity) return rejectPreflight("Invalid liquidity");
+          if (!account) return rejectPreflight("No account");
+          // Submit against the debounced swap the quote was computed for, not
+          // the live (possibly mid-drag) one. `swapExecution` is the shared
+          // scaled-routes + min-out plan, also used by the breakdown display.
+          if (!quotedSwap?.needsSwap || !swapExecution)
+            return rejectPreflight("Swap quote not ready");
+
+          const { routes, tokenOutMinAmount, tokenInCoinMinimalDenom } =
+            swapExecution;
+
+          // The swap leg's tokenIn is the conservative LOWER BOUND of the
+          // projected withdrawn amount of the sold side, fixed at sign time.
+          // MsgWithdrawPosition carries no minima, so this lower bound plus
+          // the swap's tokenOutMinAmount are the only slippage guards; the
+          // swap spends from the account balance, so beyond-tolerance drift
+          // can draw on a pre-existing sold-denom balance, covering some or
+          // all of the shortfall instead of guaranteeing a revert (see
+          // prepareZapOutOfConcentratedPositionMsg's doc).
+          const swapInLowerBound = new Dec(quotedSwap.swapInAmount)
+            .mul(slippageMultiplier)
+            .truncate();
+          if (swapInLowerBound.lte(new Int(0)))
+            return rejectPreflight("Swap input too small after slippage");
+          if (tokenOutMinAmount.lte(new Int(0)))
+            return rejectPreflight("Swap output floor rounds to zero");
+
+          const prepared = await prepareZapOutOfConcentratedPositionMsg(
+            transactionContext,
+            position.id,
+            liquidity.toString(),
+            {
+              routes,
+              tokenInCoinMinimalDenom,
+              tokenOutMinAmount: tokenOutMinAmount.toString(),
+            },
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.rawLog);
+              else {
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
+                  .finally(() => resolve());
+              }
+            }
+          );
+          broadcastAttempted = true;
+          await signAndBroadcast(...prepared);
+        } catch (e: unknown) {
+          console.error(e);
+          const message = e instanceof Error ? e.message : String(e);
+          // Broadcast failures already toast via the global tx-event handler.
+          if (!broadcastAttempted) rejectPreflight(message);
+          else reject(message);
+        }
+      }),
+    [
+      config.effectiveLiquidity,
+      account,
+      quotedSwap,
+      swapExecution,
+      slippageMultiplier,
+      transactionContext,
+      signAndBroadcast,
+      poolId,
+      position.id,
+      apiUtils,
+    ]
+  );
+
+  return {
+    config,
+    removeLiquidity,
+    zapOutLiquidity,
+    zapQuote,
+    zapSlippageConfig,
+    zapSlippageSource,
+    zapSlippageLiquidityUnknown,
+    requiredSwap,
+    currentBaseValueFraction,
+    quoteInSync,
+    swapMinOut: swapExecution?.swapMinOut,
+    swapExecutedIn: swapExecution?.swapExecutedIn,
+    swapExpectedOut: swapExecution?.swapExpectedOut,
+    swapExecutedFeeIn: swapExecution?.swapExecutedFeeIn,
+    swapEffectiveImpact: swapExecution?.swapEffectiveImpact,
+    swapImpactUnknown: Boolean(
+      zapQuote.quote &&
+      (zapQuote.quote.priceImpactUnknown || !zapQuote.quote.priceImpactTokenOut)
+    ),
+    zapOutBlockedReason,
+    isPoolLoading,
+  };
 }

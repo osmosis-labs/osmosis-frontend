@@ -1010,6 +1010,85 @@ export async function prepareWithdrawConcentratedLiquidityPositionMsg(
   );
 }
 
+/**
+ * Single-asset "zap-out" of a concentrated liquidity position: a withdraw and a
+ * swap in one atomic transaction (one signature, one fee). The withdraw returns
+ * both sides at the current spot ratio, then one side is swapped into the other
+ * so the user ends with their chosen mix; both messages revert together.
+ *
+ * `MsgWithdrawPosition` carries no token minima, so slippage protection lives
+ * entirely on the swap leg's `tokenOutMinAmount`. The swap leg's
+ * `tokenInAmount` must be the conservative lower bound of the projected
+ * withdrawn amount of the side being sold: it is fixed at sign time and spent
+ * from the account balance, not specifically from the withdrawal's outputs. If
+ * spot drift makes the withdraw deliver less, the tx reverts exactly when the
+ * account's existing sold-denom balance plus the actual withdrawn amount is
+ * below it; a pre-existing balance covers the shortfall instead (and is swapped
+ * at or above `tokenOutMinAmount`).
+ *
+ * @param liquidityAmount Liquidity to withdraw (chain-raw decimal string).
+ * @param swapIn SQS route(s), the token being swapped in (the unwanted side),
+ *   its conservative-lower-bound input amount, and the slippage-adjusted
+ *   minimum out amount (all micro amounts).
+ */
+export async function prepareZapOutOfConcentratedPositionMsg(
+  context: TransactionPreparationContext,
+  positionId: string,
+  liquidityAmount: string,
+  swapIn: {
+    routes: {
+      pools: { id: string; tokenOutDenom: string }[];
+      tokenInAmount: string;
+    }[];
+    tokenInCoinMinimalDenom: string;
+    tokenOutMinAmount: string;
+  },
+  memo: string = "",
+  onFulfill?: (tx: DeliverTxResponse) => void
+) {
+  if (
+    swapIn.routes.length < 1 ||
+    swapIn.routes.some((route) => route.pools.length < 1)
+  ) {
+    throw new Error("Zap-out requires a non-empty swap route");
+  }
+
+  return prepareTransaction(
+    "clZapOutPosition",
+    async () => {
+      const withdrawPositionMsg = await makeWithdrawPositionMsg({
+        liquidityAmount,
+        positionId: BigInt(positionId),
+        sender: context.address,
+      });
+
+      const swapMsg =
+        swapIn.routes.length === 1
+          ? await makeSwapExactAmountInMsg({
+              pools: swapIn.routes[0].pools,
+              tokenIn: {
+                coinMinimalDenom: swapIn.tokenInCoinMinimalDenom,
+                amount: swapIn.routes[0].tokenInAmount,
+              },
+              tokenOutMinAmount: swapIn.tokenOutMinAmount,
+              userOsmoAddress: context.address,
+            })
+          : await makeSplitRoutesSwapExactAmountInMsg({
+              routes: swapIn.routes,
+              tokenIn: { coinMinimalDenom: swapIn.tokenInCoinMinimalDenom },
+              tokenOutMinAmount: swapIn.tokenOutMinAmount,
+              userOsmoAddress: context.address,
+            });
+
+      return [withdrawPositionMsg, swapMsg];
+    },
+    memo,
+    undefined,
+    undefined,
+    onFulfill
+  );
+}
+
 export async function prepareCollectAllPositionsRewardsMsgs(
   context: TransactionPreparationContext,
   positionIdsWithSpreadRewards: string[],
