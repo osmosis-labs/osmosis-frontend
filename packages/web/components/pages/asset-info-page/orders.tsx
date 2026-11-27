@@ -71,11 +71,10 @@ export const AssetOrderHistory = () => {
         <Link
           // Carry the current asset path so the order-history back button
           // returns to this asset, and pre-fill its asset filter with this token.
+          // The back-button label is derived from this path, not sent separately.
           href={`/transactions?tab=orders&asset=${encodeURIComponent(
             asset.coinDenom
-          )}&from=${encodeURIComponent(
-            router.asPath
-          )}&fromLabel=${encodeURIComponent(asset.coinDenom)}`}
+          )}&from=${encodeURIComponent(router.asPath)}`}
           aria-label={t("limitOrders.orderHistory")}
           title={t("limitOrders.orderHistory")}
           className="-my-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-osmoverse-400 transition-colors hover:bg-osmoverse-800 hover:text-osmoverse-200"

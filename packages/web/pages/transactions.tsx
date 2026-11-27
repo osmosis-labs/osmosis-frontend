@@ -67,7 +67,6 @@ const Transactions: React.FC = memo(() => {
 
   const [fromPage] = useQueryState("fromPage");
   const [fromPath] = useQueryState("from");
-  const [fromLabel] = useQueryState("fromLabel");
 
   const { t } = useTranslation();
 
@@ -76,7 +75,12 @@ const Transactions: React.FC = memo(() => {
   // query value cannot turn the back button into an open redirect.
   const back = (() => {
     if (fromPath?.startsWith("/assets/")) {
-      return { href: fromPath, label: fromLabel ?? t("menu.portfolio") };
+      // Derive the label from the trusted path's asset segment, not a
+      // caller-supplied query value, so the link can't set arbitrary text.
+      const symbol = decodeURIComponent(
+        fromPath.slice("/assets/".length).split(/[/?#]/)[0]
+      );
+      return { href: fromPath, label: symbol || t("menu.portfolio") };
     }
     if (fromPage === "swap") {
       return { href: "/", label: t("limitOrders.trade") };
