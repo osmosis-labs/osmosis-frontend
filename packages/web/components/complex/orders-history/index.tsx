@@ -36,6 +36,7 @@ import {
 } from "~/hooks";
 import {
   OrderSortKey,
+  useInvalidateOrderbookOrders,
   useOrderbookClaimableOrders,
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
@@ -185,6 +186,10 @@ export const OrderHistory = ({
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     sort: { keyPath: sortKey, direction: sortDirection },
   });
+
+  // A claim or cancel from the self-hosted modal lands a block later, so refresh
+  // on a 1s/2s/4s schedule rather than once, which usually reads stale.
+  const invalidateOrderbookOrders = useInvalidateOrderbookOrders();
 
   // Scope to one book when asked (the pool page), then to one side when the
   // Buy/Sell filter is set. `bookOrders` drives the empty state; `displayOrders`
@@ -567,7 +572,7 @@ export const OrderHistory = ({
         <OrderModal
           order={internalSelectedOrder}
           onRequestClose={() => setInternalSelectedOrder(undefined)}
-          onRequestRefresh={refetch}
+          onRequestRefresh={invalidateOrderbookOrders}
         />
       )}
     </div>
