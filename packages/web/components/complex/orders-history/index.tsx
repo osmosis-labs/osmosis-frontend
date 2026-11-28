@@ -324,7 +324,7 @@ export const OrderHistory = ({
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => (isMobile ? 60 : 84),
+    estimateSize: () => (isMobile ? 60 : 64),
     paddingEnd: 110,
     overscan: 10,
     scrollMargin,
@@ -669,7 +669,7 @@ const TableGroupHeader = ({
           <div className="flex w-full items-center justify-between pr-4">
             <div className="relative flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="sm:subtitle1 text-h5 font-h5">
+                <span className="subtitle1">
                   {t("limitOrders.orderHistoryHeaders.filled")}
                 </span>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
@@ -715,7 +715,7 @@ const TableGroupHeader = ({
     <tr style={style} className="flex items-center">
       <td colSpan={headers.length + 1} className="!p-0">
         <div className="flex items-center gap-3">
-          <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
+          <span className="subtitle1">
             {group === "pending"
               ? t("limitOrders.orderHistoryHeaders.pending")
               : t("limitOrders.orderHistoryHeaders.past")}
