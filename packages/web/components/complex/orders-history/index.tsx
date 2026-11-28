@@ -10,7 +10,7 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import { useQueryState } from "nuqs";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -73,6 +73,52 @@ const sortKeys: Record<string, OrderSortKey> = {
   orderPlaced: "placedAt",
   status: "lastActivity",
 };
+
+// The direction and asset filters live in the URL so the asset page can deep
+// link here, and so the toggle can be rendered beside the transactions tabs
+// while the table reads the same state.
+const ORDER_SIDES = ["all", "bid", "ask"] as const;
+const sideQueryParser = parseAsStringLiteral(ORDER_SIDES).withDefault("all");
+const ASSET_QUERY = { defaultValue: "", clearOnDefault: true };
+
+/** Buy/Sell/All direction filter, kept in the URL (`?side=`). */
+export function OrderDirectionToggle() {
+  const { t } = useTranslation();
+  const [side, setSide] = useQueryState("side", sideQueryParser);
+  return (
+    <ButtonGroup
+      value={side}
+      onValueChange={(value) => setSide(value as (typeof ORDER_SIDES)[number])}
+    >
+      <ButtonGroupItem value="all" label={t("limitOrders.all")} />
+      <ButtonGroupItem value="bid" label={t("limitOrders.buy")} />
+      <ButtonGroupItem value="ask" label={t("limitOrders.sell")} />
+    </ButtonGroup>
+  );
+}
+
+/**
+ * Asset filter, kept in the URL (`?asset=`). Editing the field drops the asset
+ * page deep link's exact-denom match (`?assetDenom=`) and switches to the typed
+ * base-symbol search.
+ */
+export function OrderAssetSearch({ className }: { className?: string }) {
+  const { t } = useTranslation();
+  const [assetFilter, setAssetFilter] = useQueryState("asset", ASSET_QUERY);
+  const [, setAssetDenomFilter] = useQueryState("assetDenom", ASSET_QUERY);
+  return (
+    <SearchBox
+      className={className}
+      size="small"
+      placeholder={t("limitOrders.filterByAsset")}
+      currentValue={assetFilter}
+      onInput={(value) => {
+        setAssetFilter(value);
+        setAssetDenomFilter("");
+      }}
+    />
+  );
+}
 
 const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
@@ -149,21 +195,13 @@ export const OrderHistory = ({
     // eslint-disable-next-line hooks-compat/set-state-in-effect -- resets the self-hosted selection on a wallet or book change so a stale order is not shown; runs only when those identities change
     setInternalSelectedOrder(undefined);
   }, [selfHosted, address, orderbookAddress]);
-  const [dirFilter, setDirFilter] = useState<"all" | "bid" | "ask">("all");
-  // Backed by the URL (`?asset=`), so the asset page can deep-link here with the
-  // field pre-filled. Hidden and unused when embedded on a single book (below).
-  const [assetFilter, setAssetFilter] = useQueryState("asset", {
-    defaultValue: "",
-    clearOnDefault: true,
-  });
-  // Set only by the asset-page deep link (`?assetDenom=`): the exact
-  // coinMinimalDenom to match on base or quote, so the set matches the asset
-  // page rather than a base-symbol substring. Cleared once the user edits the
-  // field, which switches to the typed base-symbol search.
-  const [assetDenomFilter, setAssetDenomFilter] = useQueryState("assetDenom", {
-    defaultValue: "",
-    clearOnDefault: true,
-  });
+  // The toggle and search that write these are rendered by the toolbar below
+  // (the embedded pool page) or beside the transactions tabs; here we only read
+  // the URL state. `side` is the Buy/Sell filter, `asset` the typed base-symbol
+  // search, and `assetDenom` the asset-page deep link's exact coinMinimalDenom.
+  const [dirFilter] = useQueryState("side", sideQueryParser);
+  const [assetFilter] = useQueryState("asset", ASSET_QUERY);
+  const [assetDenomFilter] = useQueryState("assetDenom", ASSET_QUERY);
 
   // The page shows the details panel from xxxl, like the trade history's. It
   // leaves too little width for every column, so the table takes the layout it
@@ -432,33 +470,15 @@ export const OrderHistory = ({
           : "overflow-x-scroll xl:overflow-visible"
       )}
     >
-      <div className="mb-4 flex items-center gap-3">
-        {title && <h6 className="mr-auto">{title}</h6>}
-        <ButtonGroup
-          value={dirFilter}
-          onValueChange={(value) =>
-            setDirFilter(value as "all" | "bid" | "ask")
-          }
-        >
-          <ButtonGroupItem value="all" label={t("limitOrders.all")} />
-          <ButtonGroupItem value="bid" label={t("limitOrders.buy")} />
-          <ButtonGroupItem value="ask" label={t("limitOrders.sell")} />
-        </ButtonGroup>
-        {!orderbookAddress && (
-          <SearchBox
-            className="ml-auto"
-            size="small"
-            placeholder={t("limitOrders.filterByAsset")}
-            currentValue={assetFilter}
-            onInput={(value) => {
-              setAssetFilter(value);
-              // Editing switches to the typed base-symbol search, so drop the
-              // deep link's exact-denom match.
-              setAssetDenomFilter("");
-            }}
-          />
-        )}
-      </div>
+      {orderbookAddress && (
+        // Embedded on a book's page: show the pair title and the Buy/Sell
+        // toggle. The transactions page renders its own toggle and search
+        // beside the tabs instead, so no toolbar is drawn here for it.
+        <div className="mb-4 flex items-center gap-3">
+          {title && <h6 className="mr-auto">{title}</h6>}
+          <OrderDirectionToggle />
+        </div>
+      )}
       {historyUnavailable && (
         <p className="body2 mb-3 text-osmoverse-300">
           {t("limitOrders.historyTable.historyUnavailable")}
