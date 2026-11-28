@@ -2,7 +2,7 @@ import type { MappedLimitOrder } from "@osmosis-labs/server";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import {
@@ -25,6 +25,11 @@ import {
 } from "~/hooks";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
 import { useWallet } from "~/hooks/use-wallet";
+import type { CallToAction } from "~/stores/nav-bar-store";
+
+// Stable reference: the nav bar clears any previous page's CTAs, and a fresh
+// `[]` each render would re-run the nav-bar effect (reloading the title icon).
+const NO_CTAS: CallToAction[] = [];
 
 const Transactions: React.FC = memo(() => {
   const { transactionsPage, _isInitialized } = useFeatureFlags();
@@ -67,6 +72,9 @@ const Transactions: React.FC = memo(() => {
 
   const [fromPage] = useQueryState("fromPage");
   const [fromPath] = useQueryState("from");
+  // The symbol the asset-page link carries (e.g. "OSMO"), used only as the back
+  // button's label. The href still comes from the trusted path below.
+  const [assetLabel] = useQueryState("asset");
 
   const { t } = useTranslation();
 
@@ -75,12 +83,16 @@ const Transactions: React.FC = memo(() => {
   // query value cannot turn the back button into an open redirect.
   const back = (() => {
     if (fromPath?.startsWith("/assets/")) {
-      // Derive the label from the trusted path's asset segment, not a
-      // caller-supplied query value, so the link can't set arbitrary text.
-      const symbol = decodeURIComponent(
+      // The href must stay the trusted internal path, but the label can show
+      // the human-readable symbol the link carries (the path segment is the
+      // raw denom, e.g. "uosmo"). Fall back to that segment, then Portfolio.
+      const denomSegment = decodeURIComponent(
         fromPath.slice("/assets/".length).split(/[/?#]/)[0]
       );
-      return { href: fromPath, label: symbol || t("menu.portfolio") };
+      return {
+        href: fromPath,
+        label: assetLabel || denomSegment || t("menu.portfolio"),
+      };
     }
     if (fromPage === "swap") {
       return { href: "/", label: t("limitOrders.trade") };
@@ -88,8 +100,10 @@ const Transactions: React.FC = memo(() => {
     return { href: "/portfolio", label: t("menu.portfolio") };
   })();
 
-  useNavBar({
-    title: (
+  // Memoize on the label/href strings so typing in the asset filter (which
+  // re-renders this page) doesn't rebuild the title and reload its icon.
+  const navTitle = useMemo(
+    () => (
       <LinkButton
         className="mr-auto md:invisible"
         icon={
@@ -106,8 +120,10 @@ const Transactions: React.FC = memo(() => {
         href={back.href}
       />
     ),
-    ctas: [],
-  });
+    [back.label, back.href]
+  );
+
+  useNavBar({ title: navTitle, ctas: NO_CTAS });
 
   const {
     open,
