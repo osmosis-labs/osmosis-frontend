@@ -10,17 +10,21 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
+import { OrderModal } from "~/components/complex/orders-history/order-modal";
+import { SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { SortHeader } from "~/components/table/headers/sort";
 import { Tooltip } from "~/components/tooltip";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
+import { ButtonGroup, ButtonGroupItem } from "~/components/ui/button-group";
 import { EntityImage } from "~/components/ui/entity-image";
 import { OsmosisChainInfo } from "~/config/chain";
 import {
@@ -32,6 +36,7 @@ import {
 } from "~/hooks";
 import {
   OrderSortKey,
+  useInvalidateOrderbookOrders,
   useOrderbookClaimableOrders,
   useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
@@ -69,6 +74,77 @@ const sortKeys: Record<string, OrderSortKey> = {
   status: "lastActivity",
 };
 
+// The direction and asset filters live in the URL so the asset page can deep
+// link here, and so the toggle can be rendered beside the transactions tabs
+// while the table reads the same state.
+const ORDER_SIDES = ["all", "bid", "ask"] as const;
+const sideQueryParser = parseAsStringLiteral(ORDER_SIDES).withDefault("all");
+const ASSET_QUERY = { defaultValue: "", clearOnDefault: true };
+
+/** Buy/Sell/All direction filter, kept in the URL (`?side=`). */
+export function OrderDirectionToggle() {
+  const { t } = useTranslation();
+  const [side, setSide] = useQueryState("side", sideQueryParser);
+  return (
+    <ButtonGroup
+      value={side}
+      onValueChange={(value) => setSide(value as (typeof ORDER_SIDES)[number])}
+    >
+      <ButtonGroupItem value="all" label={t("limitOrders.all")} />
+      <ButtonGroupItem value="bid" label={t("limitOrders.buy")} />
+      <ButtonGroupItem value="ask" label={t("limitOrders.sell")} />
+    </ButtonGroup>
+  );
+}
+
+/**
+ * Asset filter, kept in the URL (`?asset=`). Editing the field drops the asset
+ * page deep link's exact-denom match (`?assetDenom=`) and switches to the typed
+ * base-symbol search.
+ */
+export function OrderAssetSearch({ className }: { className?: string }) {
+  const { t } = useTranslation();
+  const [assetFilter, setAssetFilter] = useQueryState("asset", ASSET_QUERY);
+  const [, setAssetDenomFilter] = useQueryState("assetDenom", ASSET_QUERY);
+  return (
+    <SearchBox
+      className={className}
+      size="small"
+      placeholder={t("limitOrders.filterByAsset")}
+      currentValue={assetFilter}
+      onInput={(value) => {
+        setAssetFilter(value);
+        setAssetDenomFilter("");
+      }}
+    />
+  );
+}
+
+/**
+ * Info tooltip for the orders list. Shown beside the "Your orders" title on the
+ * pool page and beside the "Orders" tab on the transactions page, rather than
+ * repeated on every group header.
+ */
+export function OrderHistoryInfoTooltip() {
+  const { t } = useTranslation();
+  return (
+    <GenericDisclaimer
+      title={t("limitOrders.howPayoutsWork")}
+      body={t("limitOrders.payoutNote")}
+    >
+      <div className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
+        <Icon
+          id="question"
+          className="h-3.5 w-3.5 text-wosmongton-200"
+          width={24}
+          height={24}
+          viewBox="0 0 24 24"
+        />
+      </div>
+    </GenericDisclaimer>
+  );
+}
+
 const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 const compactGridClasses = "grid grid-cols-[2fr_1fr_1fr]";
@@ -77,11 +153,18 @@ export const OrderHistory = ({
   selectedOrder,
   onOrderSelect,
   onSelectedOrderChange,
+  orderbookAddress,
+  title,
 }: {
   selectedOrder?: MappedLimitOrder;
-  onOrderSelect: (order: MappedLimitOrder) => void;
+  /** Omit on a page that doesn't own the selection; the list then self-hosts a centered modal. */
+  onOrderSelect?: (order: MappedLimitOrder) => void;
   /** Receives each refetched copy of the selected order. */
-  onSelectedOrderChange: (order: MappedLimitOrder) => void;
+  onSelectedOrderChange?: (order: MappedLimitOrder) => void;
+  /** When set, show only this book's orders (and self-host the detail modal). */
+  orderbookAddress?: string;
+  /** Optional heading shown in the toolbar beside the filter toggle (the pool embed). */
+  title?: string;
 }) => {
   // Opt out of the React Compiler: `useWindowVirtualizer` returns a stable
   // virtualizer whose `getVirtualItems()`/`getTotalSize()` change on scroll, so
@@ -106,10 +189,50 @@ export const OrderHistory = ({
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile, isExtraLargeDesktop } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
+
+  // The transactions page owns the selected order and renders the detail modal
+  // itself. When those props are absent (the orderbook pool page), self-host the
+  // selection in a centered modal. The inline side panel stays off there: the
+  // pool page is too narrow to fit the table and the panel side by side.
+  const selfHosted = !onOrderSelect;
+  const [internalSelectedOrder, setInternalSelectedOrder] =
+    useState<MappedLimitOrder>();
+  const effectiveSelectedOrder = selfHosted
+    ? internalSelectedOrder
+    : selectedOrder;
+  const handleOrderSelect = useCallback(
+    (order: MappedLimitOrder) =>
+      onOrderSelect ? onOrderSelect(order) : setInternalSelectedOrder(order),
+    [onOrderSelect]
+  );
+  const handleSelectedOrderChange = useCallback(
+    (order: MappedLimitOrder) =>
+      onSelectedOrderChange
+        ? onSelectedOrderChange(order)
+        : setInternalSelectedOrder(order),
+    [onSelectedOrderChange]
+  );
+  // Clear the self-hosted selection when the wallet or book changes (including a
+  // disconnect, which empties `address`), so the modal can't reopen a previous
+  // wallet's or book's order. Controlled callers own their own selection.
+  useEffect(() => {
+    if (!selfHosted) return;
+    // eslint-disable-next-line hooks-compat/set-state-in-effect -- resets the self-hosted selection on a wallet or book change so a stale order is not shown; runs only when those identities change
+    setInternalSelectedOrder(undefined);
+  }, [selfHosted, address, orderbookAddress]);
+  // The toggle and search that write these are rendered by the toolbar below
+  // (the embedded pool page) or beside the transactions tabs; here we only read
+  // the URL state. `side` is the Buy/Sell filter, `asset` the typed base-symbol
+  // search, and `assetDenom` the asset-page deep link's exact coinMinimalDenom.
+  const [dirFilter] = useQueryState("side", sideQueryParser);
+  const [assetFilter] = useQueryState("asset", ASSET_QUERY);
+  const [assetDenomFilter] = useQueryState("assetDenom", ASSET_QUERY);
+
   // The page shows the details panel from xxxl, like the trade history's. It
   // leaves too little width for every column, so the table takes the layout it
   // has on xl screens while the panel is open.
-  const isDetailsOpen = isExtraLargeDesktop && !!selectedOrder;
+  const isDetailsOpen =
+    isExtraLargeDesktop && !!effectiveSelectedOrder && !selfHosted;
   const compact = isLargeScreen || isDetailsOpen;
   const [sortKey, setSortKey_] = useState<OrderSortKey>("placedAt");
   // Always sorted, so a click on the sorted column flips its direction instead of clearing it.
@@ -120,6 +243,7 @@ export const OrderHistory = ({
 
   const {
     orders,
+    pagesLoaded,
     historyUnavailable,
     isLoading,
     isError,
@@ -130,27 +254,79 @@ export const OrderHistory = ({
     isRefetching,
   } = useOrderbookOrders({
     userAddress: address ?? "",
-    pageSize: 20,
+    // A single book's orders can be scattered thin across pages (the query
+    // fetches every book and we filter client-side), so page larger when scoped.
+    pageSize: orderbookAddress ? 100 : 20,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     sort: { keyPath: sortKey, direction: sortDirection },
   });
+
+  // A claim or cancel from the self-hosted modal lands a block later, so refresh
+  // on a 1s/2s/4s schedule rather than once, which usually reads stale.
+  const invalidateOrderbookOrders = useInvalidateOrderbookOrders();
+
+  // Scope to one book when asked (the pool page), then to one side when the
+  // Buy/Sell filter is set. `bookOrders` drives the empty state; `displayOrders`
+  // drives the table and the claimable count.
+  const bookOrders = useMemo(
+    () =>
+      orderbookAddress
+        ? orders.filter((o) => o.orderbookAddress === orderbookAddress)
+        : orders,
+    [orders, orderbookAddress]
+  );
+  // The asset filter applies only on the full view; when embedded on a single
+  // book the list is already scoped, so the field is hidden and ignored.
+  const assetQuery = orderbookAddress ? "" : assetFilter.trim().toLowerCase();
+  const assetDenom = orderbookAddress ? "" : assetDenomFilter;
+  const displayOrders = useMemo(() => {
+    const byDirection =
+      dirFilter === "all"
+        ? bookOrders
+        : bookOrders.filter((o) => o.order_direction === dirFilter);
+    // Deep link: match the exact denom on base or quote, like the asset page, so
+    // a USDC link keeps OSMO/USDC orders and an ATOM link excludes stATOM/qATOM.
+    if (assetDenom) {
+      return byDirection.filter(
+        (o) =>
+          o.baseAsset?.coinMinimalDenom === assetDenom ||
+          o.quoteAsset?.coinMinimalDenom === assetDenom
+      );
+    }
+    if (!assetQuery) return byDirection;
+    // Typed text: base-symbol substring. "osmo" matches an OSMO/USDC order.
+    return byDirection.filter((o) =>
+      o.baseAsset?.symbol?.toLowerCase().includes(assetQuery)
+    );
+  }, [bookOrders, dirFilter, assetQuery, assetDenom]);
   // The page keeps the copy of the selected order taken on click. Hand it each
   // refetched copy, so the details show the order's current status and build the
   // claim or cancel from its current fill. An order no longer in the loaded
   // pages keeps its last copy.
   const refetchedSelectedOrder =
-    selectedOrder &&
+    effectiveSelectedOrder &&
     orders.find(
       (o) =>
-        o.order_id === selectedOrder.order_id &&
-        o.orderbookAddress === selectedOrder.orderbookAddress
+        o.order_id === effectiveSelectedOrder.order_id &&
+        o.orderbookAddress === effectiveSelectedOrder.orderbookAddress
     );
   useEffect(() => {
-    if (refetchedSelectedOrder && refetchedSelectedOrder !== selectedOrder) {
-      onSelectedOrderChange(refetchedSelectedOrder);
+    if (
+      refetchedSelectedOrder &&
+      refetchedSelectedOrder !== effectiveSelectedOrder
+    ) {
+      // eslint-disable-next-line hooks-compat/set-state-in-effect -- mirrors the refetched copy of the selected order into state so the open detail modal tracks its latest status; the inequality guard above stops a render loop
+      handleSelectedOrderChange(refetchedSelectedOrder);
     }
-  }, [refetchedSelectedOrder, selectedOrder, onSelectedOrderChange]);
-  const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
+  }, [
+    refetchedSelectedOrder,
+    effectiveSelectedOrder,
+    handleSelectedOrderChange,
+  ]);
+  const groupedOrders = useMemo(
+    () => groupOrdersByStatus(displayOrders),
+    [displayOrders]
+  );
   const groups = useMemo(
     () =>
       Object.keys(groupedOrders).filter(
@@ -173,29 +349,47 @@ export const OrderHistory = ({
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => (isMobile ? 60 : 84),
+    // Group-header rows (string entries) are short; data rows are taller. A
+    // single height for both left big gaps around the "Pending"/"Past" headers.
+    estimateSize: (index) => {
+      if (isMobile) return 60;
+      return typeof rows[index] === "string" ? 48 : 80;
+    },
     paddingEnd: 110,
     overscan: 10,
     scrollMargin,
     paddingStart: 45,
   });
   const filledOrdersInDisplay = useMemo(() => {
-    return orders.filter((o) => o.status === "filled");
-  }, [orders]);
+    return displayOrders.filter((o) => o.status === "filled");
+  }, [displayOrders]);
 
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
       userAddress: address ?? "",
       disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
       refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+      orderbookAddress,
+      orderDirection: dirFilter === "all" ? undefined : dirFilter,
+      // Scope Claim All to the visible set: the deep link's exact denom when set,
+      // otherwise the typed base-symbol substring.
+      baseSymbol: assetDenom ? undefined : assetQuery || undefined,
+      assetDenom: assetDenom || undefined,
     });
 
+  // The in-flight flag lives here, not in the group header, because a filter
+  // change can unmount the header (empty list) and would otherwise reset it,
+  // letting a second Claim All start while the first is still pending.
+  const [isClaimingAll, setIsClaimingAll] = useState(false);
   const claimOrders = useCallback(async () => {
+    setIsClaimingAll(true);
     try {
       await claimAllOrders();
       await refetch();
     } catch {
       // Intentionally swallowed: this handler previously only logged analytics.
+    } finally {
+      setIsClaimingAll(false);
     }
   }, [claimAllOrders, refetch]);
 
@@ -238,7 +432,7 @@ export const OrderHistory = ({
     );
   }
 
-  if (orders.length === 0 && !isLoading && isError) {
+  if (bookOrders.length === 0 && !isLoading && isError) {
     return (
       <div className="flex flex-col items-center justify-center gap-6">
         <h6>{t("limitOrders.historyTable.errorState.title")}</h6>
@@ -249,22 +443,48 @@ export const OrderHistory = ({
     );
   }
 
-  if (orders.length === 0 && !isLoading) {
+  // Only a definitive empty state once pagination is exhausted. While more
+  // pages may hold this book's orders, fall through so the table renders the
+  // pagination sentinel and keeps loading, instead of a premature "no orders".
+  if (
+    bookOrders.length === 0 &&
+    !isLoading &&
+    !hasNextPage &&
+    !isFetchingNextPage
+  ) {
     return (
       <div className="flex flex-col items-center justify-center gap-6">
+        {historyUnavailable && (
+          <p className="body2 text-center text-osmoverse-300">
+            {t("limitOrders.historyTable.historyUnavailable")}
+          </p>
+        )}
         <Image
           src="/images/ion-thumbs-up.svg"
           alt="ion thumbs up"
           width={120}
           height={80}
         />
-        <h6>{t("limitOrders.historyTable.emptyState.title")}</h6>
-        <p className="body2 inline-flex items-center gap-1 text-osmoverse-300">
-          {t("limitOrders.historyTable.emptyState.subtitle")}
-          <Link href={"/"} className="text-wosmongton-300">
-            {t("limitOrders.startTrading")}
-          </Link>
-        </p>
+        {orderbookAddress ? (
+          // On a book's own page the trade widget is right here, so name the
+          // pair and keep the user on the page instead of linking away to "/".
+          <>
+            <h6>{t("limitOrders.historyTable.emptyState.bookTitle")}</h6>
+            <p className="body2 text-osmoverse-300">
+              {t("pool.orderbookPool.noOrdersDesc")}
+            </p>
+          </>
+        ) : (
+          <>
+            <h6>{t("limitOrders.historyTable.emptyState.title")}</h6>
+            <p className="body2 inline-flex items-center gap-1 text-osmoverse-300">
+              {t("limitOrders.historyTable.emptyState.subtitle")}
+              <Link href={"/"} className="text-wosmongton-300">
+                {t("limitOrders.startTrading")}
+              </Link>
+            </p>
+          </>
+        )}
       </div>
     );
   }
@@ -280,6 +500,20 @@ export const OrderHistory = ({
           : "overflow-x-scroll xl:overflow-visible"
       )}
     >
+      {orderbookAddress && (
+        // Embedded on a book's page: show the pair title and the Buy/Sell
+        // toggle. The transactions page renders its own toggle and search
+        // beside the tabs instead, so no toolbar is drawn here for it.
+        <div className="mb-4 flex items-center gap-3">
+          {title && (
+            <div className="mr-auto flex items-center gap-2">
+              <h6>{title}</h6>
+              <OrderHistoryInfoTooltip />
+            </div>
+          )}
+          <OrderDirectionToggle />
+        </div>
+      )}
       {historyUnavailable && (
         <p className="body2 mb-3 text-osmoverse-300">
           {t("limitOrders.historyTable.historyUnavailable")}
@@ -350,6 +584,20 @@ export const OrderHistory = ({
                 <Spinner className="!h-10 !w-10" />
               </td>
             </tr>
+          ) : rows.length === 0 ? (
+            <tr className="flex items-center justify-center py-10">
+              <td colSpan={headers.length + 1} className="!p-0">
+                {hasNextPage || isFetchingNextPage ? (
+                  // More pages may still hold this book's orders; the sentinel
+                  // below keeps fetching, so show progress, not "no orders".
+                  <Spinner className="!h-10 !w-10" />
+                ) : (
+                  <p className="body2 text-osmoverse-300">
+                    {t("limitOrders.noMatchingOrders")}
+                  </p>
+                )}
+              </td>
+            </tr>
           ) : (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index];
@@ -376,6 +624,7 @@ export const OrderHistory = ({
                     style={style}
                     filledOrdersCount={filledOrdersCount}
                     claimOrders={claimOrders}
+                    claiming={isClaimingAll}
                   />
                 );
               }
@@ -390,12 +639,13 @@ export const OrderHistory = ({
                   order={order}
                   style={style}
                   refetch={refetch}
-                  onOrderSelect={onOrderSelect}
+                  onOrderSelect={handleOrderSelect}
                   forceCompact={isDetailsOpen}
                   isSelected={
                     isDetailsOpen &&
-                    selectedOrder.order_id === order.order_id &&
-                    selectedOrder.orderbookAddress === order.orderbookAddress
+                    effectiveSelectedOrder.order_id === order.order_id &&
+                    effectiveSelectedOrder.orderbookAddress ===
+                      order.orderbookAddress
                   }
                 />
               );
@@ -404,12 +654,25 @@ export const OrderHistory = ({
         </tbody>
       </table>
       <Intersection
+        // Remount per loaded page so a fresh observer reports its state again.
+        // A still-visible sentinel then keeps paging until the view has orders
+        // or the pages run out, which plain visibility transitions miss once the
+        // sentinel stops moving. The key only advances on a successful page, so
+        // a failed fetch can't loop; the refetch poll recovers it.
+        key={pagesLoaded}
         onVisible={() => {
           if (hasNextPage && !isFetchingNextPage && !isLoading) {
             fetchNextPage();
           }
         }}
       />
+      {selfHosted && (
+        <OrderModal
+          order={internalSelectedOrder}
+          onRequestClose={() => setInternalSelectedOrder(undefined)}
+          onRequestRefresh={invalidateOrderbookOrders}
+        />
+      )}
     </div>
   );
 };
@@ -419,20 +682,15 @@ const TableGroupHeader = ({
   style,
   filledOrdersCount,
   claimOrders,
+  claiming,
 }: {
   group: string;
   style: object;
   filledOrdersCount: number;
   claimOrders: () => Promise<void>;
+  claiming: boolean;
 }) => {
   const { t } = useTranslation();
-  const [claiming, setClaiming] = useState(false);
-
-  const claim = useCallback(async () => {
-    setClaiming(true);
-    await claimOrders();
-    setClaiming(false);
-  }, [claimOrders]);
 
   if (group === "filled") {
     return (
@@ -446,7 +704,7 @@ const TableGroupHeader = ({
           <div className="flex w-full items-center justify-between pr-4">
             <div className="relative flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="sm:subtitle1 text-h5 font-h5">
+                <span className="subtitle1">
                   {t("limitOrders.orderHistoryHeaders.filled")}
                 </span>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
@@ -459,10 +717,10 @@ const TableGroupHeader = ({
                 title={t("limitOrders.whatIsOrderClaim.title")}
                 body={t("limitOrders.whatIsOrderClaim.description")}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
                   <Icon
                     id="question"
-                    className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
+                    className="h-3.5 w-3.5 text-wosmongton-200"
                     width={24}
                     height={24}
                     viewBox="0 0 24 24"
@@ -474,8 +732,8 @@ const TableGroupHeader = ({
         </td>
         <td className="flex items-center justify-end md:!p-0">
           <button
-            className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
-            onClick={claim}
+            className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-2 px-4 disabled:opacity-50"
+            onClick={claimOrders}
             disabled={claiming}
           >
             {claiming && <Spinner className="mr-2 !h-2 !w-2 md:hidden" />}
@@ -491,27 +749,11 @@ const TableGroupHeader = ({
   return (
     <tr style={style} className="flex items-center">
       <td colSpan={headers.length + 1} className="!p-0">
-        <div className="flex items-center gap-3">
-          <span className="sm:subtitle1 block py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
-            {group === "pending"
-              ? t("limitOrders.orderHistoryHeaders.pending")
-              : t("limitOrders.orderHistoryHeaders.past")}
-          </span>
-          <GenericDisclaimer
-            title={t("limitOrders.howPayoutsWork")}
-            body={t("limitOrders.payoutNote")}
-          >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
-              <Icon
-                id="question"
-                className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-              />
-            </div>
-          </GenericDisclaimer>
-        </div>
+        <span className="subtitle1">
+          {group === "pending"
+            ? t("limitOrders.orderHistoryHeaders.pending")
+            : t("limitOrders.orderHistoryHeaders.past")}
+        </span>
       </td>
     </tr>
   );

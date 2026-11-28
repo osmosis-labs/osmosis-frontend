@@ -557,11 +557,7 @@
       "spread": "價差",
       "makerFee": "掛單手續費",
       "yourOrders": "我的訂單",
-      "noOrders": "此交易對尚無訂單",
       "noOrdersDesc": "請下您的第一筆限價訂單。",
-      "filterAll": "全部",
-      "filterBuy": "買入",
-      "filterSell": "賣出",
       "depthPrice": "價格",
       "depthRaw": "原始",
       "depthNoAsks": "無賣單",
@@ -1345,7 +1341,8 @@
         "title": "最近沒有訂單",
         "subtitle": "您的交易訂單歷史記錄將顯示在這裡。",
         "connectTitle": "連接您的錢包以查看您的訂單歷史記錄",
-        "connectSubtitle": "您過去在 Osmosis 上的限價訂單將顯示在此。"
+        "connectSubtitle": "您過去在 Osmosis 上的限價訂單將顯示在此。",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "無法載入您的訂單",
@@ -1474,7 +1471,10 @@
     "howPayoutsWork": "付款如何運作？",
     "payoutNote": "訂單幾乎全部成交後，已成交的金額通常會自動支付到您的錢包，有時會分多次支付。在此之前，這部分金額會留在訂單中。取消時會支付尚未支付的已成交金額，並退回未成交的金額。如果訂單顯示「領取」，表示部分已成交金額尚未支付。",
     "buyLimitOrder": "限價買單",
-    "sellLimitOrder": "限價賣單"
+    "sellLimitOrder": "限價賣單",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

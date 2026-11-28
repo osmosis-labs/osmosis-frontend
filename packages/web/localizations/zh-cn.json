@@ -557,11 +557,7 @@
       "spread": "价差",
       "makerFee": "挂单手续费",
       "yourOrders": "我的订单",
-      "noOrders": "该交易对暂无订单",
       "noOrdersDesc": "请下您的第一笔限价订单。",
-      "filterAll": "全部",
-      "filterBuy": "买入",
-      "filterSell": "卖出",
       "depthPrice": "价格",
       "depthRaw": "原始",
       "depthNoAsks": "无卖单",
@@ -1345,7 +1341,8 @@
         "title": "暂无近期订单",
         "subtitle": "您的交易订单历史记录将显示在这里。",
         "connectTitle": "连接您的钱包以查看您的订单历史记录",
-        "connectSubtitle": "您过去在 Osmosis 上的限价订单将显示在这里。"
+        "connectSubtitle": "您过去在 Osmosis 上的限价订单将显示在这里。",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "无法加载您的订单",
@@ -1474,7 +1471,10 @@
     "howPayoutsWork": "付款如何进行？",
     "payoutNote": "订单几乎全部成交后，已成交的金额通常会自动支付到您的钱包，有时会分多次支付。在此之前，这部分金额会留在订单中。取消时会支付尚未支付的已成交金额，并退回未成交的金额。如果订单显示“领取”，说明部分已成交金额尚未支付。",
     "buyLimitOrder": "限价买单",
-    "sellLimitOrder": "限价卖单"
+    "sellLimitOrder": "限价卖单",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

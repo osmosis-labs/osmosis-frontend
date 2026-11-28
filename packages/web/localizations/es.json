@@ -557,11 +557,7 @@
       "spread": "Diferencial",
       "makerFee": "Tarifa del creador",
       "yourOrders": "Tus órdenes",
-      "noOrders": "No hay órdenes para este par",
       "noOrdersDesc": "Coloca tu primera orden limitada.",
-      "filterAll": "Todos",
-      "filterBuy": "Comprar",
-      "filterSell": "Vender",
       "depthPrice": "Precio",
       "depthRaw": "Sin agrupar",
       "depthNoAsks": "Sin ventas",
@@ -1345,7 +1341,8 @@
         "title": "No hay pedidos recientes",
         "subtitle": "Su historial de órdenes comerciales aparecerá aquí.",
         "connectTitle": "Conecte su billetera para ver su historial de pedidos",
-        "connectSubtitle": "Tus órdenes límite anteriores en Osmosis aparecerán aquí."
+        "connectSubtitle": "Tus órdenes límite anteriores en Osmosis aparecerán aquí.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "No se pudieron cargar tus órdenes",
@@ -1474,7 +1471,10 @@
     "howPayoutsWork": "¿Cómo funcionan los pagos?",
     "payoutNote": "Cuando una orden está casi totalmente ejecutada, el importe ejecutado normalmente se paga en su billetera de forma automática, a veces en más de un pago. Hasta entonces, permanece en la orden. Al cancelar, se paga lo ejecutado que aún no se haya pagado y se devuelve el importe no ejecutado. Si una orden muestra «Reclamar», parte del importe ejecutado aún no se ha pagado.",
     "buyLimitOrder": "Orden límite de compra",
-    "sellLimitOrder": "Orden límite de venta"
+    "sellLimitOrder": "Orden límite de venta",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

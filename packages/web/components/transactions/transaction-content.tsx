@@ -7,7 +7,12 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import { ClientOnly } from "~/components/client-only";
-import { OrderHistory } from "~/components/complex/orders-history";
+import {
+  OrderAssetSearch,
+  OrderDirectionToggle,
+  OrderHistory,
+  OrderHistoryInfoTooltip,
+} from "~/components/complex/orders-history";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
 import {
@@ -17,7 +22,7 @@ import {
 import { TransactionOptionsMenu } from "~/components/transactions/transaction-options-menu";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { HistoryTransaction } from "~/hooks/use-transaction-history";
 
 const TX_PAGE_TABS = ["history", "orders"] as const;
@@ -91,6 +96,37 @@ export const TransactionContent = ({
   const showNoMatches =
     hasWallet && isFiltering && !isLoading && filteredTransactions.length === 0;
 
+  // width === 0 during SSR; default to the wide layout to avoid a flash of the
+  // compact (stacked) layout on hydration, matching TransactionFilters.
+  const { width } = useWindowSize();
+  const isWide = width === 0 || width >= Breakpoint.xl;
+
+  const tabList = (
+    <TabList className="mr-auto flex items-center gap-8">
+      {TX_PAGE_TABS.map((defaultTab) => (
+        <div key={defaultTab} className="flex items-center gap-2">
+          <Tab>
+            <span
+              className={classNames(
+                {
+                  "text-osmoverse-500": defaultTab !== tab,
+                },
+                "text-h5 font-h5 sm:text-h6"
+              )}
+            >
+              {t(
+                defaultTab === "history"
+                  ? "transactions.history"
+                  : "transactions.orders"
+              )}
+            </span>
+          </Tab>
+          {defaultTab === "orders" && <OrderHistoryInfoTooltip />}
+        </div>
+      ))}
+    </TabList>
+  );
+
   return (
     <ClientOnly className="w-full">
       <div className="flex w-full flex-col pb-16">
@@ -111,31 +147,23 @@ export const TransactionContent = ({
           selectedIndex={TX_PAGE_TABS.indexOf(tab)}
           onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
         >
-          <TransactionFilters
-            showControls={tab === "history" && showControls}
-            heading={
-              <TabList className="mr-auto flex items-center gap-8">
-                {TX_PAGE_TABS.map((defaultTab) => (
-                  <Tab key={defaultTab}>
-                    <span
-                      className={classNames(
-                        {
-                          "text-osmoverse-500": defaultTab !== tab,
-                        },
-                        "text-h5 font-h5 sm:text-h6"
-                      )}
-                    >
-                      {t(
-                        defaultTab === "history"
-                          ? "transactions.history"
-                          : "transactions.orders"
-                      )}
-                    </span>
-                  </Tab>
-                ))}
-              </TabList>
-            }
-          />
+          {tab === "orders" ? (
+            // Match the History tab: controls share the tabs' row, anchored
+            // right, with the search left of the Buy/Sell toggle. The search
+            // drops to its own full-width row when the screen is narrow.
+            <div className="flex w-full flex-col gap-3">
+              <div className="flex w-full items-center gap-5">
+                {tabList}
+                {isWalletConnected && isWide && <OrderAssetSearch />}
+                {isWalletConnected && <OrderDirectionToggle />}
+              </div>
+              {isWalletConnected && !isWide && (
+                <OrderAssetSearch className="!w-full" />
+              )}
+            </div>
+          ) : (
+            <TransactionFilters heading={tabList} showControls={showControls} />
+          )}
           <TabPanels>
             <TabPanel>
               <>

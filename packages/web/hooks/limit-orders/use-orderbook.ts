@@ -424,6 +424,8 @@ export const useOrderbookOrders = ({
 
   return {
     orders: allOrders,
+    /** Count of loaded pages; advances only on a successful fetch, so callers can key a fresh pagination observer per page. */
+    pagesLoaded: orders?.pages.length ?? 0,
     /** True when the closed orders couldn't be loaded, so `orders` holds only open orders. */
     historyUnavailable,
     isLoading,
@@ -538,12 +540,21 @@ export const useOrderbookClaimableOrders = ({
   disabled = false,
   refetchInterval = 5000,
   orderbookAddress,
+  orderDirection,
+  baseSymbol,
+  assetDenom,
 }: {
   userAddress: string;
   disabled?: boolean;
   refetchInterval?: number;
   /** Limits claiming to one orderbook, e.g. on that pool's own page. */
   orderbookAddress?: string;
+  /** Limits claiming to one side, e.g. when the Buy/Sell filter is set. */
+  orderDirection?: "bid" | "ask";
+  /** Limits claiming to orders whose base asset symbol matches the typed filter. */
+  baseSymbol?: string;
+  /** Limits claiming to orders with this exact coinMinimalDenom on base or quote, for the asset deep link. */
+  assetDenom?: string;
 }) => {
   const { orderbooks } = useOrderbooks();
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
@@ -556,11 +567,39 @@ export const useOrderbookClaimableOrders = ({
     refetchInterval,
   });
 
+  // Claim only the orders in scope: one book when `orderbookAddress` is set, one
+  // side when `orderDirection` is set, the typed base symbol when `baseSymbol`
+  // is set, or the exact base-or-quote denom when `assetDenom` is set (the asset
+  // deep link). The count and the batch both follow, so Claim All matches the
+  // visible list.
+  //
+  // Known limit: on the SQS path, `useClaimableOrdersQuery` loads only the first
+  // page of 100 filled orders and does not paginate, so these scopes narrow that
+  // first page, not the full claimable set. A wallet with more than 100 filled
+  // claimable orders could see a scoped Claim All miss orders past the first
+  // page. This predates the asset filter (the direction scope already shares it);
+  // the real fix is paging the claimable query or scoping it server-side, tracked
+  // separately.
+  const query = baseSymbol?.trim().toLowerCase();
+  const scopedOrders = useMemo(
+    () =>
+      (orders ?? []).filter(
+        (o) =>
+          (!orderbookAddress || o.orderbookAddress === orderbookAddress) &&
+          (!orderDirection || o.order_direction === orderDirection) &&
+          (!query || !!o.baseAsset?.symbol?.toLowerCase().includes(query)) &&
+          (!assetDenom ||
+            o.baseAsset?.coinMinimalDenom === assetDenom ||
+            o.quoteAsset?.coinMinimalDenom === assetDenom)
+      ),
+    [orders, orderbookAddress, orderDirection, query, assetDenom]
+  );
+
   const claimAllOrders = useCallback(async () => {
-    if (!account || !orders) return;
+    if (!account || scopedOrders.length === 0) return;
     const msgs = addresses
       .map((contractAddress) => {
-        const ordersForAddress = orders.filter(
+        const ordersForAddress = scopedOrders.filter(
           (o) => o.orderbookAddress === contractAddress
         );
         if (ordersForAddress.length === 0) return;
@@ -590,11 +629,11 @@ export const useOrderbookClaimableOrders = ({
       ).then((prepared) => signAndBroadcast(...prepared));
       // await refetch();
     }
-  }, [account, orders, addresses, transactionContext, signAndBroadcast]);
+  }, [account, scopedOrders, addresses, transactionContext, signAndBroadcast]);
 
   return {
-    orders: orders ?? [],
-    count: orders?.length ?? 0,
+    orders: scopedOrders,
+    count: scopedOrders.length,
     isLoading,
     claimAllOrders,
   };

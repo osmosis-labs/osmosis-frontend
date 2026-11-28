@@ -557,11 +557,7 @@
       "spread": "Spread",
       "makerFee": "Opłata makera",
       "yourOrders": "Twoje zlecenia",
-      "noOrders": "Brak zleceń dla tej pary",
       "noOrdersDesc": "Złóż swoje pierwsze zlecenie z limitem.",
-      "filterAll": "Wszystkie",
-      "filterBuy": "Kupno",
-      "filterSell": "Sprzedaż",
       "depthPrice": "Cena",
       "depthRaw": "Surowe",
       "depthNoAsks": "Brak ofert sprzedaży",
@@ -1345,7 +1341,8 @@
         "title": "Brak ostatnich zamówień",
         "subtitle": "Tutaj pojawi się historia Twoich zleceń handlowych.",
         "connectTitle": "Podłącz swój portfel, aby zobaczyć historię swoich zamówień",
-        "connectSubtitle": "Tutaj pojawią się Twoje wcześniejsze zamówienia z limitem na Osmozie."
+        "connectSubtitle": "Tutaj pojawią się Twoje wcześniejsze zamówienia z limitem na Osmozie.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Nie udało się wczytać Twoich zleceń",
@@ -1474,7 +1471,10 @@
     "howPayoutsWork": "Jak działają wypłaty?",
     "payoutNote": "Gdy zlecenie zostanie prawie w całości zrealizowane, zrealizowana kwota jest zwykle wypłacana automatycznie na Twój portfel, czasem w kilku wypłatach. Do tego czasu pozostaje w zleceniu. Anulowanie wypłaca zrealizowaną kwotę, która nie została jeszcze wypłacona, i zwraca niezrealizowaną kwotę. Jeśli przy zleceniu widać „Odbierz”, część zrealizowanej kwoty nie została jeszcze wypłacona.",
     "buyLimitOrder": "Zlecenie kupna z limitem",
-    "sellLimitOrder": "Zlecenie sprzedaży z limitem"
+    "sellLimitOrder": "Zlecenie sprzedaży z limitem",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

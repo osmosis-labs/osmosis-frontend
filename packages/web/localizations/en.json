@@ -557,11 +557,7 @@
       "spread": "Spread",
       "makerFee": "Maker fee",
       "yourOrders": "Your orders",
-      "noOrders": "No orders for this pair",
       "noOrdersDesc": "Place your first limit order.",
-      "filterAll": "All",
-      "filterBuy": "Buy",
-      "filterSell": "Sell",
       "depthPrice": "Price",
       "depthRaw": "Raw",
       "depthNoAsks": "No asks",
@@ -1345,7 +1341,8 @@
         "title": "No recent orders",
         "subtitle": "Your trade order history will appear here.",
         "connectTitle": "Connect your wallet to see your order history",
-        "connectSubtitle": "Your past limit orders on Osmosis will appear here."
+        "connectSubtitle": "Your past limit orders on Osmosis will appear here.",
+        "bookTitle": "No orders for this pair"
       },
       "errorState": {
         "title": "Couldn't load your orders",
@@ -1474,7 +1471,10 @@
     "howPayoutsWork": "How do payouts work?",
     "payoutNote": "Once an order is almost fully filled, the filled amount is usually paid into your wallet automatically, sometimes in more than one payout. Until then, it stays in the order. Cancelling pays out anything filled that hasn't been paid yet and returns the unfilled amount. If an order shows Claim, part of the filled amount hasn't been paid yet.",
     "buyLimitOrder": "Buy Limit Order",
-    "sellLimitOrder": "Sell Limit Order"
+    "sellLimitOrder": "Sell Limit Order",
+    "all": "All",
+    "noMatchingOrders": "No orders match this filter",
+    "filterByAsset": "Filter by asset"
   },
   "tradeDetails": {
     "priceImpact": {

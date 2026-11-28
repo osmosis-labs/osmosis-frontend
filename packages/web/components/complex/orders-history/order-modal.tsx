@@ -28,30 +28,36 @@ import { getLogoURIs } from "~/utils/logo-uri";
 interface OrderModalProps {
   order?: MappedLimitOrder;
   onRequestClose: () => void;
+  /** Called after a successful claim or cancel, to refresh the orders list. */
+  onRequestRefresh?: () => void;
 }
 
-export const OrderModal = memo(({ order, onRequestClose }: OrderModalProps) => {
-  return (
-    <ModalBase
-      isOpen={!!order}
-      onRequestClose={onRequestClose}
-      className="!px-0 !pb-0 !pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
-    >
-      <OrderDetails
-        key={order && `${order.orderbookAddress}-${order.order_id}`}
-        order={order}
-        isModal={true}
+export const OrderModal = memo(
+  ({ order, onRequestClose, onRequestRefresh }: OrderModalProps) => {
+    return (
+      <ModalBase
+        isOpen={!!order}
         onRequestClose={onRequestClose}
-      />
-    </ModalBase>
-  );
-});
+        className="!px-0 !pb-0 !pt-2 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
+      >
+        <OrderDetails
+          key={order && `${order.orderbookAddress}-${order.order_id}`}
+          order={order}
+          isModal={true}
+          onRequestClose={onRequestClose}
+          onRequestRefresh={onRequestRefresh}
+        />
+      </ModalBase>
+    );
+  }
+);
 
 /** Shows the order's details beside the table on large screens, like the trade history's slideover. */
 export const OrderDetailsSlideover = ({
   order,
   open,
   onRequestClose,
+  onRequestRefresh,
   afterLeave,
 }: OrderModalProps & {
   open: boolean;
@@ -77,6 +83,7 @@ export const OrderDetailsSlideover = ({
         order={order}
         isModal={false}
         onRequestClose={onRequestClose}
+        onRequestRefresh={onRequestRefresh}
       />
     </Transition>
   );
@@ -86,12 +93,14 @@ interface OrderDetailsProps {
   order?: MappedLimitOrder;
   isModal: boolean;
   onRequestClose: () => void;
+  onRequestRefresh?: () => void;
 }
 
 const OrderDetails = ({
   order,
   isModal,
   onRequestClose,
+  onRequestRefresh,
 }: OrderDetailsProps) => {
   const { wallet: account, signAndBroadcast, transactionContext } = useWallet();
   const [broadcasting, setBroadcasting] = useState(false);
@@ -268,13 +277,22 @@ const OrderDetails = ({
         msgs,
         undefined
       ).then((prepared) => signAndBroadcast(...prepared));
-      // await refetch();
+      // Refresh so the list drops the just-cancelled/claimed order instead of
+      // showing it as Open until the next poll.
+      onRequestRefresh?.();
       if (isShown.current) onRequestClose();
     } catch (error) {
       console.error(error);
       setBroadcasting(false);
     }
-  }, [order, account, transactionContext, onRequestClose, signAndBroadcast]);
+  }, [
+    order,
+    account,
+    transactionContext,
+    onRequestClose,
+    onRequestRefresh,
+    signAndBroadcast,
+  ]);
 
   const buttonText = useMemo(() => {
     if (
