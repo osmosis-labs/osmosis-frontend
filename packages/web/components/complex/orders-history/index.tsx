@@ -120,6 +120,31 @@ export function OrderAssetSearch({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Info tooltip for the orders list. Shown beside the "Your orders" title on the
+ * pool page and beside the "Orders" tab on the transactions page, rather than
+ * repeated on every group header.
+ */
+export function OrderHistoryInfoTooltip() {
+  const { t } = useTranslation();
+  return (
+    <GenericDisclaimer
+      title={t("limitOrders.howPayoutsWork")}
+      body={t("limitOrders.payoutNote")}
+    >
+      <div className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
+        <Icon
+          id="question"
+          className="h-3.5 w-3.5 text-wosmongton-200"
+          width={24}
+          height={24}
+          viewBox="0 0 24 24"
+        />
+      </div>
+    </GenericDisclaimer>
+  );
+}
+
 const gridClasses =
   "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 const compactGridClasses = "grid grid-cols-[2fr_1fr_1fr]";
@@ -324,7 +349,12 @@ export const OrderHistory = ({
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => (isMobile ? 60 : 84),
+    // Group-header rows (string entries) are short; data rows are taller. A
+    // single height for both left big gaps around the "Pending"/"Past" headers.
+    estimateSize: (index) => {
+      if (isMobile) return 60;
+      return typeof rows[index] === "string" ? 48 : 80;
+    },
     paddingEnd: 110,
     overscan: 10,
     scrollMargin,
@@ -475,7 +505,12 @@ export const OrderHistory = ({
         // toggle. The transactions page renders its own toggle and search
         // beside the tabs instead, so no toolbar is drawn here for it.
         <div className="mb-4 flex items-center gap-3">
-          {title && <h6 className="mr-auto">{title}</h6>}
+          {title && (
+            <div className="mr-auto flex items-center gap-2">
+              <h6>{title}</h6>
+              <OrderHistoryInfoTooltip />
+            </div>
+          )}
           <OrderDirectionToggle />
         </div>
       )}
@@ -697,7 +732,7 @@ const TableGroupHeader = ({
         </td>
         <td className="flex items-center justify-end md:!p-0">
           <button
-            className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
+            className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-2 px-4 disabled:opacity-50"
             onClick={claimOrders}
             disabled={claiming}
           >
@@ -714,27 +749,11 @@ const TableGroupHeader = ({
   return (
     <tr style={style} className="flex items-center">
       <td colSpan={headers.length + 1} className="!p-0">
-        <div className="flex items-center gap-3">
-          <span className="subtitle1">
-            {group === "pending"
-              ? t("limitOrders.orderHistoryHeaders.pending")
-              : t("limitOrders.orderHistoryHeaders.past")}
-          </span>
-          <GenericDisclaimer
-            title={t("limitOrders.howPayoutsWork")}
-            body={t("limitOrders.payoutNote")}
-          >
-            <div className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
-              <Icon
-                id="question"
-                className="h-3.5 w-3.5 text-wosmongton-200"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-              />
-            </div>
-          </GenericDisclaimer>
-        </div>
+        <span className="subtitle1">
+          {group === "pending"
+            ? t("limitOrders.orderHistoryHeaders.pending")
+            : t("limitOrders.orderHistoryHeaders.past")}
+        </span>
       </td>
     </tr>
   );

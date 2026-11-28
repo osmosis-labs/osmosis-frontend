@@ -11,6 +11,7 @@ import {
   OrderAssetSearch,
   OrderDirectionToggle,
   OrderHistory,
+  OrderHistoryInfoTooltip,
 } from "~/components/complex/orders-history";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
@@ -103,22 +104,25 @@ export const TransactionContent = ({
   const tabList = (
     <TabList className="mr-auto flex items-center gap-8">
       {TX_PAGE_TABS.map((defaultTab) => (
-        <Tab key={defaultTab}>
-          <span
-            className={classNames(
-              {
-                "text-osmoverse-500": defaultTab !== tab,
-              },
-              "text-h5 font-h5 sm:text-h6"
-            )}
-          >
-            {t(
-              defaultTab === "history"
-                ? "transactions.history"
-                : "transactions.orders"
-            )}
-          </span>
-        </Tab>
+        <div key={defaultTab} className="flex items-center gap-2">
+          <Tab>
+            <span
+              className={classNames(
+                {
+                  "text-osmoverse-500": defaultTab !== tab,
+                },
+                "text-h5 font-h5 sm:text-h6"
+              )}
+            >
+              {t(
+                defaultTab === "history"
+                  ? "transactions.history"
+                  : "transactions.orders"
+              )}
+            </span>
+          </Tab>
+          {defaultTab === "orders" && <OrderHistoryInfoTooltip />}
+        </div>
       ))}
     </TabList>
   );
