@@ -324,7 +324,7 @@ export const OrderHistory = ({
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => (isMobile ? 60 : 64),
+    estimateSize: () => (isMobile ? 60 : 84),
     paddingEnd: 110,
     overscan: 10,
     scrollMargin,
@@ -682,10 +682,10 @@ const TableGroupHeader = ({
                 title={t("limitOrders.whatIsOrderClaim.title")}
                 body={t("limitOrders.whatIsOrderClaim.description")}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
                   <Icon
                     id="question"
-                    className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
+                    className="h-3.5 w-3.5 text-wosmongton-200"
                     width={24}
                     height={24}
                     viewBox="0 0 24 24"
@@ -724,10 +724,10 @@ const TableGroupHeader = ({
             title={t("limitOrders.howPayoutsWork")}
             body={t("limitOrders.payoutNote")}
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:h-8 md:w-8">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
               <Icon
                 id="question"
-                className="h-6 w-6 text-wosmongton-200 md:h-4 md:w-4"
+                className="h-3.5 w-3.5 text-wosmongton-200"
                 width={24}
                 height={24}
                 viewBox="0 0 24 24"
